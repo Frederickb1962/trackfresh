@@ -17,15 +17,23 @@ export default function TrackFresh() {
   const [dateInput, setDateInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [shoppingItems, setShoppingItems] = useState([]);
+  const [shoppingInput, setShoppingInput] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("trackfresh.items");
     if (saved) setTrackedItems(JSON.parse(saved));
+    const savedShopping = localStorage.getItem("trackfresh.shopping");
+    if (savedShopping) setShoppingItems(JSON.parse(savedShopping));
   }, []);
 
   useEffect(() => {
     localStorage.setItem("trackfresh.items", JSON.stringify(trackedItems));
   }, [trackedItems]);
+
+  useEffect(() => {
+    localStorage.setItem("trackfresh.shopping", JSON.stringify(shoppingItems));
+  }, [shoppingItems]);
 
   useEffect(() => {
     if (foodInput.trim().length > 0) {
@@ -222,8 +230,64 @@ export default function TrackFresh() {
               </button>
               <h2 className="text-5xl font-bold">Shopping List</h2>
             </div>
+            
             <div className="p-6">
-              <p className="text-3xl text-center text-gray-600">Shopping list coming next!</p>
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={shoppingInput}
+                  onChange={(e) => setShoppingInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && shoppingInput.trim()) {
+                      setShoppingItems(prev => [...prev, {
+                        id: crypto.randomUUID(),
+                        name: shoppingInput,
+                        checked: false
+                      }]);
+                      setShoppingInput("");
+                    }
+                  }}
+                  placeholder="Add item..."
+                  className="w-full px-8 py-8 rounded-3xl border-4 border-blue-300 text-4xl text-gray-900"
+                />
+              </div>
+
+              {shoppingItems.some(item => item.checked) && (
+                <button
+                  onClick={() => setShoppingItems(prev => prev.filter(item => !item.checked))}
+                  className="w-full mb-6 py-5 bg-red-500 text-white rounded-3xl font-bold text-3xl"
+                >
+                  🗑️ Clear Checked Items
+                </button>
+              )}
+
+              {shoppingItems.length > 0 ? (
+                <div className="space-y-3">
+                  {shoppingItems.map(item => (
+                    <div
+                      key={item.id}
+                      onClick={() => setShoppingItems(prev => prev.map(i =>
+                        i.id === item.id ? { ...i, checked: !i.checked } : i
+                      ))}
+                      className="flex items-center gap-4 p-6 border-4 border-blue-200 rounded-3xl bg-white cursor-pointer hover:bg-blue-50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={item.checked}
+                        onChange={() => {}}
+                        className="w-10 h-10"
+                      />
+                      <span className={`text-4xl flex-1 ${item.checked ? "line-through text-gray-400" : "text-gray-900 font-bold"}`}>
+                        {item.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-3xl text-gray-600">Add items to your shopping list!</p>
+                </div>
+              )}
             </div>
           </div>
         )}
