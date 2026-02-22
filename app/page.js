@@ -157,7 +157,6 @@ export default function TrackFresh() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showWelcome, setShowWelcome] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
