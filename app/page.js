@@ -311,6 +311,24 @@ export default function TrackFresh() {
                 </button>
               </div>
 
+              <div className="mb-6 overflow-x-auto">
+                <div className="flex gap-2 pb-2">
+                  {["All", "Produce", "Meat", "Dairy", "Bread", "Condiments", "Frozen", "Pantry"].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setCategoryFilter(cat)}
+                      className={`px-6 py-3 rounded-full font-bold text-xl whitespace-nowrap ${
+                        categoryFilter === cat
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="mb-8">
                 <label className="block text-3xl font-bold text-gray-800 mb-3">Add Food:</label>
                 <div className="relative mb-4">
