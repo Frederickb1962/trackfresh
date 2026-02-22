@@ -2,12 +2,46 @@
 import { useState, useEffect } from "react";
 
 const FOOD_ITEMS = [
-  "Apples", "Avocados", "Bananas", "Bell Peppers", "Blueberries", "Bread",
-  "Broccoli", "Butter", "Carrots", "Cheddar Cheese", "Chicken Breast",
-  "Eggs", "Garlic", "Grapes", "Greek Yogurt", "Ground Beef", "Ham",
-  "Lettuce", "Milk", "Mozzarella", "Mushrooms", "Onions", "Oranges",
-  "Pasta", "Potatoes", "Rice", "Salmon", "Spinach", "Strawberries",
-  "Tomatoes", "Turkey", "Yogurt"
+  // Produce
+  "Apples", "Avocados", "Bananas", "Bell Peppers", "Blueberries", "Blackberries",
+  "Raspberries", "Strawberries", "Broccoli", "Brussels Sprouts", "Cabbage",
+  "Carrots", "Cauliflower", "Celery", "Cherries", "Corn", "Cucumbers",
+  "Eggplant", "Garlic", "Ginger", "Grapes", "Green Beans", "Kale", "Lemons",
+  "Lettuce", "Limes", "Mango", "Mushrooms", "Onions", "Oranges", "Peaches",
+  "Pears", "Pineapple", "Potatoes", "Radishes", "Spinach", "Sweet Potatoes",
+  "Tomatoes", "Watermelon", "Zucchini",
+  
+  // Meat & Seafood
+  "Bacon", "Beef Brisket", "Beef Chuck Roast", "Chicken Breast", "Chicken Thighs",
+  "Chicken Wings", "Deli Ham", "Deli Turkey", "Filet Mignon", "Flank Steak",
+  "Ground Beef", "Ground Chicken", "Ground Pork", "Ground Turkey", "Ham",
+  "Hot Dogs", "Pork Chops", "Pork Ribs", "Pork Tenderloin", "Ribeye Steak",
+  "Salmon", "Sausage", "Shrimp", "Sirloin Steak", "T-Bone Steak", "Tilapia",
+  "Tuna", "Turkey Breast", "Whole Chicken",
+  
+  // Dairy
+  "Almond Milk", "Butter", "Cheddar Cheese", "Cottage Cheese", "Cream Cheese",
+  "Eggs", "Feta Cheese", "Greek Yogurt", "Half and Half", "Heavy Cream",
+  "Milk", "Mozzarella", "Oat Milk", "Parmesan", "Sour Cream", "Swiss Cheese",
+  "Whipped Cream", "Yogurt",
+  
+  // Bread & Bakery
+  "Bagels", "Baguette", "Bread", "Croissants", "Dinner Rolls", "English Muffins",
+  "Hamburger Buns", "Hot Dog Buns", "Pita Bread", "Sourdough", "Tortillas",
+  "Wheat Bread", "White Bread",
+  
+  // Condiments & Sauces
+  "BBQ Sauce", "Hot Sauce", "Ketchup", "Mayonnaise", "Mustard", "Ranch Dressing",
+  "Salsa", "Soy Sauce", "Sriracha", "Tartar Sauce", "Teriyaki Sauce",
+  "Worcestershire Sauce",
+  
+  // Frozen
+  "Frozen Broccoli", "Frozen Corn", "Frozen Peas", "Frozen Pizza", "Ice Cream",
+  "Frozen Vegetables",
+  
+  // Pantry
+  "Olive Oil", "Pasta", "Rice", "Canned Beans", "Canned Tomatoes", "Flour",
+  "Sugar", "Salt", "Pepper", "Oats", "Cereal", "Peanut Butter"
 ];
 
 export default function TrackFresh() {
