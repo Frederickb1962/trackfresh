@@ -19,6 +19,8 @@ export default function TrackFresh() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
   const [shoppingInput, setShoppingInput] = useState("");
+  const [shoppingItems, setShoppingItems] = useState([]);
+  const [shoppingInput, setShoppingInput] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("trackfresh.items");
@@ -30,6 +32,10 @@ export default function TrackFresh() {
   useEffect(() => {
     localStorage.setItem("trackfresh.items", JSON.stringify(trackedItems));
   }, [trackedItems]);
+
+  useEffect(() => {
+    localStorage.setItem("trackfresh.shopping", JSON.stringify(shoppingItems));
+  }, [shoppingItems]);
 
   useEffect(() => {
     localStorage.setItem("trackfresh.shopping", JSON.stringify(shoppingItems));
