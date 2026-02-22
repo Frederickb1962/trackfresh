@@ -1,54 +1,160 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const FOOD_ITEMS = [
+const FOOD_DB = [
   // Produce
-  "Apples", "Avocados", "Bananas", "Bell Peppers", "Blueberries", "Blackberries",
-  "Raspberries", "Strawberries", "Broccoli", "Brussels Sprouts", "Cabbage",
-  "Carrots", "Cauliflower", "Celery", "Cherries", "Corn", "Cucumbers",
-  "Eggplant", "Garlic", "Ginger", "Grapes", "Green Beans", "Kale", "Lemons",
-  "Lettuce", "Limes", "Mango", "Mushrooms", "Onions", "Oranges", "Peaches",
-  "Pears", "Pineapple", "Potatoes", "Radishes", "Spinach", "Sweet Potatoes",
-  "Tomatoes", "Watermelon", "Zucchini",
+  { name: "Apples", category: "Produce" },
+  { name: "Avocados", category: "Produce" },
+  { name: "Bananas", category: "Produce" },
+  { name: "Bell Peppers", category: "Produce" },
+  { name: "Blueberries", category: "Produce" },
+  { name: "Blackberries", category: "Produce" },
+  { name: "Raspberries", category: "Produce" },
+  { name: "Strawberries", category: "Produce" },
+  { name: "Broccoli", category: "Produce" },
+  { name: "Brussels Sprouts", category: "Produce" },
+  { name: "Cabbage", category: "Produce" },
+  { name: "Carrots", category: "Produce" },
+  { name: "Cauliflower", category: "Produce" },
+  { name: "Celery", category: "Produce" },
+  { name: "Cherries", category: "Produce" },
+  { name: "Corn", category: "Produce" },
+  { name: "Cucumbers", category: "Produce" },
+  { name: "Eggplant", category: "Produce" },
+  { name: "Garlic", category: "Produce" },
+  { name: "Ginger", category: "Produce" },
+  { name: "Grapes", category: "Produce" },
+  { name: "Green Beans", category: "Produce" },
+  { name: "Kale", category: "Produce" },
+  { name: "Lemons", category: "Produce" },
+  { name: "Lettuce", category: "Produce" },
+  { name: "Limes", category: "Produce" },
+  { name: "Mango", category: "Produce" },
+  { name: "Mushrooms", category: "Produce" },
+  { name: "Onions", category: "Produce" },
+  { name: "Oranges", category: "Produce" },
+  { name: "Peaches", category: "Produce" },
+  { name: "Pears", category: "Produce" },
+  { name: "Pineapple", category: "Produce" },
+  { name: "Potatoes", category: "Produce" },
+  { name: "Radishes", category: "Produce" },
+  { name: "Spinach", category: "Produce" },
+  { name: "Sweet Potatoes", category: "Produce" },
+  { name: "Tomatoes", category: "Produce" },
+  { name: "Watermelon", category: "Produce" },
+  { name: "Zucchini", category: "Produce" },
   
   // Meat & Seafood
-  "Bacon", "Beef Brisket", "Beef Chuck Roast", "Chicken Breast", "Chicken Thighs",
-  "Chicken Wings", "Deli Ham", "Deli Turkey", "Filet Mignon", "Flank Steak",
-  "Ground Beef", "Ground Chicken", "Ground Pork", "Ground Turkey", "Ham",
-  "Hot Dogs", "Pork Chops", "Pork Ribs", "Pork Tenderloin", "Ribeye Steak",
-  "Salmon", "Sausage", "Shrimp", "Sirloin Steak", "T-Bone Steak", "Tilapia",
-  "Tuna", "Turkey Breast", "Whole Chicken",
+  { name: "Bacon", category: "Meat" },
+  { name: "Beef Brisket", category: "Meat" },
+  { name: "Beef Chuck Roast", category: "Meat" },
+  { name: "Chicken Breast", category: "Meat" },
+  { name: "Chicken Thighs", category: "Meat" },
+  { name: "Chicken Wings", category: "Meat" },
+  { name: "Deli Ham", category: "Meat" },
+  { name: "Deli Turkey", category: "Meat" },
+  { name: "Filet Mignon", category: "Meat" },
+  { name: "Flank Steak", category: "Meat" },
+  { name: "Ground Beef", category: "Meat" },
+  { name: "Ground Chicken", category: "Meat" },
+  { name: "Ground Pork", category: "Meat" },
+  { name: "Ground Turkey", category: "Meat" },
+  { name: "Ham", category: "Meat" },
+  { name: "Hot Dogs", category: "Meat" },
+  { name: "Pork Chops", category: "Meat" },
+  { name: "Pork Ribs", category: "Meat" },
+  { name: "Pork Tenderloin", category: "Meat" },
+  { name: "Ribeye Steak", category: "Meat" },
+  { name: "Salmon", category: "Meat" },
+  { name: "Sausage", category: "Meat" },
+  { name: "Shrimp", category: "Meat" },
+  { name: "Sirloin Steak", category: "Meat" },
+  { name: "T-Bone Steak", category: "Meat" },
+  { name: "Tilapia", category: "Meat" },
+  { name: "Tuna", category: "Meat" },
+  { name: "Turkey Breast", category: "Meat" },
+  { name: "Whole Chicken", category: "Meat" },
   
   // Dairy
-  "Almond Milk", "Butter", "Cheddar Cheese", "Cottage Cheese", "Cream Cheese",
-  "Eggs", "Feta Cheese", "Greek Yogurt", "Half and Half", "Heavy Cream",
-  "Milk", "Mozzarella", "Oat Milk", "Parmesan", "Sour Cream", "Swiss Cheese",
-  "Whipped Cream", "Yogurt",
+  { name: "Almond Milk", category: "Dairy" },
+  { name: "Butter", category: "Dairy" },
+  { name: "Cheddar Cheese", category: "Dairy" },
+  { name: "Cottage Cheese", category: "Dairy" },
+  { name: "Cream Cheese", category: "Dairy" },
+  { name: "Eggs", category: "Dairy" },
+  { name: "Feta Cheese", category: "Dairy" },
+  { name: "Greek Yogurt", category: "Dairy" },
+  { name: "Half and Half", category: "Dairy" },
+  { name: "Heavy Cream", category: "Dairy" },
+  { name: "Milk", category: "Dairy" },
+  { name: "Mozzarella", category: "Dairy" },
+  { name: "Oat Milk", category: "Dairy" },
+  { name: "Parmesan", category: "Dairy" },
+  { name: "Sour Cream", category: "Dairy" },
+  { name: "Swiss Cheese", category: "Dairy" },
+  { name: "Whipped Cream", category: "Dairy" },
+  { name: "Yogurt", category: "Dairy" },
   
   // Bread & Bakery
-  "Bagels", "Baguette", "Bread", "Croissants", "Dinner Rolls", "English Muffins",
-  "Hamburger Buns", "Hot Dog Buns", "Pita Bread", "Sourdough", "Tortillas",
-  "Wheat Bread", "White Bread",
+  { name: "Bagels", category: "Bread" },
+  { name: "Baguette", category: "Bread" },
+  { name: "Bread", category: "Bread" },
+  { name: "Croissants", category: "Bread" },
+  { name: "Dinner Rolls", category: "Bread" },
+  { name: "English Muffins", category: "Bread" },
+  { name: "Hamburger Buns", category: "Bread" },
+  { name: "Hot Dog Buns", category: "Bread" },
+  { name: "Pita Bread", category: "Bread" },
+  { name: "Sourdough", category: "Bread" },
+  { name: "Tortillas", category: "Bread" },
+  { name: "Wheat Bread", category: "Bread" },
+  { name: "White Bread", category: "Bread" },
   
   // Condiments & Sauces
-  "BBQ Sauce", "Hot Sauce", "Ketchup", "Mayonnaise", "Mustard", "Ranch Dressing",
-  "Salsa", "Soy Sauce", "Sriracha", "Tartar Sauce", "Teriyaki Sauce",
-  "Worcestershire Sauce",
+  { name: "BBQ Sauce", category: "Condiments" },
+  { name: "Hot Sauce", category: "Condiments" },
+  { name: "Ketchup", category: "Condiments" },
+  { name: "Mayonnaise", category: "Condiments" },
+  { name: "Mustard", category: "Condiments" },
+  { name: "Ranch Dressing", category: "Condiments" },
+  { name: "Salsa", category: "Condiments" },
+  { name: "Soy Sauce", category: "Condiments" },
+  { name: "Sriracha", category: "Condiments" },
+  { name: "Tartar Sauce", category: "Condiments" },
+  { name: "Teriyaki Sauce", category: "Condiments" },
+  { name: "Worcestershire Sauce", category: "Condiments" },
   
   // Frozen
-  "Frozen Broccoli", "Frozen Corn", "Frozen Peas", "Frozen Pizza", "Ice Cream",
-  "Frozen Vegetables",
+  { name: "Frozen Broccoli", category: "Frozen" },
+  { name: "Frozen Corn", category: "Frozen" },
+  { name: "Frozen Peas", category: "Frozen" },
+  { name: "Frozen Pizza", category: "Frozen" },
+  { name: "Ice Cream", category: "Frozen" },
+  { name: "Frozen Vegetables", category: "Frozen" },
   
   // Pantry
-  "Olive Oil", "Pasta", "Rice", "Canned Beans", "Canned Tomatoes", "Flour",
-  "Sugar", "Salt", "Pepper", "Oats", "Cereal", "Peanut Butter"
+  { name: "Olive Oil", category: "Pantry" },
+  { name: "Pasta", category: "Pantry" },
+  { name: "Rice", category: "Pantry" },
+  { name: "Canned Beans", category: "Pantry" },
+  { name: "Canned Tomatoes", category: "Pantry" },
+  { name: "Flour", category: "Pantry" },
+  { name: "Sugar", category: "Pantry" },
+  { name: "Salt", category: "Pantry" },
+  { name: "Pepper", category: "Pantry" },
+  { name: "Oats", category: "Pantry" },
+  { name: "Cereal", category: "Pantry" },
+  { name: "Peanut Butter", category: "Pantry" }
 ];
+
+const FOOD_ITEMS = FOOD_DB.map(f => f.name);
 
 export default function TrackFresh() {
   const [view, setView] = useState("home");
   const [trackedItems, setTrackedItems] = useState([]);
   const [foodInput, setFoodInput] = useState("");
   const [dateInput, setDateInput] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
@@ -103,9 +209,10 @@ export default function TrackFresh() {
 
   useEffect(() => {
     if (foodInput.trim().length > 0) {
-      const filtered = FOOD_ITEMS.filter(item =>
-        item.toLowerCase().includes(foodInput.toLowerCase())
-      ).slice(0, 5);
+      const filtered = FOOD_DB
+        .filter(item => item.name.toLowerCase().includes(foodInput.toLowerCase()))
+        .map(item => item.name)
+        .slice(0, 5);
       setSuggestions(filtered);
       setShowSuggestions(true);
     } else {
@@ -123,9 +230,11 @@ export default function TrackFresh() {
 
   const addFood = (name) => {
     if (name.trim() && dateInput) {
+      const foodData = FOOD_DB.find(f => f.name === name);
       setTrackedItems(prev => [...prev, {
         id: crypto.randomUUID(),
         name: name,
+        category: foodData ? foodData.category : "Other",
         useByDate: dateInput,
         addedDate: new Date().toISOString()
       }]);
@@ -261,9 +370,13 @@ export default function TrackFresh() {
                 </button>
               </div>
 
-              {itemsWithCountdown.length > 0 ? (
+              {itemsWithCountdown.filter(item => 
+                categoryFilter === "All" || item.category === categoryFilter
+              ).length > 0 ? (
                 <div className="space-y-4">
-                  {itemsWithCountdown.map(item => (
+                  {itemsWithCountdown
+                    .filter(item => categoryFilter === "All" || item.category === categoryFilter)
+                    .map(item => (
                     <div
                       key={item.id}
                       className={`p-6 rounded-3xl shadow-xl ${
@@ -275,6 +388,9 @@ export default function TrackFresh() {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="text-4xl font-bold text-gray-900">{item.name}</h3>
+                          <span className="inline-block mt-2 px-4 py-1 bg-gray-100 text-gray-700 rounded-full text-xl font-bold">
+                            {item.category}
+                          </span>
                         </div>
                         <div className="text-right ml-4">
                           <div className={`text-6xl font-black ${item.urgent ? "text-red-600" : "text-green-600"}`}>
