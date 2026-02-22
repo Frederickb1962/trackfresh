@@ -155,6 +155,8 @@ export default function TrackFresh() {
   const [foodInput, setFoodInput] = useState("");
   const [dateInput, setDateInput] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
@@ -167,6 +169,11 @@ export default function TrackFresh() {
     if (saved) setTrackedItems(JSON.parse(saved));
     const savedShopping = localStorage.getItem("trackfresh.shopping");
     if (savedShopping) setShoppingItems(JSON.parse(savedShopping));
+    
+    const hasSeenWelcome = localStorage.getItem("trackfresh.welcomed");
+    if (!hasSeenWelcome) {
+      setShowWelcome(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -220,6 +227,13 @@ export default function TrackFresh() {
       setShowSuggestions(false);
     }
   }, [foodInput]);
+
+  const handleAcceptTerms = () => {
+    if (agreedToTerms) {
+      localStorage.setItem("trackfresh.welcomed", "true");
+      setShowWelcome(false);
+    }
+  };
 
   const daysUntil = (date) => {
     if (!date) return null;
