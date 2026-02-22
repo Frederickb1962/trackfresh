@@ -208,12 +208,20 @@ export default function TrackFresh() {
                           <div className="text-2xl text-gray-600 font-bold">days left</div>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setTrackedItems(prev => prev.filter(i => i.id !== item.id))}
-                        className="mt-4 w-full py-4 bg-red-500 text-white rounded-2xl font-bold text-2xl"
-                      >
-                        × Remove
-                      </button>
+                      <div className="grid grid-cols-2 gap-3 mt-4">
+                        <button
+                          onClick={() => setTrackedItems(prev => prev.filter(i => i.id !== item.id))}
+                          className="py-4 bg-green-500 text-white rounded-2xl font-bold text-2xl"
+                        >
+                          ✓ Used It!
+                        </button>
+                        <button
+                          onClick={() => setTrackedItems(prev => prev.filter(i => i.id !== item.id))}
+                          className="py-4 bg-gray-400 text-white rounded-2xl font-bold text-2xl"
+                        >
+                          × Remove
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
