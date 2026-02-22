@@ -115,6 +115,19 @@ export default function TrackFresh() {
             </div>
             
             <div className="p-6">
+              {itemsWithCountdown.filter(i => i.urgent).length > 0 && (
+                <div className="mb-6 p-6 bg-red-50 border-4 border-red-400 rounded-3xl">
+                  <div className="flex items-center gap-4">
+                    <span className="text-6xl">⚠️</span>
+                    <div>
+                      <p className="font-bold text-3xl text-red-800">
+                        {itemsWithCountdown.filter(i => i.urgent).length} item{itemsWithCountdown.filter(i => i.urgent).length > 1 ? 's' : ''} expiring soon!
+                      </p>
+                      <p className="text-red-700 text-2xl mt-1">Use them before they go bad!</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="space-y-4 mb-8">
                 <button className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
                   🏷️ Label Scanner
