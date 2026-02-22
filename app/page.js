@@ -123,6 +123,14 @@ export default function TrackFresh() {
                     value={foodInput}
                     onChange={(e) => setFoodInput(e.target.value)}
                     placeholder="Type food name..."
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (showSuggestions && suggestions.length > 0) {
+                          setFoodInput(suggestions[0]);
+                          setShowSuggestions(false);
+                        }
+                      }
+                    }}
                     className="w-full px-8 py-8 rounded-3xl border-4 border-green-300 text-4xl text-gray-900 font-bold"
                   />
                   
