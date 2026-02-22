@@ -53,6 +53,8 @@ export default function TrackFresh() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
   const [shoppingInput, setShoppingInput] = useState("");
+  const [shoppingSuggestions, setShoppingSuggestions] = useState([]);
+  const [showShoppingSuggestions, setShowShoppingSuggestions] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("trackfresh.items");
@@ -70,8 +72,34 @@ export default function TrackFresh() {
   }, [shoppingItems]);
 
   useEffect(() => {
+    if (shoppingInput.trim().length > 0) {
+      const filtered = FOOD_ITEMS.filter(item =>
+        item.toLowerCase().includes(shoppingInput.toLowerCase())
+      ).slice(0, 5);
+      setShoppingSuggestions(filtered);
+      setShowShoppingSuggestions(true);
+    } else {
+      setShoppingSuggestions([]);
+      setShowShoppingSuggestions(false);
+    }
+  }, [shoppingInput]);
+
+  useEffect(() => {
     localStorage.setItem("trackfresh.shopping", JSON.stringify(shoppingItems));
   }, [shoppingItems]);
+
+  useEffect(() => {
+    if (shoppingInput.trim().length > 0) {
+      const filtered = FOOD_ITEMS.filter(item =>
+        item.toLowerCase().includes(shoppingInput.toLowerCase())
+      ).slice(0, 5);
+      setShoppingSuggestions(filtered);
+      setShowShoppingSuggestions(true);
+    } else {
+      setShoppingSuggestions([]);
+      setShowShoppingSuggestions(false);
+    }
+  }, [shoppingInput]);
 
   useEffect(() => {
     if (foodInput.trim().length > 0) {
@@ -291,24 +319,52 @@ export default function TrackFresh() {
             </div>
             
             <div className="p-6">
-              <div className="mb-6">
+              <div className="mb-6 relative">
                 <input
                   type="text"
                   value={shoppingInput}
                   onChange={(e) => setShoppingInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && shoppingInput.trim()) {
-                      setShoppingItems(prev => [...prev, {
-                        id: crypto.randomUUID(),
-                        name: shoppingInput,
-                        checked: false
-                      }]);
-                      setShoppingInput("");
+                    if (e.key === "Enter") {
+                      const itemToAdd = showShoppingSuggestions && shoppingSuggestions.length > 0 
+                        ? shoppingSuggestions[0] 
+                        : shoppingInput;
+                      if (itemToAdd.trim()) {
+                        setShoppingItems(prev => [...prev, {
+                          id: crypto.randomUUID(),
+                          name: itemToAdd,
+                          checked: false
+                        }]);
+                        setShoppingInput("");
+                        setShowShoppingSuggestions(false);
+                      }
                     }
                   }}
                   placeholder="Add item..."
                   className="w-full px-8 py-8 rounded-3xl border-4 border-blue-300 text-4xl text-gray-900"
                 />
+                
+                {showShoppingSuggestions && shoppingSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-2 bg-white border-4 border-blue-300 rounded-2xl shadow-2xl">
+                    {shoppingSuggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setShoppingItems(prev => [...prev, {
+                            id: crypto.randomUUID(),
+                            name: item,
+                            checked: false
+                          }]);
+                          setShoppingInput("");
+                          setShowShoppingSuggestions(false);
+                        }}
+                        className="w-full text-left px-8 py-6 text-3xl font-bold text-gray-900 hover:bg-blue-100 border-b-2 last:border-b-0"
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {shoppingItems.some(item => item.checked) && (
