@@ -19,8 +19,6 @@ export default function TrackFresh() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [shoppingItems, setShoppingItems] = useState([]);
   const [shoppingInput, setShoppingInput] = useState("");
-  const [shoppingItems, setShoppingItems] = useState([]);
-  const [shoppingInput, setShoppingInput] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("trackfresh.items");
