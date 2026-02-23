@@ -513,6 +513,89 @@ export default function TrackFresh() {
                   <p className="text-3xl text-gray-600">Add food with expiration date!</p>
                 </div>
               )}
+
+              {/* Label Scanner Modal */}
+              {showLabelScanner && (
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
+                  <div className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                    <h2 className="text-4xl font-bold mb-4">📸 Label Scanner</h2>
+                    
+                    {!labelResult ? (
+                      <>
+                        <p className="text-xl mb-4">Take photos of the food label (front and back if needed)</p>
+                        
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          onChange={handlePhotoCapture}
+                          className="hidden"
+                          id="photo-input"
+                        />
+                        
+                        <label htmlFor="photo-input" className="block w-full py-6 bg-blue-500 text-white rounded-2xl text-center font-bold text-2xl mb-4 cursor-pointer">
+                          📷 Take Photo
+                        </label>
+
+                        {labelPhotos.length > 0 && (
+                          <div className="mb-4">
+                            <p className="text-xl font-bold mb-2">{labelPhotos.length} photo(s) captured</p>
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                              {labelPhotos.map((photo, idx) => (
+                                <img key={idx} src={photo.preview} className="w-full h-24 object-cover rounded-lg" alt="Label" />
+                              ))}
+                            </div>
+                            <button
+                              onClick={scanLabelPhotos}
+                              disabled={labelScanning}
+                              className="w-full py-6 bg-green-500 text-white rounded-2xl font-bold text-2xl disabled:bg-gray-300"
+                            >
+                              {labelScanning ? '🔍 Scanning...' : '✓ Scan Photos'}
+                            </button>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setShowLabelScanner(false);
+                            setLabelPhotos([]);
+                          }}
+                          className="w-full py-4 bg-gray-300 text-gray-900 rounded-2xl font-bold text-xl"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="bg-green-50 border-4 border-green-300 rounded-2xl p-6 mb-4">
+                          <p className="text-2xl font-bold mb-2">✅ Found:</p>
+                          <p className="text-xl"><strong>Name:</strong> {labelResult.name || 'Not found'}</p>
+                          <p className="text-xl"><strong>Expires:</strong> {labelResult.date || 'Not found'}</p>
+                          <p className="text-xl"><strong>Category:</strong> {labelResult.category || 'Unknown'}</p>
+                        </div>
+
+                        <button
+                          onClick={addScannedItem}
+                          disabled={!labelResult.name || !labelResult.date}
+                          className="w-full py-6 bg-green-500 text-white rounded-2xl font-bold text-2xl mb-3 disabled:bg-gray-300"
+                        >
+                          ✓ Add to Tracker
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setLabelResult(null);
+                            setLabelPhotos([]);
+                          }}
+                          className="w-full py-4 bg-yellow-400 text-gray-900 rounded-2xl font-bold text-xl"
+                        >
+                          📸 Try Again
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
