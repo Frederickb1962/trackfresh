@@ -156,13 +156,6 @@ export default function TrackFresh() {
   const [dateInput, setDateInput] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showLabelScanner, setShowLabelScanner] = useState(false);
-  const [labelPhotos, setLabelPhotos] = useState([]);
-  const [labelScanning, setLabelScanning] = useState(false);
-  const [labelResult, setLabelResult] = useState(null);
-  const [scanError, setScanError] = useState(null);
-  const [scanMode, setScanMode] = useState('choose'); // 'choose', 'barcode', 'photo'
-  const [scannedBarcode, setScannedBarcode] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -248,96 +241,6 @@ export default function TrackFresh() {
     const expiry = new Date(date);
     return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
   };
-  const handlePhotoCapture = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setLabelPhotos(prev => [...prev, {
-          data: event.target.result.split(',')[1],
-          mediaType: file.type,
-          preview: event.target.result
-        }]);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const scanLabelPhotos = async () => {
-    if (labelPhotos.length === 0) return;
-    
-    setLabelScanning(true);
-    try {
-      const response = await fetch('/api/scan-label', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          images: labelPhotos.map(p => ({ data: p.data, mediaType: p.mediaType }))
-        })
-      });
-      
-      const result = await response.json();
-      if (result.error) {
-        setScanError(result.error);
-      } else if (result.name || result.date) {
-        const finalResult = scannedBarcode ? {
-          name: scannedBarcode.name,
-          category: scannedBarcode.category,
-          date: result.date || null
-        } : result;
-        setLabelResult(finalResult);
-        setScanError(null);
-      } else {
-        setScanError('Could not read label. Try taking clearer photos!');
-      }
-    } catch (error) {
-      setScanError('Error scanning: ' + error.message);
-    }
-    setLabelScanning(false);
-  };
-
-
-  const lookupBarcode = async (barcode) => {
-    try {
-      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-      const data = await response.json();
-      
-      if (data.status === 1 && data.product) {
-        const productName = data.product.product_name || data.product.generic_name || 'Unknown Product';
-        const category = data.product.categories ? 
-          (data.product.categories.includes('dairy') ? 'Dairy' :
-           data.product.categories.includes('meat') ? 'Meat' :
-           data.product.categories.includes('produce') ? 'Produce' : 'Pantry') 
-          : 'Pantry';
-        
-        setScannedBarcode({ name: productName, category: category });
-        setScanMode('photo');
-        setScanError(null);
-      } else {
-        setScanError('Product not found. Use photo scanner instead.');
-        setScanMode('photo');
-      }
-    } catch (error) {
-      setScanError('Barcode lookup failed. Use photo scanner instead.');
-      setScanMode('photo');
-    }
-  };
-
-  const addScannedItem = () => {
-    if (labelResult && labelResult.name && labelResult.date) {
-      setTrackedItems(prev => [...prev, {
-        id: crypto.randomUUID(),
-        name: labelResult.name,
-        category: labelResult.category || 'Other',
-        useByDate: labelResult.date,
-        addedDate: new Date().toISOString()
-      }]);
-      setShowLabelScanner(false);
-      setLabelPhotos([]);
-      setLabelResult(null);
-    }
-  };
-
 
   const addFood = (name) => {
     if (name.trim() && dateInput) {
@@ -411,8 +314,7 @@ export default function TrackFresh() {
                 </div>
               )}
               <div className="space-y-4 mb-8">
-                <button onClick={() => setShowLabelScanner(true)}
-                  className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
+                <button className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
                   🏷️ Label Scanner
                 </button>
                 <button className="w-full py-10 bg-purple-400 text-white rounded-3xl font-bold text-3xl">
@@ -549,155 +451,6 @@ export default function TrackFresh() {
               ) : (
                 <div className="text-center py-12">
                   <p className="text-3xl text-gray-600">Add food with expiration date!</p>
-                </div>
-              )}
-
-              {/* Smart Scanner Modal */}
-              {showLabelScanner && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
-                  <div className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                    <h2 className="text-4xl font-bold mb-4">📦 Smart Scanner</h2>
-                    
-                    {!labelResult ? (
-                      <>
-                        {scanMode === 'choose' && (
-                          <>
-                            <p className="text-2xl mb-6">Choose scanning method:</p>
-                            <button
-                              onClick={() => setScanMode('barcode')}
-                              className="w-full py-8 bg-purple-500 text-white rounded-3xl font-bold text-3xl mb-4"
-                            >
-                              📦 Scan Barcode
-                            </button>
-                            <button
-                              onClick={() => setScanMode('photo')}
-                              className="w-full py-8 bg-blue-500 text-white rounded-3xl font-bold text-3xl mb-4"
-                            >
-                              📸 Take Photos
-                            </button>
-                            <button
-                              onClick={() => {
-                                setShowLabelScanner(false);
-                                setScanMode('choose');
-                              }}
-                              className="w-full py-4 bg-gray-300 rounded-2xl font-bold text-xl"
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        )}
-
-                        {scanMode === 'barcode' && (
-                          <>
-                            <p className="text-xl mb-4">Scan the product barcode</p>
-                            <input
-                              type="text"
-                              placeholder="Or enter barcode manually..."
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && e.target.value) {
-                                  lookupBarcode(e.target.value);
-                                }
-                              }}
-                              className="w-full px-6 py-6 rounded-2xl border-4 text-3xl mb-4"
-                            />
-                            <button
-                              onClick={() => setScanMode('choose')}
-                              className="w-full py-4 bg-gray-300 rounded-2xl font-bold text-xl"
-                            >
-                              ← Back
-                            </button>
-                          </>
-                        )}
-
-                        {scanMode === 'photo' && (
-                          <>
-                            {scannedBarcode && (
-                              <div className="bg-green-50 border-4 border-green-300 rounded-2xl p-4 mb-4">
-                                <p className="text-xl font-bold">✅ Product: {scannedBarcode.name}</p>
-                                <p className="text-lg">Now take photo of expiration date</p>
-                              </div>
-                            )}
-                            {!scannedBarcode && <p className="text-xl mb-4">Take photos of the food label (front and back if needed)</p>}
-                        
-                        <input
-                          type="file"
-                          accept="image/*"
-                          capture="environment"
-                          onChange={handlePhotoCapture}
-                          className="hidden"
-                          id="photo-input"
-                        />
-                        
-                        <label htmlFor="photo-input" className="block w-full py-6 bg-blue-500 text-white rounded-2xl text-center font-bold text-2xl mb-4 cursor-pointer">
-                          📷 Take Photo
-                        </label>
-
-                        {scanError && (
-                          <div className="bg-red-50 border-4 border-red-400 rounded-2xl p-4 mb-4">
-                            <p className="text-xl font-bold text-red-800">⚠️ {scanError}</p>
-                          </div>
-                        )}
-
-                        {labelPhotos.length > 0 && (
-                          <div className="mb-4">
-                            <p className="text-xl font-bold mb-2">{labelPhotos.length} photo(s) captured</p>
-                            <div className="grid grid-cols-3 gap-2 mb-4">
-                              {labelPhotos.map((photo, idx) => (
-                                <img key={idx} src={photo.preview} className="w-full h-24 object-cover rounded-lg" alt="Label" />
-                              ))}
-                            </div>
-                            <button
-                              onClick={scanLabelPhotos}
-                              disabled={labelScanning}
-                              className="w-full py-6 bg-green-500 text-white rounded-2xl font-bold text-2xl disabled:bg-gray-300"
-                            >
-                              {labelScanning ? '🔍 Scanning...' : '✓ Scan Photos'}
-                            </button>
-                          </div>
-                        )}
-
-                        <button
-                          onClick={() => {
-                            setShowLabelScanner(false);
-                            setLabelPhotos([]);
-                            setScanMode('choose');
-                            setScannedBarcode(null);
-                            setScanError(null);
-                          }}
-                          className="w-full py-4 bg-gray-300 text-gray-900 rounded-2xl font-bold text-xl"
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) && (
-                      <>
-                        <div className="bg-green-50 border-4 border-green-300 rounded-2xl p-6 mb-4">
-                          <p className="text-2xl font-bold mb-2">✅ Found:</p>
-                          <p className="text-xl"><strong>Name:</strong> {labelResult.name || 'Not found'}</p>
-                          <p className="text-xl"><strong>Expires:</strong> {labelResult.date || 'Not found'}</p>
-                          <p className="text-xl"><strong>Category:</strong> {labelResult.category || 'Unknown'}</p>
-                        </div>
-
-                        <button
-                          onClick={addScannedItem}
-                          disabled={!labelResult.name || !labelResult.date}
-                          className="w-full py-6 bg-green-500 text-white rounded-2xl font-bold text-2xl mb-3 disabled:bg-gray-300"
-                        >
-                          ✓ Add to Tracker
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setLabelResult(null);
-                            setLabelPhotos([]);
-                          }}
-                          className="w-full py-4 bg-yellow-400 text-gray-900 rounded-2xl font-bold text-xl"
-                        >
-                          📸 Try Again
-                        </button>
-                      </>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
