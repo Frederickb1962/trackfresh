@@ -155,6 +155,9 @@ export default function TrackFresh() {
   const [foodInput, setFoodInput] = useState("");
   const [dateInput, setDateInput] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const [scanMode, setScanMode] = useState("choose");
+
   const [showWelcome, setShowWelcome] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
