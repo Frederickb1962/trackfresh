@@ -315,7 +315,7 @@ export default function TrackFresh() {
               )}
               <div className="space-y-4 mb-8">
                 <button className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
-                  🏷️ Label Scanner
+                  📦 Smart Scanner
                 </button>
                 <button className="w-full py-10 bg-purple-400 text-white rounded-3xl font-bold text-3xl">
                   📦 Barcode
