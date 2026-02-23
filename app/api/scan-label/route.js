@@ -13,7 +13,7 @@ export async function POST(request) {
 
     const content = [{
       type: "text",
-      text: "Analyze these food label photos. Extract: 1) Food name 2) Expiration date (YYYY-MM-DD format) 3) Category (Produce/Meat/Dairy/Bread/Condiments/Frozen/Pantry). Reply with ONLY valid JSON: {\"name\": \"...\", \"date\": \"YYYY-MM-DD\", \"category\": \"...\"}"
+      text: "Look at these food label photos and extract: 1) Product name 2) Expiration/Use-by/Best-by date in YYYY-MM-DD format 3) Category (Produce/Meat/Dairy/Bread/Condiments/Frozen/Pantry). Reply with ONLY this exact JSON format with no other text: {\"name\": \"product name\", \"date\": \"YYYY-MM-DD\", \"category\": \"category name\"}"
     }];
 
     images.forEach(img => {
@@ -34,17 +34,32 @@ export async function POST(request) {
     });
 
     const responseText = message.content[0].text;
-    const jsonMatch = responseText.match(/\{[^}]+\}/);
+    
+    // More flexible JSON extraction
+    const jsonMatch = responseText.match(/\{[\s\S]*?\}/);
     
     if (jsonMatch) {
-      const result = JSON.parse(jsonMatch[0]);
-      return Response.json(result);
+      try {
+        const result = JSON.parse(jsonMatch[0]);
+        return Response.json(result);
+      } catch (parseError) {
+        return Response.json({ 
+          error: 'Could not parse AI response', 
+          rawResponse: responseText 
+        }, { status: 500 });
+      }
     }
 
-    return Response.json({ error: 'Could not read label' }, { status: 500 });
+    return Response.json({ 
+      error: 'No JSON found in response',
+      rawResponse: responseText
+    }, { status: 500 });
     
   } catch (error) {
     console.error('Scan error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ 
+      error: error.message,
+      details: error.toString()
+    }, { status: 500 });
   }
 }
