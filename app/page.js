@@ -280,7 +280,12 @@ export default function TrackFresh() {
       if (result.error) {
         setScanError(result.error);
       } else if (result.name || result.date) {
-        setLabelResult(result);
+        const finalResult = scannedBarcode ? {
+          name: scannedBarcode.name,
+          category: scannedBarcode.category,
+          date: result.date || null
+        } : result;
+        setLabelResult(finalResult);
         setScanError(null);
       } else {
         setScanError('Could not read label. Try taking clearer photos!');
@@ -547,15 +552,72 @@ export default function TrackFresh() {
                 </div>
               )}
 
-              {/* Label Scanner Modal */}
+              {/* Smart Scanner Modal */}
               {showLabelScanner && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6">
                   <div className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                    <h2 className="text-4xl font-bold mb-4">📸 Label Scanner</h2>
+                    <h2 className="text-4xl font-bold mb-4">📦 Smart Scanner</h2>
                     
                     {!labelResult ? (
                       <>
-                        <p className="text-xl mb-4">Take photos of the food label (front and back if needed)</p>
+                        {scanMode === 'choose' && (
+                          <>
+                            <p className="text-2xl mb-6">Choose scanning method:</p>
+                            <button
+                              onClick={() => setScanMode('barcode')}
+                              className="w-full py-8 bg-purple-500 text-white rounded-3xl font-bold text-3xl mb-4"
+                            >
+                              📦 Scan Barcode
+                            </button>
+                            <button
+                              onClick={() => setScanMode('photo')}
+                              className="w-full py-8 bg-blue-500 text-white rounded-3xl font-bold text-3xl mb-4"
+                            >
+                              📸 Take Photos
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowLabelScanner(false);
+                                setScanMode('choose');
+                              }}
+                              className="w-full py-4 bg-gray-300 rounded-2xl font-bold text-xl"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
+
+                        {scanMode === 'barcode' && (
+                          <>
+                            <p className="text-xl mb-4">Scan the product barcode</p>
+                            <input
+                              type="text"
+                              placeholder="Or enter barcode manually..."
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && e.target.value) {
+                                  lookupBarcode(e.target.value);
+                                }
+                              }}
+                              className="w-full px-6 py-6 rounded-2xl border-4 text-3xl mb-4"
+                            />
+                            <button
+                              onClick={() => setScanMode('choose')}
+                              className="w-full py-4 bg-gray-300 rounded-2xl font-bold text-xl"
+                            >
+                              ← Back
+                            </button>
+                          </>
+                        )}
+
+                        {scanMode === 'photo' && (
+                          <>
+                            {scannedBarcode && (
+                              <div className="bg-green-50 border-4 border-green-300 rounded-2xl p-4 mb-4">
+                                <p className="text-xl font-bold">✅ Product: {scannedBarcode.name}</p>
+                                <p className="text-lg">Now take photo of expiration date</p>
+                              </div>
+                            )}
+                            {!scannedBarcode && <p className="text-xl mb-4">Take photos of the food label (front and back if needed)</p>}
                         
                         <input
                           type="file"
@@ -598,6 +660,9 @@ export default function TrackFresh() {
                           onClick={() => {
                             setShowLabelScanner(false);
                             setLabelPhotos([]);
+                            setScanMode('choose');
+                            setScannedBarcode(null);
+                            setScanError(null);
                           }}
                           className="w-full py-4 bg-gray-300 text-gray-900 rounded-2xl font-bold text-xl"
                         >
