@@ -156,6 +156,10 @@ export default function TrackFresh() {
   const [dateInput, setDateInput] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showLabelScanner, setShowLabelScanner] = useState(false);
+  const [labelPhotos, setLabelPhotos] = useState([]);
+  const [labelScanning, setLabelScanning] = useState(false);
+  const [labelResult, setLabelResult] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -314,7 +318,8 @@ export default function TrackFresh() {
                 </div>
               )}
               <div className="space-y-4 mb-8">
-                <button className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
+                <button onClick={() => setShowLabelScanner(true)}
+                  className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
                   🏷️ Label Scanner
                 </button>
                 <button className="w-full py-10 bg-purple-400 text-white rounded-3xl font-bold text-3xl">
