@@ -160,6 +160,7 @@ export default function TrackFresh() {
   const [labelPhotos, setLabelPhotos] = useState([]);
   const [labelScanning, setLabelScanning] = useState(false);
   const [labelResult, setLabelResult] = useState(null);
+  const [scanError, setScanError] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -274,13 +275,16 @@ export default function TrackFresh() {
       });
       
       const result = await response.json();
-      if (result.name || result.date) {
+      if (result.error) {
+        setScanError(result.error);
+      } else if (result.name || result.date) {
         setLabelResult(result);
+        setScanError(null);
       } else {
-        alert('Could not read label. Try taking clearer photos!');
+        setScanError('Could not read label. Try taking clearer photos!');
       }
     } catch (error) {
-      alert('Error scanning: ' + error.message);
+      setScanError('Error scanning: ' + error.message);
     }
     setLabelScanning(false);
   };
@@ -536,6 +540,12 @@ export default function TrackFresh() {
                         <label htmlFor="photo-input" className="block w-full py-6 bg-blue-500 text-white rounded-2xl text-center font-bold text-2xl mb-4 cursor-pointer">
                           📷 Take Photo
                         </label>
+
+                        {scanError && (
+                          <div className="bg-red-50 border-4 border-red-400 rounded-2xl p-4 mb-4">
+                            <p className="text-xl font-bold text-red-800">⚠️ {scanError}</p>
+                          </div>
+                        )}
 
                         {labelPhotos.length > 0 && (
                           <div className="mb-4">
