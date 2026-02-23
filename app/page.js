@@ -161,6 +161,8 @@ export default function TrackFresh() {
   const [labelScanning, setLabelScanning] = useState(false);
   const [labelResult, setLabelResult] = useState(null);
   const [scanError, setScanError] = useState(null);
+  const [scanMode, setScanMode] = useState('choose'); // 'choose', 'barcode', 'photo'
+  const [scannedBarcode, setScannedBarcode] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -287,6 +289,33 @@ export default function TrackFresh() {
       setScanError('Error scanning: ' + error.message);
     }
     setLabelScanning(false);
+  };
+
+
+  const lookupBarcode = async (barcode) => {
+    try {
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await response.json();
+      
+      if (data.status === 1 && data.product) {
+        const productName = data.product.product_name || data.product.generic_name || 'Unknown Product';
+        const category = data.product.categories ? 
+          (data.product.categories.includes('dairy') ? 'Dairy' :
+           data.product.categories.includes('meat') ? 'Meat' :
+           data.product.categories.includes('produce') ? 'Produce' : 'Pantry') 
+          : 'Pantry';
+        
+        setScannedBarcode({ name: productName, category: category });
+        setScanMode('photo');
+        setScanError(null);
+      } else {
+        setScanError('Product not found. Use photo scanner instead.');
+        setScanMode('photo');
+      }
+    } catch (error) {
+      setScanError('Barcode lookup failed. Use photo scanner instead.');
+      setScanMode('photo');
+    }
   };
 
   const addScannedItem = () => {
