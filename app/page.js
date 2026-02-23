@@ -669,7 +669,7 @@ export default function TrackFresh() {
                           Cancel
                         </button>
                       </>
-                    ) : (
+                    ) && (
                       <>
                         <div className="bg-green-50 border-4 border-green-300 rounded-2xl p-6 mb-4">
                           <p className="text-2xl font-bold mb-2">✅ Found:</p>
