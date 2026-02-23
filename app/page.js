@@ -314,7 +314,7 @@ export default function TrackFresh() {
                 </div>
               )}
               <div className="space-y-4 mb-8">
-                <button onClick={() => setShowSmartScanner(true)} className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
+                <button onClick={() => alert("Button clicked!")} className="w-full py-10 bg-orange-400 text-white rounded-3xl font-bold text-3xl">
                   📦 Smart Scanner
                 </button>
                 <button className="w-full py-10 bg-purple-400 text-white rounded-3xl font-bold text-3xl">
