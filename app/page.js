@@ -245,6 +245,61 @@ export default function TrackFresh() {
     const expiry = new Date(date);
     return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
   };
+  const handlePhotoCapture = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setLabelPhotos(prev => [...prev, {
+          data: event.target.result.split(',')[1],
+          mediaType: file.type,
+          preview: event.target.result
+        }]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const scanLabelPhotos = async () => {
+    if (labelPhotos.length === 0) return;
+    
+    setLabelScanning(true);
+    try {
+      const response = await fetch('/api/scan-label', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          images: labelPhotos.map(p => ({ data: p.data, mediaType: p.mediaType }))
+        })
+      });
+      
+      const result = await response.json();
+      if (result.name || result.date) {
+        setLabelResult(result);
+      } else {
+        alert('Could not read label. Try taking clearer photos!');
+      }
+    } catch (error) {
+      alert('Error scanning: ' + error.message);
+    }
+    setLabelScanning(false);
+  };
+
+  const addScannedItem = () => {
+    if (labelResult && labelResult.name && labelResult.date) {
+      setTrackedItems(prev => [...prev, {
+        id: crypto.randomUUID(),
+        name: labelResult.name,
+        category: labelResult.category || 'Other',
+        useByDate: labelResult.date,
+        addedDate: new Date().toISOString()
+      }]);
+      setShowLabelScanner(false);
+      setLabelPhotos([]);
+      setLabelResult(null);
+    }
+  };
+
 
   const addFood = (name) => {
     if (name.trim() && dateInput) {
