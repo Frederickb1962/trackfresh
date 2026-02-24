@@ -162,7 +162,7 @@ export default function TrackFresh() {
         setScanError('Could not read label. Try taking clearer photos!');
       }
     } catch (error) {
-      setScanError('Error: ' + error.message);
+      setScanError(result.error || "Scanning failed. Try again.");
     }
     setScanning(false);
   };
