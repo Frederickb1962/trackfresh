@@ -2,11 +2,12 @@
 
 const GLOBAL_STYLES = `
   .btn-3d {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 100%);
-    text-shadow: 0 1px 1px rgba(0,0,0,0.15);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.08) 100%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15);
     transition: all 0.15s ease;
     position: relative;
+    font-weight: 700 !important;
   }
   .btn-3d:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
@@ -17,17 +18,19 @@ const GLOBAL_STYLES = `
     transform: translateY(1px);
   }
   .pill-3d {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.05) 100%);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.04) 100%);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2);
     transition: all 0.15s ease;
+    font-weight: 600 !important;
   }
   .pill-3d:hover {
     box-shadow: 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
     transform: translateY(-1px);
   }
   .pill-3d-active {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.08) 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    font-weight: 700 !important;
   }
   input[type="text"], input[type="date"], input[type="number"], select, textarea,
   input.rounded.border, input.flex-1.rounded.border {
@@ -206,9 +209,9 @@ const RECIPE_DB = [
   { name: "Scrambled Eggs on Toast", ingredients: ["eggs","butter","bread","milk"], requires: ["eggs"], description: "Perfect creamy scrambled eggs.", time: "8 min", instructions: "1. Crack eggs into a cold pan, add butter and a splash of milk.\n2. Place over low-medium heat and stir continuously.\n3. Keep stirring, bringing the curds together slowly.\n4. Remove from heat while still slightly underdone.\n5. Season with salt and pepper.\n6. Toast and butter bread.\n7. Pile eggs onto toast and serve immediately." },
   { name: "Frittata", ingredients: ["eggs","onions","carrots","cheese","butter"], requires: ["eggs"], description: "Italian baked omelette great for using up vegetables.", time: "25 min", instructions: "1. Preheat oven to 375F.\n2. Saute any vegetables in an oven-safe pan until softened.\n3. Whisk eggs with salt, pepper, and a splash of cream.\n4. Pour egg mixture over the vegetables.\n5. Cook on stovetop for 3-4 minutes until edges are set.\n6. Transfer to oven and bake 10-12 minutes until puffed and golden.\n7. Let cool slightly, slice like a pizza and serve." },
   { name: "Mayonnaise Roasted Potatoes", ingredients: ["potatos","mayonaise","garlic"], requires: ["potatos","mayonaise"], description: "Incredibly crispy roasted potatoes using the mayo trick.", time: "45 min", instructions: "1. Preheat oven to 425F.\n2. Cut potatoes into wedges or chunks.\n3. Toss thoroughly with mayonnaise, garlic, salt, and pepper.\n4. Spread on a baking sheet in a single layer.\n5. Roast for 20 minutes until golden on the bottom.\n6. Flip and roast another 15 minutes until crispy all over.\n7. Serve with ketchup or sour cream." },
-  { name: "Ribeye Steak", ingredients: ["ribeye","butter","garlic","thyme"], requires: ["ribeye"], description: "Perfect pan-seared ribeye with garlic butter.", time: "20 min", instructions: "1. Take steak out of fridge 30 minutes before cooking.\n2. Pat dry and season with salt and pepper.\n3. Heat cast iron skillet until smoking.\n4. Sear 3-4 minutes per side.\n5. Add butter, garlic, and thyme.\n6. Baste continuously for 1-2 minutes.\n7. Rest 5 minutes before slicing.", temps: [{"label":"Rare","temp":"125F","color":"bg-red-100 text-red-700"},{"label":"Medium Rare","temp":"135F","color":"bg-orange-100 text-orange-700"},{"label":"Medium","temp":"145F","color":"bg-yellow-100 text-yellow-700","safe":true},{"label":"Well Done","temp":"160F","color":"bg-green-100 text-green-700","safe":true}] },
-  { name: "Roast Chicken", ingredients: ["chicken","butter","garlic","thyme"], requires: ["chicken"], description: "Classic roast chicken with crispy skin.", time: "90 min", instructions: "1. Preheat oven to 425F.\n2. Pat chicken dry inside and out.\n3. Rub all over with butter, salt, pepper, and garlic.\n4. Roast breast side up for 60-75 minutes.\n5. Baste every 20 minutes.\n6. Rest 10 minutes before carving.", temps: [{"label":"USDA Safe Minimum","temp":"165F","color":"bg-green-100 text-green-700","safe":true}] },
-  { name: "Pan Seared Salmon", ingredients: ["salmon","butter","lemon","garlic"], requires: ["salmon"], description: "Crispy skin salmon with lemon butter.", time: "15 min", instructions: "1. Pat salmon dry and season with salt and pepper.\n2. Heat oil over medium-high heat.\n3. Place skin side down and press gently.\n4. Cook 4-5 minutes until skin is crispy.\n5. Flip and cook 2-3 more minutes.\n6. Add butter and lemon juice and serve.", temps: [{"label":"Safe Minimum","temp":"145F","color":"bg-green-100 text-green-700","safe":true}] },
+  { name: "Ribeye Steak", ingredients: ["ribeye","butter","garlic","thyme"], requires: ["ribeye"], description: "Perfect pan-seared ribeye with garlic butter.", time: "20 min", instructions: "1. Take steak out of fridge 30 minutes before cooking.\n2. Pat dry and season with salt and pepper.\n3. Heat cast iron skillet until smoking.\n4. Sear 3-4 minutes per side.\n5. Add butter, garlic, and thyme.\n6. Baste continuously for 1-2 minutes.\n7. Rest 5 minutes before slicing.", temps: [{"label":"Rare","temp":"125F","color":"bg-red-100 text-red-800"},{"label":"Medium Rare","temp":"135F","color":"bg-orange-100 text-orange-800"},{"label":"Medium","temp":"145F","color":"bg-yellow-100 text-yellow-800","safe":true},{"label":"Well Done","temp":"160F","color":"bg-green-100 text-green-800","safe":true}] },
+  { name: "Roast Chicken", ingredients: ["chicken","butter","garlic","thyme"], requires: ["chicken"], description: "Classic roast chicken with crispy skin.", time: "90 min", instructions: "1. Preheat oven to 425F.\n2. Pat chicken dry inside and out.\n3. Rub all over with butter, salt, pepper, and garlic.\n4. Roast breast side up for 60-75 minutes.\n5. Baste every 20 minutes.\n6. Rest 10 minutes before carving.", temps: [{"label":"USDA Safe Minimum","temp":"165F","color":"bg-green-100 text-green-800","safe":true}] },
+  { name: "Pan Seared Salmon", ingredients: ["salmon","butter","lemon","garlic"], requires: ["salmon"], description: "Crispy skin salmon with lemon butter.", time: "15 min", instructions: "1. Pat salmon dry and season with salt and pepper.\n2. Heat oil over medium-high heat.\n3. Place skin side down and press gently.\n4. Cook 4-5 minutes until skin is crispy.\n5. Flip and cook 2-3 more minutes.\n6. Add butter and lemon juice and serve.", temps: [{"label":"Safe Minimum","temp":"145F","color":"bg-green-100 text-green-800","safe":true}] },
 ];
 
 function daysUntil(dateString) {
@@ -301,18 +304,18 @@ const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sun
 const MEAL_SLOTS = ["Breakfast","Lunch","Dinner"];
 
 const CATEGORY_COLORS = {
-  Produce: "bg-green-100 text-green-700",
-  Dairy: "bg-blue-100 text-blue-700",
-  Meat: "bg-red-100 text-red-700",
-  Pantry: "bg-yellow-100 text-yellow-700",
-  Leftovers: "bg-purple-100 text-purple-700",
+  Produce: "bg-green-100 text-green-800",
+  Dairy: "bg-blue-100 text-blue-800",
+  Meat: "bg-red-100 text-red-800",
+  Pantry: "bg-yellow-100 text-yellow-800",
+  Leftovers: "bg-purple-100 text-purple-800",
   Other: "bg-gray-100 text-gray-700",
 };
 
 const LOCATION_COLORS = {
   Fridge: "bg-sky-100 text-sky-700",
-  Freezer: "bg-cyan-100 text-cyan-700",
-  Pantry: "bg-amber-100 text-amber-700",
+  Freezer: "bg-cyan-100 text-cyan-800",
+  Pantry: "bg-amber-100 text-amber-800",
 };
 
 const LOCATION_ICONS = {
@@ -1009,7 +1012,7 @@ export default function TrackFreshDashboard() {
                   {urgent.map(it => (
                     <div key={it.id} className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-3 py-2">
                       <span className="text-sm font-semibold">{it.name}</span>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-700"}`}>{it.daysLeft <= 0 ? "EXPIRED" : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-800"}`}>{it.daysLeft <= 0 ? "EXPIRED" : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
                     </div>
                   ))}
                 </div>
@@ -1063,7 +1066,7 @@ export default function TrackFreshDashboard() {
                         <label className="mb-1 block text-sm font-medium text-gray-700">{barcodeLocation === "Freezer" ? "Freeze By Date" : "Use By Date"}</label>
                         <div className="flex gap-2">
                           <input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                          <button onClick={() => handleVoiceDate("useBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "useBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{voiceListening === "useBy" ? "🎤 Listening..." : "🎤"}</button>
+                          <button onClick={() => handleVoiceDate("useBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "useBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{voiceListening === "useBy" ? "🎤 Listening..." : "🎤"}</button>
                         </div>
                         {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>}
                       </div>
@@ -1072,7 +1075,7 @@ export default function TrackFreshDashboard() {
                           <label className="mb-1 block text-sm font-medium text-gray-700">Freeze By Date <span className="text-xs text-gray-400">(optional — we will remind you)</span></label>
                           <div className="flex gap-2">
                             <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                            <button onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
+                            <button onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
                           </div>
                           {voiceListening === "freezeBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 25 2026</p>}
                         </div>
@@ -1121,7 +1124,7 @@ export default function TrackFreshDashboard() {
                   <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
                   <div className="flex gap-2">
                     <input value={quickAddQty} onChange={(e) => setQuickAddQty(e.target.value)} placeholder="e.g. 2 lbs" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
+                    <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
                   {quickVoiceListening === "qty" && <p className="text-xs text-green-700 mt-1">Say quantity e.g. two pounds</p>}
                 </div>
@@ -1129,7 +1132,7 @@ export default function TrackFreshDashboard() {
                   <label className="mb-1 block text-sm font-medium text-gray-700">Use By Date</label>
                   <div className="flex gap-2">
                     <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
+                    <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
                   {quickVoiceListening === "date" && <p className="text-xs text-green-700 mt-1">Say date e.g. February 20 2026</p>}
                   {quickVoiceError && <p className="text-xs text-red-500 mt-1">{quickVoiceError}</p>}
@@ -1278,12 +1281,12 @@ export default function TrackFreshDashboard() {
                               <div className="text-xs text-gray-500">days</div>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1 text-xs font-bold text-white btn-3d">Used</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">Used</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1 text-xs font-bold text-white btn-3d animate-pulse">❄️ Freeze!</button>
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-3 py-1 text-xs font-bold text-white btn-3d animate-pulse">❄️ Freeze!</button>
                               )}
-                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white btn-3d">Edit</button>
-                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-500 hover:border-red-300 hover:text-red-500 pill-3d">Remove</button>
+                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">Edit</button>
+                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">Remove</button>
                             </div>
                           </div>
                         </div>
@@ -1300,7 +1303,7 @@ export default function TrackFreshDashboard() {
           <Card>
             <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-white btn-3d disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-5 py-2.5 text-sm font-bold text-white btn-3d disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -1440,7 +1443,7 @@ export default function TrackFreshDashboard() {
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">Meal Planner</h2>
                 </div>
-                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white btn-3d ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-600 to-indigo-600"}`}>
+                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white btn-3d ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-700 to-indigo-700"}`}>
                   {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
                 </button>
               </div>
