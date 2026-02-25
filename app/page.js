@@ -1,5 +1,43 @@
 "use client";
 
+const GLOBAL_STYLES = `
+  .btn-3d {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 100%);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  .btn-3d:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-3d:active {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 3px rgba(0,0,0,0.1);
+    transform: translateY(1px);
+  }
+  .pill-3d {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.05) 100%);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.15s ease;
+  }
+  .pill-3d:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-1px);
+  }
+  .pill-3d-active {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .card-3d {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+  }
+  .card-3d:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+  }
+`;
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
 
@@ -267,14 +305,14 @@ const LOCATION_ICONS = {
 };
 
 function Card({ children, className = "" }) {
-  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-sm p-5 shadow-lg shadow-green-900/5 ${className}`}>{children}</div>;
+  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-sm p-5 card-3d ${className}`}>{children}</div>;
 }
 
 function TabBar({ active, onChange }) {
   return (
     <div className="flex gap-1 rounded-2xl bg-gradient-to-r from-green-900 to-emerald-800 p-1.5 shadow-lg">
       {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
-        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 shadow-md scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10"}`}>{label}</button>
+        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 pill-3d-active scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10 pill-3d"}`}>{label}</button>
       ))}
     </div>
   );
@@ -841,17 +879,17 @@ export default function TrackFreshDashboard() {
             <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">Freeze alerts before meat goes bad</span></div>
           </div>
           <p className="text-xs text-gray-400 mb-4">Your data is stored locally on your device. No account required.</p>
-          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full bg-green-600 py-3 text-lg font-bold text-white shadow-lg hover:bg-green-500 transition-all">🚀 Get Started</button>
+          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full bg-gradient-to-b from-green-500 to-green-700 py-3 text-lg font-bold text-white btn-3d">🚀 Get Started</button>
         </div>
       </div>
     )}
 
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-emerald-50/50 to-white p-4">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 via-emerald-50/50 to-white p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
           <div className="flex items-center gap-3">
-            <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors">How to use</button>
+            <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors underline decoration-green-300">How to use</button>
             <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-medium text-red-600 underline">Sign Out</button>
           </div>
         </div>
@@ -864,7 +902,7 @@ export default function TrackFreshDashboard() {
               <p className="mb-4 text-sm text-gray-600">Upload a photo of your grocery receipt and Claude will extract the food items automatically.</p>
               {!receiptScanning && receiptItems.length === 0 && (
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-6 hover:bg-green-100 transition-colors">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-green-300 bg-gradient-to-b from-green-50 to-green-100 p-6 btn-3d">
                     <span className="text-3xl mb-2">📸</span>
                     <span className="text-sm font-semibold text-green-700">Take Photo</span>
                     <span className="text-xs text-gray-500 mt-1">Open camera</span>
@@ -905,10 +943,10 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="w-full rounded bg-green-700 py-2 text-sm font-semibold text-white">Add {selectedReceiptItems.length} Items to Tracker</button>
+                  <button onClick={handleAddReceiptItems} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add {selectedReceiptItems.length} Items to Tracker</button>
                 </div>
               )}
-              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
+              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -925,7 +963,7 @@ export default function TrackFreshDashboard() {
                 <li>🔹 <strong>Community:</strong> Share recipes, tips, and chat.</li>
                 <li>🔹 Red = expires within 3 days. Yellow = within 7 days.</li>
               </ul>
-              <button onClick={() => setShowHelp(false)} className="mt-4 rounded bg-green-700 px-4 py-2 font-semibold text-white">Close</button>
+              <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 font-bold text-white btn-3d">Close</button>
             </div>
           </div>
         )}
@@ -961,8 +999,8 @@ export default function TrackFreshDashboard() {
               ) : <p className="text-sm text-gray-700 mb-4"><span className="font-semibold">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
               <p className="text-xs text-gray-500 mb-3">Use these items soon, freeze them, or check for recipes!</p>
               <div className="flex gap-2">
-                <button onClick={() => setShowAlert(false)} className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-bold text-white">Got it</button>
-                <button onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg border border-red-300 py-2 text-sm font-semibold text-red-600">Find Recipes</button>
+                <button onClick={() => setShowAlert(false)} className="flex-1 rounded-lg bg-gradient-to-b from-red-500 to-red-600 py-2 text-sm font-bold text-white btn-3d">Got it</button>
+                <button onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg border border-red-300 bg-gradient-to-b from-white to-red-50 py-2 text-sm font-bold text-red-600 pill-3d">Find Recipes</button>
               </div>
             </div>
           </div>
@@ -1029,7 +1067,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Scan Another</button>
                 </div>
               )}
-              <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
+              <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -1120,7 +1158,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={() => setLabelItem(null)} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Scan Another</button>
                 </div>
               )}
-              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
+              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -1185,14 +1223,14 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="mb-2 flex flex-wrap gap-1">
                 {["All", ...LOCATIONS].map((l) => (
-                  <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200"}`}>
+                  <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
                     {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{l}
                   </button>
                 ))}
               </div>
               <div className="mb-3 flex flex-wrap gap-1">
                 {["All", ...CATEGORIES].map((c) => (
-                  <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200"}`}>{c}</button>
+                  <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>{c}</button>
                 ))}
               </div>
               {filteredItems.length === 0 ? (
@@ -1223,12 +1261,12 @@ export default function TrackFreshDashboard() {
                               <div className="text-xs text-gray-500">days</div>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-sm hover:shadow-md transition-all">Used</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1 text-xs font-bold text-white btn-3d">Used</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1 text-xs font-bold text-white shadow-sm animate-pulse">❄️ Freeze!</button>
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1 text-xs font-bold text-white btn-3d animate-pulse">❄️ Freeze!</button>
                               )}
-                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-600/80 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-600 transition-all">Edit</button>
-                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-500 hover:border-red-300 hover:text-red-500 transition-all">Remove</button>
+                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white btn-3d">Edit</button>
+                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-500 hover:border-red-300 hover:text-red-500 pill-3d">Remove</button>
                             </div>
                           </div>
                         </div>
@@ -1245,7 +1283,7 @@ export default function TrackFreshDashboard() {
           <Card>
             <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-white btn-3d disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -1351,7 +1389,7 @@ export default function TrackFreshDashboard() {
               <p className="mb-3 text-xs text-gray-500">{mealPickerDay} — {mealPickerSlot}</p>
               <div className="flex gap-2 mb-3">
                 <MealSearchInput value={mealPickerSearch} onChange={(e) => setMealPickerSearch(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && mealPickerSearch.trim()) handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim()); }} />
-                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded bg-green-700 px-3 py-2 text-sm font-semibold text-white">Add</button>}
+                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-3 py-2 text-sm font-bold text-white btn-3d">Add</button>}
               </div>
               <div className="max-h-64 overflow-y-auto space-y-2">
                 {mealPickerSearch && !RECIPE_DB.find((r) => r.name.toLowerCase() === mealPickerSearch.toLowerCase()) && (
@@ -1372,7 +1410,7 @@ export default function TrackFreshDashboard() {
                   );
                 })}
               </div>
-              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
+              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -1385,7 +1423,7 @@ export default function TrackFreshDashboard() {
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">Meal Planner</h2>
                 </div>
-                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition-all ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg"}`}>
+                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white btn-3d ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-600 to-indigo-600"}`}>
                   {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
                 </button>
               </div>
@@ -1409,8 +1447,8 @@ export default function TrackFreshDashboard() {
                                     <span className="text-sm font-medium">{meal}</span>
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    <button onClick={() => handleAddMealIngredientsToShopping(meal)} className="rounded-lg bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 hover:bg-green-200 transition-colors">+ List</button>
-                                    <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-500 hover:bg-gray-200 transition-colors">Change</button>
+                                    <button onClick={() => handleAddMealIngredientsToShopping(meal)} className="rounded-lg bg-gradient-to-b from-green-100 to-green-200 px-2 py-1 text-xs font-bold text-green-700 pill-3d">+ List</button>
+                                    <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="rounded-lg bg-gradient-to-b from-gray-100 to-gray-200 px-2 py-1 text-xs font-semibold text-gray-500 pill-3d">Change</button>
                                     <button onClick={() => handleClearMeal(day, slot)} className="text-xs text-gray-400 hover:text-red-500">✕</button>
                                   </div>
                                 </div>
@@ -1438,7 +1476,7 @@ export default function TrackFreshDashboard() {
                 <p className="mb-3 text-sm text-gray-600">Choose a display name to get started.</p>
                 <div className="flex gap-2">
                   <input value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSetUsername()} placeholder="Your display name" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                  <button onClick={handleSetUsername} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Join</button>
+                  <button onClick={handleSetUsername} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Join</button>
                 </div>
               </Card>
             ) : (
@@ -1465,7 +1503,7 @@ export default function TrackFreshDashboard() {
                     </div>
                     <div className="flex gap-2">
                       <input value={newChat} onChange={(e) => setNewChat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostChat()} placeholder="Type a message…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostChat} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Send</button>
+                      <button onClick={handlePostChat} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Send</button>
                     </div>
                   </Card>
                 )}
@@ -1475,7 +1513,7 @@ export default function TrackFreshDashboard() {
                     <div className="mb-4 space-y-2">
                       <input value={newRecipeTitle} onChange={(e) => setNewRecipeTitle(e.target.value)} placeholder="Recipe title" className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                       <textarea value={newRecipeBody} onChange={(e) => setNewRecipeBody(e.target.value)} placeholder="Ingredients and instructions…" rows={3} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostRecipe} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Share Recipe</button>
+                      <button onClick={handlePostRecipe} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Share Recipe</button>
                     </div>
                     <div className="space-y-3">
                       {community.recipes.length === 0 ? <p className="text-sm text-gray-500">No recipes shared yet — be the first!</p> : community.recipes.map((r) => (
@@ -1493,7 +1531,7 @@ export default function TrackFreshDashboard() {
                     <h3 className="mb-3 font-bold">Tips & Ideas</h3>
                     <div className="mb-4 flex gap-2">
                       <input value={newTip} onChange={(e) => setNewTip(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostTip()} placeholder="Share a food storage tip…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostTip} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Post</button>
+                      <button onClick={handlePostTip} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Post</button>
                     </div>
                     <div className="space-y-2">
                       {community.tips.length === 0 ? <p className="text-sm text-gray-500">No tips yet — share one!</p> : community.tips.map((tip) => (
