@@ -515,19 +515,9 @@ export default function TrackFreshDashboard() {
   };
 
   const handleAddMealIngredientsToShopping = (mealName) => {
-    const recipe = RECIPE_DB.find((r) => r.name === mealName);
-    if (!recipe) { setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: mealName, qty: "", checked: false, forMeal: mealName }]); setActiveTab("shopping"); return; }
-    const trackedNames = trackedItems.map((it) => it.name.toLowerCase());
-    let added = 0;
-    recipe.ingredients.forEach((ing) => {
-      const have = trackedNames.some((n) => n.includes(ing));
-      const onList = shoppingItems.some((s) => s.name.toLowerCase().includes(ing));
-      if (!have && !onList) {
-        setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: ing.charAt(0).toUpperCase() + ing.slice(1), qty: "", checked: false, forMeal: mealName }]);
-        added++;
-      }
-    });
-    if (added === 0) { window.alert("You already have all ingredients for " + mealName + "!"); return; }
+    const onList = shoppingItems.some((s) => s.name.toLowerCase() === mealName.toLowerCase());
+    if (onList) { window.alert(mealName + " is already on your shopping list!"); return; }
+    setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: "Ingredients for: " + mealName, qty: "", checked: false, forMeal: mealName }]);
     setActiveTab("shopping");
   };
 
@@ -1395,20 +1385,19 @@ export default function TrackFreshDashboard() {
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">Meal Planner</h2>
                 </div>
-                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded px-3 py-1.5 text-xs font-semibold text-white ${aiPlanLoading ? "bg-gray-400" : "bg-purple-600 hover:bg-purple-700"}`}>
-                  {aiPlanLoading ? "⏳ Planning..." : "✨ AI Plan My Week"}
+                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition-all ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg"}`}>
+                  {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
                 </button>
               </div>
               <p className="text-xs text-gray-500 mb-4">Tap any slot to add a meal. ⚡ means it uses ingredients expiring soon.</p>
               <div className="space-y-4">
                 {DAYS.map((day) => (
                   <div key={day} className="rounded-lg border overflow-hidden">
-                    <div className="bg-gray-50 px-3 py-2 font-semibold text-sm text-gray-700">{day}</div>
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 font-bold text-sm text-green-800">{day}</div>
                     <div className="divide-y">
                       {MEAL_SLOTS.map((slot) => {
                         const meal = meals[`${day}-${slot}`];
-                        const recipe = meal ? RECIPE_DB.find((r) => r.name === meal) : null;
-                        const usesExpiring = recipe && recipe.ingredients.some((ing) => itemsWithCountdown.some((it) => it.daysLeft !== null && it.daysLeft <= 7 && (it.name.toLowerCase().includes(ing) || ing.includes(it.name.toLowerCase()))));
+                        const usesExpiring = meal && itemsWithCountdown.some((it) => it.daysLeft !== null && it.daysLeft <= 7 && meal.toLowerCase().includes(it.name.toLowerCase().split(" ")[0]));
                         return (
                           <div key={slot} className="flex items-center gap-2 px-3 py-2">
                             <span className="w-16 text-xs font-medium text-gray-500">{slot}</span>
@@ -1420,22 +1409,15 @@ export default function TrackFreshDashboard() {
                                     <span className="text-sm font-medium">{meal}</span>
                                   </div>
                                   <div className="flex items-center gap-1">
-                                    {recipe && <button onClick={() => handleAddMealIngredientsToShopping(meal)} className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">+ List</button>}
-                                    <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Change</button>
+                                    <button onClick={() => handleAddMealIngredientsToShopping(meal)} className="rounded-lg bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 hover:bg-green-200 transition-colors">+ List</button>
+                                    <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-500 hover:bg-gray-200 transition-colors">Change</button>
                                     <button onClick={() => handleClearMeal(day, slot)} className="text-xs text-gray-400 hover:text-red-500">✕</button>
                                   </div>
                                 </div>
-                                {recipe && recipe.temps && (
-                                  <div className="mt-1 flex flex-wrap gap-1">
-                                    <span className="text-xs text-gray-500 mr-1">🌡️</span>
-                                    {recipe.temps.map((t) => (
-                                      <span key={t.label} className={`rounded-full px-2 py-0.5 text-xs font-medium ${t.color} ${t.safe ? "ring-1 ring-green-400" : ""}`}>{t.label}: {t.temp}{t.safe ? " ✅" : ""}</span>
-                                    ))}
-                                  </div>
-                                )}
+
                               </div>
                             ) : (
-                              <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="flex-1 rounded border border-dashed border-gray-200 py-1 text-xs text-gray-400 hover:border-orange-300 hover:text-orange-400">+ Add meal</button>
+                              <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="flex-1 rounded-lg border border-dashed border-gray-200 py-2 text-xs text-gray-400 hover:border-green-400 hover:text-green-600 hover:bg-green-50/50 transition-all">+ Add meal</button>
                             )}
                           </div>
                         );
