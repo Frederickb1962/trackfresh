@@ -433,10 +433,6 @@ export default function TrackFreshDashboard() {
   const [shoppingItems, setShoppingItems] = useState([]);
   const [newShoppingItem, setNewShoppingItem] = useState("");
   const [newShoppingQty, setNewShoppingQty] = useState("");
-  const [showReceiptScanner, setShowReceiptScanner] = useState(false);
-  const [receiptItems, setReceiptItems] = useState([]);
-  const [receiptScanning, setReceiptScanning] = useState(false);
-  const [receiptError, setReceiptError] = useState("");
   const [selectedReceiptItems, setSelectedReceiptItems] = useState([]);
   const [showLabelScanner, setShowLabelScanner] = useState(false);
   const [labelItem, setLabelItem] = useState(null);
@@ -467,6 +463,10 @@ export default function TrackFreshDashboard() {
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
   const [voiceListening, setVoiceListening] = useState("");
   const [voiceError, setVoiceError] = useState("");
+  const [showReceiptScanner, setShowReceiptScanner] = useState(false);
+  const [receiptLoading, setReceiptLoading] = useState(false);
+  const [receiptItems, setReceiptItems] = useState([]);
+  const [receiptError, setReceiptError] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
   useEffect(() => { if (!localStorage.getItem("trackfresh.welcomed")) setShowWelcome(true); }, []);
 
@@ -609,7 +609,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType }) });
+        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType }) });
         const data = await res.json();
         if (data.error) { setReceiptError(data.error); setReceiptScanning(false); return; }
         setReceiptItems(data.items);
@@ -757,7 +757,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType }) });
+        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType }) });
         const data = await res.json();
         if (data.error) { setLabelError(data.error); setLabelScanning(false); return; }
         
@@ -794,8 +794,11 @@ export default function TrackFreshDashboard() {
   const handleAddReceiptItems = () => {
     const toAdd = receiptItems.filter((_, i) => selectedReceiptItems.includes(i));
     const today = new Date();
-    const defaultUseBy = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-    setTrackedItems((prev) => [...prev, ...toAdd.map((it) => ({ id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: defaultUseBy, openDate: today.toISOString().split("T")[0] }))]);
+    setTrackedItems((prev) => [...prev, ...toAdd.map((it) => {
+      const days = it.daysSealed || 7;
+      const useBy = new Date(today.getTime() + days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      return { id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" };
+    })]);
     setShowReceiptScanner(false);
     setReceiptItems([]);
     setSelectedReceiptItems([]);
@@ -862,11 +865,18 @@ export default function TrackFreshDashboard() {
                   <p className="mb-2 text-sm font-semibold text-gray-700">Found {receiptItems.length} items — select which to add:</p>
                   <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
                     {receiptItems.map((it, i) => (
-                      <div key={i} className="flex items-center gap-3 rounded-lg border px-3 py-2">
-                        <input type="checkbox" checked={selectedReceiptItems.includes(i)} onChange={() => setSelectedReceiptItems((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i])} className="h-4 w-4 accent-blue-600" />
-                        <span className="flex-1 text-sm font-medium">{it.name}</span>
-                        <span className="text-xs text-gray-500">{it.location}</span>
-                        <span className="text-xs text-gray-500">{it.category}</span>
+                      <div key={i} className="rounded-lg border px-3 py-2">
+                        <div className="flex items-center gap-3">
+                          <input type="checkbox" checked={selectedReceiptItems.includes(i)} onChange={() => setSelectedReceiptItems((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i])} className="h-4 w-4 accent-green-600" />
+                          <span className="flex-1 text-sm font-bold">{it.name}</span>
+                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">{it.location}</span>
+                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{it.category}</span>
+                        </div>
+                        <div className="ml-7 mt-1 space-y-0.5">
+                          <p className="text-xs text-green-700">📦 Sealed: ~{it.daysSealed || 7} days{it.daysAfterOpening ? " · 📂 After opening: ~" + it.daysAfterOpening + " days" : ""}</p>
+                          {it.storageTip && <p className="text-xs text-gray-500">💡 {it.storageTip}</p>}
+                          {it.openedTip && <p className="text-xs text-orange-600">⚠️ {it.openedTip}</p>}
+                        </div>
                       </div>
                     ))}
                   </div>
