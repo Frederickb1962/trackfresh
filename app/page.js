@@ -29,6 +29,23 @@ const GLOBAL_STYLES = `
     background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
   }
+  input[type="text"], input[type="date"], input[type="number"], select, textarea,
+  input.rounded.border, input.flex-1.rounded.border {
+    border-radius: 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
+    transition: all 0.15s ease !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+    border-color: #059669 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 3px rgba(5,150,105,0.15) !important;
+    outline: none !important;
+  }
+  select {
+    border-radius: 0.75rem !important;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(0,0,0,0.02) 100%) !important;
+  }
   .card-3d {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
     transition: all 0.2s ease;
@@ -890,7 +907,7 @@ export default function TrackFreshDashboard() {
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
           <div className="flex items-center gap-3">
             <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors underline decoration-green-300">How to use</button>
-            <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-medium text-red-600 underline">Sign Out</button>
+            <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-semibold text-green-600 hover:text-green-800 transition-colors">Sign Out</button>
           </div>
         </div>
         <TabBar active={activeTab} onChange={setActiveTab} />
@@ -1036,8 +1053,8 @@ export default function TrackFreshDashboard() {
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-2">Where are you storing this?</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-blue-500 bg-green-50 text-blue-700" : "border-gray-200 text-gray-600"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
-                      <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-600"}`}>❄️ Freezer{barcodeLocation === "Freezer" && <p className="text-xs font-normal mt-1">Long term storage</p>}</button>
+                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-green-500 bg-gradient-to-b from-green-50 to-green-100 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
+                      <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-gradient-to-b from-cyan-50 to-cyan-100 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>❄️ Freezer{barcodeLocation === "Freezer" && <p className="text-xs font-normal mt-1">Long term storage</p>}</button>
                     </div>
                   </div>
                   {barcodeLocation && (
@@ -1063,8 +1080,8 @@ export default function TrackFreshDashboard() {
                       {voiceError && <p className="text-xs text-red-500">{voiceError}</p>}
                     </div>
                   )}
-                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded py-2 text-sm font-semibold text-white ${!barcodeLocation ? "bg-gray-300" : "bg-green-700"}`}>Add to Tracker</button>
-                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Scan Another</button>
+                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold text-white ${!barcodeLocation ? "bg-gray-300" : "bg-gradient-to-b from-green-600 to-green-700 btn-3d"}`}>Add to Tracker</button>
+                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
               <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
@@ -1155,7 +1172,7 @@ export default function TrackFreshDashboard() {
                     </div>
                   </div>
                   <button onClick={handleAddLabelItem} className="w-full rounded bg-green-600 py-2 text-sm font-semibold text-white">Add to Tracker</button>
-                  <button onClick={() => setLabelItem(null)} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Scan Another</button>
+                  <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
               <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
@@ -1166,10 +1183,10 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl border-2 border-dashed border-green-400 bg-green-50 py-3 text-xs font-semibold text-green-700 hover:bg-blue-100">📷 Receipt</button>
-              <button onClick={() => setShowLabelScanner(true)} className="rounded-xl border-2 border-dashed border-orange-300 bg-orange-50 py-3 text-xs font-semibold text-orange-600 hover:bg-orange-100">🏷️ Label</button>
-              <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl border-2 border-dashed border-purple-300 bg-purple-50 py-3 text-xs font-semibold text-purple-600 hover:bg-purple-100">📦 Barcode</button>
-              <button onClick={() => setShowQuickAdd(true)} className="rounded-xl border-2 border-dashed border-green-300 bg-green-50 py-3 text-xs font-semibold text-green-600 hover:bg-green-100">✏️ Quick Add</button>
+              <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
+              <button onClick={() => setShowLabelScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button>
+              <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl bg-gradient-to-b from-purple-100 to-purple-200 py-3 text-xs font-bold text-purple-800 btn-3d border border-purple-300">📦 Barcode</button>
+              <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ Quick Add</button>
             </div>
           <>
             <Card>
