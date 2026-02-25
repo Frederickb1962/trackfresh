@@ -1281,9 +1281,9 @@ export default function TrackFreshDashboard() {
                               <div className="text-xs text-gray-500">days</div>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">Used</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>Used</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 px-3 py-1 text-xs font-bold text-white btn-3d animate-pulse">❄️ Freeze!</button>
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
                               )}
                               <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">Edit</button>
                               <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">Remove</button>
@@ -1303,7 +1303,7 @@ export default function TrackFreshDashboard() {
           <Card>
             <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-5 py-2.5 text-sm font-bold text-white btn-3d disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -1443,7 +1443,7 @@ export default function TrackFreshDashboard() {
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">Meal Planner</h2>
                 </div>
-                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white btn-3d ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-700 to-indigo-700"}`}>
+                <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-lg ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-700 to-indigo-800"}`} style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>
                   {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
                 </button>
               </div>
