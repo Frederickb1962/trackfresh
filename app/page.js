@@ -1391,7 +1391,7 @@ export default function TrackFreshDashboard() {
                           <span className="text-sm font-semibold">{it.name}</span>
                           <span className={`ml-2 text-xs font-bold ${urgent ? "text-red-600" : "text-yellow-600"}`}>{it.daysLeft}d left</span>
                         </div>
-                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className={`rounded px-3 py-1 text-xs font-semibold ${alreadyAdded ? "bg-gray-100 text-gray-400" : "bg-green-600 text-white"}`}>
+                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className={`rounded-xl px-3 py-1.5 text-xs font-bold btn-3d ${alreadyAdded ? "bg-gray-200 text-gray-400" : "bg-gradient-to-b from-green-600 to-green-700 text-white"}`}>
                           {alreadyAdded ? "Added" : "+ Add"}
                         </button>
                       </div>
