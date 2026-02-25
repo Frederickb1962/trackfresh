@@ -1175,6 +1175,9 @@ export default function TrackFreshDashboard() {
                               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
                             </div>
                             <div className="text-xs text-gray-600 mt-0.5">Use by: {it.useByDate}{it.openDate ? " • Opened: " + it.openDate : ""}</div>
+                            {it.daysAfterOpening && <div className="text-xs text-orange-600 mt-0.5">📂 After opening: use within {it.daysAfterOpening} days</div>}
+                            {it.storageTip && <div className="text-xs text-green-700 mt-0.5">💡 {it.storageTip}</div>}
+                            {it.openedTip && <div className="text-xs text-orange-500 mt-0.5">⚠️ {it.openedTip}</div>}
                           </div>
                           <div className="flex items-center gap-2 ml-2">
                             <div className="text-right">
