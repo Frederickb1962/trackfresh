@@ -464,7 +464,7 @@ export default function TrackFreshDashboard() {
   const [voiceListening, setVoiceListening] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
-  const [receiptLoading, setReceiptLoading] = useState(false);
+  const [receiptScanning, setReceiptScanning] = useState(false);
   const [receiptItems, setReceiptItems] = useState([]);
   const [receiptError, setReceiptError] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);

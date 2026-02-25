@@ -9,7 +9,7 @@ export async function POST(req) {
     if (!image) return NextResponse.json({ error: "No image" }, { status: 400 });
 
     const resp = await client.messages.create({
-      model: "claude-sonnet-4-5-20250514",
+      model: "claude-sonnet-4-5",
       max_tokens: 2048,
       messages: [
         {
