@@ -570,10 +570,21 @@ export default function TrackFreshDashboard() {
 
   const handleUseTodayItem = (id) => setTrackedItems((prev) => prev.filter((it) => it.id !== id));
 
-  const handleSuggestRecipes = () => {
-    setRecipeSuggestions(suggestRecipes(trackedItems));
-    setRecipesGenerated(true);
+  const [recipesLoading, setRecipesLoading] = useState(false);
+  const handleSuggestRecipes = async () => {
+    if (trackedItems.length === 0) { window.alert("Add some food items first!"); return; }
+    setRecipesLoading(true);
+    setRecipesGenerated(false);
+    setRecipeSuggestions([]);
     setExpandedRecipe(null);
+    try {
+      const res = await fetch("/api/suggest-recipes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: trackedItems.map(it => ({ name: it.name, daysLeft: it.daysLeft, category: it.category, location: it.location })) }) });
+      const data = await res.json();
+      if (data.error) { window.alert("Recipe error: " + data.error); setRecipesLoading(false); return; }
+      setRecipeSuggestions(data.recipes || []);
+      setRecipesGenerated(true);
+    } catch (e) { window.alert("Failed to get recipes. Try again."); }
+    setRecipesLoading(false);
   };
 
   const handleSaveRecipeToCommunity = (recipe) => {
@@ -1244,7 +1255,7 @@ export default function TrackFreshDashboard() {
           <Card>
             <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
-            <button onClick={handleSuggestRecipes} className="inline-flex items-center gap-2 rounded bg-amber-600 px-4 py-2 text-sm font-semibold text-white"><ChefHat className="h-4 w-4" /> Suggest Recipes</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -1260,16 +1271,15 @@ export default function TrackFreshDashboard() {
                       </div>
                       <p className="mt-1 text-sm text-gray-600">{r.description}</p>
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {r.usedItems.map((it) => {
-                          const days = daysUntil(it.useByDate);
-                          const urgent = days !== null && days <= 3;
-                          const soon = days !== null && days <= 7 && days > 3;
-                          return <span key={it.id} className={`rounded-full px-2 py-0.5 text-xs font-medium ${urgent ? "bg-red-100 text-red-700" : soon ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>{urgent ? "⚡ " : ""}{it.name} {days !== null ? "(" + days + "d)" : ""}</span>;
-                        })}
+                        {r.difficulty && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-700">{r.difficulty}</span>}
+                        {(r.usesExpiring || []).map((name, j) => (
+                          <span key={j} className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">⚡ {name}</span>
+                        ))}
                       </div>
                     </button>
                     {expandedRecipe === i && (
                       <div className="border-t border-orange-200 bg-white px-4 py-3">
+                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-gray-700">Ingredients</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm text-gray-600 flex items-center gap-1"><span className="text-green-500">•</span> {ing}</li>)}</ul></>)}
                         <h4 className="mb-2 text-sm font-bold text-gray-700">Instructions</h4>
                         <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
