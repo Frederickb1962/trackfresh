@@ -469,6 +469,11 @@ export default function TrackFreshDashboard() {
   const [receiptError, setReceiptError] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
   useEffect(() => { if (!localStorage.getItem("trackfresh.welcomed")) setShowWelcome(true); }, []);
+  useEffect(() => {
+    if (trackedItems.length === 0) return;
+    const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2);
+    if (urgent.length > 0) { setAlertItem({ name: urgent[0].name, daysLeft: urgent[0].daysLeft }); setShowAlert(true); }
+  }, [trackedItems.length]);
 
   useEffect(() => {
     setTrackedItems(loadItems());
@@ -640,7 +645,7 @@ export default function TrackFreshDashboard() {
     if (!barcodeItem) return;
     const loc = barcodeLocation || barcodeItem.location;
     const today = new Date().toISOString().split("T")[0];
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: today, freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "" }]);
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: today, freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
     setShowBarcodeScanner(false);
     setBarcodeItem(null);
     setBarcodeDetected("");
@@ -740,10 +745,18 @@ export default function TrackFreshDashboard() {
     recognition.start();
   };
 
-  const handleQuickAdd = () => {
+  const handleQuickAdd = async () => {
     if (!quickAddName.trim()) return;
-    if (!quickAddDate) { window.alert("Please enter a Use By date."); return; }
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: quickAddName, category: quickAddCategory, location: quickAddLocation, quantity: quickAddQty, useByDate: quickAddDate, openDate: new Date().toISOString().split("T")[0] }]);
+    let foodInfo = {};
+    try {
+      const res = await fetch("/api/food-info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: quickAddName }) });
+      if (res.ok) foodInfo = await res.json();
+    } catch (e) { console.log("Food info fetch failed, using defaults"); }
+    const today = new Date();
+    const useBy = quickAddDate || (foodInfo.daysSealed ? new Date(today.getTime() + foodInfo.daysSealed * 86400000).toISOString().split("T")[0] : "");
+    const cat = quickAddCategory !== "Other" ? quickAddCategory : (foodInfo.category || quickAddCategory);
+    const loc = quickAddLocation !== "Fridge" ? quickAddLocation : (foodInfo.location || quickAddLocation);
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: quickAddQty, useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
     setShowQuickAdd(false);
     setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
   };
@@ -784,7 +797,10 @@ export default function TrackFreshDashboard() {
       location: labelItem.location, 
       quantity: quantity,
       useByDate: labelItem.date || "", 
-      openDate: new Date().toISOString().split("T")[0] 
+      openDate: new Date().toISOString().split("T")[0], 
+      daysAfterOpening: labelItem.daysAfterOpening || null,
+      storageTip: labelItem.storageTip || "",
+      openedTip: labelItem.openedTip || ""
     }]);
     setShowLabelScanner(false);
     setLabelItem(null);
@@ -931,9 +947,22 @@ export default function TrackFreshDashboard() {
         {showAlert && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-              <div className="mb-2 flex items-center gap-2"><Bell className="h-5 w-5 text-red-500" /><h2 className="text-lg font-bold">Use-by Alert</h2></div>
-              <p className="text-sm text-gray-700"><span className="font-semibold">{alertItem.name}</span> is <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"} from its use-by date.</p>
-              <div className="mt-4 flex justify-end"><button onClick={() => setShowAlert(false)} className="rounded border px-4 py-2 text-sm font-semibold">OK</button></div>
+              <div className="mb-3 flex items-center gap-2"><Bell className="h-5 w-5 text-red-500 animate-bounce" /><h2 className="text-lg font-bold text-red-600">Expiring Soon!</h2></div>
+              {(() => { const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2); return urgent.length > 0 ? (
+                <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                  {urgent.map(it => (
+                    <div key={it.id} className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                      <span className="text-sm font-semibold">{it.name}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-700"}`}>{it.daysLeft <= 0 ? "EXPIRED" : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="text-sm text-gray-700 mb-4"><span className="font-semibold">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
+              <p className="text-xs text-gray-500 mb-3">Use these items soon, freeze them, or check for recipes!</p>
+              <div className="flex gap-2">
+                <button onClick={() => setShowAlert(false)} className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-bold text-white">Got it</button>
+                <button onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg border border-red-300 py-2 text-sm font-semibold text-red-600">Find Recipes</button>
+              </div>
             </div>
           </div>
         )}

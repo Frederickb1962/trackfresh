@@ -23,7 +23,7 @@ export async function POST(req) {
               type: "text",
               text: `You are an expert grocery receipt scanner and food safety advisor.
 
-Look at this receipt and extract every food/grocery item you can find.
+Look at this receipt and extract ONLY food and beverage items. SKIP non-food items like shampoo, deodorant, soap, cleaning supplies, paper towels, trash bags, toiletries, pet supplies, medicine, vitamins, and any other non-edible products.
 
 For EACH item, provide:
 1. "name" - the product name (clean up receipt abbreviations into readable names)

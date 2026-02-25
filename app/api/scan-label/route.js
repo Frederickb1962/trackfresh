@@ -19,7 +19,7 @@ export async function POST(request) {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
     const content = [
-      { type: "text", text: "Find the food product name and expiration date. Reply ONLY with JSON: {\"name\":\"...\",\"date\":\"YYYY-MM-DD\",\"dateFound\":true} If no date visible, set date to \"\" and dateFound to false." },
+      { type: "text", text: "Find the food product name and expiration date. Also provide shelf life and storage info. Reply ONLY with JSON: {\"name\":\"...\",\"date\":\"YYYY-MM-DD\",\"dateFound\":true,\"daysSealed\":7,\"daysAfterOpening\":null,\"storageTip\":\"...\",\"openedTip\":null,\"category\":\"Produce\",\"location\":\"Fridge\"} If no date visible, set date to \"\" and dateFound to false. category must be one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other. location must be: Fridge, Freezer, or Pantry. daysAfterOpening and openedTip can be null for items like fresh produce." },
       ...imageContent
     ];
 
