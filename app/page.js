@@ -8,6 +8,11 @@ const GLOBAL_STYLES = `
     transition: all 0.15s ease;
     position: relative;
     font-weight: 700 !important;
+    letter-spacing: 0.02em;
+  }
+  .btn-3d.text-white, .btn-3d .text-white {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
   }
   .btn-3d:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
