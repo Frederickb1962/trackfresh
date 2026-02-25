@@ -267,14 +267,14 @@ const LOCATION_ICONS = {
 };
 
 function Card({ children, className = "" }) {
-  return <div className={`rounded-xl border bg-white p-4 shadow-sm ${className}`}>{children}</div>;
+  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-sm p-5 shadow-lg shadow-green-900/5 ${className}`}>{children}</div>;
 }
 
 function TabBar({ active, onChange }) {
   return (
-    <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
+    <div className="flex gap-1 rounded-2xl bg-gradient-to-r from-green-900 to-emerald-800 p-1.5 shadow-lg">
       {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
-        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-colors ${active === id ? "bg-white shadow text-blue-600" : "text-gray-500 hover:text-gray-700"}`}>{label}</button>
+        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 shadow-md scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10"}`}>{label}</button>
       ))}
     </div>
   );
@@ -388,7 +388,7 @@ function FoodAutocomplete({ value, onChange, onSelect }) {
               key={f.name}
               onMouseDown={() => { onSelect(f); setOpen(false); }}
               onMouseEnter={() => setHighlighted(i)}
-              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-blue-50" : "hover:bg-blue-50"}`}
+              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
             >
               <span>{f.name}</span>
               <div className="flex items-center gap-1">
@@ -845,12 +845,12 @@ export default function TrackFreshDashboard() {
       </div>
     )}
 
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 via-emerald-50/50 to-white p-4">
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">TrackFresh</h1>
+          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
           <div className="flex items-center gap-3">
-            <button onClick={() => setShowHelp(true)} className="text-sm font-medium text-blue-600 underline">How to use</button>
+            <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors">How to use</button>
             <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-medium text-red-600 underline">Sign Out</button>
           </div>
         </div>
@@ -869,9 +869,9 @@ export default function TrackFreshDashboard() {
                     <span className="text-xs text-gray-500 mt-1">Open camera</span>
                     <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
                   </label>
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-6 hover:bg-blue-100 transition-colors">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-400 bg-green-50 p-6 hover:bg-blue-100 transition-colors">
                     <span className="text-3xl mb-2">🖼️</span>
-                    <span className="text-sm font-semibold text-blue-600">Upload Photo</span>
+                    <span className="text-sm font-semibold text-green-700">Upload Photo</span>
                     <span className="text-xs text-gray-500 mt-1">From gallery</span>
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
                   </label>
@@ -904,7 +904,7 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="w-full rounded bg-blue-600 py-2 text-sm font-semibold text-white">Add {selectedReceiptItems.length} Items to Tracker</button>
+                  <button onClick={handleAddReceiptItems} className="w-full rounded bg-green-700 py-2 text-sm font-semibold text-white">Add {selectedReceiptItems.length} Items to Tracker</button>
                 </div>
               )}
               <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
@@ -924,7 +924,7 @@ export default function TrackFreshDashboard() {
                 <li>🔹 <strong>Community:</strong> Share recipes, tips, and chat.</li>
                 <li>🔹 Red = expires within 3 days. Yellow = within 7 days.</li>
               </ul>
-              <button onClick={() => setShowHelp(false)} className="mt-4 rounded bg-blue-600 px-4 py-2 font-semibold text-white">Close</button>
+              <button onClick={() => setShowHelp(false)} className="mt-4 rounded bg-green-700 px-4 py-2 font-semibold text-white">Close</button>
             </div>
           </div>
         )}
@@ -984,7 +984,7 @@ export default function TrackFreshDashboard() {
               {barcodeError && (
                 <div className="mt-2 rounded-lg bg-red-50 p-3">
                   <p className="text-sm text-red-600">{barcodeError}</p>
-<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-blue-600 underline">Try again</button>
+<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">Try again</button>
                 </div>
               )}
               {barcodeItem && (
@@ -997,7 +997,7 @@ export default function TrackFreshDashboard() {
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-2">Where are you storing this?</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-200 text-gray-600"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
+                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-blue-500 bg-green-50 text-blue-700" : "border-gray-200 text-gray-600"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
                       <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-200 text-gray-600"}`}>❄️ Freezer{barcodeLocation === "Freezer" && <p className="text-xs font-normal mt-1">Long term storage</p>}</button>
                     </div>
                   </div>
@@ -1009,7 +1009,7 @@ export default function TrackFreshDashboard() {
                           <input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                           <button onClick={() => handleVoiceDate("useBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "useBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{voiceListening === "useBy" ? "🎤 Listening..." : "🎤"}</button>
                         </div>
-                        {voiceListening === "useBy" && <p className="text-xs text-blue-600 mt-1">Say the date e.g. February 20 2026</p>}
+                        {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>}
                       </div>
                       {barcodeLocation === "Fridge" && barcodeItem.category === "Meat" && (
                         <div>
@@ -1018,13 +1018,13 @@ export default function TrackFreshDashboard() {
                             <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                             <button onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
                           </div>
-                          {voiceListening === "freezeBy" && <p className="text-xs text-blue-600 mt-1">Say the date e.g. February 25 2026</p>}
+                          {voiceListening === "freezeBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 25 2026</p>}
                         </div>
                       )}
                       {voiceError && <p className="text-xs text-red-500">{voiceError}</p>}
                     </div>
                   )}
-                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded py-2 text-sm font-semibold text-white ${!barcodeLocation ? "bg-gray-300" : "bg-blue-600"}`}>Add to Tracker</button>
+                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded py-2 text-sm font-semibold text-white ${!barcodeLocation ? "bg-gray-300" : "bg-green-700"}`}>Add to Tracker</button>
                   <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Scan Another</button>
                 </div>
               )}
@@ -1067,7 +1067,7 @@ export default function TrackFreshDashboard() {
                     <input value={quickAddQty} onChange={(e) => setQuickAddQty(e.target.value)} placeholder="e.g. 2 lbs" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                     <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
-                  {quickVoiceListening === "qty" && <p className="text-xs text-blue-600 mt-1">Say quantity e.g. two pounds</p>}
+                  {quickVoiceListening === "qty" && <p className="text-xs text-green-700 mt-1">Say quantity e.g. two pounds</p>}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Use By Date</label>
@@ -1075,7 +1075,7 @@ export default function TrackFreshDashboard() {
                     <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                     <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-600"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
-                  {quickVoiceListening === "date" && <p className="text-xs text-blue-600 mt-1">Say date e.g. February 20 2026</p>}
+                  {quickVoiceListening === "date" && <p className="text-xs text-green-700 mt-1">Say date e.g. February 20 2026</p>}
                   {quickVoiceError && <p className="text-xs text-red-500 mt-1">{quickVoiceError}</p>}
                 </div>
                 <button onClick={handleQuickAdd} className="w-full rounded bg-green-600 py-2 text-sm font-semibold text-white">Add to Tracker</button>
@@ -1127,7 +1127,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-3 text-xs font-semibold text-blue-600 hover:bg-blue-100">📷 Receipt</button>
+              <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl border-2 border-dashed border-green-400 bg-green-50 py-3 text-xs font-semibold text-green-700 hover:bg-blue-100">📷 Receipt</button>
               <button onClick={() => setShowLabelScanner(true)} className="rounded-xl border-2 border-dashed border-orange-300 bg-orange-50 py-3 text-xs font-semibold text-orange-600 hover:bg-orange-100">🏷️ Label</button>
               <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl border-2 border-dashed border-purple-300 bg-purple-50 py-3 text-xs font-semibold text-purple-600 hover:bg-purple-100">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl border-2 border-dashed border-green-300 bg-green-50 py-3 text-xs font-semibold text-green-600 hover:bg-green-100">✏️ Quick Add</button>
@@ -1169,14 +1169,14 @@ export default function TrackFreshDashboard() {
                 </div>
               </div>
               <div className="mt-4 flex justify-end">
-                <button onClick={handleAddItem} className="inline-flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+                <button onClick={handleAddItem} className="inline-flex items-center gap-2 rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">
                   <PlusCircle className="h-4 w-4" /> Add
                 </button>
               </div>
             </Card>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-bold">Tracked Items</h2>
+                <h2 className="text-lg font-bold text-gray-800">Tracked Items</h2>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
                   {trackedItems.length > 0 && <button onClick={() => { if (window.confirm("Clear all tracked items and start fresh?")) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">Clear All</button>}
@@ -1184,14 +1184,14 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="mb-2 flex flex-wrap gap-1">
                 {["All", ...LOCATIONS].map((l) => (
-                  <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200"}`}>
                     {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{l}
                   </button>
                 ))}
               </div>
               <div className="mb-3 flex flex-wrap gap-1">
                 {["All", ...CATEGORIES].map((c) => (
-                  <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>{c}</button>
+                  <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200"}`}>{c}</button>
                 ))}
               </div>
               {filteredItems.length === 0 ? (
@@ -1202,7 +1202,7 @@ export default function TrackFreshDashboard() {
                     const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                     const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                     return (
-                      <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-red-50" : soon ? "border-yellow-300 bg-yellow-50" : "bg-white"}`}>
+                      <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-gradient-to-r from-red-50 to-red-100/50 shadow-sm" : soon ? "border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50/50 shadow-sm" : "bg-white shadow-sm hover:shadow-md transition-shadow"}`}>
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
@@ -1222,12 +1222,12 @@ export default function TrackFreshDashboard() {
                               <div className="text-xs text-gray-500">days</div>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded bg-green-500 px-2 py-1 text-xs font-semibold text-white">Used</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-sm hover:shadow-md transition-all">Used</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded bg-cyan-500 px-2 py-1 text-xs font-semibold text-white animate-pulse">❄️ Freeze!</button>
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1 text-xs font-bold text-white shadow-sm animate-pulse">❄️ Freeze!</button>
                               )}
-                              <button onClick={() => handleEditItem(it.id)} className="rounded bg-blue-500 px-2 py-1 text-xs font-semibold text-white">Edit</button>
-                              <button onClick={() => handleRemoveItem(it.id)} className="rounded border px-2 py-1 text-xs font-semibold">Remove</button>
+                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-600/80 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-600 transition-all">Edit</button>
+                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-500 hover:border-red-300 hover:text-red-500 transition-all">Remove</button>
                             </div>
                           </div>
                         </div>
@@ -1244,7 +1244,7 @@ export default function TrackFreshDashboard() {
           <Card>
             <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
-            <button onClick={handleSuggestRecipes} className="inline-flex items-center gap-2 rounded bg-orange-500 px-4 py-2 text-sm font-semibold text-white"><ChefHat className="h-4 w-4" /> Suggest Recipes</button>
+            <button onClick={handleSuggestRecipes} className="inline-flex items-center gap-2 rounded bg-amber-600 px-4 py-2 text-sm font-semibold text-white"><ChefHat className="h-4 w-4" /> Suggest Recipes</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -1273,7 +1273,7 @@ export default function TrackFreshDashboard() {
                         <h4 className="mb-2 text-sm font-bold text-gray-700">Instructions</h4>
                         <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
-                          <button onClick={() => handleSaveRecipeToCommunity(r)} disabled={savedRecipes.includes(r.name)} className={`rounded px-3 py-1.5 text-xs font-semibold ${savedRecipes.includes(r.name) ? "bg-gray-100 text-gray-400" : "bg-blue-600 text-white hover:bg-blue-700"}`}>
+                          <button onClick={() => handleSaveRecipeToCommunity(r)} disabled={savedRecipes.includes(r.name)} className={`rounded px-3 py-1.5 text-xs font-semibold ${savedRecipes.includes(r.name) ? "bg-gray-100 text-gray-400" : "bg-green-700 text-white hover:bg-blue-700"}`}>
                             {savedRecipes.includes(r.name) ? "Saved to Community" : "Save to Community"}
                           </button>
                         </div>
@@ -1351,11 +1351,11 @@ export default function TrackFreshDashboard() {
               <p className="mb-3 text-xs text-gray-500">{mealPickerDay} — {mealPickerSlot}</p>
               <div className="flex gap-2 mb-3">
                 <MealSearchInput value={mealPickerSearch} onChange={(e) => setMealPickerSearch(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && mealPickerSearch.trim()) handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim()); }} />
-                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Add</button>}
+                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded bg-green-700 px-3 py-2 text-sm font-semibold text-white">Add</button>}
               </div>
               <div className="max-h-64 overflow-y-auto space-y-2">
                 {mealPickerSearch && !RECIPE_DB.find((r) => r.name.toLowerCase() === mealPickerSearch.toLowerCase()) && (
-                  <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch)} className="w-full rounded-lg border-2 border-dashed border-blue-300 px-3 py-2 text-left text-sm text-blue-600">+ Add "{mealPickerSearch}" as custom meal</button>
+                  <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch)} className="w-full rounded-lg border-2 border-dashed border-green-400 px-3 py-2 text-left text-sm text-green-700">+ Add "{mealPickerSearch}" as custom meal</button>
                 )}
                 {RECIPE_DB.filter((r) => r.name.toLowerCase().includes(mealPickerSearch.toLowerCase())).map((r) => {
                   const usesExpiring = r.ingredients.some((ing) => itemsWithCountdown.some((it) => it.daysLeft !== null && it.daysLeft <= 7 && (it.name.toLowerCase().includes(ing) || ing.includes(it.name.toLowerCase()))));
@@ -1446,18 +1446,18 @@ export default function TrackFreshDashboard() {
                 <p className="mb-3 text-sm text-gray-600">Choose a display name to get started.</p>
                 <div className="flex gap-2">
                   <input value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSetUsername()} placeholder="Your display name" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                  <button onClick={handleSetUsername} className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Join</button>
+                  <button onClick={handleSetUsername} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Join</button>
                 </div>
               </Card>
             ) : (
               <>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Signed in as <span className="font-semibold text-blue-600">{username}</span></p>
+                  <p className="text-sm text-gray-600">Signed in as <span className="font-semibold text-green-700">{username}</span></p>
                   <button onClick={() => { setUsername(""); localStorage.removeItem(USERNAME_KEY); }} className="text-xs text-gray-400 underline">Change name</button>
                 </div>
                 <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
                   {[["chat","💬 Chat"],["recipes","📖 Recipes"],["tips","💡 Tips"]].map(([id, label]) => (
-                    <button key={id} onClick={() => setCommunityTab(id)} className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${communityTab === id ? "bg-white shadow text-blue-600" : "text-gray-500"}`}>{label}</button>
+                    <button key={id} onClick={() => setCommunityTab(id)} className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${communityTab === id ? "bg-white shadow text-green-700" : "text-gray-500"}`}>{label}</button>
                   ))}
                 </div>
                 {communityTab === "chat" && (
@@ -1466,14 +1466,14 @@ export default function TrackFreshDashboard() {
                     <div className="mb-3 max-h-64 space-y-2 overflow-y-auto">
                       {community.chat.length === 0 ? <p className="text-sm text-gray-500">No messages yet — say hello!</p> : community.chat.map((msg) => (
                         <div key={msg.id} className="rounded-lg bg-gray-50 px-3 py-2">
-                          <div className="flex items-center justify-between"><span className="text-xs font-semibold text-blue-600">{msg.author}</span><span className="text-xs text-gray-400">{msg.time}</span></div>
+                          <div className="flex items-center justify-between"><span className="text-xs font-semibold text-green-700">{msg.author}</span><span className="text-xs text-gray-400">{msg.time}</span></div>
                           <p className="text-sm text-gray-800">{msg.text}</p>
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-2">
                       <input value={newChat} onChange={(e) => setNewChat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostChat()} placeholder="Type a message…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostChat} className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Send</button>
+                      <button onClick={handlePostChat} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Send</button>
                     </div>
                   </Card>
                 )}
@@ -1483,13 +1483,13 @@ export default function TrackFreshDashboard() {
                     <div className="mb-4 space-y-2">
                       <input value={newRecipeTitle} onChange={(e) => setNewRecipeTitle(e.target.value)} placeholder="Recipe title" className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                       <textarea value={newRecipeBody} onChange={(e) => setNewRecipeBody(e.target.value)} placeholder="Ingredients and instructions…" rows={3} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostRecipe} className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Share Recipe</button>
+                      <button onClick={handlePostRecipe} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Share Recipe</button>
                     </div>
                     <div className="space-y-3">
                       {community.recipes.length === 0 ? <p className="text-sm text-gray-500">No recipes shared yet — be the first!</p> : community.recipes.map((r) => (
                         <div key={r.id} className="rounded-lg border p-3">
                           <div className="flex items-center justify-between"><span className="font-semibold">{r.title}</span><span className="text-xs text-gray-400">{r.date}</span></div>
-                          <p className="mt-1 text-xs text-blue-600">{r.author}</p>
+                          <p className="mt-1 text-xs text-green-700">{r.author}</p>
                           <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">{r.body}</p>
                         </div>
                       ))}
@@ -1501,12 +1501,12 @@ export default function TrackFreshDashboard() {
                     <h3 className="mb-3 font-bold">Tips & Ideas</h3>
                     <div className="mb-4 flex gap-2">
                       <input value={newTip} onChange={(e) => setNewTip(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostTip()} placeholder="Share a food storage tip…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostTip} className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Post</button>
+                      <button onClick={handlePostTip} className="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">Post</button>
                     </div>
                     <div className="space-y-2">
                       {community.tips.length === 0 ? <p className="text-sm text-gray-500">No tips yet — share one!</p> : community.tips.map((tip) => (
                         <div key={tip.id} className="rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2">
-                          <div className="flex items-center justify-between"><span className="text-xs font-semibold text-blue-600">{tip.author}</span><span className="text-xs text-gray-400">{tip.date}</span></div>
+                          <div className="flex items-center justify-between"><span className="text-xs font-semibold text-green-700">{tip.author}</span><span className="text-xs text-gray-400">{tip.date}</span></div>
                           <p className="text-sm text-gray-800">{tip.text}</p>
                         </div>
                       ))}
