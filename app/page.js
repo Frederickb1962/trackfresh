@@ -1137,7 +1137,7 @@ export default function TrackFreshDashboard() {
                   {quickVoiceListening === "date" && <p className="text-xs text-green-700 mt-1">Say date e.g. February 20 2026</p>}
                   {quickVoiceError && <p className="text-xs text-red-500 mt-1">{quickVoiceError}</p>}
                 </div>
-                <button onClick={handleQuickAdd} className="w-full rounded bg-green-600 py-2 text-sm font-semibold text-white">Add to Tracker</button>
+                <button onClick={handleQuickAdd} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add to Tracker</button>
                 <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
               </div>
             </div>
@@ -1174,7 +1174,7 @@ export default function TrackFreshDashboard() {
                       <div><span className="font-semibold text-gray-600">Location:</span><p>{labelItem.location}</p></div>
                     </div>
                   </div>
-                  <button onClick={handleAddLabelItem} className="w-full rounded bg-green-600 py-2 text-sm font-semibold text-white">Add to Tracker</button>
+                  <button onClick={handleAddLabelItem} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add to Tracker</button>
                   <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
@@ -1358,7 +1358,7 @@ export default function TrackFreshDashboard() {
               <div className="flex gap-2 mb-2">
                 <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Add item…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                 <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Qty" className="w-20 rounded border px-3 py-2 text-sm" />
-                <button onClick={handleAddShoppingItem} className="rounded bg-green-600 px-3 py-2 text-sm font-semibold text-white">Add</button>
+                <button onClick={handleAddShoppingItem} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-3 py-2 text-sm font-bold text-white btn-3d">Add</button>
               </div>
               {shoppingItems.length === 0 ? (
                 <p className="text-sm text-gray-500 mt-3">Your shopping list is empty.</p>
