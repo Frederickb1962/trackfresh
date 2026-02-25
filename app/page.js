@@ -846,12 +846,20 @@ export default function TrackFreshDashboard() {
               <h2 className="mb-2 text-lg font-bold">📷 Scan Receipt</h2>
               <p className="mb-4 text-sm text-gray-600">Upload a photo of your grocery receipt and Claude will extract the food items automatically.</p>
               {!receiptScanning && receiptItems.length === 0 && (
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-8 hover:bg-blue-100">
-                  <span className="text-3xl mb-2">📷</span>
-                  <span className="text-sm font-semibold text-blue-600">Tap to upload receipt photo</span>
-                  <span className="text-xs text-gray-500 mt-1">JPG, PNG supported</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
-                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-6 hover:bg-green-100 transition-colors">
+                    <span className="text-3xl mb-2">📸</span>
+                    <span className="text-sm font-semibold text-green-700">Take Photo</span>
+                    <span className="text-xs text-gray-500 mt-1">Open camera</span>
+                    <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
+                  </label>
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-6 hover:bg-blue-100 transition-colors">
+                    <span className="text-3xl mb-2">🖼️</span>
+                    <span className="text-sm font-semibold text-blue-600">Upload Photo</span>
+                    <span className="text-xs text-gray-500 mt-1">From gallery</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
+                  </label>
+                </div>
               )}
               {receiptScanning && (
                 <div className="flex flex-col items-center py-8">
