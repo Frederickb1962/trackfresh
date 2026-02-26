@@ -54,6 +54,196 @@ const GLOBAL_STYLES = `
     border-radius: 0.75rem !important;
     background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(0,0,0,0.02) 100%) !important;
   }
+  .btn-green-3d {
+    background: linear-gradient(to bottom, #15803d, #14532d) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    box-shadow: 0 4px 0px #0f3d20, 0 6px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+    border: none !important;
+    border-radius: 0.75rem;
+    transition: all 0.12s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+  .btn-green-3d:hover {
+    background: linear-gradient(to bottom, #16a34a, #15803d) !important;
+    box-shadow: 0 5px 0px #0f3d20, 0 8px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+    transform: translateY(-1px);
+  }
+  .bubble-blue {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #1e3a8a, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+  }
+  .bubble-blue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0px #1e3a8a, 0 10px 20px rgba(0,0,0,0.35), inset 0 2px 0 rgba(255,255,255,0.25);
+  }
+  .bubble-blue:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0px #1e3a8a, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  @keyframes bubbleBurst {
+    0% { transform: scale(1); opacity: 1; }
+    30% { transform: scale(1.8); opacity: 0.8; }
+    60% { transform: scale(3.5); opacity: 0.4; border-radius: 30%; }
+    100% { transform: scale(8); opacity: 0; border-radius: 10%; }
+  }
+  .bubble-burst {
+    animation: bubbleBurst 0.4s ease-out forwards !important;
+    z-index: 100;
+    pointer-events: none;
+  }
+  @keyframes tableShine {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+  }
+  
+  }
+  @keyframes handGrab {
+    0% { transform: translateX(120px) rotate(0deg); opacity: 0; }
+    20% { transform: translateX(40px) rotate(-5deg); opacity: 1; }
+    40% { transform: translateX(0px) rotate(-10deg); opacity: 1; }
+    60% { transform: translateX(-30px) rotate(-5deg); opacity: 1; }
+    100% { transform: translateX(-300px) rotate(15deg); opacity: 0; }
+  }
+  @keyframes platePulled {
+    0% { transform: scale(1) translateX(0); opacity: 1; }
+    30% { transform: scale(1.05) translateX(-10px); opacity: 1; }
+    100% { transform: scale(0.6) translateX(-350px) rotate(-20deg); opacity: 0; }
+  }
+  @keyframes fadeInPage {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  .bubble-green {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #14532d 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #0f3d20, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    animation: float 3s ease-in-out infinite;
+  }
+  .bubble-green:nth-child(1) { animation-delay: 0s; }
+  .bubble-green:nth-child(2) { animation-delay: 0.4s; }
+  .bubble-green:nth-child(3) { animation-delay: 0.8s; }
+  .bubble-green:nth-child(4) { animation-delay: 1.2s; }
+  .bubble-green:nth-child(5) { animation-delay: 1.6s; }
+  .bubble-green:nth-child(6) { animation-delay: 2.0s; }
+  .bubble-green:active {
+    animation-play-state: paused;
+    transform: scale(0.92);
+    box-shadow: 0 2px 0px #0f3d20, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  @keyframes dance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(-8deg); }
+    50% { transform: translateY(-5px) rotate(0deg); }
+    75% { transform: translateY(-15px) rotate(8deg); }
+  }
+  @keyframes danceRight {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-12px) rotate(10deg); }
+    50% { transform: translateY(-3px) rotate(0deg); }
+    75% { transform: translateY(-12px) rotate(-10deg); }
+  }
+  @keyframes jumpIn {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    40% { transform: translateY(-60px) scale(1.2); opacity: 1; }
+    70% { transform: translateY(-20px) scale(0.9); opacity: 1; }
+    85% { transform: translateY(30px) scale(0.7); opacity: 0.7; }
+    100% { transform: translateY(40px) scale(0.3); opacity: 0; }
+  }
+  @keyframes potBubble {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.5) translateY(-8px); opacity: 0; }
+  }
+  @keyframes potSteam {
+    0% { transform: translateY(0) scaleX(1); opacity: 0.6; }
+    100% { transform: translateY(-30px) scaleX(1.5); opacity: 0; }
+  }
+  @keyframes potWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+  }
+  @keyframes happy {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .stew-scene { position: relative; height: 220px; width: 100%; overflow: hidden; margin: 0 auto; }
+  .stew-pot {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 160px; height: 90px; background: linear-gradient(to bottom, #6b7280, #4b5563);
+    border-radius: 0 0 40% 40%; border-top: 8px solid #374151;
+    animation: potWiggle 0.5s ease-in-out infinite;
+    z-index: 10;
+  }
+  .pot-rim {
+    position: absolute; bottom: 82px; left: 50%; transform: translateX(-50%);
+    width: 180px; height: 16px; background: linear-gradient(to bottom, #9ca3af, #6b7280);
+    border-radius: 8px; z-index: 11;
+  }
+  .pot-liquid {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 148px; height: 50px; background: linear-gradient(to bottom, #ea580c, #c2410c);
+    border-radius: 0 0 38% 38%; z-index: 11;
+  }
+  .pot-handle-l {
+    position: absolute; bottom: 55px; left: calc(50% - 95px);
+    width: 20px; height: 30px; border: 4px solid #374151; border-right: none;
+    border-radius: 10px 0 0 10px; z-index: 9;
+  }
+  .pot-handle-r {
+    position: absolute; bottom: 55px; left: calc(50% + 75px);
+    width: 20px; height: 30px; border: 4px solid #374151; border-left: none;
+    border-radius: 0 10px 10px 0; z-index: 9;
+  }
+  .food-char {
+    position: absolute; bottom: 95px; font-size: 32px; z-index: 12;
+    animation: dance 0.8s ease-in-out infinite;
+  }
+  .food-char.r { animation-name: danceRight; }
+  .food-char.jump {
+    animation: jumpIn 1s ease-in forwards;
+  }
+  .steam {
+    position: absolute; font-size: 18px; z-index: 15; opacity: 0.6;
+    animation: potSteam 1.5s ease-out infinite;
+  }
+  .bubble-pot {
+    position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.6);
+    border-radius: 50%; z-index: 12;
+    animation: potBubble 1s ease-in-out infinite;
+  }
+  .btn-green-3d:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0px #0f3d20, 0 2px 4px rgba(0,0,0,0.2) !important;
+  }
   .card-3d {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
     transition: all 0.2s ease;
@@ -76,124 +266,248 @@ const CATEGORIES = ["Produce", "Dairy", "Meat", "Pantry", "Leftovers", "Other"];
 const LOCATIONS = ["Fridge", "Freezer", "Pantry"];
 
 const FOOD_DB = [
-  { name: "Apples", category: "Produce", location: "Fridge" },
-  { name: "Avocado", category: "Produce", location: "Fridge" },
-  { name: "Bananas", category: "Produce", location: "Pantry" },
-  { name: "Basil", category: "Produce", location: "Fridge" },
-  { name: "Bell Peppers", category: "Produce", location: "Fridge" },
-  { name: "Berries", category: "Produce", location: "Fridge" },
-  { name: "Blueberries", category: "Produce", location: "Fridge" },
-  { name: "Broccoli", category: "Produce", location: "Fridge" },
-  { name: "Brussels Sprouts", category: "Produce", location: "Fridge" },
-  { name: "Cabbage", category: "Produce", location: "Fridge" },
-  { name: "Carrots", category: "Produce", location: "Fridge" },
-  { name: "Cauliflower", category: "Produce", location: "Fridge" },
-  { name: "Celery", category: "Produce", location: "Fridge" },
-  { name: "Cherries", category: "Produce", location: "Fridge" },
-  { name: "Cilantro", category: "Produce", location: "Fridge" },
-  { name: "Corn", category: "Produce", location: "Fridge" },
-  { name: "Cucumber", category: "Produce", location: "Fridge" },
-  { name: "Garlic", category: "Produce", location: "Pantry" },
-  { name: "Ginger", category: "Produce", location: "Fridge" },
-  { name: "Grapes", category: "Produce", location: "Fridge" },
-  { name: "Green Beans", category: "Produce", location: "Fridge" },
-  { name: "Green Onions", category: "Produce", location: "Fridge" },
-  { name: "Jalapeno", category: "Produce", location: "Fridge" },
-  { name: "Kale", category: "Produce", location: "Fridge" },
-  { name: "Leeks", category: "Produce", location: "Fridge" },
-  { name: "Lemon", category: "Produce", location: "Fridge" },
-  { name: "Lettuce", category: "Produce", location: "Fridge" },
-  { name: "Lime", category: "Produce", location: "Fridge" },
-  { name: "Mango", category: "Produce", location: "Fridge" },
-  { name: "Mushrooms", category: "Produce", location: "Fridge" },
-  { name: "Onions", category: "Produce", location: "Pantry" },
-  { name: "Oranges", category: "Produce", location: "Fridge" },
-  { name: "Parsley", category: "Produce", location: "Fridge" },
-  { name: "Peaches", category: "Produce", location: "Fridge" },
-  { name: "Pears", category: "Produce", location: "Fridge" },
-  { name: "Peas", category: "Produce", location: "Freezer" },
-  { name: "Pineapple", category: "Produce", location: "Fridge" },
-  { name: "Potatoes", category: "Produce", location: "Pantry" },
-  { name: "Raspberries", category: "Produce", location: "Fridge" },
-  { name: "Romaine Lettuce", category: "Produce", location: "Fridge" },
-  { name: "Shallots", category: "Produce", location: "Pantry" },
-  { name: "Spinach", category: "Produce", location: "Fridge" },
-  { name: "Strawberries", category: "Produce", location: "Fridge" },
-  { name: "Sweet Potatoes", category: "Produce", location: "Pantry" },
-  { name: "Thyme", category: "Produce", location: "Fridge" },
-  { name: "Tomatoes", category: "Produce", location: "Pantry" },
-  { name: "Zucchini", category: "Produce", location: "Fridge" },
-  { name: "Butter", category: "Dairy", location: "Fridge" },
-  { name: "Cheddar Cheese", category: "Dairy", location: "Fridge" },
-  { name: "Cottage Cheese", category: "Dairy", location: "Fridge" },
-  { name: "Cream", category: "Dairy", location: "Fridge" },
-  { name: "Cream Cheese", category: "Dairy", location: "Fridge" },
-  { name: "Eggs", category: "Dairy", location: "Fridge" },
-  { name: "Feta Cheese", category: "Dairy", location: "Fridge" },
-  { name: "Greek Yogurt", category: "Dairy", location: "Fridge" },
-  { name: "Half and Half", category: "Dairy", location: "Fridge" },
-  { name: "Milk", category: "Dairy", location: "Fridge" },
-  { name: "Mozzarella", category: "Dairy", location: "Fridge" },
-  { name: "Parmesan", category: "Dairy", location: "Fridge" },
-  { name: "Ricotta", category: "Dairy", location: "Fridge" },
-  { name: "Sour Cream", category: "Dairy", location: "Fridge" },
-  { name: "Swiss Cheese", category: "Dairy", location: "Fridge" },
-  { name: "Whipping Cream", category: "Dairy", location: "Fridge" },
-  { name: "Yogurt", category: "Dairy", location: "Fridge" },
-  { name: "Bacon", category: "Meat", location: "Fridge" },
-  { name: "Chicken Breast", category: "Meat", location: "Freezer" },
-  { name: "Chicken Thighs", category: "Meat", location: "Freezer" },
-  { name: "Chicken Wings", category: "Meat", location: "Freezer" },
-  { name: "Deli Turkey", category: "Meat", location: "Fridge" },
-  { name: "Ground Beef", category: "Meat", location: "Freezer" },
-  { name: "Ground Turkey", category: "Meat", location: "Freezer" },
-  { name: "Ham", category: "Meat", location: "Fridge" },
-  { name: "Italian Sausage", category: "Meat", location: "Fridge" },
-  { name: "Lamb Chops", category: "Meat", location: "Freezer" },
-  { name: "Pork Chops", category: "Meat", location: "Freezer" },
-  { name: "Pork Tenderloin", category: "Meat", location: "Freezer" },
-  { name: "Prosciutto", category: "Meat", location: "Fridge" },
-  { name: "Ribeye Steak", category: "Meat", location: "Freezer" },
-  { name: "Salmon", category: "Meat", location: "Freezer" },
-  { name: "Shrimp", category: "Meat", location: "Freezer" },
-  { name: "Sirloin Steak", category: "Meat", location: "Freezer" },
-  { name: "Smoked Salmon", category: "Meat", location: "Fridge" },
-  { name: "Tilapia", category: "Meat", location: "Freezer" },
-  { name: "Tuna", category: "Meat", location: "Pantry" },
-  { name: "Turkey Breast", category: "Meat", location: "Freezer" },
-  { name: "All-Purpose Flour", category: "Pantry", location: "Pantry" },
-  { name: "Almond Butter", category: "Pantry", location: "Pantry" },
-  { name: "Balsamic Vinegar", category: "Pantry", location: "Pantry" },
-  { name: "Black Beans", category: "Pantry", location: "Pantry" },
-  { name: "Bread", category: "Pantry", location: "Pantry" },
-  { name: "Brown Rice", category: "Pantry", location: "Pantry" },
-  { name: "Brown Sugar", category: "Pantry", location: "Pantry" },
-  { name: "Canola Oil", category: "Pantry", location: "Pantry" },
-  { name: "Chicken Broth", category: "Pantry", location: "Pantry" },
-  { name: "Chickpeas", category: "Pantry", location: "Pantry" },
-  { name: "Coconut Milk", category: "Pantry", location: "Pantry" },
-  { name: "Dijon Mustard", category: "Pantry", location: "Fridge" },
-  { name: "Honey", category: "Pantry", location: "Pantry" },
-  { name: "Hot Sauce", category: "Pantry", location: "Fridge" },
-  { name: "Ketchup", category: "Pantry", location: "Fridge" },
-  { name: "Lentils", category: "Pantry", location: "Pantry" },
-  { name: "Maple Syrup", category: "Pantry", location: "Pantry" },
-  { name: "Mayonnaise", category: "Pantry", location: "Fridge" },
-  { name: "Oats", category: "Pantry", location: "Pantry" },
-  { name: "Olive Oil", category: "Pantry", location: "Pantry" },
-  { name: "Pasta", category: "Pantry", location: "Pantry" },
-  { name: "Peanut Butter", category: "Pantry", location: "Pantry" },
-  { name: "Quinoa", category: "Pantry", location: "Pantry" },
-  { name: "Rice", category: "Pantry", location: "Pantry" },
-  { name: "Sesame Oil", category: "Pantry", location: "Pantry" },
-  { name: "Soy Sauce", category: "Pantry", location: "Pantry" },
-  { name: "Sriracha", category: "Pantry", location: "Fridge" },
-  { name: "Sugar", category: "Pantry", location: "Pantry" },
-  { name: "Tomato Paste", category: "Pantry", location: "Pantry" },
-  { name: "Vegetable Broth", category: "Pantry", location: "Pantry" },
-  { name: "White Rice", category: "Pantry", location: "Pantry" },
-  { name: "White Wine Vinegar", category: "Pantry", location: "Pantry" },
-  { name: "Worcestershire Sauce", category: "Pantry", location: "Pantry" },
+  // === PRODUCE ===
+  { name: "Apples", category: "Produce", location: "Fridge", daysSealed: 28, daysAfterOpening: null },
+  { name: "Asparagus", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Avocado", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: 2 },
+  { name: "Bananas", category: "Produce", location: "Pantry", daysSealed: 7, daysAfterOpening: null },
+  { name: "Basil", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Beets", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Bell Peppers", category: "Produce", location: "Fridge", daysSealed: 10, daysAfterOpening: 5 },
+  { name: "Berries", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Blackberries", category: "Produce", location: "Fridge", daysSealed: 4, daysAfterOpening: null },
+  { name: "Blueberries", category: "Produce", location: "Fridge", daysSealed: 10, daysAfterOpening: null },
+  { name: "Bok Choy", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Broccoli", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Brussels Sprouts", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Butternut Squash", category: "Produce", location: "Pantry", daysSealed: 30, daysAfterOpening: 5 },
+  { name: "Cabbage", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Cantaloupe", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Carrots", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Cauliflower", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Celery", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Cherries", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Cilantro", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Corn", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Cranberries", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: null },
+  { name: "Cucumber", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Eggplant", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Garlic", category: "Produce", location: "Pantry", daysSealed: 60, daysAfterOpening: 10 },
+  { name: "Ginger", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Grapes", category: "Produce", location: "Fridge", daysSealed: 10, daysAfterOpening: null },
+  { name: "Green Beans", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Green Onions", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Honeydew", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Jalapenos", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Kale", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Leeks", category: "Produce", location: "Fridge", daysSealed: 10, daysAfterOpening: null },
+  { name: "Lemons", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: 5 },
+  { name: "Lettuce", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Limes", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: 5 },
+  { name: "Mangoes", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Mushrooms", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 4 },
+  { name: "Nectarines", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Onions", category: "Produce", location: "Pantry", daysSealed: 30, daysAfterOpening: 7 },
+  { name: "Oranges", category: "Produce", location: "Fridge", daysSealed: 21, daysAfterOpening: null },
+  { name: "Parsley", category: "Produce", location: "Fridge", daysSealed: 10, daysAfterOpening: null },
+  { name: "Peaches", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Pears", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+  { name: "Peas", category: "Produce", location: "Freezer", daysSealed: 240, daysAfterOpening: null },
+  { name: "Pineapple", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: 3 },
+  { name: "Plums", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Pomegranate", category: "Produce", location: "Fridge", daysSealed: 30, daysAfterOpening: 5 },
+  { name: "Potatoes", category: "Produce", location: "Pantry", daysSealed: 28, daysAfterOpening: null },
+  { name: "Radishes", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Raspberries", category: "Produce", location: "Fridge", daysSealed: 3, daysAfterOpening: null },
+  { name: "Romaine Lettuce", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Rosemary", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Shallots", category: "Produce", location: "Pantry", daysSealed: 30, daysAfterOpening: 7 },
+  { name: "Snow Peas", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Spinach", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Strawberries", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Sweet Potatoes", category: "Produce", location: "Pantry", daysSealed: 28, daysAfterOpening: null },
+  { name: "Swiss Chard", category: "Produce", location: "Fridge", daysSealed: 5, daysAfterOpening: null },
+  { name: "Thyme", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Tomatoes", category: "Produce", location: "Pantry", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Turnips", category: "Produce", location: "Fridge", daysSealed: 14, daysAfterOpening: null },
+  { name: "Watermelon", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Zucchini", category: "Produce", location: "Fridge", daysSealed: 7, daysAfterOpening: null },
+
+  // === DAIRY ===
+  { name: "Butter", category: "Dairy", location: "Fridge", daysSealed: 90, daysAfterOpening: 30 },
+  { name: "Buttermilk", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Cheddar Cheese", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Colby Jack", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Cottage Cheese", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Cream", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Cream Cheese", category: "Dairy", location: "Fridge", daysSealed: 30, daysAfterOpening: 14 },
+  { name: "Eggs", category: "Dairy", location: "Fridge", daysSealed: 35, daysAfterOpening: null },
+  { name: "Feta Cheese", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 7 },
+  { name: "Goat Cheese", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Greek Yogurt", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Gruyere", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Half and Half", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Heavy Cream", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Mascarpone", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Milk", category: "Dairy", location: "Fridge", daysSealed: 10, daysAfterOpening: 7 },
+  { name: "Mozzarella", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Oat Milk", category: "Dairy", location: "Fridge", daysSealed: 10, daysAfterOpening: 7 },
+  { name: "Parmesan", category: "Dairy", location: "Fridge", daysSealed: 180, daysAfterOpening: 42 },
+  { name: "Pepper Jack", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Provolone", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Ricotta", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Sour Cream", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 14 },
+  { name: "Swiss Cheese", category: "Dairy", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Whipping Cream", category: "Dairy", location: "Fridge", daysSealed: 21, daysAfterOpening: 5 },
+  { name: "Yogurt", category: "Dairy", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+
+  // === MEAT & SEAFOOD ===
+  { name: "Bacon", category: "Meat", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Bratwurst", category: "Meat", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Chicken Breast", category: "Meat", location: "Freezer", daysSealed: 270, daysAfterOpening: 2 },
+  { name: "Chicken Thighs", category: "Meat", location: "Freezer", daysSealed: 270, daysAfterOpening: 2 },
+  { name: "Chicken Wings", category: "Meat", location: "Freezer", daysSealed: 270, daysAfterOpening: 2 },
+  { name: "Chorizo", category: "Meat", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Cod", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Crab Meat", category: "Meat", location: "Fridge", daysSealed: 5, daysAfterOpening: 2 },
+  { name: "Deli Ham", category: "Meat", location: "Fridge", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Deli Turkey", category: "Meat", location: "Fridge", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Ground Beef", category: "Meat", location: "Freezer", daysSealed: 120, daysAfterOpening: 2 },
+  { name: "Ground Pork", category: "Meat", location: "Freezer", daysSealed: 120, daysAfterOpening: 2 },
+  { name: "Ground Turkey", category: "Meat", location: "Freezer", daysSealed: 120, daysAfterOpening: 2 },
+  { name: "Halibut", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Ham", category: "Meat", location: "Fridge", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Hot Dogs", category: "Meat", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Italian Sausage", category: "Meat", location: "Fridge", daysSealed: 7, daysAfterOpening: 3 },
+  { name: "Lamb Chops", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+  { name: "Lobster", category: "Meat", location: "Fridge", daysSealed: 2, daysAfterOpening: 1 },
+  { name: "Mahi Mahi", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Pepperoni", category: "Meat", location: "Fridge", daysSealed: 42, daysAfterOpening: 21 },
+  { name: "Pork Chops", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+  { name: "Pork Tenderloin", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+  { name: "Prosciutto", category: "Meat", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Ribeye Steak", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+  { name: "Rotisserie Chicken", category: "Meat", location: "Fridge", daysSealed: 4, daysAfterOpening: 3 },
+  { name: "Salami", category: "Meat", location: "Fridge", daysSealed: 42, daysAfterOpening: 14 },
+  { name: "Salmon", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Scallops", category: "Meat", location: "Freezer", daysSealed: 90, daysAfterOpening: 1 },
+  { name: "Shrimp", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Sirloin Steak", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+  { name: "Smoked Salmon", category: "Meat", location: "Fridge", daysSealed: 14, daysAfterOpening: 5 },
+  { name: "Swordfish", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Tilapia", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 2 },
+  { name: "Tuna", category: "Meat", location: "Pantry", daysSealed: 730, daysAfterOpening: 3 },
+  { name: "Tuna Steak", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 1 },
+  { name: "Turkey Breast", category: "Meat", location: "Freezer", daysSealed: 180, daysAfterOpening: 3 },
+
+  // === CONDIMENTS & SAUCES ===
+  { name: "BBQ Sauce", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 120 },
+  { name: "Buffalo Sauce", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Chili Garlic Sauce", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Dijon Mustard", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 365 },
+  { name: "Fish Sauce", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Hoisin Sauce", category: "Pantry", location: "Fridge", daysSealed: 540, daysAfterOpening: 90 },
+  { name: "Honey Mustard", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 60 },
+  { name: "Horseradish", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Hot Sauce", category: "Pantry", location: "Fridge", daysSealed: 730, daysAfterOpening: 180 },
+  { name: "Hummus", category: "Pantry", location: "Fridge", daysSealed: 30, daysAfterOpening: 7 },
+  { name: "Ketchup", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Marinara Sauce", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 7 },
+  { name: "Mayonnaise", category: "Pantry", location: "Fridge", daysSealed: 180, daysAfterOpening: 60 },
+  { name: "Mustard", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 365 },
+  { name: "Oyster Sauce", category: "Pantry", location: "Fridge", daysSealed: 540, daysAfterOpening: 90 },
+  { name: "Pesto", category: "Pantry", location: "Fridge", daysSealed: 180, daysAfterOpening: 7 },
+  { name: "Pickle Relish", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Ranch Dressing", category: "Pantry", location: "Fridge", daysSealed: 180, daysAfterOpening: 30 },
+  { name: "Salsa", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 14 },
+  { name: "Soy Sauce", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 365 },
+  { name: "Sriracha", category: "Pantry", location: "Fridge", daysSealed: 730, daysAfterOpening: 180 },
+  { name: "Steak Sauce", category: "Pantry", location: "Fridge", daysSealed: 540, daysAfterOpening: 90 },
+  { name: "Tahini", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Tartar Sauce", category: "Pantry", location: "Fridge", daysSealed: 180, daysAfterOpening: 60 },
+  { name: "Teriyaki Sauce", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 30 },
+  { name: "Vinaigrette", category: "Pantry", location: "Fridge", daysSealed: 90, daysAfterOpening: 14 },
+  { name: "Worcestershire Sauce", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 365 },
+  { name: "Yellow Mustard", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 365 },
+
+  // === PANTRY STAPLES ===
+  { name: "All-Purpose Flour", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Almond Butter", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Almond Flour", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 90 },
+  { name: "Baking Powder", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Baking Soda", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 180 },
+  { name: "Balsamic Vinegar", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 365 },
+  { name: "Black Beans", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Bread", category: "Pantry", location: "Pantry", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Bread Crumbs", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 90 },
+  { name: "Brown Rice", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 90 },
+  { name: "Brown Sugar", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 120 },
+  { name: "Canola Oil", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Capers", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 365 },
+  { name: "Chicken Broth", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Chickpeas", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Cocoa Powder", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 365 },
+  { name: "Coconut Milk", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Coconut Oil", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Cornstarch", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Couscous", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Crackers", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 14 },
+  { name: "Dried Pasta", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Granola", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 30 },
+  { name: "Honey", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 1095 },
+  { name: "Jam", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 30 },
+  { name: "Jelly", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 30 },
+  { name: "Kidney Beans", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Lentils", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 365 },
+  { name: "Maple Syrup", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Oats", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Olive Oil", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 180 },
+  { name: "Olives", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 14 },
+  { name: "Panko", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Pasta", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Peanut Butter", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Pickles", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Popcorn Kernels", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Quinoa", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Raisins", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 90 },
+  { name: "Rice", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "Sesame Oil", category: "Pantry", location: "Pantry", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Sugar", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 730 },
+  { name: "Sun-Dried Tomatoes", category: "Pantry", location: "Fridge", daysSealed: 365, daysAfterOpening: 14 },
+  { name: "Tomato Paste", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 7 },
+  { name: "Tomato Sauce", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 7 },
+  { name: "Tortillas", category: "Pantry", location: "Pantry", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Vegetable Broth", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 5 },
+  { name: "Walnuts", category: "Pantry", location: "Pantry", daysSealed: 180, daysAfterOpening: 90 },
+  { name: "White Rice", category: "Pantry", location: "Pantry", daysSealed: 730, daysAfterOpening: 365 },
+  { name: "White Wine Vinegar", category: "Pantry", location: "Pantry", daysSealed: 1095, daysAfterOpening: 365 },
+
+  // === FROZEN ===
+  { name: "Frozen Berries", category: "Other", location: "Freezer", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Frozen Broccoli", category: "Other", location: "Freezer", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Frozen Corn", category: "Other", location: "Freezer", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Frozen Pizza", category: "Other", location: "Freezer", daysSealed: 180, daysAfterOpening: null },
+  { name: "Frozen Spinach", category: "Other", location: "Freezer", daysSealed: 365, daysAfterOpening: 180 },
+  { name: "Frozen Waffles", category: "Other", location: "Freezer", daysSealed: 240, daysAfterOpening: 60 },
+  { name: "Ice Cream", category: "Other", location: "Freezer", daysSealed: 60, daysAfterOpening: 30 },
+
+  // === BEVERAGES ===
+  { name: "Almond Milk", category: "Other", location: "Fridge", daysSealed: 10, daysAfterOpening: 7 },
+  { name: "Apple Juice", category: "Other", location: "Fridge", daysSealed: 21, daysAfterOpening: 7 },
+  { name: "Coconut Water", category: "Other", location: "Pantry", daysSealed: 365, daysAfterOpening: 3 },
+  { name: "Orange Juice", category: "Other", location: "Fridge", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Soy Milk", category: "Other", location: "Fridge", daysSealed: 10, daysAfterOpening: 7 },
+
+  // === BAKERY ===
+  { name: "Bagels", category: "Other", location: "Pantry", daysSealed: 5, daysAfterOpening: 3 },
+  { name: "Croissants", category: "Other", location: "Pantry", daysSealed: 3, daysAfterOpening: 2 },
+  { name: "English Muffins", category: "Other", location: "Pantry", daysSealed: 14, daysAfterOpening: 7 },
+  { name: "Hamburger Buns", category: "Other", location: "Pantry", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Hot Dog Buns", category: "Other", location: "Pantry", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Pita Bread", category: "Other", location: "Pantry", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Sandwich Bread", category: "Other", location: "Pantry", daysSealed: 7, daysAfterOpening: 5 },
+  { name: "Sourdough", category: "Other", location: "Pantry", daysSealed: 5, daysAfterOpening: 3 },
+  { name: "Wraps", category: "Other", location: "Pantry", daysSealed: 14, daysAfterOpening: 7 },
 ];
 
 const RECIPE_DB = [
@@ -466,8 +780,58 @@ function FoodAutocomplete({ value, onChange, onSelect }) {
   );
 }
 
+
+function CommunityStewAnim() {
+  const [phase, setPhase] = React.useState("dance");
+  const chars = [
+    { emoji: "🥕", left: "calc(50% - 80px)", delay: "0s" },
+    { emoji: "🥦", left: "calc(50% - 40px)", delay: "0.15s" },
+    { emoji: "🍗", left: "calc(50%)", delay: "0.3s" },
+    { emoji: "🥩", left: "calc(50% + 40px)", delay: "0.1s" },
+    { emoji: "🌽", left: "calc(50% + 80px)", delay: "0.2s" },
+    { emoji: "🧅", left: "calc(50% - 60px)", delay: "0.25s", top: true },
+    { emoji: "🍅", left: "calc(50% + 60px)", delay: "0.05s", top: true },
+  ];
+
+  React.useEffect(() => {
+    const t1 = setTimeout(() => setPhase("jump"), 3500);
+    const t2 = setTimeout(() => setPhase("done"), 5500);
+    const t3 = setTimeout(() => setPhase("dance"), 7500);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, [phase]);
+
+  if (phase === "done") return null;
+
+  return (
+    <>
+      {chars.map((ch, i) => (
+        <div
+          key={i}
+          className={`food-char ${i % 2 === 0 ? "" : "r"} ${phase === "jump" ? "jump" : ""}`}
+          style={{
+            left: ch.left,
+            bottom: ch.top ? "130px" : "95px",
+            animationDelay: phase === "jump" ? `${i * 0.15}s` : ch.delay,
+            fontSize: "32px"
+          }}
+        >
+          {ch.emoji}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export default function TrackFreshDashboard() {
-  const [activeTab, setActiveTab] = useState("tracker");
+  const [activeTab, setActiveTab] = useState("home");
+  const [burstingBubble, setBurstingBubble] = useState(null);
+  const handleBubbleTap = (target) => {
+    setBurstingBubble(target);
+    setTimeout(() => {
+      setActiveTab(target);
+      setBurstingBubble(null);
+    }, 550);
+  };
   const [trackedItems, setTrackedItems] = useState([]);
   const [itemName, setItemName] = useState("");
   const [useByDate, setUseByDate] = useState("");
@@ -894,17 +1258,17 @@ export default function TrackFreshDashboard() {
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4">
         <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl animate-[fadeIn_0.4s_ease]">
           <div className="text-5xl mb-3">🥦</div>
-          <h2 className="text-2xl font-bold text-green-700 mb-1">Welcome to TrackFresh!</h2>
+          <h2 className="text-2xl font-bold text-green-700 mb-1">Welcome to FreshTrack.ai!</h2>
           <p className="text-gray-500 text-sm mb-4">The smart way to track your groceries, reduce food waste, and save money.</p>
           <div className="text-left bg-green-50 rounded-xl p-4 mb-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-gray-700">Scan labels &amp; barcodes with AI</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-gray-700">Get color-coded expiry alerts</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🎤</span><span className="text-gray-700">Add items by voice, hands-free</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🛒</span><span className="text-gray-700">Smart shopping list with autocomplete</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">Freeze alerts before meat goes bad</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-gray-700">AI-powered label &amp; barcode scanning</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-gray-700">Smart AI expiry predictions &amp; alerts</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>🎤</span><span className="text-gray-700">Voice-powered hands-free entry</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>🛒</span><span className="text-gray-700">AI-built smart shopping lists</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">AI freeze alerts save your food</span></div>
           </div>
           <p className="text-xs text-gray-400 mb-4">Your data is stored locally on your device. No account required.</p>
-          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full bg-gradient-to-b from-green-500 to-green-700 py-3 text-lg font-bold text-white btn-3d">🚀 Get Started</button>
+          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full py-3 text-lg btn-green-3d">🚀 Get Started</button>
         </div>
       </div>
     )}
@@ -918,13 +1282,111 @@ export default function TrackFreshDashboard() {
             <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-semibold text-green-600 hover:text-green-800 transition-colors">Sign Out</button>
           </div>
         </div>
-        <TabBar active={activeTab} onChange={setActiveTab} />
+
+
+
+        {activeTab === "home" && (
+          <div className="flex flex-col items-center py-6">
+            <p className="text-sm text-gray-600 mb-6">✨ Your AI-powered kitchen assistant</p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("tracker-menu")} className={`bubble-green ${burstingBubble === "tracker-menu" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">🥦</span>
+                  <span className="text-xs font-bold mt-1">Tracker</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI tracks your food & freshness</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("recipes")} className={`bubble-green ${burstingBubble === "recipes" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">🍳</span>
+                  <span className="text-xs font-bold mt-1">Recipes</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI recipes from your fridge</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("shopping")} className={`bubble-green ${burstingBubble === "shopping" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">🛒</span>
+                  <span className="text-xs font-bold mt-1">Shopping</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Smart shopping with AI alerts</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("meals")} className={`bubble-green ${burstingBubble === "meals" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">📅</span>
+                  <span className="text-xs font-bold mt-1">Meals</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI plans meals from what you have</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("stores")} className={`bubble-green ${burstingBubble === "stores" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">🏪</span>
+                  <span className="text-xs font-bold mt-1">Stores</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Shop your favorite stores</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => handleBubbleTap("community")} className={`bubble-green ${burstingBubble === "community" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">👥</span>
+                  <span className="text-xs font-bold mt-1">Community</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Connect & share with others</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "tracker-menu" && (
+          <div className="flex flex-col items-center py-6">
+            <button onClick={() => setActiveTab("home")} className="self-start flex items-center gap-1 text-sm font-semibold text-green-700 mb-4">
+              <span>←</span> Back
+            </button>
+            <h2 className="text-lg font-bold text-gray-800 mb-1">✨ AI Food Scanner</h2>
+            <p className="text-sm text-gray-500 mb-6">Choose how AI should add your items</p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => { setBurstingBubble("receipt"); setTimeout(() => { setShowReceiptScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                  <span className="text-2xl">📷</span>
+                  <span className="text-xs font-bold mt-1">Receipt</span>
+                </button>
+                <p className="text-xs text-gray-500 text-center w-24">AI reads your receipt instantly</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => { setBurstingBubble("barcode"); setTimeout(() => { setShowBarcodeScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                  <span className="text-2xl">📦</span>
+                  <span className="text-xs font-bold mt-1">Barcode</span>
+                </button>
+                <p className="text-xs text-gray-500 text-center w-24">AI identifies any product</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => { setBurstingBubble("label"); setTimeout(() => { setShowLabelScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                  <span className="text-2xl">🏷️</span>
+                  <span className="text-xs font-bold mt-1">Label</span>
+                </button>
+                <p className="text-xs text-gray-500 text-center w-24">AI extracts label details</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => { setBurstingBubble("quickadd"); setTimeout(() => { setShowQuickAdd(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                  <span className="text-2xl">✏️</span>
+                  <span className="text-xs font-bold mt-1">Quick Add</span>
+                </button>
+                <p className="text-xs text-gray-500 text-center w-24">Quick add with AI autocomplete</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <button onClick={() => { setBurstingBubble("myitems"); setTimeout(() => { setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className={`bubble-green ${burstingBubble === "myitems" ? "bubble-burst" : ""}`}>
+                  <span className="text-2xl">📋</span>
+                  <span className="text-xs font-bold mt-1">My Items</span>
+                </button>
+                <p className="text-xs text-gray-500 text-center w-24">Your AI-monitored inventory</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showReceiptScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-2 text-lg font-bold">📷 Scan Receipt</h2>
-              <p className="mb-4 text-sm text-gray-600">Upload a photo of your grocery receipt and Claude will extract the food items automatically.</p>
+              <p className="mb-4 text-sm text-gray-600">Upload a receipt photo and our AI will instantly identify every food item, category, and shelf life.</p>
               {!receiptScanning && receiptItems.length === 0 && (
                 <div className="grid grid-cols-2 gap-3">
                   <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-green-300 bg-gradient-to-b from-green-50 to-green-100 p-6 btn-3d">
@@ -968,7 +1430,7 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add {selectedReceiptItems.length} Items to Tracker</button>
+                  <button onClick={handleAddReceiptItems} className="w-full rounded-xl py-2.5 text-sm btn-green-3d btn-3d">Add {selectedReceiptItems.length} Items to Tracker</button>
                 </div>
               )}
               <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
@@ -981,14 +1443,14 @@ export default function TrackFreshDashboard() {
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-2 text-lg font-bold">How to Use</h2>
               <ul className="space-y-2 text-sm text-gray-700">
-                <li>🔹 <strong>Tracker:</strong> Type a food name to search from 100+ items. Category and location auto-fill.</li>
+                <li>🔹 <strong>Tracker:</strong> AI searches 100+ items. Category and location auto-fill intelligently.</li>
                 <li>🔹 Filter by 🧊 Fridge, ❄️ Freezer, or 🗄️ Pantry to see items by location.</li>
-                <li>🔹 <strong>Recipes:</strong> Get recipe suggestions, tap to see full instructions.</li>
+                <li>🔹 <strong>Recipes:</strong> AI suggests recipes based on what's in your kitchen.</li>
                 <li>🔹 <strong>Shopping:</strong> Build your shopping list, check off items as you shop.</li>
                 <li>🔹 <strong>Community:</strong> Share recipes, tips, and chat.</li>
                 <li>🔹 Red = expires within 3 days. Yellow = within 7 days.</li>
               </ul>
-              <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 font-bold text-white btn-3d">Close</button>
+              <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl px-4 py-2 text-sm btn-green-3d">Close</button>
             </div>
           </div>
         )}
@@ -1088,7 +1550,7 @@ export default function TrackFreshDashboard() {
                       {voiceError && <p className="text-xs text-red-500">{voiceError}</p>}
                     </div>
                   )}
-                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold text-white ${!barcodeLocation ? "bg-gray-300" : "bg-gradient-to-b from-green-600 to-green-700 btn-3d"}`}>Add to Tracker</button>
+                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold ${!barcodeLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>Add to Tracker</button>
                   <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
@@ -1142,7 +1604,7 @@ export default function TrackFreshDashboard() {
                   {quickVoiceListening === "date" && <p className="text-xs text-green-700 mt-1">Say date e.g. February 20 2026</p>}
                   {quickVoiceError && <p className="text-xs text-red-500 mt-1">{quickVoiceError}</p>}
                 </div>
-                <button onClick={handleQuickAdd} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add to Tracker</button>
+                <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">Add to Tracker</button>
                 <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
               </div>
             </div>
@@ -1179,7 +1641,7 @@ export default function TrackFreshDashboard() {
                       <div><span className="font-semibold text-gray-600">Location:</span><p>{labelItem.location}</p></div>
                     </div>
                   </div>
-                  <button onClick={handleAddLabelItem} className="w-full rounded-xl bg-gradient-to-b from-green-600 to-green-700 py-2.5 text-sm font-bold text-white btn-3d">Add to Tracker</button>
+                  <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">Add to Tracker</button>
                   <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
@@ -1191,6 +1653,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="grid grid-cols-2 gap-2">
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
               <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
               <button onClick={() => setShowLabelScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button>
               <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl bg-gradient-to-b from-purple-100 to-purple-200 py-3 text-xs font-bold text-purple-800 btn-3d border border-purple-300">📦 Barcode</button>
@@ -1233,9 +1696,7 @@ export default function TrackFreshDashboard() {
                 </div>
               </div>
               <div className="mt-4 flex justify-end">
-                <button onClick={handleAddItem} className="inline-flex items-center gap-2 rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white">
-                  <PlusCircle className="h-4 w-4" /> Add
-                </button>
+                <button onClick={handleAddItem} className="inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm btn-green-3d"><PlusCircle className="h-4 w-4" /> Add</button>
               </div>
             </Card>
             <Card>
@@ -1306,7 +1767,8 @@ export default function TrackFreshDashboard() {
         )}
         {activeTab === "recipes" && (
           <Card>
-            <div className="mb-3 flex items-center gap-2"><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
+            <div className="mb-3 flex items-center gap-2">
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
             <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
             <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
@@ -1354,6 +1816,7 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center gap-2">
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
                 <ShoppingCart className="h-5 w-5 text-green-600" />
                 <h2 className="text-lg font-bold">Shopping List</h2>
                 {shoppingItems.some((it) => it.checked) && (
@@ -1361,9 +1824,9 @@ export default function TrackFreshDashboard() {
                 )}
               </div>
               <div className="flex gap-2 mb-2">
-                <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Add item…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Qty" className="w-20 rounded border px-3 py-2 text-sm" />
-                <button onClick={handleAddShoppingItem} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-3 py-2 text-sm font-bold text-white btn-3d">Add</button>
+                <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Add item…" className="rounded-xl px-3 py-2 text-sm btn-green-3d" />
+                <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Qty" className="rounded-xl px-3 py-2 text-sm btn-green-3d" />
+                <button onClick={handleAddShoppingItem} className="rounded-xl px-3 py-2 text-sm btn-green-3d">Add</button>
               </div>
               {shoppingItems.length === 0 ? (
                 <p className="text-sm text-gray-500 mt-3">Your shopping list is empty.</p>
@@ -1396,7 +1859,7 @@ export default function TrackFreshDashboard() {
                           <span className="text-sm font-semibold">{it.name}</span>
                           <span className={`ml-2 text-xs font-bold ${urgent ? "text-red-600" : "text-yellow-600"}`}>{it.daysLeft}d left</span>
                         </div>
-                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className={`rounded-xl px-3 py-1.5 text-xs font-bold btn-3d ${alreadyAdded ? "bg-gray-200 text-gray-400" : "bg-gradient-to-b from-green-600 to-green-700 text-white"}`}>
+                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className={`rounded-xl px-3 py-1.5 text-xs font-bold ${alreadyAdded ? "bg-gray-200 text-gray-400" : "btn-green-3d"}`}>
                           {alreadyAdded ? "Added" : "+ Add"}
                         </button>
                       </div>
@@ -1414,11 +1877,11 @@ export default function TrackFreshDashboard() {
               <p className="mb-3 text-xs text-gray-500">{mealPickerDay} — {mealPickerSlot}</p>
               <div className="flex gap-2 mb-3">
                 <MealSearchInput value={mealPickerSearch} onChange={(e) => setMealPickerSearch(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && mealPickerSearch.trim()) handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim()); }} />
-                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-3 py-2 text-sm font-bold text-white btn-3d">Add</button>}
+                {mealPickerSearch.trim() && <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch.trim())} className="rounded-xl px-3 py-2 text-sm btn-green-3d">Add</button>}
               </div>
               <div className="max-h-64 overflow-y-auto space-y-2">
                 {mealPickerSearch && !RECIPE_DB.find((r) => r.name.toLowerCase() === mealPickerSearch.toLowerCase()) && (
-                  <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch)} className="w-full rounded-lg border-2 border-dashed border-green-400 px-3 py-2 text-left text-sm text-green-700">+ Add "{mealPickerSearch}" as custom meal</button>
+                  <button onClick={() => handleSetMeal(mealPickerDay, mealPickerSlot, mealPickerSearch)} className="w-full rounded-xl py-2 text-sm btn-green-3d">+ Add "{mealPickerSearch}" as custom meal</button>
                 )}
                 {RECIPE_DB.filter((r) => r.name.toLowerCase().includes(mealPickerSearch.toLowerCase())).map((r) => {
                   const usesExpiring = r.ingredients.some((ing) => itemsWithCountdown.some((it) => it.daysLeft !== null && it.daysLeft <= 7 && (it.name.toLowerCase().includes(ing) || ing.includes(it.name.toLowerCase()))));
@@ -1444,6 +1907,7 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center justify-between">
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">Meal Planner</h2>
@@ -1480,7 +1944,7 @@ export default function TrackFreshDashboard() {
 
                               </div>
                             ) : (
-                              <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="flex-1 rounded-lg border border-dashed border-gray-200 py-2 text-xs text-gray-400 hover:border-green-400 hover:text-green-600 hover:bg-green-50/50 transition-all">+ Add meal</button>
+                              <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="flex-1 rounded-lg py-2 text-xs font-semibold btn-green-3d">+ Add meal</button>
                             )}
                           </div>
                         );
@@ -1495,13 +1959,29 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
+            <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
+              <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
+              <div style={{position: "absolute", bottom: 82, left: "50%", transform: "translateX(-50%)", width: 180, height: 16, background: "linear-gradient(to bottom, #9ca3af, #6b7280)", borderRadius: 8, zIndex: 11}}></div>
+              <div style={{position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 148, height: 50, background: "linear-gradient(to bottom, #ea580c, #c2410c)", borderRadius: "0 0 38% 38%", zIndex: 11}}></div>
+              <div style={{position: "absolute", bottom: 55, left: "calc(50% - 95px)", width: 20, height: 30, border: "4px solid #374151", borderRight: "none", borderRadius: "10px 0 0 10px", zIndex: 9}}></div>
+              <div style={{position: "absolute", bottom: 55, left: "calc(50% + 75px)", width: 20, height: 30, border: "4px solid #374151", borderLeft: "none", borderRadius: "0 10px 10px 0", zIndex: 9}}></div>
+              <div className="steam" style={{left: "calc(50% - 20px)", bottom: 100, animationDelay: "0s"}}>☁️</div>
+              <div className="steam" style={{left: "calc(50% + 10px)", bottom: 105, animationDelay: "0.5s"}}>☁️</div>
+              <div className="steam" style={{left: "calc(50% - 5px)", bottom: 95, animationDelay: "1s"}}>☁️</div>
+              <div className="bubble-pot" style={{left: "calc(50% - 15px)", bottom: 30, animationDelay: "0s"}}></div>
+              <div className="bubble-pot" style={{left: "calc(50% + 10px)", bottom: 25, animationDelay: "0.3s"}}></div>
+              <div className="bubble-pot" style={{left: "calc(50% - 5px)", bottom: 35, animationDelay: "0.7s"}}></div>
+              <CommunityStewAnim />
+            </div>
             {!username ? (
               <Card>
-                <div className="mb-2 flex items-center gap-2"><Users className="h-5 w-5 text-blue-500" /><h2 className="text-lg font-bold">Join the Community</h2></div>
+                <div className="mb-2 flex items-center gap-2">
+            <Users className="h-5 w-5 text-blue-500" /><h2 className="text-lg font-bold">Join the Community</h2></div>
                 <p className="mb-3 text-sm text-gray-600">Choose a display name to get started.</p>
                 <div className="flex gap-2">
                   <input value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSetUsername()} placeholder="Your display name" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                  <button onClick={handleSetUsername} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Join</button>
+                  <button onClick={handleSetUsername} className="rounded-xl px-4 py-2 text-sm btn-green-3d">Join</button>
                 </div>
               </Card>
             ) : (
@@ -1572,6 +2052,83 @@ export default function TrackFreshDashboard() {
             )}
           </>
         )}
+
+        {activeTab === "stores" && (
+          <div className="space-y-4">
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
+            <div className="rounded-2xl bg-white p-5 card-3d">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">🏪</span>
+                <h2 className="text-lg font-bold">Shop Online</h2>
+              </div>
+              <p className="text-sm text-gray-500 mb-4">Tap any store to shop for groceries online.</p>
+              <div className="grid grid-cols-2 gap-3">
+
+                <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🛒</span>
+                  <span className="text-sm font-bold text-gray-800">Amazon Fresh</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.kroger.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🏬</span>
+                  <span className="text-sm font-bold text-gray-800">Kroger</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.walmart.com/cp/food/976759" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🔵</span>
+                  <span className="text-sm font-bold text-gray-800">Walmart</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.wholefoodsmarket.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🥬</span>
+                  <span className="text-sm font-bold text-gray-800">Whole Foods</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.target.com/c/grocery/-/N-5xt1a" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🎯</span>
+                  <span className="text-sm font-bold text-gray-800">Target</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.costco.com/grocery-household.html" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">📦</span>
+                  <span className="text-sm font-bold text-gray-800">Costco</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🌺</span>
+                  <span className="text-sm font-bold text-gray-800">Trader Joe&apos;s</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.instacart.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🥕</span>
+                  <span className="text-sm font-bold text-gray-800">Instacart</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.freshdirect.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🍎</span>
+                  <span className="text-sm font-bold text-gray-800">FreshDirect</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+                <a href="https://www.mortonwilliams.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                  <span className="text-3xl">🏙️</span>
+                  <span className="text-sm font-bold text-gray-800">Morton Williams</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
+                </a>
+
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
     </>
