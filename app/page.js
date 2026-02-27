@@ -255,335 +255,6 @@ const GLOBAL_STYLES = `
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
 
-
-const LANG_KEY = "trackfresh.lang";
-
-const T = {
-  // APP HEADER
-  appName: { en: "TrackFresh", es: "TrackFresh" },
-  appTagline: { en: "\u2728 Your AI-powered kitchen assistant", es: "\u2728 Tu asistente de cocina con IA" },
-  howToUse: { en: "How to use", es: "Cómo usar" },
-  signOut: { en: "Sign Out", es: "Cerrar Sesión" },
-  signOutConfirm: { en: t("signOutConfirm"), es: "¿Cerrar sesión de TrackFresh?" },
-  // PASSWORD
-  betaTesting: { en: "Beta Testing", es: "Prueba Beta" },
-  enterAccessCode: { en: "Enter your access code to continue", es: "Ingresa tu código de acceso" },
-  accessCode: { en: "Access Code", es: "Código de Acceso" },
-  enterBeta: { en: "Enter Beta", es: "Entrar a Beta" },
-  invalidCode: { en: "Invalid code. Try again.", es: "Código inválido. Intenta de nuevo." },
-  contactFreddie: { en: "Contact Freddie for access", es: "Contacta a Freddie para acceso" },
-  // WELCOME
-  welcomeTitle: { en: "Welcome to FreshTrack.ai!", es: "¡Bienvenido a FreshTrack.ai!" },
-  welcomeDesc: { en: "The smart way to track your groceries, reduce food waste, and save money.", es: "La forma inteligente de rastrear tus alimentos, reducir el desperdicio y ahorrar dinero." },
-  welcomeF1: { en: "AI-powered label & barcode scanning", es: "Escaneo de etiquetas y códigos de barras con IA" },
-  welcomeF2: { en: "Smart AI expiry predictions & alerts", es: "Predicciones inteligentes de vencimiento con IA" },
-  welcomeF3: { en: "{t("welcomeF3")}", es: "Entrada manos libres por voz" },
-  welcomeF4: { en: "{t("welcomeF4")}", es: "Listas de compras inteligentes con IA" },
-  welcomeF5: { en: "{t("welcomeF5")}", es: "Alertas de congelación con IA salvan tu comida" },
-  welcomeLocal: { en: "Your data is stored locally on your device. No account required.", es: "Tus datos se guardan en tu dispositivo. No necesitas cuenta." },
-  getStarted: { en: "\ud83d\ude80 Get Started", es: "\ud83d\ude80 Comenzar" },
-  chooseLang: { en: "Choose your language:", es: "Elige tu idioma:" },
-  // HOME BUBBLES
-  tracker: { en: "Tracker", es: "Rastreador" },
-  trackerDesc: { en: "AI tracks your food & freshness", es: "IA rastrea tu comida y frescura" },
-  recipes: { en: "Recipes", es: "Recetas" },
-  recipesDesc: { en: "AI recipes from your fridge", es: "Recetas con IA de tu refrigerador" },
-  shopping: { en: "Shopping", es: "Compras" },
-  shoppingDesc: { en: "Smart shopping with AI alerts", es: "Compras inteligentes con alertas IA" },
-  meals: { en: "Meals", es: "Comidas" },
-  mealsDesc: { en: "AI plans meals from what you have", es: "IA planifica comidas con lo que tienes" },
-  stores: { en: "Stores", es: "Tiendas" },
-  storesDesc: { en: "Shop your favorite stores", es: "Compra en tus tiendas favoritas" },
-  communityWord: { en: "Community", es: "Comunidad" },
-  communityDesc: { en: "Connect & share with others", es: "Conéctate y comparte con otros" },
-  // TRACKER MENU
-  aiScanTitle: { en: "\u2728 AI Food Scanner", es: "\u2728 Escáner de Alimentos con IA" },
-  aiScanDesc: { en: "Choose how AI should add your items", es: "Elige cómo la IA debe agregar tus productos" },
-  receipt: { en: "Receipt", es: "Recibo" },
-  receiptDesc: { en: "AI reads your receipt instantly", es: "La IA lee tu recibo al instante" },
-  barcodeWord: { en: "Barcode", es: "Código" },
-  barcodeDesc: { en: "AI identifies any product", es: "La IA identifica cualquier producto" },
-  label: { en: "Label", es: "Etiqueta" },
-  labelDesc: { en: "AI extracts label details", es: "La IA extrae detalles de la etiqueta" },
-  quickAdd: { en: "Quick Add", es: "Agregar" },
-  quickAddDesc: { en: "Quick add with AI autocomplete", es: "Agrega rápido con autocompletado IA" },
-  myItems: { en: "My Items", es: "Mis Productos" },
-  myItemsDesc: { en: "Your AI-monitored inventory", es: "Tu inventario monitoreado por IA" },
-  back: { en: "Back", es: "Atrás" },
-  home: { en: "Home", es: "Inicio" },
-  // CATEGORIES
-  Produce: { en: "Produce", es: "Frutas/Verduras" },
-  Dairy: { en: "Dairy", es: "Lácteos" },
-  Meat: { en: "Meat", es: "Carnes" },
-  Pantry: { en: "Pantry", es: "Despensa" },
-  Leftovers: { en: "Leftovers", es: "Sobras" },
-  Other: { en: "Other", es: "Otro" },
-  All: { en: "All", es: "Todo" },
-  // LOCATIONS
-  Fridge: { en: "Fridge", es: "Refrigerador" },
-  Freezer: { en: "Freezer", es: "Congelador" },
-  PantryLoc: { en: "Pantry", es: "Despensa" },
-  Counter: { en: "Counter", es: "Mostrador" },
-  // FORM
-  itemWord: { en: "Item", es: "Producto" },
-  quantity: { en: "Quantity", es: "Cantidad" },
-  qtyPlaceholder: { en: "e.g. 2 lbs, 1 carton", es: "ej. 2 lbs, 1 cartón" },
-  category: { en: "Category", es: "Categoría" },
-  locationWord: { en: "Location", es: "Ubicación" },
-  useByWord: { en: "Use By", es: "Consumir Antes De" },
-  openedOpt: { en: "Opened (optional)", es: "Abierto (opcional)" },
-  addWord: { en: "Add", es: "Agregar" },
-  // TRACKED ITEMS
-  trackedItemsTitle: { en: "Tracked Items", es: "Productos Rastreados" },
-  clearAll: { en: "Clear All", es: "Borrar Todo" },
-  clearAllConfirm: { en: t("clearAllConfirm"), es: "¿Borrar todos los productos y empezar de nuevo?" },
-  noFilter: { en: "No items match this filter.", es: "Ningún producto coincide con este filtro." },
-  days: { en: "days", es: "días" },
-  used: { en: "Used", es: "Usado" },
-  edit: { en: "Edit", es: "Editar" },
-  remove: { en: "Remove", es: "Quitar" },
-  freezeIt: { en: "\u2744\ufe0f Freeze!", es: "\u2744\ufe0f ¡Congelar!" },
-  afterOpen: { en: "After opening: use within", es: "Después de abrir: usar en" },
-  daysW: { en: "days", es: "días" },
-  useByColon: { en: "Use by:", es: "Consumir antes de:" },
-  openedColon: { en: "Opened:", es: "Abierto:" },
-  // EDIT MODAL
-  editItemTitle: { en: "\u270f\ufe0f Edit Item", es: "\u270f\ufe0f Editar Producto" },
-  nameWord: { en: "Name", es: "Nombre" },
-  useByDate: { en: "Use By Date", es: "Fecha de Vencimiento" },
-  save: { en: "Save", es: "Guardar" },
-  cancel: { en: "Cancel", es: "Cancelar" },
-  // ALERTS
-  expiringSoon: { en: "Expiring Soon!", es: "¡Vence Pronto!" },
-  expired: { en: t("expired"), es: "VENCIDO" },
-  dayLeft: { en: "day left", es: "día restante" },
-  daysLeft: { en: "days left", es: "días restantes" },
-  useItemsSoon: { en: "Use these items soon, freeze them, or check for recipes!", es: "¡Usa estos productos pronto, congélalos o busca recetas!" },
-  gotIt: { en: "Got it", es: "Entendido" },
-  findRecipes: { en: "Find Recipes", es: "Buscar Recetas" },
-  pleaseEnterDate: { en: "Please enter a Use By date.", es: "Por favor ingresa una fecha de vencimiento." },
-  // RECEIPT
-  scanReceiptTitle: { en: "\ud83d\udcf7 Scan Receipt", es: "\ud83d\udcf7 Escanear Recibo" },
-  scanReceiptDesc: { en: "Upload a receipt photo and our AI will instantly identify every food item, category, and shelf life.", es: "Sube una foto del recibo y nuestra IA identificará cada producto, categoría y vida útil al instante." },
-  takePhoto: { en: "Take Photo", es: "Tomar Foto" },
-  openCamera: { en: "Open camera", es: "Abrir cámara" },
-  uploadPhoto: { en: "Upload Photo", es: "Subir Foto" },
-  fromGallery: { en: "From gallery", es: "Desde galería" },
-  readingReceipt: { en: "Claude is reading your receipt...", es: "Claude está leyendo tu recibo..." },
-  foundWord: { en: "Found", es: "Se encontraron" },
-  selectWhich: { en: "items \u2014 select which to add:", es: "productos \u2014 selecciona cuáles agregar:" },
-  addItemsTracker: { en: "Items to Tracker", es: "Productos al Rastreador" },
-  // BARCODE
-  scanBarcodeTitle: { en: "\ud83d\udce6 Scan Barcode", es: "\ud83d\udce6 Escanear Código de Barras" },
-  scanBarcodeDesc: { en: "Point your camera at the barcode on any food package.", es: "Apunta tu cámara al código de barras de cualquier paquete de alimentos." },
-  pointAtBarcode: { en: "Point at barcode", es: "Apunta al código de barras" },
-  lookingUp: { en: "Looking up product...", es: "Buscando producto..." },
-  productFound: { en: "\u2705 Product found!", es: "\u2705 ¡Producto encontrado!" },
-  whereStoring: { en: "Where are you storing this?", es: "¿Dónde vas a guardar esto?" },
-  useFresh: { en: "Use fresh", es: "Usar fresco" },
-  longTerm: { en: "Long term storage", es: "Almacenamiento a largo plazo" },
-  freezeByDate: { en: "Freeze By Date", es: "Congelar Antes De" },
-  addToTracker: { en: "Add to Tracker", es: "Agregar al Rastreador" },
-  scanAnother: { en: "Scan Another", es: "Escanear Otro" },
-  tryAgain: { en: "Try again", es: "Intentar de nuevo" },
-  scanFailed: { en: t("scanFailed"), es: "Escaneo fallido. Intenta de nuevo." },
-  cameraDenied: { en: "Camera access denied or not available. Please allow camera access.", es: "Acceso a cámara denegado. Por favor permite el acceso." },
-  // LABEL
-  scanLabelTitle: { en: "\ud83c\udff7\ufe0f Scan Package Label", es: "\ud83c\udff7\ufe0f Escanear Etiqueta" },
-  scanLabelDesc: { en: "Take a photo of the package label and Claude will read the item name and date automatically.", es: "Toma una foto de la etiqueta y Claude leerá el nombre y la fecha automáticamente." },
-  tapUpload: { en: "Tap to upload package photo", es: "Toca para subir foto del paquete" },
-  jpgPng: { en: "JPG, PNG supported", es: "Se aceptan JPG, PNG" },
-  readingLabel: { en: "Claude is reading the label...", es: "Claude está leyendo la etiqueta..." },
-  noDateFound: { en: "\ud83d\udcc5 No expiration date visible. Flip package over and scan the other side!", es: "\ud83d\udcc5 No se ve fecha de vencimiento. ¡Voltea el paquete y escanea el otro lado!" },
-  notFoundWord: { en: "Not found", es: "No encontrado" },
-  // QUICK ADD
-  quickAddTitle: { en: "\u270f\ufe0f Quick Add", es: "\u270f\ufe0f Agregar Rápido" },
-  quickAddTitleDesc: { en: "Select a food from the list or type your own.", es: "Selecciona un alimento de la lista o escribe el tuyo." },
-  foodItem: { en: "Food Item", es: "Alimento" },
-  qtyPH: { en: "e.g. 2 lbs", es: "ej. 2 lbs" },
-  sayDate: { en: "Say the date e.g. February 20 2026", es: "Di la fecha ej. 20 de febrero 2026" },
-  sayQty: { en: "Say quantity e.g. two pounds", es: "Di la cantidad ej. dos libras" },
-  listening: { en: "\ud83c\udfa4 Listening...", es: "\ud83c\udfa4 Escuchando..." },
-  voiceNotSupp: { en: "Voice not supported on this browser. Please type the date.", es: "Voz no disponible en este navegador. Por favor escribe." },
-  cantUnderstand: { en: "Could not understand date. Try saying: February 20 2026", es: "No se pudo entender. Intenta: 20 de febrero 2026" },
-  cantHear: { en: "Could not hear you. Please try again.", es: "No te pude escuchar. Intenta de nuevo." },
-  // RECIPES
-  recipeSugg: { en: "Recipe Suggestions", es: "Sugerencias de Recetas" },
-  recipeIntro: { en: "Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.", es: "Recetas que coinciden con tus ingredientes, priorizando lo que vence primero. Toca una receta para ver instrucciones." },
-  getAIRecipes: { en: "Get AI Recipe Ideas", es: "Obtener Recetas con IA" },
-  aiCooking: { en: "AI is cooking...", es: "La IA está cocinando..." },
-  noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or onions.", es: "Sin coincidencias. Agrega más productos como huevos, zanahorias o cebollas." },
-  ingredientsWord: { en: "Ingredients", es: "Ingredientes" },
-  instructionsWord: { en: "Instructions", es: "Instrucciones" },
-  savedComm: { en: "Saved to Community", es: "Guardado en Comunidad" },
-  saveComm: { en: "Save to Community", es: "Guardar en Comunidad" },
-  addFoodFirst: { en: "Add some food items first!", es: "¡Agrega algunos alimentos primero!" },
-  failedRecipes: { en: "Failed to get recipes. Try again.", es: "Error al obtener recetas. Intenta de nuevo." },
-  trackedCount: { en: "tracked item", es: "producto rastreado" },
-  clickForRecipes: { en: "Click the button to see recipe matches.", es: "Haz clic para ver recetas." },
-  addInTracker: { en: " Add items in the Tracker tab first.", es: " Agrega productos en el Rastreador primero." },
-  // SHOPPING
-  shoppingList: { en: "Shopping List", es: "Lista de Compras" },
-  clearChecked: { en: "Clear Checked", es: "Borrar Marcados" },
-  addItemDots: { en: "Add item\u2026", es: "Agregar producto\u2026" },
-  qtyWord: { en: "Qty", es: "Cant." },
-  emptyList: { en: "Your shopping list is empty.", es: "Tu lista de compras está vacía." },
-  expSoonAdd: { en: "\ud83d\udd14 Expiring Soon \u2014 Add to List?", es: "\ud83d\udd14 Vence Pronto \u2014 ¿Agregar a la Lista?" },
-  expire7: { en: "These items expire within 7 days. Tap to add a replacement to your shopping list.", es: "Estos productos vencen en 7 días. Toca para agregar un reemplazo a tu lista." },
-  addedWord: { en: "Added", es: "Agregado" },
-  // MEALS
-  mealPlanner: { en: "Meal Planner", es: "Planificador de Comidas" },
-  aiPlanWeek: { en: "\u2728 AI Plan My Week", es: "\u2728 IA Planifica Mi Semana" },
-  aiPlanning: { en: "AI is planning...", es: "La IA está planificando..." },
-  mealDesc: { en: "Tap any slot to add a meal. \u26a1 means it uses ingredients expiring soon.", es: "Toca cualquier espacio para agregar comida. \u26a1 = usa ingredientes que vencen pronto." },
-  addMeal: { en: "+ Add meal", es: "+ Agregar comida" },
-  changeWord: { en: "Change", es: "Cambiar" },
-  listPlus: { en: "+ List", es: "+ Lista" },
-  pickMeal: { en: "Pick a Meal", es: "Elegir Comida" },
-  searchRecipes: { en: "Search recipes or type your own...", es: "Busca recetas o escribe la tuya..." },
-  customMeal: { en: "as custom meal", es: "como comida personalizada" },
-  usesExp: { en: "uses expiring", es: "usa lo que vence" },
-  Monday: { en: "Monday", es: "Lunes" },
-  Tuesday: { en: "Tuesday", es: "Martes" },
-  Wednesday: { en: "Wednesday", es: "Miércoles" },
-  Thursday: { en: "Thursday", es: "Jueves" },
-  Friday: { en: "Friday", es: "Viernes" },
-  Saturday: { en: "Saturday", es: "Sábado" },
-  Sunday: { en: "Sunday", es: "Domingo" },
-  Breakfast: { en: "Breakfast", es: "Desayuno" },
-  Lunch: { en: "Lunch", es: "Almuerzo" },
-  Dinner: { en: "Dinner", es: "Cena" },
-  // COMMUNITY
-  joinComm: { en: "Join the Community", es: "Únete a la Comunidad" },
-  chooseName: { en: "Choose a display name to get started.", es: "Elige un nombre para comenzar." },
-  displayName: { en: "Your display name", es: "Tu nombre" },
-  joinWord: { en: "Join", es: "Unirse" },
-  signedAs: { en: "Signed in as", es: "Conectado como" },
-  changeName: { en: "Change name", es: "Cambiar nombre" },
-  chatTab: { en: "\ud83d\udcac Chat", es: "\ud83d\udcac Chat" },
-  recipesTab: { en: "\ud83d\udcd6 Recipes", es: "\ud83d\udcd6 Recetas" },
-  tipsTab: { en: "\ud83d\udca1 Tips", es: "\ud83d\udca1 Consejos" },
-  commChat: { en: "Community Chat", es: "Chat de la Comunidad" },
-  noMsg: { en: "No messages yet \u2014 say hello!", es: "No hay mensajes \u2014 ¡di hola!" },
-  typeMsg: { en: "Type a message\u2026", es: "Escribe un mensaje\u2026" },
-  sendWord: { en: "Send", es: "Enviar" },
-  recipeExch: { en: "Recipe Exchange", es: "Intercambio de Recetas" },
-  recipeTitlePH: { en: "Recipe title", es: "Título de la receta" },
-  ingInst: { en: "Ingredients and instructions\u2026", es: "Ingredientes e instrucciones\u2026" },
-  shareRecipe: { en: "Share Recipe", es: "Compartir Receta" },
-  noRecipes: { en: "No recipes shared yet \u2014 be the first!", es: "No hay recetas \u2014 ¡sé el primero!" },
-  tipsIdeas: { en: "Tips & Ideas", es: "Consejos e Ideas" },
-  shareTip: { en: "Share a food storage tip\u2026", es: "Comparte un consejo\u2026" },
-  postWord: { en: "Post", es: "Publicar" },
-  noTips: { en: "No tips yet \u2014 share one!", es: "No hay consejos \u2014 ¡comparte uno!" },
-  // STORES
-  shopOnline: { en: "Shop Online", es: "Comprar en Línea" },
-  shopOnlineDesc: { en: "Tap any store to shop for groceries online.", es: "Toca cualquier tienda para comprar alimentos en línea." },
-  shopNow: { en: "Shop Now \u2192", es: "Comprar Ahora \u2192" },
-  // HELP
-  help1: { en: "Tracker: AI searches 100+ items. Category and location auto-fill intelligently.", es: "Rastreador: La IA busca más de 100 productos. Categoría y ubicación se llenan automáticamente." },
-  help2: { en: "Filter by \ud83e\uddca Fridge, \u2744\ufe0f Freezer, or \ud83d\uddc4\ufe0f Pantry to see items by location.", es: "Filtra por \ud83e\uddca Refrigerador, \u2744\ufe0f Congelador o \ud83d\uddc4\ufe0f Despensa para ver por ubicación." },
-  help3: { en: "Recipes: AI suggests recipes based on what's in your kitchen.", es: "Recetas: La IA sugiere recetas basadas en lo que hay en tu cocina." },
-  help4: { en: "Shopping: Build your shopping list, check off items as you shop.", es: "Compras: Crea tu lista, marca los productos mientras compras." },
-  help5: { en: "Community: Share recipes, tips, and chat.", es: "Comunidad: Comparte recetas, consejos y chatea." },
-  help6: { en: "Red = expires within 3 days. Yellow = within 7 days.", es: "Rojo = vence en 3 días. Amarillo = en 7 días." },
-  close: { en: "Close", es: "Cerrar" },
-  itemWord2: { en: "item", es: "producto" },
-  itemsWord: { en: "items", es: "productos" },
-  alreadyOnList: { en: "is already on your shopping list!", es: "ya está en tu lista de compras!" },
-  ingredientsFor: { en: "Ingredients for: ", es: "Ingredientes para: " },
-};
-
-const FOOD_NAMES_ES = {
-  "Apples": "Manzanas", "Asparagus": "Espárragos", "Avocado": "Aguacate", "Bananas": "Plátanos",
-  "Basil": "Albahaca", "Beets": "Betabel", "Bell Peppers": "Pimientos", "Berries": "Bayas",
-  "Blackberries": "Moras", "Blueberries": "Arándanos", "Bok Choy": "Bok Choy",
-  "Broccoli": "Brócoli", "Brussels Sprouts": "Coles de Bruselas", "Butternut Squash": "Calabaza",
-  "Cabbage": "Repollo", "Cantaloupe": "Melón", "Carrots": "Zanahorias",
-  "Cauliflower": "Coliflor", "Celery": "Apio", "Cherries": "Cerezas",
-  "Cilantro": "Cilantro", "Corn": "Maíz", "Cranberries": "Arándanos Rojos",
-  "Cucumber": "Pepino", "Eggplant": "Berenjena", "Garlic": "Ajo",
-  "Ginger": "Jengibre", "Grapes": "Uvas", "Green Beans": "Ejotes",
-  "Green Onions": "Cebollín", "Honeydew": "Melón Verde", "Jalapenos": "Jalapeños",
-  "Kale": "Col Rizada", "Leeks": "Puerros", "Lemons": "Limones",
-  "Lettuce": "Lechuga", "Limes": "Limas", "Mangoes": "Mangos",
-  "Mushrooms": "Champiñones", "Nectarines": "Nectarinas", "Onions": "Cebollas",
-  "Oranges": "Naranjas", "Parsley": "Perejil", "Peaches": "Duraznos",
-  "Pears": "Peras", "Peas": "Chícharos", "Pineapple": "Piña",
-  "Plums": "Ciruelas", "Pomegranate": "Granada", "Potatoes": "Papas",
-  "Radishes": "Rábanos", "Raspberries": "Frambuesas", "Romaine Lettuce": "Lechuga Romana",
-  "Rosemary": "Romero", "Shallots": "Chalotes", "Snow Peas": "Chícharos Chinos",
-  "Spinach": "Espinacas", "Strawberries": "Fresas", "Sweet Potatoes": "Camotes",
-  "Swiss Chard": "Acelga", "Thyme": "Tomillo", "Tomatoes": "Tomates",
-  "Turnips": "Nabos", "Watermelon": "Sandía", "Zucchini": "Calabacín",
-  "Butter": "Mantequilla", "Buttermilk": "Suero de Leche", "Cheddar Cheese": "Queso Cheddar",
-  "Colby Jack": "Queso Colby Jack", "Cottage Cheese": "Requesón", "Cream": "Crema",
-  "Cream Cheese": "Queso Crema", "Eggs": "Huevos", "Feta Cheese": "Queso Feta",
-  "Goat Cheese": "Queso de Cabra", "Greek Yogurt": "Yogur Griego", "Gruyere": "Queso Gruyere",
-  "Half and Half": "Media Crema", "Heavy Cream": "Crema Espesa", "Mascarpone": "Mascarpone",
-  "Milk": "Leche", "Mozzarella": "Mozzarella", "Oat Milk": "Leche de Avena",
-  "Parmesan": "Parmesano", "Pepper Jack": "Queso Pepper Jack", "Provolone": "Provolone",
-  "Ricotta": "Ricotta", "Sour Cream": "Crema Agria", "Swiss Cheese": "Queso Suizo",
-  "Whipping Cream": "Crema para Batir", "Yogurt": "Yogur",
-  "Bacon": "Tocino", "Bratwurst": "Bratwurst", "Chicken Breast": "Pechuga de Pollo",
-  "Chicken Thighs": "Muslos de Pollo", "Chicken Wings": "Alitas de Pollo",
-  "Chorizo": "Chorizo", "Cod": "Bacalao", "Crab Meat": "Carne de Cangrejo",
-  "Deli Ham": "Jamón de Deli", "Deli Turkey": "Pavo de Deli", "Ground Beef": "Carne Molida",
-  "Ground Pork": "Cerdo Molido", "Ground Turkey": "Pavo Molido", "Halibut": "Halibut",
-  "Ham": "Jamón", "Hot Dogs": "Hot Dogs", "Italian Sausage": "Salchicha Italiana",
-  "Lamb Chops": "Chuletas de Cordero", "Lobster": "Langosta", "Mahi Mahi": "Mahi Mahi",
-  "Pepperoni": "Pepperoni", "Pork Chops": "Chuletas de Cerdo",
-  "Pork Tenderloin": "Lomo de Cerdo", "Prosciutto": "Prosciutto",
-  "Ribeye Steak": "Ribeye", "Rotisserie Chicken": "Pollo Rostizado",
-  "Salami": "Salami", "Salmon": "Salmón", "Scallops": "Callos de Hacha",
-  "Shrimp": "Camarones", "Sirloin Steak": "Sirloin", "Smoked Salmon": "Salmón Ahumado",
-  "Swordfish": "Pez Espada", "Tilapia": "Tilapia", "Tuna": "Atún",
-  "Tuna Steak": "Filete de Atún", "Turkey Breast": "Pechuga de Pavo",
-  "BBQ Sauce": "Salsa BBQ", "Buffalo Sauce": "Salsa Buffalo",
-  "Chili Garlic Sauce": "Salsa de Chile y Ajo", "Dijon Mustard": "Mostaza Dijon",
-  "Fish Sauce": "Salsa de Pescado", "Hoisin Sauce": "Salsa Hoisin",
-  "Honey Mustard": "Mostaza con Miel", "Horseradish": "Rábano Picante",
-  "Hot Sauce": "Salsa Picante", "Hummus": "Hummus", "Ketchup": "Ketchup",
-  "Marinara Sauce": "Salsa Marinara", "Mayonnaise": "Mayonesa", "Mustard": "Mostaza",
-  "Oyster Sauce": "Salsa de Ostión", "Pesto": "Pesto", "Pickle Relish": "Relish",
-  "Ranch Dressing": "Aderezo Ranch", "Salsa": "Salsa", "Soy Sauce": "Salsa de Soya",
-  "Sriracha": "Sriracha", "Steak Sauce": "Salsa para Carne", "Tahini": "Tahini",
-  "Tartar Sauce": "Salsa Tártara", "Teriyaki Sauce": "Salsa Teriyaki",
-  "Vinaigrette": "Vinagreta", "Worcestershire Sauce": "Salsa Inglesa",
-  "Yellow Mustard": "Mostaza Amarilla",
-  "All-Purpose Flour": "Harina", "Almond Butter": "Mantequilla de Almendra",
-  "Almond Flour": "Harina de Almendra", "Baking Powder": "Polvo para Hornear",
-  "Baking Soda": "Bicarbonato", "Balsamic Vinegar": "Vinagre Balsámico",
-  "Black Beans": "Frijoles Negros", "Bread": "Pan", "Bread Crumbs": "Pan Molido",
-  "Brown Rice": "Arroz Integral", "Brown Sugar": "Azúcar Morena", "Canola Oil": "Aceite de Canola",
-  "Capers": "Alcaparras", "Chicken Broth": "Caldo de Pollo", "Chickpeas": "Garbanzos",
-  "Cocoa Powder": "Cocoa en Polvo", "Coconut Milk": "Leche de Coco",
-  "Coconut Oil": "Aceite de Coco", "Cornstarch": "Maicena", "Couscous": "Cuscús",
-  "Crackers": "Galletas Saladas", "Dried Pasta": "Pasta Seca", "Granola": "Granola",
-  "Honey": "Miel", "Jam": "Mermelada", "Jelly": "Jalea",
-  "Kidney Beans": "Frijoles Rojos", "Lentils": "Lentejas", "Maple Syrup": "Miel de Maple",
-  "Oats": "Avena", "Olive Oil": "Aceite de Oliva", "Olives": "Aceitunas",
-  "Panko": "Panko", "Pasta": "Pasta", "Peanut Butter": "Crema de Cacahuate",
-  "Pickles": "Pepinillos", "Popcorn Kernels": "Maíz para Palomitas",
-  "Quinoa": "Quinoa", "Raisins": "Pasas", "Rice": "Arroz",
-  "Sesame Oil": "Aceite de Sésamo", "Sugar": "Azúcar",
-  "Sun-Dried Tomatoes": "Tomates Deshidratados", "Tomato Paste": "Pasta de Tomate",
-  "Tomato Sauce": "Salsa de Tomate", "Tortillas": "Tortillas",
-  "Vegetable Broth": "Caldo de Verduras", "Walnuts": "Nueces",
-  "White Rice": "Arroz Blanco", "White Wine Vinegar": "Vinagre de Vino Blanco",
-  "Frozen Berries": "Bayas Congeladas", "Frozen Broccoli": "Brócoli Congelado",
-  "Frozen Corn": "Maíz Congelado", "Frozen Pizza": "Pizza Congelada",
-  "Frozen Spinach": "Espinacas Congeladas", "Frozen Waffles": "Waffles Congelados",
-  "Ice Cream": "Helado", "Almond Milk": "Leche de Almendra",
-  "Apple Juice": "Jugo de Manzana", "Coconut Water": "Agua de Coco",
-  "Orange Juice": "Jugo de Naranja", "Soy Milk": "Leche de Soya",
-  "Bagels": "Bagels", "Croissants": "Croissants", "English Muffins": "Muffins Ingleses",
-  "Hamburger Buns": "Pan para Hamburguesa", "Hot Dog Buns": "Pan para Hot Dog",
-  "Pita Bread": "Pan Pita", "Sandwich Bread": "Pan de Sándwich",
-  "Sourdough": "Pan de Masa Madre", "Wraps": "Wraps",
-};
-
-
 const STORAGE_KEY = "trackfresh.items";
 const COMMUNITY_KEY = "trackfresh.community";
 const USERNAME_KEY = "trackfresh.username";
@@ -1025,7 +696,7 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="border-2 border-red-400 rounded w-48 h-24 opacity-70" />
           </div>
-          <p className="absolute bottom-2 left-0 right-0 text-center text-xs text-white bg-black/40 py-1">{t("pointAtBarcode")}</p>
+          <p className="absolute bottom-2 left-0 right-0 text-center text-xs text-white bg-black/40 py-1">Point at barcode</p>
         </div>
       )}
     </div>
@@ -1151,16 +822,6 @@ function CommunityStewAnim() {
 }
 
 export default function TrackFreshDashboard() {
-  const [lang, setLang] = useState("en");
-  useEffect(() => { try { const saved = localStorage.getItem(LANG_KEY); if (saved) setLang(saved); } catch(e) {} }, []);
-  const changeLang = (l) => { setLang(l); try { localStorage.setItem(LANG_KEY, l); } catch(e) {} };
-  const t = (key) => { const entry = T[key]; if (!entry) return key; return entry[lang] || entry.en || key; };
-  const fn = (name) => lang === "es" ? (FOOD_NAMES_ES[name] || name) : name;
-  const tCat = (cat) => { const entry = T[cat]; return entry ? (entry[lang] || entry.en || cat) : cat; };
-  const tLoc = (loc) => { if (loc === "Pantry") { const entry = T.PantryLoc; return entry ? entry[lang] : loc; } const entry = T[loc]; return entry ? (entry[lang] || entry.en || loc) : loc; };
-  const tDay = (day) => { const entry = T[day]; return entry ? (entry[lang] || entry.en || day) : day; };
-  const tSlot = (slot) => { const entry = T[slot]; return entry ? (entry[lang] || entry.en || slot) : slot; };
-
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
@@ -1411,7 +1072,7 @@ export default function TrackFreshDashboard() {
       if (data.error) { setBarcodeError("Barcode: " + barcode + " — not found in database. Try a different product."); setBarcodeScanning(false); setBarcodeDetected(""); return; }
       setBarcodeItem({ ...data.item, barcode });
       setBarcodeScanning(false);
-} catch (err) { setBarcodeError(t("scanFailed")); setBarcodeScanning(false); setBarcodeDetected(""); }
+} catch (err) { setBarcodeError("Scan failed. Please try again."); setBarcodeScanning(false); setBarcodeDetected(""); }
   };
 
   const handleAddBarcodeItem = () => {
@@ -1603,16 +1264,12 @@ export default function TrackFreshDashboard() {
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
         <div className="text-4xl mb-3">🥦</div>
         <h1 className="text-2xl font-bold text-gray-800 mb-1">FreshTrack<span className="text-green-600">.ai</span></h1>
-        <p className="text-sm text-gray-500 mb-1">{t("betaTesting")}</p>
-        <p className="text-xs text-gray-400 mb-4">{t("enterAccessCode")}</p>
-        <div className="flex justify-center gap-2 mb-4">
-          <button onClick={() => changeLang("en")} className={`rounded-full px-4 py-1.5 text-xs font-bold border-2 transition-all ${lang === "en" ? "border-green-600 bg-green-100 text-green-800" : "border-gray-200 text-gray-500"}`}>🇺🇸 English</button>
-          <button onClick={() => changeLang("es")} className={`rounded-full px-4 py-1.5 text-xs font-bold border-2 transition-all ${lang === "es" ? "border-green-600 bg-green-100 text-green-800" : "border-gray-200 text-gray-500"}`}>🇲🇽 Español</button>
-        </div>
+        <p className="text-sm text-gray-500 mb-1">Beta Testing</p>
+        <p className="text-xs text-gray-400 mb-6">Enter your access code to continue</p>
         <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-center text-lg text-gray-800 mb-3 focus:border-green-500 focus:outline-none" />
-        {pwError && <p className="text-red-500 text-sm mb-3">{t("invalidCode")}</p>}
-        <button onClick={handlePwSubmit} className="w-full rounded-xl py-3 text-white font-bold text-lg btn-green-3d">{t("enterBeta")}</button>
-        <p className="text-xs text-gray-400 mt-4">{t("contactFreddie")}</p>
+        {pwError && <p className="text-red-500 text-sm mb-3">Invalid code. Try again.</p>}
+        <button onClick={handlePwSubmit} className="w-full rounded-xl py-3 text-white font-bold text-lg btn-green-3d">Enter Beta</button>
+        <p className="text-xs text-gray-400 mt-4">Contact Freddie for access</p>
       </div>
     </div>
   );
@@ -1622,21 +1279,17 @@ export default function TrackFreshDashboard() {
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4">
         <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl animate-[fadeIn_0.4s_ease]">
           <div className="text-5xl mb-3">🥦</div>
-          <h2 className="text-2xl font-bold text-green-700 mb-1">{t("welcomeTitle")}</h2>
-          <p className="text-gray-500 text-sm mb-3">{t("welcomeDesc")}</p>
-          <div className="flex justify-center gap-3 mb-4">
-            <button onClick={() => changeLang("en")} className={`rounded-full px-5 py-2 text-sm font-bold border-2 transition-all ${lang === "en" ? "border-green-600 bg-green-100 text-green-800" : "border-gray-200 text-gray-500 hover:border-green-300"}`}>🇺🇸 English</button>
-            <button onClick={() => changeLang("es")} className={`rounded-full px-5 py-2 text-sm font-bold border-2 transition-all ${lang === "es" ? "border-green-600 bg-green-100 text-green-800" : "border-gray-200 text-gray-500 hover:border-green-300"}`}>🇲🇽 Español</button>
-          </div>
+          <h2 className="text-2xl font-bold text-green-700 mb-1">Welcome to FreshTrack.ai!</h2>
+          <p className="text-gray-500 text-sm mb-4">The smart way to track your groceries, reduce food waste, and save money.</p>
           <div className="text-left bg-green-50 rounded-xl p-4 mb-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-gray-700">{t("welcomeF1")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-gray-700">{t("welcomeF2")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🎤</span><span className="text-gray-700">{t("welcomeF3")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🛒</span><span className="text-gray-700">{t("welcomeF4")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">{t("welcomeF5")}</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-gray-700">AI-powered label &amp; barcode scanning</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-gray-700">Smart AI expiry predictions &amp; alerts</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>🎤</span><span className="text-gray-700">Voice-powered hands-free entry</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>🛒</span><span className="text-gray-700">AI-built smart shopping lists</span></div>
+            <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">AI freeze alerts save your food</span></div>
           </div>
-          <p className="text-xs text-gray-400 mb-4">{t("welcomeLocal")}</p>
-          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full py-3 text-lg btn-green-3d">{t("getStarted")}</button>
+          <p className="text-xs text-gray-400 mb-4">Your data is stored locally on your device. No account required.</p>
+          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full py-3 text-lg btn-green-3d">🚀 Get Started</button>
         </div>
       </div>
     )}
@@ -1646,9 +1299,8 @@ export default function TrackFreshDashboard() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
           <div className="flex items-center gap-3">
-            <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="rounded-full bg-green-100 px-2 py-1 text-xs font-bold text-green-800 hover:bg-green-200 transition-colors">{lang === "en" ? "🌐 ES" : "🌐 EN"}</button>
-            <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors underline decoration-green-300">{t("howToUse")}</button>
-            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-semibold text-green-600 hover:text-green-800 transition-colors">{t("signOut")}</button>
+            <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors underline decoration-green-300">How to use</button>
+            <button onClick={() => { if (window.confirm("Sign out of TrackFresh?")) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-semibold text-green-600 hover:text-green-800 transition-colors">Sign Out</button>
           </div>
         </div>
 
@@ -1656,49 +1308,49 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "home" && (
           <div className="flex flex-col items-center py-6">
-            <p className="text-sm text-gray-600 mb-6">{t("appTagline")}</p>
+            <p className="text-sm text-gray-600 mb-6">✨ Your AI-powered kitchen assistant</p>
             <div className="flex flex-wrap justify-center gap-6">
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("tracker-menu")} className={`bubble-green ${burstingBubble === "tracker-menu" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">🥦</span>
-                  <span className="text-xs font-bold mt-1">{t("tracker")}</span>
+                  <span className="text-xs font-bold mt-1">Tracker</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("trackerDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI tracks your food & freshness</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("recipes")} className={`bubble-green ${burstingBubble === "recipes" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">🍳</span>
-                  <span className="text-xs font-bold mt-1">{t("recipes")}</span>
+                  <span className="text-xs font-bold mt-1">Recipes</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("recipesDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI recipes from your fridge</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("shopping")} className={`bubble-green ${burstingBubble === "shopping" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">🛒</span>
-                  <span className="text-xs font-bold mt-1">{t("shopping")}</span>
+                  <span className="text-xs font-bold mt-1">Shopping</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("shoppingDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Smart shopping with AI alerts</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("meals")} className={`bubble-green ${burstingBubble === "meals" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">📅</span>
-                  <span className="text-xs font-bold mt-1">{t("meals")}</span>
+                  <span className="text-xs font-bold mt-1">Meals</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("mealsDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">AI plans meals from what you have</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("stores")} className={`bubble-green ${burstingBubble === "stores" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">🏪</span>
-                  <span className="text-xs font-bold mt-1">{t("stores")}</span>
+                  <span className="text-xs font-bold mt-1">Stores</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("storesDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Shop your favorite stores</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => handleBubbleTap("community")} className={`bubble-green ${burstingBubble === "community" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">👥</span>
-                  <span className="text-xs font-bold mt-1">{t("communityWord")}</span>
+                  <span className="text-xs font-bold mt-1">Community</span>
                 </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("communityDesc")}</p>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">Connect & share with others</p>
               </div>
             </div>
           </div>
@@ -1709,43 +1361,43 @@ export default function TrackFreshDashboard() {
             <button onClick={() => setActiveTab("home")} className="self-start flex items-center gap-1 text-sm font-semibold text-green-700 mb-4">
               <span>←</span> Back
             </button>
-            <h2 className="text-lg font-bold text-gray-800 mb-1">{t("aiScanTitle")}</h2>
-            <p className="text-sm text-gray-500 mb-6">{t("aiScanDesc")}</p>
+            <h2 className="text-lg font-bold text-gray-800 mb-1">✨ AI Food Scanner</h2>
+            <p className="text-sm text-gray-500 mb-6">Choose how AI should add your items</p>
             <div className="flex flex-wrap justify-center gap-6">
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => { setBurstingBubble("receipt"); setTimeout(() => { setShowReceiptScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">📷</span>
-                  <span className="text-xs font-bold mt-1">{t("receipt")}</span>
+                  <span className="text-xs font-bold mt-1">Receipt</span>
                 </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("receiptDesc")}</p>
+                <p className="text-xs text-gray-500 text-center w-24">AI reads your receipt instantly</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => { setBurstingBubble("barcode"); setTimeout(() => { setShowBarcodeScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">📦</span>
-                  <span className="text-xs font-bold mt-1">{t("barcodeWord")}</span>
+                  <span className="text-xs font-bold mt-1">Barcode</span>
                 </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("barcodeDesc")}</p>
+                <p className="text-xs text-gray-500 text-center w-24">AI identifies any product</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => { setBurstingBubble("label"); setTimeout(() => { setShowLabelScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">🏷️</span>
-                  <span className="text-xs font-bold mt-1">{t("label")}</span>
+                  <span className="text-xs font-bold mt-1">Label</span>
                 </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("labelDesc")}</p>
+                <p className="text-xs text-gray-500 text-center w-24">AI extracts label details</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => { setBurstingBubble("quickadd"); setTimeout(() => { setShowQuickAdd(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">✏️</span>
-                  <span className="text-xs font-bold mt-1">{t("quickAdd")}</span>
+                  <span className="text-xs font-bold mt-1">Quick Add</span>
                 </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("quickAddDesc")}</p>
+                <p className="text-xs text-gray-500 text-center w-24">Quick add with AI autocomplete</p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <button onClick={() => { setBurstingBubble("myitems"); setTimeout(() => { setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className={`bubble-green ${burstingBubble === "myitems" ? "bubble-burst" : ""}`}>
                   <span className="text-2xl">📋</span>
-                  <span className="text-xs font-bold mt-1">{t("myItems")}</span>
+                  <span className="text-xs font-bold mt-1">My Items</span>
                 </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("myItemsDesc")}</p>
+                <p className="text-xs text-gray-500 text-center w-24">Your AI-monitored inventory</p>
               </div>
             </div>
           </div>
@@ -1754,20 +1406,20 @@ export default function TrackFreshDashboard() {
         {showReceiptScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("scanReceiptTitle")}</h2>
-              <p className="mb-4 text-sm text-gray-600">{t("scanReceiptDesc")}</p>
+              <h2 className="mb-2 text-lg font-bold">📷 Scan Receipt</h2>
+              <p className="mb-4 text-sm text-gray-600">Upload a receipt photo and our AI will instantly identify every food item, category, and shelf life.</p>
               {!receiptScanning && receiptItems.length === 0 && (
                 <div className="grid grid-cols-2 gap-3">
                   <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-green-300 bg-gradient-to-b from-green-50 to-green-100 p-6 btn-3d">
                     <span className="text-3xl mb-2">📸</span>
-                    <span className="text-sm font-semibold text-green-700">{t("takePhoto")}</span>
-                    <span className="text-xs text-gray-500 mt-1">{t("openCamera")}</span>
+                    <span className="text-sm font-semibold text-green-700">Take Photo</span>
+                    <span className="text-xs text-gray-500 mt-1">Open camera</span>
                     <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
                   </label>
                   <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-400 bg-green-50 p-6 hover:bg-blue-100 transition-colors">
                     <span className="text-3xl mb-2">🖼️</span>
-                    <span className="text-sm font-semibold text-green-700">{t("uploadPhoto")}</span>
-                    <span className="text-xs text-gray-500 mt-1">{t("fromGallery")}</span>
+                    <span className="text-sm font-semibold text-green-700">Upload Photo</span>
+                    <span className="text-xs text-gray-500 mt-1">From gallery</span>
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
                   </label>
                 </div>
@@ -1775,7 +1427,7 @@ export default function TrackFreshDashboard() {
               {receiptScanning && (
                 <div className="flex flex-col items-center py-8">
                   <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm text-gray-600">{t("readingReceipt")}</p>
+                  <p className="text-sm text-gray-600">Claude is reading your receipt...</p>
                 </div>
               )}
               {receiptError && <p className="mt-2 text-sm text-red-600">Error: {receiptError}</p>}
@@ -1802,7 +1454,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleAddReceiptItems} className="w-full rounded-xl py-2.5 text-sm btn-green-3d btn-3d">Add {selectedReceiptItems.length} Items to Tracker</button>
                 </div>
               )}
-              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -1810,7 +1462,7 @@ export default function TrackFreshDashboard() {
         {showHelp && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("howToUse")}</h2>
+              <h2 className="mb-2 text-lg font-bold">How to Use</h2>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li>🔹 <strong>Tracker:</strong> AI searches 100+ items. Category and location auto-fill intelligently.</li>
                 <li>🔹 Filter by 🧊 Fridge, ❄️ Freezer, or 🗄️ Pantry to see items by location.</li>
@@ -1819,7 +1471,7 @@ export default function TrackFreshDashboard() {
                 <li>🔹 <strong>Community:</strong> Share recipes, tips, and chat.</li>
                 <li>🔹 Red = expires within 3 days. Yellow = within 7 days.</li>
               </ul>
-              <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl px-4 py-2 text-sm btn-green-3d">{t("close")}</button>
+              <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl px-4 py-2 text-sm btn-green-3d">Close</button>
             </div>
           </div>
         )}
@@ -1827,14 +1479,14 @@ export default function TrackFreshDashboard() {
         {editingItem && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-4 text-lg font-bold">{t("editItemTitle")}</h2>
+              <h2 className="mb-4 text-lg font-bold">✏️ Edit Item</h2>
               <div className="space-y-3">
-                <div><label className="mb-1 block text-sm font-medium">{t("nameWord")}</label><input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
-                <div><label className="mb-1 block text-sm font-medium">{t("useByDate")}</label><input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
-                <div><label className="mb-1 block text-sm font-medium">{t("quantity")}</label><input type="text" value={editingItem.quantity || ""} onChange={(e) => setEditingItem({...editingItem, quantity: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
-                <div><label className="mb-1 block text-sm font-medium">{t("locationWord")}</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
-                <div><label className="mb-1 block text-sm font-medium">{t("category")}</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
-                <div className="flex gap-2 pt-2"><button onClick={handleSaveEdit} className="flex-1 rounded bg-green-500 py-2 text-sm font-semibold text-white">{t("save")}</button><button onClick={() => setEditingItem(null)} className="flex-1 rounded border py-2 text-sm font-semibold text-gray-600">{t("cancel")}</button></div>
+                <div><label className="mb-1 block text-sm font-medium">Name</label><input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
+                <div><label className="mb-1 block text-sm font-medium">Use By Date</label><input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
+                <div><label className="mb-1 block text-sm font-medium">Quantity</label><input type="text" value={editingItem.quantity || ""} onChange={(e) => setEditingItem({...editingItem, quantity: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
+                <div><label className="mb-1 block text-sm font-medium">Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
+                <div><label className="mb-1 block text-sm font-medium">Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
+                <div className="flex gap-2 pt-2"><button onClick={handleSaveEdit} className="flex-1 rounded bg-green-500 py-2 text-sm font-semibold text-white">Save</button><button onClick={() => setEditingItem(null)} className="flex-1 rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button></div>
               </div>
             </div>
           </div>
@@ -1842,21 +1494,21 @@ export default function TrackFreshDashboard() {
         {showAlert && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-              <div className="mb-3 flex items-center gap-2"><Bell className="h-5 w-5 text-red-500 animate-bounce" /><h2 className="text-lg font-bold text-red-600">{t("expiringSoon")}</h2></div>
+              <div className="mb-3 flex items-center gap-2"><Bell className="h-5 w-5 text-red-500 animate-bounce" /><h2 className="text-lg font-bold text-red-600">Expiring Soon!</h2></div>
               {(() => { const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2); return urgent.length > 0 ? (
                 <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
                   {urgent.map(it => (
                     <div key={it.id} className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-3 py-2">
                       <span className="text-sm font-semibold">{it.name}</span>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-800"}`}>{it.daysLeft <= 0 ? t("expired") : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-800"}`}>{it.daysLeft <= 0 ? "EXPIRED" : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
                     </div>
                   ))}
                 </div>
               ) : <p className="text-sm text-gray-700 mb-4"><span className="font-semibold">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
-              <p className="text-xs text-gray-500 mb-3">{t("useItemsSoon")}</p>
+              <p className="text-xs text-gray-500 mb-3">Use these items soon, freeze them, or check for recipes!</p>
               <div className="flex gap-2">
-                <button onClick={() => setShowAlert(false)} className="flex-1 rounded-lg bg-gradient-to-b from-red-500 to-red-600 py-2 text-sm font-bold text-white btn-3d">{t("gotIt")}</button>
-                <button onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg border border-red-300 bg-gradient-to-b from-white to-red-50 py-2 text-sm font-bold text-red-600 pill-3d">{t("findRecipes")}</button>
+                <button onClick={() => setShowAlert(false)} className="flex-1 rounded-lg bg-gradient-to-b from-red-500 to-red-600 py-2 text-sm font-bold text-white btn-3d">Got it</button>
+                <button onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg border border-red-300 bg-gradient-to-b from-white to-red-50 py-2 text-sm font-bold text-red-600 pill-3d">Find Recipes</button>
               </div>
             </div>
           </div>
@@ -1865,32 +1517,32 @@ export default function TrackFreshDashboard() {
         {showBarcodeScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("scanBarcodeTitle")}</h2>
-              <p className="mb-4 text-sm text-gray-600">{t("scanBarcodeDesc")}</p>
+              <h2 className="mb-2 text-lg font-bold">📦 Scan Barcode</h2>
+              <p className="mb-4 text-sm text-gray-600">Point your camera at the barcode on any food package.</p>
               {!barcodeItem && (
                 <BarcodeScanner key={barcodeScanKey} onDetected={handleBarcodeDetected} />
               )}
               {barcodeScanning && (
                 <div className="flex flex-col items-center py-4">
                   <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm text-gray-600">{t("lookingUp")}</p>
+                  <p className="text-sm text-gray-600">Looking up product...</p>
                 </div>
               )}
               {barcodeError && (
                 <div className="mt-2 rounded-lg bg-red-50 p-3">
                   <p className="text-sm text-red-600">{barcodeError}</p>
-<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">{t("tryAgain")}</button>
+<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">Try again</button>
                 </div>
               )}
               {barcodeItem && (
                 <div className="space-y-3">
                   <div className="rounded-lg border p-3 bg-green-50">
-                    <p className="text-xs text-green-600 font-semibold mb-1">{t("productFound")}</p>
+                    <p className="text-xs text-green-600 font-semibold mb-1">✅ Product found!</p>
                     <p className="font-bold text-gray-800">{barcodeItem.name}</p>
                     <p className="text-xs text-gray-500">{barcodeItem.category}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-700 mb-2">{t("whereStoring")}</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Where are you storing this?</p>
                     <div className="grid grid-cols-2 gap-2">
                       <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-green-500 bg-gradient-to-b from-green-50 to-green-100 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
                       <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-gradient-to-b from-cyan-50 to-cyan-100 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>❄️ Freezer{barcodeLocation === "Freezer" && <p className="text-xs font-normal mt-1">Long term storage</p>}</button>
@@ -1919,11 +1571,11 @@ export default function TrackFreshDashboard() {
                       {voiceError && <p className="text-xs text-red-500">{voiceError}</p>}
                     </div>
                   )}
-                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold ${!barcodeLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
-                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
+                  <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold ${!barcodeLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>Add to Tracker</button>
+                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
-              <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -1931,11 +1583,11 @@ export default function TrackFreshDashboard() {
         {showQuickAdd && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("quickAddTitle")}</h2>
-              <p className="mb-4 text-sm text-gray-600">{t("quickAddTitleDesc")}</p>
+              <h2 className="mb-2 text-lg font-bold">✏️ Quick Add</h2>
+              <p className="mb-4 text-sm text-gray-600">Select a food from the list or type your own.</p>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("foodItem")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Food Item</label>
                   <FoodAutocomplete
                     value={quickAddName}
                     onChange={setQuickAddName}
@@ -1944,20 +1596,20 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">{t("category")}</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
                     <select value={quickAddCategory} onChange={(e) => setQuickAddCategory(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
                       {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">{t("locationWord")}</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Location</label>
                     <select value={quickAddLocation} onChange={(e) => setQuickAddLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
                       {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("quantity")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
                   <div className="flex gap-2">
                     <input value={quickAddQty} onChange={(e) => setQuickAddQty(e.target.value)} placeholder="e.g. 2 lbs" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                     <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
@@ -1973,8 +1625,8 @@ export default function TrackFreshDashboard() {
                   {quickVoiceListening === "date" && <p className="text-xs text-green-700 mt-1">Say date e.g. February 20 2026</p>}
                   {quickVoiceError && <p className="text-xs text-red-500 mt-1">{quickVoiceError}</p>}
                 </div>
-                <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">{t("addToTracker")}</button>
-                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">{t("cancel")}</button>
+                <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">Add to Tracker</button>
+                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border py-2 text-sm font-semibold text-gray-600">Cancel</button>
               </div>
             </div>
           </div>
@@ -1983,20 +1635,20 @@ export default function TrackFreshDashboard() {
         {showLabelScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("scanLabelTitle")}</h2>
-              <p className="mb-4 text-sm text-gray-600">{t("scanLabelDesc")}</p>
+              <h2 className="mb-2 text-lg font-bold">🏷️ Scan Package Label</h2>
+              <p className="mb-4 text-sm text-gray-600">Take a photo of the package label and Claude will read the item name and date automatically.</p>
               {!labelScanning && !labelItem && (
                 <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-8 hover:bg-green-100">
                   <span className="text-3xl mb-2">🏷️</span>
-                  <span className="text-sm font-semibold text-green-600">{t("tapUpload")}</span>
-                  <span className="text-xs text-gray-500 mt-1">{t("jpgPng")}</span>
+                  <span className="text-sm font-semibold text-green-600">Tap to upload package photo</span>
+                  <span className="text-xs text-gray-500 mt-1">JPG, PNG supported</span>
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanLabel(e.target.files[0])} />
                 </label>
               )}
               {labelScanning && (
                 <div className="flex flex-col items-center py-8">
                   <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm text-gray-600">{t("readingLabel")}</p>
+                  <p className="text-sm text-gray-600">Claude is reading the label...</p>
                 </div>
               )}
               {labelError && <p className="mt-2 text-sm text-red-600">Error: {labelError}</p>}
@@ -2010,11 +1662,11 @@ export default function TrackFreshDashboard() {
                       <div><span className="font-semibold text-gray-600">Location:</span><p>{labelItem.location}</p></div>
                     </div>
                   </div>
-                  <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">{t("addToTracker")}</button>
-                  <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
+                  <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">Add to Tracker</button>
+                  <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
-              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -2022,7 +1674,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
               <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
               <button onClick={() => setShowLabelScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button>
               <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl bg-gradient-to-b from-purple-100 to-purple-200 py-3 text-xs font-bold text-purple-800 btn-3d border border-purple-300">📦 Barcode</button>
@@ -2032,7 +1684,7 @@ export default function TrackFreshDashboard() {
             <Card>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("itemWord")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Item</label>
                   <FoodAutocomplete
                     value={itemName}
                     onChange={setItemName}
@@ -2040,27 +1692,27 @@ export default function TrackFreshDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("quantity")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
                   <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="e.g. 2 lbs, 1 carton" className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("category")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("locationWord")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Location</label>
                   <select value={location} onChange={(e) => setLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
                     {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("useByWord")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Use By</label>
                   <input type="date" value={useByDate} onChange={(e) => setUseByDate(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("openedOpt")}</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Opened (optional)</label>
                   <input type="date" value={openDate} onChange={(e) => setOpenDate(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                 </div>
               </div>
@@ -2070,10 +1722,10 @@ export default function TrackFreshDashboard() {
             </Card>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-800">{t("trackedItemsTitle")}</h2>
+                <h2 className="text-lg font-bold text-gray-800">Tracked Items</h2>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
-                  {trackedItems.length > 0 && <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>}
+                  {trackedItems.length > 0 && <button onClick={() => { if (window.confirm("Clear all tracked items and start fresh?")) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">Clear All</button>}
                 </div>
               </div>
               <div className="mb-2 flex flex-wrap gap-1">
@@ -2089,7 +1741,7 @@ export default function TrackFreshDashboard() {
                 ))}
               </div>
               {filteredItems.length === 0 ? (
-                <p className="text-sm text-gray-600">{t("noFilter")}</p>
+                <p className="text-sm text-gray-600">No items match this filter.</p>
               ) : (
                 <div className="space-y-2">
                   {filteredItems.map((it) => {
@@ -2113,15 +1765,15 @@ export default function TrackFreshDashboard() {
                           <div className="flex items-center gap-2 ml-2">
                             <div className="text-right">
                               <div className={`text-sm font-bold ${urgent ? "text-red-600" : soon ? "text-yellow-600" : "text-gray-800"}`}>{it.daysLeft === null ? "—" : it.daysLeft}</div>
-                              <div className="text-xs text-gray-500">{t("days")}</div>
+                              <div className="text-xs text-gray-500">days</div>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>Used</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
                                 <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
                               )}
-                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
-                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">{t("remove")}</button>
+                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">Edit</button>
+                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">Remove</button>
                             </div>
                           </div>
                         </div>
@@ -2137,10 +1789,10 @@ export default function TrackFreshDashboard() {
         {activeTab === "recipes" && (
           <Card>
             <div className="mb-3 flex items-center gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
-            <p className="mb-4 text-sm text-gray-600">{t("recipeIntro")}</p>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">Recipe Suggestions</h2></div>
+            <p className="mb-4 text-sm text-gray-600">Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full instructions.</p>
             <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
-            {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">{t("noMatches")}</p>}
+            {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">No matches found. Try adding more items like eggs, carrots, or onions.</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
                 {recipeSuggestions.map((r, i) => (
@@ -2163,8 +1815,8 @@ export default function TrackFreshDashboard() {
                     </button>
                     {expandedRecipe === i && (
                       <div className="border-t border-orange-200 bg-white px-4 py-3">
-                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-gray-700">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm text-gray-600 flex items-center gap-1"><span className="text-green-500">•</span> {ing}</li>)}</ul></>)}
-                        <h4 className="mb-2 text-sm font-bold text-gray-700">{t("instructionsWord")}</h4>
+                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-gray-700">Ingredients</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm text-gray-600 flex items-center gap-1"><span className="text-green-500">•</span> {ing}</li>)}</ul></>)}
+                        <h4 className="mb-2 text-sm font-bold text-gray-700">Instructions</h4>
                         <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
                           <button onClick={() => handleSaveRecipeToCommunity(r)} disabled={savedRecipes.includes(r.name)} className={`rounded px-3 py-1.5 text-xs font-semibold ${savedRecipes.includes(r.name) ? "bg-gray-100 text-gray-400" : "bg-green-700 text-white hover:bg-blue-700"}`}>
@@ -2185,11 +1837,11 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
                 <ShoppingCart className="h-5 w-5 text-green-600" />
-                <h2 className="text-lg font-bold">{t("shoppingList")}</h2>
+                <h2 className="text-lg font-bold">Shopping List</h2>
                 {shoppingItems.some((it) => it.checked) && (
-                  <button onClick={handleClearChecked} className="ml-auto rounded bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">{t("clearChecked")}</button>
+                  <button onClick={handleClearChecked} className="ml-auto rounded bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">Clear Checked</button>
                 )}
               </div>
               <div className="flex gap-2 mb-2">
@@ -2198,7 +1850,7 @@ export default function TrackFreshDashboard() {
                 <button onClick={handleAddShoppingItem} className="rounded-xl px-3 py-2 text-sm btn-green-3d">Add</button>
               </div>
               {shoppingItems.length === 0 ? (
-                <p className="text-sm text-gray-500 mt-3">{t("emptyList")}</p>
+                <p className="text-sm text-gray-500 mt-3">Your shopping list is empty.</p>
               ) : (
                 <div className="mt-3 space-y-2">
                   {shoppingItems.map((it) => (
@@ -2267,7 +1919,7 @@ export default function TrackFreshDashboard() {
                   );
                 })}
               </div>
-              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Cancel</button>
             </div>
           </div>
         )}
@@ -2276,16 +1928,16 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📅</span>
-                  <h2 className="text-lg font-bold">{t("mealPlanner")}</h2>
+                  <h2 className="text-lg font-bold">Meal Planner</h2>
                 </div>
                 <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-lg ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-700 to-indigo-800"}`} style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>
                   {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mb-4">{t("mealDesc")}</p>
+              <p className="text-xs text-gray-500 mb-4">Tap any slot to add a meal. ⚡ means it uses ingredients expiring soon.</p>
               <div className="space-y-4">
                 {DAYS.map((day) => (
                   <div key={day} className="rounded-lg border overflow-hidden">
@@ -2328,7 +1980,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
               <div style={{position: "absolute", bottom: 82, left: "50%", transform: "translateX(-50%)", width: 180, height: 16, background: "linear-gradient(to bottom, #9ca3af, #6b7280)", borderRadius: 8, zIndex: 11}}></div>
@@ -2346,18 +1998,18 @@ export default function TrackFreshDashboard() {
             {!username ? (
               <Card>
                 <div className="mb-2 flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-500" /><h2 className="text-lg font-bold">{t("joinComm")}</h2></div>
-                <p className="mb-3 text-sm text-gray-600">{t("chooseName")}</p>
+            <Users className="h-5 w-5 text-blue-500" /><h2 className="text-lg font-bold">Join the Community</h2></div>
+                <p className="mb-3 text-sm text-gray-600">Choose a display name to get started.</p>
                 <div className="flex gap-2">
                   <input value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSetUsername()} placeholder="Your display name" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                  <button onClick={handleSetUsername} className="rounded-xl px-4 py-2 text-sm btn-green-3d">{t("joinWord")}</button>
+                  <button onClick={handleSetUsername} className="rounded-xl px-4 py-2 text-sm btn-green-3d">Join</button>
                 </div>
               </Card>
             ) : (
               <>
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-600">Signed in as <span className="font-semibold text-green-700">{username}</span></p>
-                  <button onClick={() => { setUsername(""); localStorage.removeItem(USERNAME_KEY); }} className="text-xs text-gray-400 underline">{t("changeName")}</button>
+                  <button onClick={() => { setUsername(""); localStorage.removeItem(USERNAME_KEY); }} className="text-xs text-gray-400 underline">Change name</button>
                 </div>
                 <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
                   {[["chat","💬 Chat"],["recipes","📖 Recipes"],["tips","💡 Tips"]].map(([id, label]) => (
@@ -2366,9 +2018,9 @@ export default function TrackFreshDashboard() {
                 </div>
                 {communityTab === "chat" && (
                   <Card>
-                    <h3 className="mb-3 font-bold">{t("commChat")}</h3>
+                    <h3 className="mb-3 font-bold">Community Chat</h3>
                     <div className="mb-3 max-h-64 space-y-2 overflow-y-auto">
-                      {community.chat.length === 0 ? <p className="text-sm text-gray-500">{t("noMsg")}</p> : community.chat.map((msg) => (
+                      {community.chat.length === 0 ? <p className="text-sm text-gray-500">No messages yet — say hello!</p> : community.chat.map((msg) => (
                         <div key={msg.id} className="rounded-lg bg-gray-50 px-3 py-2">
                           <div className="flex items-center justify-between"><span className="text-xs font-semibold text-green-700">{msg.author}</span><span className="text-xs text-gray-400">{msg.time}</span></div>
                           <p className="text-sm text-gray-800">{msg.text}</p>
@@ -2377,20 +2029,20 @@ export default function TrackFreshDashboard() {
                     </div>
                     <div className="flex gap-2">
                       <input value={newChat} onChange={(e) => setNewChat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostChat()} placeholder="Type a message…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostChat} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">{t("sendWord")}</button>
+                      <button onClick={handlePostChat} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Send</button>
                     </div>
                   </Card>
                 )}
                 {communityTab === "recipes" && (
                   <Card>
-                    <h3 className="mb-3 font-bold">{t("recipeExch")}</h3>
+                    <h3 className="mb-3 font-bold">Recipe Exchange</h3>
                     <div className="mb-4 space-y-2">
                       <input value={newRecipeTitle} onChange={(e) => setNewRecipeTitle(e.target.value)} placeholder="Recipe title" className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                       <textarea value={newRecipeBody} onChange={(e) => setNewRecipeBody(e.target.value)} placeholder="Ingredients and instructions…" rows={3} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostRecipe} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">{t("shareRecipe")}</button>
+                      <button onClick={handlePostRecipe} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Share Recipe</button>
                     </div>
                     <div className="space-y-3">
-                      {community.recipes.length === 0 ? <p className="text-sm text-gray-500">{t("noRecipes")}</p> : community.recipes.map((r) => (
+                      {community.recipes.length === 0 ? <p className="text-sm text-gray-500">No recipes shared yet — be the first!</p> : community.recipes.map((r) => (
                         <div key={r.id} className="rounded-lg border p-3">
                           <div className="flex items-center justify-between"><span className="font-semibold">{r.title}</span><span className="text-xs text-gray-400">{r.date}</span></div>
                           <p className="mt-1 text-xs text-green-700">{r.author}</p>
@@ -2402,13 +2054,13 @@ export default function TrackFreshDashboard() {
                 )}
                 {communityTab === "tips" && (
                   <Card>
-                    <h3 className="mb-3 font-bold">{t("tipsIdeas")}</h3>
+                    <h3 className="mb-3 font-bold">Tips & Ideas</h3>
                     <div className="mb-4 flex gap-2">
                       <input value={newTip} onChange={(e) => setNewTip(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handlePostTip()} placeholder="Share a food storage tip…" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                      <button onClick={handlePostTip} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">{t("postWord")}</button>
+                      <button onClick={handlePostTip} className="rounded-xl bg-gradient-to-b from-green-600 to-green-700 px-4 py-2 text-sm font-bold text-white btn-3d">Post</button>
                     </div>
                     <div className="space-y-2">
-                      {community.tips.length === 0 ? <p className="text-sm text-gray-500">{t("noTips")}</p> : community.tips.map((tip) => (
+                      {community.tips.length === 0 ? <p className="text-sm text-gray-500">No tips yet — share one!</p> : community.tips.map((tip) => (
                         <div key={tip.id} className="rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2">
                           <div className="flex items-center justify-between"><span className="text-xs font-semibold text-green-700">{tip.author}</span><span className="text-xs text-gray-400">{tip.date}</span></div>
                           <p className="text-sm text-gray-800">{tip.text}</p>
@@ -2424,73 +2076,73 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "stores" && (
           <div className="space-y-4">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Home</button>
             <div className="rounded-2xl bg-white p-5 card-3d">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">🏪</span>
-                <h2 className="text-lg font-bold">{t("shopOnline")}</h2>
+                <h2 className="text-lg font-bold">Shop Online</h2>
               </div>
-              <p className="text-sm text-gray-500 mb-4">{t("shopOnlineDesc")}</p>
+              <p className="text-sm text-gray-500 mb-4">Tap any store to shop for groceries online.</p>
               <div className="grid grid-cols-2 gap-3">
 
                 <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🛒</span>
                   <span className="text-sm font-bold text-gray-800">Amazon Fresh</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.kroger.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🏬</span>
                   <span className="text-sm font-bold text-gray-800">Kroger</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.walmart.com/cp/food/976759" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🔵</span>
                   <span className="text-sm font-bold text-gray-800">Walmart</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.wholefoodsmarket.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🥬</span>
                   <span className="text-sm font-bold text-gray-800">Whole Foods</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.target.com/c/grocery/-/N-5xt1a" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🎯</span>
                   <span className="text-sm font-bold text-gray-800">Target</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.costco.com/grocery-household.html" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">📦</span>
                   <span className="text-sm font-bold text-gray-800">Costco</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🌺</span>
                   <span className="text-sm font-bold text-gray-800">Trader Joe&apos;s</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.instacart.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🥕</span>
                   <span className="text-sm font-bold text-gray-800">Instacart</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.freshdirect.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🍎</span>
                   <span className="text-sm font-bold text-gray-800">FreshDirect</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
                 <a href="https://www.mortonwilliams.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 rounded-xl border-2 border-gray-100 bg-gradient-to-b from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                   <span className="text-3xl">🏙️</span>
                   <span className="text-sm font-bold text-gray-800">Morton Williams</span>
-                  <span className="text-xs text-green-600 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-green-600 font-semibold">Shop Now →</span>
                 </a>
 
               </div>
