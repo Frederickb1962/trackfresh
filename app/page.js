@@ -376,6 +376,8 @@ const T = {
   shopNow: { en: "Shop Now \u2192", es: "Comprar Ahora \u2192" },
   close: { en: "Close", es: "Cerrar" },
   addBtn: { en: "Add", es: "Agregar" },
+  fdaRecalls: { en: "FDA Recalls", es: "Retiros FDA" },
+  fdaRecallsDesc: { en: "Check food safety alerts", es: "Consulta alertas de seguridad alimentaria" },
 };
 
 const FOOD_ES = {
@@ -1538,6 +1540,13 @@ export default function TrackFreshDashboard() {
                   <span className="text-xs font-bold mt-1">{t("communityWord")}</span>
                 </button>
                 <p className="text-sm font-bold text-gray-700 text-center w-24">{t("communityDesc")}</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d">
+                  <span className="text-2xl">⚠️</span>
+                  <span className="text-xs font-bold mt-1">{t("fdaRecalls")}</span>
+                </button>
+                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("fdaRecallsDesc")}</p>
               </div>
             </div>
           </div>
