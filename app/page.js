@@ -110,7 +110,6 @@ const GLOBAL_STYLES = `
     50% { opacity: 0.5; }
   }
   
-  }
   @keyframes handGrab {
     0% { transform: translateX(120px) rotate(0deg); opacity: 0; }
     20% { transform: translateX(40px) rotate(-5deg); opacity: 1; }
@@ -823,6 +822,13 @@ function CommunityStewAnim() {
 }
 
 export default function TrackFreshDashboard() {
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [pwInput, setPwInput] = useState("");
+  const [pwError, setPwError] = useState(false);
+  const handlePwSubmit = () => {
+    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { sessionStorage.setItem("tf_ok", "1"); } catch(e) {} } else { setPwError(true); }
+  };
+  React.useEffect(() => { try { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); } catch(e) {} }, []);
   const [activeTab, setActiveTab] = useState("home");
   const [burstingBubble, setBurstingBubble] = useState(null);
   const handleBubbleTap = (target) => {
@@ -1252,6 +1258,21 @@ export default function TrackFreshDashboard() {
   const handlePostRecipe = () => { if (!newRecipeTitle.trim() || !newRecipeBody.trim()) return; setCommunity((prev) => ({ ...prev, recipes: [{ id: crypto.randomUUID(), author: username, title: newRecipeTitle.trim(), body: newRecipeBody.trim(), date: new Date().toLocaleDateString() }, ...prev.recipes] })); setNewRecipeTitle(""); setNewRecipeBody(""); };
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
+
+    if (isUnlocked === false) return (
+    <div className="min-h-screen flex items-center justify-center p-4" style={{backgroundColor: "#faf7f2"}}>
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
+        <div className="text-4xl mb-3">🥦</div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">FreshTrack<span className="text-green-600">.ai</span></h1>
+        <p className="text-sm text-gray-500 mb-1">Beta Testing</p>
+        <p className="text-xs text-gray-400 mb-6">Enter your access code to continue</p>
+        <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-center text-lg text-gray-800 mb-3 focus:border-green-500 focus:outline-none" />
+        {pwError && <p className="text-red-500 text-sm mb-3">Invalid code. Try again.</p>}
+        <button onClick={handlePwSubmit} className="w-full rounded-xl py-3 text-white font-bold text-lg btn-green-3d">Enter Beta</button>
+        <p className="text-xs text-gray-400 mt-4">Contact Freddie for access</p>
+      </div>
+    </div>
+  );
 
     return (
     <>{showWelcome && (
