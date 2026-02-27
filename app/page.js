@@ -817,11 +817,6 @@ function CommunityStewAnim() {
           {ch.emoji}
         </div>
       ))}
-
-      {/* FLOATING LANGUAGE BUTTON */}
-      <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-500 text-white shadow-xl hover:bg-green-600 hover:scale-110 transition-all flex items-center justify-center text-xl font-bold border-2 border-white" style={{ boxShadow: "0 4px 20px rgba(34,197,94,0.4)" }}>
-        {lang === "en" ? "🇲🇽" : "🇺🇸"}
-      </button>
     </>
   );
 }
