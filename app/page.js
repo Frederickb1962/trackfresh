@@ -652,6 +652,14 @@ function TabBar({ active, onChange }) {
       {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
         <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 pill-3d-active scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10 pill-3d"}`}>{label}</button>
       ))}
+      {/* FLOATING LANGUAGE BUTTON */}
+      <button
+        onClick={() => changeLang(lang === "en" ? "es" : "en")}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-500 text-white shadow-xl hover:bg-green-600 hover:scale-110 transition-all flex items-center justify-center text-xl font-bold border-2 border-white"
+        style={{ boxShadow: "0 4px 20px rgba(34,197,94,0.4)" }}
+      >
+        {lang === "en" ? "🇲🇽" : "🇺🇸"}
+      </button>
     </div>
   );
 }
