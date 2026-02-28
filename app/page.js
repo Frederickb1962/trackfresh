@@ -393,6 +393,9 @@ const T = {
   smartScanRetry: { en: "Scan Again", es: "Escanear Otra Vez" },
   smartScanWhere: { en: "Where are you storing it?", es: "Donde lo guardas?" },
   smartScanDateAuto: { en: "Auto-detected from label", es: "Auto-detectado de la etiqueta" },
+  smartScanDate: { en: "Scan Date from Package", es: "Escanear Fecha del Paquete" },
+  smartScanDateDesc: { en: "Flip package over and photograph the date", es: "Voltea el paquete y fotografa la fecha" },
+  smartScanDateReading: { en: "Reading date...", es: "Leyendo fecha..." },
 };
 
 const FOOD_ES = {
@@ -1228,10 +1231,11 @@ export default function TrackFreshDashboard() {
   const [smartLocation, setSmartLocation] = useState("");
   const [smartUseBy, setSmartUseBy] = useState("");
   const [smartFreezeBy, setSmartFreezeBy] = useState("");
+  const [scanningDate, setScanningDate] = useState(false);
 
   const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); };
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
-  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
@@ -1952,7 +1956,38 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div className="mb-3">
                   <p className="text-xs font-bold text-gray-700 mb-1">Use By Date</p>
-                  {smartResult.dateFound ? (<div style={{background:"#ecfdf5",borderRadius:"8px",padding:"0.5rem 0.75rem",border:"1px solid #a7f3d0"}}><p className="text-sm font-bold text-green-800">{smartUseBy}</p><p className="text-xs text-green-600">{t("smartScanDateAuto")}</p></div>) : (<div><p className="text-xs text-orange-600 mb-1">{t("smartScanNoDate")}</p><input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
+                  {smartResult.dateFound && smartUseBy ? (<div style={{background:"#ecfdf5",borderRadius:"8px",padding:"0.5rem 0.75rem",border:"1px solid #a7f3d0"}}><p className="text-sm font-bold text-green-800">{smartUseBy}</p><p className="text-xs text-green-600">{t("smartScanDateAuto")}</p></div>) : (<div>
+                    <p className="text-xs text-orange-600 mb-2">{t("smartScanNoDate")}</p>
+                    <input type="file" accept="image/*" capture="environment" id="smartDateInput" style={{display:"none"}} onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      setScanningDate(true);
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = reader.result.split(",")[1];
+                        try {
+                          const res = await fetch("/api/scan-label", {
+                            method: "POST", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ imageData: base64, mediaType: file.type || "image/jpeg" })
+                          });
+                          const data = await res.json();
+                          if (data.item && data.item.date && data.item.dateFound) {
+                            setSmartUseBy(data.item.date);
+                            setSmartResult(prev => ({...prev, dateFound: true, date: data.item.date}));
+                          }
+                        } catch (err) { console.error("Date scan error:", err); }
+                        setScanningDate(false);
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = "";
+                    }} />
+                    {scanningDate ? (
+                      <p className="text-sm text-center text-orange-600 font-bold py-2">{t("smartScanDateReading")}</p>
+                    ) : (
+                      <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2.5 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white mb-2" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
+                    )}
+                    <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" />
+                  </div>)}
                 </div>
                 {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">Freeze By</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
                 <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
