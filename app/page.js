@@ -851,19 +851,6 @@ function BarcodeScanner({ onDetected }) {
   const readerRef = useRef(null);
 
   useEffect(() => {
-    async function fetchRecalls() {
-      setFdaLoading(true);
-      try {
-        const res = await fetch("/api/fda-recalls");
-        const data = await res.json();
-        if (data.recalls) setFdaRecalls(data.recalls);
-      } catch (e) { console.error("FDA fetch failed:", e); }
-      setFdaLoading(false);
-    }
-    fetchRecalls();
-  }, []);
-
-  useEffect(() => {
     detectedRef.current = false;
     async function startScanner() {
 if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
@@ -1067,6 +1054,25 @@ export default function TrackFreshDashboard() {
   const [fdaRecalls, setFdaRecalls] = useState([]);
   const [fdaLoading, setFdaLoading] = useState(false);
   const [showRecallsPanel, setShowRecallsPanel] = useState(false);
+
+  useEffect(() => {
+    if (!showRecallsPanel) return;
+    let cancelled = false;
+    setFdaLoading(true);
+    fetch("/api/fda-recalls")
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!cancelled && d.recalls) {
+          setFdaRecalls(d.recalls);
+        }
+        if (!cancelled) setFdaLoading(false);
+      })
+      .catch(function(e) {
+        console.error("FDA error:", e);
+        if (!cancelled) setFdaLoading(false);
+      });
+    return function() { cancelled = true; };
+  }, [showRecallsPanel]);
   const [newRecipeTitle, setNewRecipeTitle] = useState("");
   const [newRecipeBody, setNewRecipeBody] = useState("");
   const [newTip, setNewTip] = useState("");
