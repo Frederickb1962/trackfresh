@@ -1,8 +1,8 @@
 export async function GET() {
   try {
-    const url = "https://api.fda.gov/food/enforcement.json?search=status:%22Ongoing%22&sort=report_date:desc&limit=10";
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (res.ok === false) throw new Error("FDA API error");
+    const url = "https://api.fda.gov/food/enforcement.json?limit=10&sort=report_date:desc";
+    const res = await fetch(url);
+    if (res.ok === false) throw new Error("FDA API error: " + res.status);
     const data = await res.json();
     const recalls = (data.results || []).map((r, i) => ({
       id: i + 1,
