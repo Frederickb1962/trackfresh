@@ -378,6 +378,14 @@ const T = {
   addBtn: { en: "Add", es: "Agregar" },
   fdaRecalls: { en: "FDA Recalls", es: "Retiros FDA" },
   fdaRecallsDesc: { en: "Check food safety alerts", es: "Consulta alertas de seguridad alimentaria" },
+  fdaRecallsBanner: { en: "Active FDA Food Recalls", es: "Retiros Activos de la FDA" },
+  fdaLoading: { en: "Checking FDA recalls...", es: "Verificando retiros FDA..." },
+  fdaError: { en: "Could not load recalls", es: "No se pudieron cargar los retiros" },
+  fdaViewAll: { en: "View All Recalls", es: "Ver Todos los Retiros" },
+  fdaClose: { en: "Close", es: "Cerrar" },
+  fdaClassI: { en: "Dangerous", es: "Peligroso" },
+  fdaClassII: { en: "Moderate", es: "Moderado" },
+  fdaClassIII: { en: "Low Risk", es: "Bajo Riesgo" },
 };
 
 const FOOD_ES = {
@@ -843,6 +851,19 @@ function BarcodeScanner({ onDetected }) {
   const readerRef = useRef(null);
 
   useEffect(() => {
+    async function fetchRecalls() {
+      setFdaLoading(true);
+      try {
+        const res = await fetch("/api/fda-recalls");
+        const data = await res.json();
+        if (data.recalls) setFdaRecalls(data.recalls);
+      } catch (e) { console.error("FDA fetch failed:", e); }
+      setFdaLoading(false);
+    }
+    fetchRecalls();
+  }, []);
+
+  useEffect(() => {
     detectedRef.current = false;
     async function startScanner() {
 if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
@@ -1043,6 +1064,9 @@ export default function TrackFreshDashboard() {
   const [usernameInput, setUsernameInput] = useState("");
   const [community, setCommunity] = useState({ recipes: [], tips: [], chat: [] });
   const [communityTab, setCommunityTab] = useState("chat");
+  const [fdaRecalls, setFdaRecalls] = useState([]);
+  const [fdaLoading, setFdaLoading] = useState(false);
+  const [showRecallsPanel, setShowRecallsPanel] = useState(false);
   const [newRecipeTitle, setNewRecipeTitle] = useState("");
   const [newRecipeBody, setNewRecipeBody] = useState("");
   const [newTip, setNewTip] = useState("");
@@ -1542,9 +1566,10 @@ export default function TrackFreshDashboard() {
                 <p className="text-sm font-bold text-gray-700 text-center w-24">{t("communityDesc")}</p>
               </div>
               <div className="flex flex-col items-center">
-                <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d">
+                <button onClick={() => setShowRecallsPanel(true)} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d" style={{position:"relative"}}>
                   <span className="text-2xl">⚠️</span>
                   <span className="text-xs font-bold mt-1">{t("fdaRecalls")}</span>
+                  {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"-4px",right:"-4px",background:"#ef4444",color:"white",borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.65rem",fontWeight:"800",border:"2px solid white",boxShadow:"0 2px 4px rgba(0,0,0,0.3)"}}>{fdaRecalls.length}</span>}
                 </button>
                 <p className="text-sm font-bold text-gray-700 text-center w-24">{t("fdaRecallsDesc")}</p>
               </div>
@@ -1655,7 +1680,39 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
-        {showHelp && (
+        {showRecallsPanel && (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
+          <div style={{background:"white",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
+              <h2 style={{fontWeight:800,fontSize:"1.1rem",color:"#991b1b",margin:0}}>&#9888;&#65039; {t("fdaRecallsBanner")}</h2>
+              <button onClick={() => setShowRecallsPanel(false)} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&#10005;</button>
+            </div>
+            {fdaLoading && <p style={{textAlign:"center",color:"#6b7280",padding:"2rem 0"}}>{t("fdaLoading")}</p>}
+            {fdaRecalls.length === 0 && !fdaLoading && <p style={{textAlign:"center",color:"#6b7280",padding:"2rem 0"}}>{t("fdaError")}</p>}
+            <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+              {fdaRecalls.map(recall => (
+                <div key={recall.id} style={{background:"white",borderRadius:"12px",padding:"1rem",border:recall.severity === "high" ? "2px solid #fecaca" : recall.severity === "medium" ? "2px solid #fed7aa" : "1px solid #e5e7eb",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem"}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:700,fontSize:"0.85rem",color:"#111",lineHeight:1.3}}>{recall.product}</div>
+                      <div style={{fontSize:"0.75rem",color:"#6b7280",marginTop:"3px"}}>Brand: {recall.brand}</div>
+                      <div style={{fontSize:"0.75rem",color:"#374151",marginTop:"0.3rem"}}>{recall.reason}</div>
+                      <div style={{fontSize:"0.65rem",color:"#9ca3af",marginTop:"4px"}}>{recall.date}</div>
+                    </div>
+                    <span style={{fontSize:"0.6rem",fontWeight:700,padding:"3px 8px",borderRadius:"999px",flexShrink:0,textTransform:"uppercase",background:recall.severity === "high" ? "#fee2e2" : recall.severity === "medium" ? "#ffedd5" : "#f3f4f6",color:recall.severity === "high" ? "#b91c1c" : recall.severity === "medium" ? "#c2410c" : "#374151"}}>{recall.severity === "high" ? t("fdaClassI") : recall.severity === "medium" ? t("fdaClassII") : t("fdaClassIII")}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:"1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+              <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts","_blank")} style={{width:"100%",background:"linear-gradient(to bottom,#dc2626,#991b1b)",color:"white",border:"none",borderRadius:"10px",padding:"0.7rem",fontSize:"0.85rem",fontWeight:700,cursor:"pointer"}}>{t("fdaViewAll")} &#8594; FDA.gov</button>
+              <button onClick={() => setShowRecallsPanel(false)} style={{width:"100%",background:"#f3f4f6",color:"#374151",border:"none",borderRadius:"10px",padding:"0.7rem",fontSize:"0.85rem",fontWeight:600,cursor:"pointer"}}>{t("fdaClose")}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHelp && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-2 text-lg font-bold">{t("howToUse")}</h2>
