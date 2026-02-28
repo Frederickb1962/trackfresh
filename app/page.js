@@ -1700,7 +1700,7 @@ export default function TrackFreshDashboard() {
                 <p className="text-sm font-bold text-gray-700 text-center w-24">{t("communityDesc")}</p>
               </div>
               <div className="flex flex-col items-center">
-                <button onClick={() => setShowRecallsPanel(true)} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d" style={{position:"relative"}}>
+                <button onClick={() => { setShowRecallsPanel(true); setFdaLoading(true); fetch("/api/fda-recalls").then(r => r.json()).then(d => { if (d.recalls) setFdaRecalls(d.recalls); setFdaLoading(false); }).catch(e => { console.error("FDA error:", e); setFdaLoading(false); }); }} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d" style={{position:"relative"}}>
                   <span className="text-2xl">⚠️</span>
                   <span className="text-xs font-bold mt-1">{t("fdaRecalls")}</span>
                   {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"-4px",right:"-4px",background:"#ef4444",color:"white",borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.65rem",fontWeight:"800",border:"2px solid white",boxShadow:"0 2px 4px rgba(0,0,0,0.3)"}}>{fdaRecalls.length}</span>}
