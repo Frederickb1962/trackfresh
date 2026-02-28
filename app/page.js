@@ -898,7 +898,7 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
-function SmartScanner({ onResult, onError }) {
+function SmartScanner({ onResult, onError, captureRef }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("starting");
@@ -967,7 +967,8 @@ function SmartScanner({ onResult, onError }) {
             }
           });
         } catch(e) { /* barcode lib failed, wait for timer */ }
-        timerRef.current = setTimeout(() => { if (!detectedRef.current) captureAndScan(); }, 5000);
+        if (captureRef) captureRef.current = () => { if (!detectedRef.current) captureAndScan(); };
+        timerRef.current = setTimeout(() => { if (!detectedRef.current) captureAndScan(); }, 8000);
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
     start();
@@ -991,7 +992,7 @@ function SmartScanner({ onResult, onError }) {
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Scanning for barcode... auto-reads label in 5s"}
+            {status === "scanning" && "Scanning for barcode... auto-reads label in 8s"}
             {status === "barcode_found" && "Barcode found! Looking up product..."}
             {status === "reading_label" && "AI reading label... please wait"}
           </p>
@@ -1221,6 +1222,7 @@ export default function TrackFreshDashboard() {
   const [barcodeUseBy, setBarcodeUseBy] = useState("");
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
   const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const smartCaptureRef = useRef(null);
   const [smartResult, setSmartResult] = useState(null);
   const [smartError, setSmartError] = useState("");
   const [smartLocation, setSmartLocation] = useState("");
@@ -1907,7 +1909,10 @@ export default function TrackFreshDashboard() {
                 <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
               </div>
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
-              {!smartResult && !smartError && <SmartScanner onResult={handleSmartResult} onError={handleSmartError} />}
+              {!smartResult && !smartError && (<div>
+                <SmartScanner onResult={handleSmartResult} onError={handleSmartError} captureRef={smartCaptureRef} />
+                <button onClick={() => { if (smartCaptureRef.current) smartCaptureRef.current(); }} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">Capture Label Now</button>
+              </div>)}
               {smartError && (<div className="text-center py-6"><p className="text-sm text-red-600 mb-3">{smartError}</p><button onClick={resetSmartScanner} className="rounded-xl px-6 py-2 text-sm font-bold btn-green-3d">{t("smartScanRetry")}</button></div>)}
               {smartResult && (<div className="mt-3">
                 <div style={{background:"#f0fdf4",borderRadius:"12px",padding:"1rem",border:"1px solid #bbf7d0",marginBottom:"0.75rem"}}>
