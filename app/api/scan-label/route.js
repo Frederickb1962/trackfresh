@@ -3,9 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 export async function POST(request) {
   try {
     const body = await request.json();
-    
     let imageContent = [];
-    
     if (body.images && body.images.length > 0) {
       body.images.forEach(img => {
         imageContent.push({ type: "image", source: { type: "base64", media_type: img.mediaType, data: img.data } });
@@ -19,7 +17,7 @@ export async function POST(request) {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
     const content = [
-      { type: "text", text: "Find the food product name and expiration date. Also provide shelf life and storage info. Reply ONLY with JSON: {\"name\":\"...\",\"date\":\"YYYY-MM-DD\",\"dateFound\":true,\"daysSealed\":7,\"daysAfterOpening\":null,\"storageTip\":\"...\",\"openedTip\":null,\"category\":\"Produce\",\"location\":\"Fridge\"} If no date visible, set date to \"\" and dateFound to false. category must be one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other. location must be: Fridge, Freezer, or Pantry. daysAfterOpening and openedTip can be null for items like fresh produce." },
+      { type: "text", text: "Look at this food product image carefully. Your TOP PRIORITY is identifying the PRODUCT NAME and BRAND. Look for large text, logos, brand names like Hellmanns, Kraft, Heinz, Oscar Mayer etc. Even if blurry, always give your best guess. Also look for any expiration, use-by, sell-by, or best-by date anywhere on the package. Reply ONLY with valid JSON: {\\"name\\":\\"Brand Product (e.g. Hellmanns Real Mayonnaise)\\",\\"date\\":\\"YYYY-MM-DD\\",\\"dateFound\\":true,\\"daysSealed\\":90,\\"daysAfterOpening\\":60,\\"storageTip\\":\\"Keep refrigerated\\",\\"openedTip\\":\\"Use within 2 months after opening\\",\\"category\\":\\"Condiments\\",\\"location\\":\\"Fridge\\"} CRITICAL RULES: 1) name must NEVER be empty. Always guess. 2) If no date visible set date to empty string and dateFound to false. 3) category must be: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, or Other. 4) location must be: Fridge, Freezer, or Pantry." },
       ...imageContent
     ];
 
