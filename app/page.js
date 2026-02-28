@@ -1725,14 +1725,14 @@ export default function TrackFreshDashboard() {
                 <p className="text-xs text-gray-500 text-center w-24">{t("receiptDesc")}</p>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("barcode"); setTimeout(() => { setShowBarcodeScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                <button onClick={() => { setBurstingBubble("barcode"); setTimeout(() => { setShowSmartScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">📦</span>
                   <span className="text-xs font-bold mt-1">{t("barcodeWord")}</span>
                 </button>
                 <p className="text-xs text-gray-500 text-center w-24">{t("barcodeDesc")}</p>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("label"); setTimeout(() => { setShowLabelScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
+                <button onClick={() => { setBurstingBubble("label"); setTimeout(() => { setShowSmartScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
                   <span className="text-2xl">🏷️</span>
                   <span className="text-xs font-bold mt-1">{t("label")}</span>
                 </button>
