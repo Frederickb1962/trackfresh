@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from "@anthropic-ai/sdk";
 
 export async function POST(request) {
   try {
@@ -11,15 +11,32 @@ export async function POST(request) {
     } else if (body.imageData && body.mediaType) {
       imageContent.push({ type: "image", source: { type: "base64", media_type: body.mediaType, data: body.imageData } });
     } else {
-      return Response.json({ error: 'No images' }, { status: 400 });
+      return Response.json({ error: "No images" }, { status: 400 });
     }
 
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || "" });
 
-    const content = [
-      { type: "text", text: "Look at this food product image carefully. Your TOP PRIORITY is identifying the PRODUCT NAME and BRAND. Look for large text, logos, brand names like Hellmanns, Kraft, Heinz, Oscar Mayer etc. Even if blurry, always give your best guess. Also look for any expiration, use-by, sell-by, or best-by date anywhere on the package. Reply ONLY with valid JSON: {\\"name\\":\\"Brand Product (e.g. Hellmanns Real Mayonnaise)\\",\\"date\\":\\"YYYY-MM-DD\\",\\"dateFound\\":true,\\"daysSealed\\":90,\\"daysAfterOpening\\":60,\\"storageTip\\":\\"Keep refrigerated\\",\\"openedTip\\":\\"Use within 2 months after opening\\",\\"category\\":\\"Condiments\\",\\"location\\":\\"Fridge\\"} CRITICAL RULES: 1) name must NEVER be empty. Always guess. 2) If no date visible set date to empty string and dateFound to false. 3) category must be: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, or Other. 4) location must be: Fridge, Freezer, or Pantry." },
-      ...imageContent
+    const parts = [
+      "Look at this food product image carefully.",
+      "Your TOP PRIORITY is identifying the PRODUCT NAME and BRAND.",
+      "Look for large text logos and brand names.",
+      "Even if blurry always give your best guess.",
+      "Also look for any expiration use-by sell-by or best-by date.",
+      "Reply ONLY with valid JSON with these fields:",
+      "name (NEVER empty - always guess the product),",
+      "date (YYYY-MM-DD or empty string if not found),",
+      "dateFound (true or false),",
+      "daysSealed (number),",
+      "daysAfterOpening (number or null),",
+      "storageTip (string),",
+      "openedTip (string or null),",
+      "category (Produce Dairy Meat Pantry Frozen Beverages Snacks Bread Condiments or Other),",
+      "location (Fridge Freezer or Pantry).",
+      "Example: {name: Hellmanns Real Mayonnaise, date: 2026-05-15, dateFound: true, category: Condiments, location: Fridge}"
     ];
+    const prompt = parts.join(" ");
+
+    const content = [{ type: "text", text: prompt }, ...imageContent];
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-5",
