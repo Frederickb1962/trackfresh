@@ -386,6 +386,13 @@ const T = {
   fdaClassI: { en: "Dangerous", es: "Peligroso" },
   fdaClassII: { en: "Moderate", es: "Moderado" },
   fdaClassIII: { en: "Low Risk", es: "Bajo Riesgo" },
+  smartScanTitle: { en: "Smart Scanner", es: "Escaner Inteligente" },
+  smartScanDesc: { en: "Auto-detects barcodes, labels & dates", es: "Auto-detecta codigos, etiquetas y fechas" },
+  smartScanFound: { en: "Found", es: "Encontrado" },
+  smartScanNoDate: { en: "No date found - enter manually", es: "Sin fecha - ingrese manualmente" },
+  smartScanRetry: { en: "Scan Again", es: "Escanear Otra Vez" },
+  smartScanWhere: { en: "Where are you storing it?", es: "Donde lo guardas?" },
+  smartScanDateAuto: { en: "Auto-detected from label", es: "Auto-detectado de la etiqueta" },
 };
 
 const FOOD_ES = {
@@ -891,6 +898,109 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
+function SmartScanner({ onResult, onError }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [status, setStatus] = useState("starting");
+  const [scanError, setScanError] = useState("");
+  const detectedRef = useRef(false);
+  const readerRef = useRef(null);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    detectedRef.current = false;
+    let stream = null;
+
+    async function captureAndScan() {
+      if (detectedRef.current) return;
+      detectedRef.current = true;
+      setStatus("reading_label");
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (!video || !canvas) { onError("Camera not ready"); return; }
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      const base64 = dataUrl.split(",")[1];
+      try {
+        const res = await fetch("/api/scan-label", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+        });
+        const data = await res.json();
+        if (data.item) { onResult({ ...data.item, source: "label" }); }
+        else { onError(data.error || "Could not read label. Try again."); }
+      } catch (e) { onError("Scan failed: " + e.message); }
+    }
+
+    async function start() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "true");
+          await videoRef.current.play();
+        }
+        setStatus("scanning");
+        try {
+          const { BrowserMultiFormatReader } = await import("@zxing/library");
+          readerRef.current = new BrowserMultiFormatReader();
+          readerRef.current.decodeFromStream(stream, videoRef.current, async (result) => {
+            if (result && !detectedRef.current) {
+              detectedRef.current = true;
+              if (timerRef.current) clearTimeout(timerRef.current);
+              if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+              setStatus("barcode_found");
+              try {
+                const res = await fetch("/api/scan-barcode", {
+                  method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ barcode: result.getText() })
+                });
+                const data = await res.json();
+                if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
+                else { detectedRef.current = false; captureAndScan(); }
+              } catch(e) { detectedRef.current = false; captureAndScan(); }
+            }
+          });
+        } catch(e) { /* barcode lib failed, wait for timer */ }
+        timerRef.current = setTimeout(() => { if (!detectedRef.current) captureAndScan(); }, 5000);
+      } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
+    }
+    start();
+    return () => {
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
+    };
+  }, []);
+
+  return (
+    <div className="relative">
+      {scanError ? <p className="text-sm text-red-600 p-4">{scanError}</p> : (
+        <div className="relative overflow-hidden rounded-xl bg-black">
+          <video ref={videoRef} playsInline muted className="w-full rounded-xl" style={{ height: "280px", objectFit: "cover" }} />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"220px",height:"140px",opacity:0.7}} />}
+            {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"220px",height:"140px",opacity:0.8}} />}
+            {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"220px",height:"140px",background:"rgba(34,197,94,0.15)"}} />}
+          </div>
+          <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
+            {status === "starting" && "Starting camera..."}
+            {status === "scanning" && "Scanning for barcode... auto-reads label in 5s"}
+            {status === "barcode_found" && "Barcode found! Looking up product..."}
+            {status === "reading_label" && "AI reading label... please wait"}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MealSearchInput({ value, onChange, onKeyDown }) {
   const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.focus(); }, []);
@@ -1110,6 +1220,22 @@ export default function TrackFreshDashboard() {
   const [barcodeLocation, setBarcodeLocation] = useState("");
   const [barcodeUseBy, setBarcodeUseBy] = useState("");
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
+  const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const [smartResult, setSmartResult] = useState(null);
+  const [smartError, setSmartError] = useState("");
+  const [smartLocation, setSmartLocation] = useState("");
+  const [smartUseBy, setSmartUseBy] = useState("");
+  const [smartFreezeBy, setSmartFreezeBy] = useState("");
+
+  const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); };
+  const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); };
+  const handleAddSmartItem = () => {
+    if (!smartResult) return;
+    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    setTrackedItems(prev => [newItem, ...prev]);
+    setShowSmartScanner(false); resetSmartScanner();
+  };
   const [voiceListening, setVoiceListening] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
@@ -1773,6 +1899,45 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
+        {showSmartScanner && (
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
+            <div style={{background:"white",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.75rem"}}>
+                <h2 className="text-lg font-bold">{t("smartScanTitle")}</h2>
+                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
+              </div>
+              <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
+              {!smartResult && !smartError && <SmartScanner onResult={handleSmartResult} onError={handleSmartError} />}
+              {smartError && (<div className="text-center py-6"><p className="text-sm text-red-600 mb-3">{smartError}</p><button onClick={resetSmartScanner} className="rounded-xl px-6 py-2 text-sm font-bold btn-green-3d">{t("smartScanRetry")}</button></div>)}
+              {smartResult && (<div className="mt-3">
+                <div style={{background:"#f0fdf4",borderRadius:"12px",padding:"1rem",border:"1px solid #bbf7d0",marginBottom:"0.75rem"}}>
+                  <p className="text-xs font-bold text-green-700 mb-1">{t("smartScanFound")}</p>
+                  <p className="text-lg font-bold text-gray-900">{smartResult.name}</p>
+                  {smartResult.source === "barcode" && <p className="text-xs text-gray-500 mt-1">Via barcode</p>}
+                  {smartResult.source === "label" && <p className="text-xs text-gray-500 mt-1">Via AI label scan</p>}
+                  {smartResult.category && <p className="text-xs text-gray-500">Category: {smartResult.category}</p>}
+                  {smartResult.storageTip && <p className="text-xs text-green-600 mt-1">{smartResult.storageTip}</p>}
+                </div>
+                <div className="mb-3">
+                  <p className="text-xs font-bold text-gray-700 mb-2">{t("smartScanWhere")}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => { setSmartLocation("Fridge"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Fridge" ? "border-green-500 bg-green-50 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Fridge</button>
+                    <button onClick={() => setSmartLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Freezer</button>
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <p className="text-xs font-bold text-gray-700 mb-1">Use By Date</p>
+                  {smartResult.dateFound ? (<div style={{background:"#ecfdf5",borderRadius:"8px",padding:"0.5rem 0.75rem",border:"1px solid #a7f3d0"}}><p className="text-sm font-bold text-green-800">{smartUseBy}</p><p className="text-xs text-green-600">{t("smartScanDateAuto")}</p></div>) : (<div><p className="text-xs text-orange-600 mb-1">{t("smartScanNoDate")}</p><input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
+                </div>
+                {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">Freeze By</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
+                <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
+                <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
+                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); }} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("cancel")}</button>
+              </div>)}
+            </div>
+          </div>
+        )}
+
         {showBarcodeScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
@@ -1936,7 +2101,7 @@ export default function TrackFreshDashboard() {
             <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
               <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
               <button onClick={() => setShowLabelScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button>
-              <button onClick={() => setShowBarcodeScanner(true)} className="rounded-xl bg-gradient-to-b from-purple-100 to-purple-200 py-3 text-xs font-bold text-purple-800 btn-3d border border-purple-300">📦 Barcode</button>
+              <button onClick={() => setShowSmartScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ Quick Add</button>
             </div>
           <>
