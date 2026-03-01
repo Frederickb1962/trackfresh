@@ -1232,8 +1232,6 @@ export default function TrackFreshDashboard() {
   const [smartUseBy, setSmartUseBy] = useState("");
   const [smartFreezeBy, setSmartFreezeBy] = useState("");
   const [scanningDate, setScanningDate] = useState(false);
-  const [voiceListening, setVoiceListening] = useState(false);
-  const [voicePromptDone, setVoicePromptDone] = useState(false);
 
   const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); if (!item.dateFound) startVoiceDatePrompt(item.name); };
 
@@ -1283,6 +1281,7 @@ export default function TrackFreshDashboard() {
     setShowSmartScanner(false); resetSmartScanner();
   };
   const [voiceListening, setVoiceListening] = useState("");
+  const [voicePromptDone, setVoicePromptDone] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
   const [receiptScanning, setReceiptScanning] = useState(false);
