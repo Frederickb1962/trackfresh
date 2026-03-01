@@ -941,7 +941,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
     async function start() {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 }, advanced: [{ torch: false }] }
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -1244,7 +1244,10 @@ export default function TrackFreshDashboard() {
   const startVoiceDatePrompt = (productName) => {
     setVoicePromptDone(false);
     const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
-    msg.rate = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const natural = voices.find(v => v.name.includes("Samantha")) || voices.find(v => v.name.includes("Karen")) || voices.find(v => v.name.includes("Google") && v.lang.startsWith("en")) || voices.find(v => v.lang.startsWith("en") && v.localService);
+    if (natural) msg.voice = natural;
+    msg.rate = 1.15;
     msg.onend = () => { startVoiceListening(); };
     window.speechSynthesis.speak(msg);
   };
@@ -1264,7 +1267,7 @@ export default function TrackFreshDashboard() {
         setSmartUseBy(parsed);
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
         const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
-        confirm.rate = 1.0;
+        confirm.rate = 1.15;
         window.speechSynthesis.speak(confirm);
       } else {
         const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
@@ -1994,9 +1997,10 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div className="mb-3">
                   <p className="text-xs font-bold text-gray-700 mb-2">{t("smartScanWhere")}</p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <button onClick={() => { setSmartLocation("Fridge"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Fridge" ? "border-green-500 bg-green-50 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Fridge</button>
-                    <button onClick={() => setSmartLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Freezer</button>
+                    <button onClick={() => { setSmartLocation("Freezer"); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Freezer</button>
+                    <button onClick={() => { setSmartLocation("Pantry"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Pantry" ? "border-amber-500 bg-amber-50 text-amber-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Pantry</button>
                   </div>
                 </div>
                 <div className="mb-3">
