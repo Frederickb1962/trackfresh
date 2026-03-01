@@ -971,7 +971,6 @@ function SmartScanner({ onResult, onError, captureRef }) {
           });
         } catch(e) { /* barcode lib failed, wait for timer */ }
         if (captureRef) captureRef.current = () => { if (!detectedRef.current) captureAndScan(); };
-        timerRef.current = setTimeout(() => { if (!detectedRef.current) captureAndScan(); }, 8000);
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
     start();
@@ -995,7 +994,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Scanning for barcode... auto-reads label in 8s"}
+            {status === "scanning" && "Scanning for barcode... or tap Take Photo below"}
             {status === "barcode_found" && "Barcode found! Looking up product..."}
             {status === "reading_label" && "AI reading label... please wait"}
           </p>
@@ -2205,7 +2204,57 @@ export default function TrackFreshDashboard() {
             <div className="grid grid-cols-2 gap-2">
             <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
               <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
-              <button onClick={() => setShowLabelScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button>
+              <div><input type="file" accept="image/*" capture="environment" id="trackerLabelInput" style={{display:"none"}} onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                setLabelError("");
+                setLabelItem(null);
+                setShowLabelScanner(true);
+                const reader = new FileReader();
+                reader.onload = async () => {
+                  const base64 = reader.result.split(",")[1];
+                  try {
+                    const res = await fetch("/api/scan-label", {
+                      method: "POST", headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ imageData: base64, mediaType: file.type || "image/jpeg" })
+                    });
+                    const data = await res.json();
+                    if (data.item && data.item.name) {
+                      setLabelItem(data.item);
+                      if (data.item.name && !data.item.dateFound) {
+                        try {
+                          const msg = new SpeechSynthesisUtterance("I found " + data.item.name + ". What is the expiration date?");
+                          msg.rate = 1.0;
+                          msg.onend = () => {
+                            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                            if (!SR) return;
+                            const rec = new SR();
+                            rec.lang = lang === "es" ? "es-MX" : "en-US";
+                            rec.interimResults = false;
+                            rec.onresult = (ev) => {
+                              const t = ev.results[0][0].transcript;
+                              const parsed = parseSpokenDate(t);
+                              if (parsed) {
+                                setLabelItem(prev => prev ? {...prev, date: parsed, dateFound: true} : prev);
+                                const ok = new SpeechSynthesisUtterance("Got it. " + t);
+                                ok.rate = 1.0;
+                                window.speechSynthesis.speak(ok);
+                              }
+                            };
+                            rec.start();
+                          };
+                          window.speechSynthesis.speak(msg);
+                        } catch(err) {}
+                      }
+                    } else {
+                      setLabelError(data.error || "Could not read label. Try again.");
+                    }
+                  } catch (err) { setLabelError("Scan failed: " + err.message); }
+                };
+                reader.readAsDataURL(file);
+                e.target.value = "";
+              }} />
+              <button onClick={() => document.getElementById("trackerLabelInput").click()} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button></div>
               <button onClick={() => setShowSmartScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ Quick Add</button>
             </div>
