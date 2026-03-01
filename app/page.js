@@ -1232,11 +1232,18 @@ export default function TrackFreshDashboard() {
   const [smartFreezeBy, setSmartFreezeBy] = useState("");
   const [scanningDate, setScanningDate] = useState(false);
 
-  const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); if (!item.dateFound) startVoiceDatePrompt(item.name); };
+  const handleSmartResult = (item) => {
+    setSmartResult(item); setSmartError("");
+    if (item.date && item.dateFound) setSmartUseBy(item.date);
+    if (item.location) setSmartLocation(item.location);
+    if (!item.dateFound || !item.date) {
+      setTimeout(() => startVoiceDatePrompt(item.name || "this product"), 500);
+    }
+  };
 
   const startVoiceDatePrompt = (productName) => {
     setVoicePromptDone(false);
-    const msg = new SpeechSynthesisUtterance("I found " + productName + ". What is the expiration date?");
+    const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
     msg.rate = 1.0;
     msg.onend = () => { startVoiceListening(); };
     window.speechSynthesis.speak(msg);
