@@ -2027,10 +2027,10 @@ export default function TrackFreshDashboard() {
                     }} />
                     {scanningDate ? (
                       <p className="text-sm text-center text-orange-600 font-bold py-2">{t("smartScanDateReading")}</p>
-                    ) : (
+                    ) : (<>
                       <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2.5 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white mb-2" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
                     <button onClick={() => startVoiceDatePrompt(smartResult.name)} className="w-full rounded-xl py-2 text-sm font-bold bg-gradient-to-b from-blue-400 to-blue-500 text-white mt-2" style={{border:"none",cursor:"pointer"}}>🎙️ Say Date by Voice</button>
-                    )}
+                    </>)}
                     <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" />
                   </div>)}
                 </div>
