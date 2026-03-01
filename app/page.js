@@ -1232,10 +1232,50 @@ export default function TrackFreshDashboard() {
   const [smartUseBy, setSmartUseBy] = useState("");
   const [smartFreezeBy, setSmartFreezeBy] = useState("");
   const [scanningDate, setScanningDate] = useState(false);
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voicePromptDone, setVoicePromptDone] = useState(false);
 
-  const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); };
+  const handleSmartResult = (item) => { setSmartResult(item); setSmartError(""); if (item.date) setSmartUseBy(item.date); if (item.location) setSmartLocation(item.location); if (!item.dateFound) startVoiceDatePrompt(item.name); };
+
+  const startVoiceDatePrompt = (productName) => {
+    setVoicePromptDone(false);
+    const msg = new SpeechSynthesisUtterance("I found " + productName + ". What is the expiration date?");
+    msg.rate = 1.0;
+    msg.onend = () => { startVoiceListening(); };
+    window.speechSynthesis.speak(msg);
+  };
+
+  const startVoiceListening = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setVoicePromptDone(true); return; }
+    const recognition = new SR();
+    recognition.lang = lang === "es" ? "es-MX" : "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    setVoiceListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const parsed = parseSpokenDate(transcript);
+      if (parsed) {
+        setSmartUseBy(parsed);
+        setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
+        const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
+        confirm.rate = 1.0;
+        window.speechSynthesis.speak(confirm);
+      } else {
+        const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
+        retry.rate = 1.0;
+        window.speechSynthesis.speak(retry);
+      }
+      setVoiceListening(false);
+      setVoicePromptDone(true);
+    };
+    recognition.onerror = () => { setVoiceListening(false); setVoicePromptDone(true); };
+    recognition.onend = () => { setVoiceListening(false); setVoicePromptDone(true); };
+    recognition.start();
+  };
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
-  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
@@ -1956,6 +1996,11 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div className="mb-3">
                   <p className="text-xs font-bold text-gray-700 mb-1">Use By Date</p>
+                  {voiceListening && (<div style={{background:"#fff7ed",borderRadius:"12px",padding:"1rem",border:"2px solid #fb923c",textAlign:"center",marginBottom:"0.75rem"}}>
+                    <p className="text-2xl mb-2">🎙️</p>
+                    <p className="text-sm font-bold text-orange-700">Listening for expiration date...</p>
+                    <p className="text-xs text-orange-500 mt-1">Say something like March 15, 2026</p>
+                  </div>)}
                   {smartResult.dateFound && smartUseBy ? (<div style={{background:"#ecfdf5",borderRadius:"8px",padding:"0.5rem 0.75rem",border:"1px solid #a7f3d0"}}><p className="text-sm font-bold text-green-800">{smartUseBy}</p><p className="text-xs text-green-600">{t("smartScanDateAuto")}</p></div>) : (<div>
                     <p className="text-xs text-orange-600 mb-2">{t("smartScanNoDate")}</p>
                     <input type="file" accept="image/*" capture="environment" id="smartDateInput" style={{display:"none"}} onChange={async (e) => {
@@ -1985,6 +2030,7 @@ export default function TrackFreshDashboard() {
                       <p className="text-sm text-center text-orange-600 font-bold py-2">{t("smartScanDateReading")}</p>
                     ) : (
                       <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2.5 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white mb-2" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
+                    <button onClick={() => startVoiceDatePrompt(smartResult.name)} className="w-full rounded-xl py-2 text-sm font-bold bg-gradient-to-b from-blue-400 to-blue-500 text-white mt-2" style={{border:"none",cursor:"pointer"}}>🎙️ Say Date by Voice</button>
                     )}
                     <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" />
                   </div>)}
