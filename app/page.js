@@ -1245,8 +1245,15 @@ export default function TrackFreshDashboard() {
     setVoicePromptDone(false);
     const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
     const voices = window.speechSynthesis.getVoices();
-    const natural = voices.find(v => v.name.includes("Samantha")) || voices.find(v => v.name.includes("Karen")) || voices.find(v => v.name.includes("Google") && v.lang.startsWith("en")) || voices.find(v => v.lang.startsWith("en") && v.localService);
+    const natural = voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en")) 
+      || voices.find(v => v.name.includes("Nicky") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Ava") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Allison") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Premium") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
+      || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
     if (natural) msg.voice = natural;
+    msg.pitch = 1.05;
     msg.rate = 1.15;
     msg.onend = () => { startVoiceListening(); };
     window.speechSynthesis.speak(msg);
