@@ -985,7 +985,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
     <div className="relative">
       {scanError ? <p className="text-sm text-red-600 p-4">{scanError}</p> : (
         <div className="relative overflow-hidden rounded-xl bg-black">
-          <video ref={videoRef} playsInline muted className="w-full rounded-xl" style={{ height: "280px", objectFit: "cover" }} />
+          <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "280px", objectFit: "cover" }} />
           <canvas ref={canvasRef} style={{ display: "none" }} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"220px",height:"140px",opacity:0.7}} />}
@@ -1970,27 +1970,47 @@ export default function TrackFreshDashboard() {
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
               {!smartResult && !smartError && (<div>
                 <SmartScanner onResult={handleSmartResult} onError={handleSmartError} captureRef={smartCaptureRef} />
-                <input type="file" accept="image/*" capture="environment" id="smartPhotoInput" style={{display:"none"}} onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = async () => {
-                    const base64 = reader.result.split(",")[1];
-                    handleSmartError("");
-                    try {
-                      const res = await fetch("/api/scan-label", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ imageData: base64, mediaType: file.type || "image/jpeg" })
-                      });
-                      const data = await res.json();
-                      if (data.item && data.item.name) { handleSmartResult({ ...data.item, source: "label" }); }
-                      else { handleSmartError(data.error || "Could not read label. Try again."); }
-                    } catch (err) { handleSmartError("Scan failed: " + err.message); }
-                  };
-                  reader.readAsDataURL(file);
-                  e.target.value = "";
-                }} />
-                <button onClick={() => document.getElementById("smartPhotoInput").click()} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">Take Photo of Label</button>
+                <button onClick={async () => {
+                  try {
+                    const video = document.querySelector("#smartScannerVideo");
+                    if (!video || !video.srcObject) { handleSmartError("Camera not ready"); return; }
+                    const track = video.srcObject.getVideoTracks()[0];
+                    if (typeof ImageCapture !== "undefined") {
+                      const capture = new ImageCapture(track);
+                      const blob = await capture.takePhoto();
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = reader.result.split(",")[1];
+                        try {
+                          const res = await fetch("/api/scan-label", {
+                            method: "POST", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+                          });
+                          const data = await res.json();
+                          if (data.item && data.item.name) { handleSmartResult({ ...data.item, source: "label" }); }
+                          else { handleSmartError(data.error || "Could not read label. Try again."); }
+                        } catch (err) { handleSmartError("Scan failed: " + err.message); }
+                      };
+                      reader.readAsDataURL(blob);
+                    } else {
+                      const canvas = document.createElement("canvas");
+                      canvas.width = video.videoWidth || 1280;
+                      canvas.height = video.videoHeight || 720;
+                      canvas.getContext("2d").drawImage(video, 0, 0);
+                      const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+                      const base64 = dataUrl.split(",")[1];
+                      try {
+                        const res = await fetch("/api/scan-label", {
+                          method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+                        });
+                        const data = await res.json();
+                        if (data.item && data.item.name) { handleSmartResult({ ...data.item, source: "label" }); }
+                        else { handleSmartError(data.error || "Could not read label. Try again."); }
+                      } catch (err) { handleSmartError("Scan failed: " + err.message); }
+                    }
+                  } catch (err) { handleSmartError("Capture failed: " + err.message); }
+                }} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">📸 Take Photo</button>
               </div>)}
               {smartError && (<div className="text-center py-6"><p className="text-sm text-red-600 mb-3">{smartError}</p><button onClick={resetSmartScanner} className="rounded-xl px-6 py-2 text-sm font-bold btn-green-3d">{t("smartScanRetry")}</button></div>)}
               {smartResult && (<div className="mt-3">
