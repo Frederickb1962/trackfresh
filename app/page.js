@@ -2391,8 +2391,12 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "tracker" && (
           <>
-            <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <div className="flex items-center justify-between mb-3">
+              <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700"><span>←</span> {t("home")}</button>
+              <h2 className="text-lg font-bold text-gray-800">{t("trackedItemsTitle")}</h2>
+              <span className="text-sm text-gray-500">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mb-3">
               <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
               <div><input type="file" accept="image/*" capture="environment" id="trackerLabelInput" style={{display:"none"}} onChange={async (e) => {
                 const file = e.target.files[0];
@@ -2446,54 +2450,12 @@ export default function TrackFreshDashboard() {
               }} />
               <button onClick={() => document.getElementById("trackerLabelInput").click()} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ Label</button></div>
               <button onClick={() => setShowSmartScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
-              <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ Quick Add</button>
+              <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ {t("quickAdd")}</button>
             </div>
-          <>
-            <Card>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("itemWord")}</label>
-                  <FoodAutocomplete lang={lang}
-                    value={itemName}
-                    onChange={setItemName}
-                    onSelect={(f) => { setItemName(f.name); setCategory(f.category); setLocation(f.location); }}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
-                  <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="e.g. 2 lbs, 1 carton" className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Category</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
-                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Location</label>
-                  <select value={location} onChange={(e) => setLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
-                    {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("useByWord")}</label>
-                  <input type="date" value={useByDate} onChange={(e) => setUseByDate(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">{t("openedOpt")}</label>
-                  <input type="date" value={openDate} onChange={(e) => setOpenDate(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                </div>
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button onClick={handleAddItem} className="inline-flex items-center gap-1 rounded-xl px-3 py-2 text-sm btn-green-3d"><PlusCircle className="h-4 w-4" /> Add</button>
-              </div>
-            </Card>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-800">{t("trackedItemsTitle")}</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
-                  {trackedItems.length > 0 && <button onClick={() => { if (window.confirm("Clear all tracked items and start fresh?")) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>}
+                  {trackedItems.length > 0 && <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>}
                 </div>
               </div>
               <div className="mb-2 flex flex-wrap gap-1">
@@ -2551,7 +2513,6 @@ export default function TrackFreshDashboard() {
                 </div>
               )}
             </Card>
-          </>
           </>
         )}
         {activeTab === "recipes" && (
