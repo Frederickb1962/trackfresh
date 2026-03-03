@@ -1459,6 +1459,127 @@ export default function TrackFreshDashboard() {
     recognition.onend = () => { setVoiceListening(false); setVoicePromptDone(true); };
     recognition.start();
   };
+  const [uniScanCount, setUniScanCount] = useState(0);
+  const [uniScanLastItem, setUniScanLastItem] = useState("");
+  const [voiceFlowStep, setVoiceFlowStep] = useState(null);
+  const uniScanTimer = React.useRef(null);
+  const voiceFlowRef = React.useRef(null);
+
+  const resetUniScanTimer = () => {
+    if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
+    uniScanTimer.current = setTimeout(() => {
+      handleDoneUniScan();
+    }, 30000);
+  };
+
+  const speak = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.1;
+      u.pitch = 1;
+      window.speechSynthesis.speak(u);
+      return u;
+    }
+    return null;
+  };
+
+  const startVoiceCommand = (onResult) => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
+    const recog = new SR();
+    recog.lang = lang === "es" ? "es-MX" : "en-US";
+    recog.interimResults = false;
+    recog.maxAlternatives = 3;
+    voiceFlowRef.current = recog;
+    recog.onresult = (ev) => {
+      const transcript = ev.results[0][0].transcript.toLowerCase().trim();
+      onResult(transcript);
+    };
+    recog.onerror = () => { setVoiceFlowStep(null); };
+    recog.onend = () => {};
+    recog.start();
+  };
+
+  const handleSmartResultMulti = (item) => {
+    setSmartResult(item);
+    setSmartError("");
+    resetUniScanTimer();
+    const loc = item.location || "Fridge";
+    setSmartLocation(loc);
+    const itemName = item.name || "item";
+    const prompt = lang === "es"
+      ? "Encontrado " + itemName + ". Diga la fecha de vencimiento."
+      : "Found " + itemName + ". Say the expiration date.";
+    setVoiceFlowStep("say_date");
+    const utt = speak(prompt);
+    if (utt) {
+      utt.onend = () => {
+        setVoiceFlowStep("listening_date");
+        startVoiceCommand((transcript) => {
+          const parsed = parseSpokenDate(transcript);
+          if (parsed) {
+            setSmartUseBy(parsed);
+            setVoiceFlowStep("say_next");
+            const nextPrompt = lang === "es"
+              ? "Fecha capturada. Diga Siguiente para escanear otro, o Listo para terminar."
+              : "Date captured. Say Next to scan another, or Done to finish.";
+            const utt2 = speak(nextPrompt);
+            if (utt2) {
+              utt2.onend = () => {
+                setVoiceFlowStep("listening_next");
+                startVoiceCommand((cmd) => {
+                  handleVoiceNextDone(cmd);
+                });
+              };
+            }
+          } else {
+            setVoiceFlowStep(null);
+            speak(lang === "es" ? "No entend\u00ed la fecha. Ingr\u00e9sela manualmente." : "Could not understand date. Please enter it manually.");
+          }
+        });
+      };
+    }
+  };
+
+  const handleVoiceNextDone = (cmd) => {
+    const isNext = cmd.includes("next") || cmd.includes("siguiente") || cmd.includes("pr\u00f3xima") || cmd.includes("proxima");
+    const isDone = cmd.includes("done") || cmd.includes("listo") || cmd.includes("lista") || cmd.includes("finish") || cmd.includes("terminar");
+    if (isNext) {
+      handleAddSmartItemMulti();
+    } else if (isDone) {
+      handleAddSmartItemMulti();
+      setTimeout(() => handleDoneUniScan(), 300);
+    } else {
+      setVoiceFlowStep("listening_next");
+      startVoiceCommand((cmd2) => { handleVoiceNextDone(cmd2); });
+    }
+  };
+
+  const handleAddSmartItemMulti = () => {
+    if (!smartResult) return;
+    const itemName = smartResult.name || "Unknown Item";
+    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    setTrackedItems(prev => [newItem, ...prev]);
+    setUniScanCount(prev => prev + 1);
+    setUniScanLastItem(itemName);
+    resetSmartScanner();
+    setVoiceFlowStep(null);
+    resetUniScanTimer();
+  };
+
+  const handleDoneUniScan = () => {
+    setShowSmartScanner(false);
+    resetSmartScanner();
+    setUniScanCount(0);
+    setUniScanLastItem("");
+    setVoiceFlowStep(null);
+    if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
+    if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  };
+
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); };
   const handleAddSmartItem = () => {
@@ -2154,7 +2275,8 @@ export default function TrackFreshDashboard() {
                 {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">Freeze By</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
                 <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
                 <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
-                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); }} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("cancel")}</button>
+                <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{String.fromCodePoint(0x27A1,0xFE0F)} {lang === "es" ? "Agregar y Siguiente" : "Add & Next"}</button>
+              <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? String.fromCodePoint(0x2705) + " Done (" + uniScanCount + " items)" : t("cancel")}</button>
               </div>)}
             </div>
           </div>
@@ -2380,7 +2502,7 @@ export default function TrackFreshDashboard() {
                 e.target.value = "";
               }} />
               <button onClick={() => document.getElementById("trackerLabelInput").click()} className="w-full rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ {t("label")}</button></div>
-              <button onClick={() => { setShowSmartScanner(true); resetMultiScanTimer(); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
+              <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ {t("quickAdd")}</button>
             </div>
             <Card>
