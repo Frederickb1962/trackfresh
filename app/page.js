@@ -1972,7 +1972,7 @@ export default function TrackFreshDashboard() {
                 <li className="flex gap-2"><span>\ud83d\uded2</span><span><strong>Shopping:</strong> {lang === "es" ? "Crea tu lista de compras y marca lo que compres." : "Build your shopping list and check off items as you shop."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udcc5</span><span><strong>{lang === "es" ? "Comidas" : "Meals"}:</strong> {lang === "es" ? "La IA planifica tus comidas de la semana." : "AI plans your weekly meals based on your tracked items."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udc65</span><span><strong>{lang === "es" ? "Comunidad" : "Community"}:</strong> {lang === "es" ? "Comparte recetas, consejos y chatea." : "Share recipes, tips, and chat with others."}</span></li>
-                <li className="flex gap-2"><span>\u26a0\ufe0f</span><span><strong>FDA Recalls:</strong> {lang === "es" ? "Alertas de seguridad alimentaria en tiempo real." : "Real-time food safety alerts from the FDA."}</span></li>
+                <li className="flex gap-2"><span>⚠️</span><span><strong>FDA Recalls:</strong> {lang === "es" ? "Alertas de seguridad alimentaria en tiempo real." : "Real-time food safety alerts from the FDA."}</span></li>
               </ul>
               <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl px-4 py-2 text-sm btn-green-3d">{t("close")}</button>
             </div>
