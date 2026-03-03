@@ -250,7 +250,8 @@ const GLOBAL_STYLES = `
   .card-3d:hover {
     box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
   }
-/* === MARKETING PAGE === */
+
+  /* === MARKETING PAGE === */
   .mkt-page { min-height: 100vh; background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
   .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto; }
   .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
@@ -265,11 +266,6 @@ const GLOBAL_STYLES = `
   .mkt-phone-inner { background: linear-gradient(to bottom, #f0fdf4, #fff); border-radius: 20px; padding: 1rem; }
   .mkt-phone-header { text-align: center; font-size: 0.85rem; font-weight: 800; color: #15803d; margin-bottom: 0.5rem; }
   .mkt-phone-item { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.5rem; border-radius: 8px; margin-bottom: 4px; font-size: 0.7rem; }
-  .mkt-phone-item:nth-child(1) { background: #fef2f2; }
-  .mkt-phone-item:nth-child(2) { background: #fefce8; }
-  .mkt-phone-item:nth-child(3) { background: #fef2f2; }
-  .mkt-phone-item:nth-child(4) { background: #f0fdf4; }
-  .mkt-phone-item:nth-child(5) { background: #f0fdf4; }
   .mkt-phone-nav { display: flex; justify-content: space-around; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb; }
   .mkt-phone-nav span { font-size: 0.55rem; color: #6b7280; font-weight: 600; }
   .mkt-section { padding: 3rem 1.5rem; max-width: 800px; margin: 0 auto; }
@@ -289,7 +285,7 @@ const GLOBAL_STYLES = `
   .mkt-feature p { font-size: 0.8rem; opacity: 0.75; line-height: 1.4; }
   .mkt-steps { counter-reset: step; margin-top: 2rem; }
   .mkt-step { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
-  .mkt-step-num { counter-increment: step; min-width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 3px 0 #92400e; }
+  .mkt-step-num { min-width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 3px 0 #92400e; }
   .mkt-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
   .mkt-step p { font-size: 0.85rem; opacity: 0.8; line-height: 1.5; }
   .mkt-impact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
@@ -304,106 +300,7 @@ const GLOBAL_STYLES = `
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
-```
-
-After pasting, it should look like:
-```
-  }
-  /* === MARKETING PAGE === */
-  .mkt-page { min-height: ...
-  ...
-  .mkt-animate-d4 { animation-delay: 0.4s; }
 `;
-```
-
----
-
-**PASTE 2 — MarketingPage component**
-
-Press **Cmd+F** and search for:
-
-function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
-  const isEs = lang === "es";
-  return (
-    <div className="mkt-page">
-      <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
-      <nav className="mkt-nav">
-        <div className="mkt-nav-logo">🥦 TrackFresh <span style={{opacity:0.6,fontSize:"0.7em"}}>Ai</span></div>
-        <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
-          <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? "🇲🇽 ES" : "🇺🇸 EN"}</button>
-        </div>
-      </nav>
-      <div className="mkt-hero mkt-animate">
-        <h1>{isEs ? "Deja de Desperdiciar Comida." : "Stop Wasting Food."}<br/><span>{isEs ? "Empieza a Ahorrar." : "Start Saving."}</span></h1>
-        <p>{isEs ? "TrackFresh Ai es tu asistente de cocina inteligente — escanea, rastrea y administra tu comida, planifica comidas, descubre recetas y elimina el desperdicio." : "TrackFresh Ai is your intelligent kitchen assistant — scan, track, and manage your food, plan meals, discover recipes, and eliminate waste."}</p>
-        <button onClick={onLaunchApp} className="mkt-cta mkt-animate mkt-animate-d2">🚀 {isEs ? "Abrir TrackFresh" : "Launch TrackFresh"}</button>
-      </div>
-      <div className="mkt-phone mkt-animate mkt-animate-d3">
-        <div className="mkt-phone-inner">
-          <div className="mkt-phone-header">🥦 TrackFresh Ai</div>
-          <div style={{fontSize:"0.65rem",fontWeight:700,color:"#374151",marginBottom:"4px"}}>{isEs ? "Vence Pronto" : "Expiring Soon"}</div>
-          {[{e:"🥛",n:isEs?"Leche":"Milk",c:"1d",bg:"#fef2f2"},{e:"🥬",n:isEs?"Espinacas":"Spinach",c:"3d",bg:"#fefce8"},{e:"🍗",n:isEs?"Pechuga":"Chicken",c:"2d",bg:"#fef2f2"},{e:"🫐",n:isEs?"Arándanos":"Blueberries",c:"5d",bg:"#f0fdf4"},{e:"🧀",n:isEs?"Queso":"Cheese",c:"8d",bg:"#f0fdf4"}].map((item,i) => (
-            <div key={i} className="mkt-phone-item" style={{background:item.bg}}><span>{item.e} <strong style={{color:"#111"}}>{item.n}</strong></span><span style={{color:"#6b7280"}}>{item.c}</span></div>
-          ))}
-          <div className="mkt-phone-nav"><span>📦 {isEs?"Despensa":"Pantry"}</span><span>📷 {isEs?"Escanear":"Scan"}</span><span>🛒 {isEs?"Compras":"Shop"}</span><span>📊 Stats</span></div>
-        </div>
-      </div>
-      <div className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><span>{isEs ? "El Problema" : "The Problem"}</span><h2>{isEs ? "El Desperdicio se Esconde en Tu Cocina" : "Food Waste Is Hiding in Your Kitchen"}</h2></div>
-        <div className="mkt-stats">
-          <div><div className="mkt-stat-num">40%</div><div className="mkt-stat-label">{isEs ? "de la comida se desperdicia" : "of food produced is wasted"}</div></div>
-          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al año" : "thrown away per family yearly"}</div></div>
-          <div><div className="mkt-stat-num">43%</div><div className="mkt-stat-label">{isEs ? "del desperdicio ocurre en casa" : "of waste happens at home"}</div></div>
-        </div>
-      </div>
-      <div className="mkt-section">
-        <div className="mkt-section-title"><span>{isEs ? "La Solución" : "The Solution"}</span><h2>{isEs ? "Conoce TrackFresh Ai" : "Meet TrackFresh Ai"}</h2></div>
-        <div className="mkt-features">
-          {[{icon:"📸",title:isEs?"Escáner con IA":"AI Label Scanner",desc:isEs?"Toma foto de cualquier etiqueta — la IA lee nombre y fecha.":"Snap a photo of any food label — AI reads it instantly."},{icon:"📦",title:isEs?"Código de Barras":"Barcode Scanner",desc:isEs?"Apunta tu cámara a cualquier código de barras.":"Point your camera at any barcode."},{icon:"⏰",title:isEs?"Alertas Inteligentes":"Smart Expiry Alerts",desc:isEs?"Niveles de urgencia con colores.":"Color-coded urgency levels."},{icon:"🎤",title:isEs?"Entrada por Voz":"Voice Input",desc:isEs?"¿Manos ocupadas? Solo habla.":"Hands full? Just speak."},{icon:"🍳",title:isEs?"Recetas con IA":"AI Recipes",desc:isEs?"Recetas basadas en lo que tienes.":"Recipes from what you have."},{icon:"📅",title:isEs?"Planificador":"Meal Planner",desc:isEs?"La IA planifica tus comidas.":"AI plans your weekly meals."},{icon:"🛒",title:isEs?"Lista de Compras":"Smart Shopping",desc:isEs?"Lista inteligente con alertas.":"Smart list with alerts."},{icon:"⚠️",title:isEs?"Retiros FDA":"FDA Recalls",desc:isEs?"Alertas de seguridad alimentaria.":"Real-time food safety alerts."}].map((f,i) => (
-            <div key={i} className="mkt-feature mkt-animate" style={{animationDelay:0.1*i+"s"}}><div className="mkt-feature-icon">{f.icon}</div><h3>{f.title}</h3><p>{f.desc}</p></div>
-          ))}
-        </div>
-      </div>
-      <div className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><span>{isEs ? "Cómo Funciona" : "How It Works"}</span><h2>{isEs ? "Cuatro Pasos a Cero Desperdicio" : "Four Steps to Zero Waste"}</h2></div>
-        <div className="mkt-steps">
-          {[{n:"1",title:isEs?"Escanea o Agrega":"Scan or Add",desc:isEs?"Usa el escáner de IA, código de barras, voz o manual.":"Use AI scanner, barcode, voice, or manual entry."},{n:"2",title:isEs?"Establece Fechas":"Set Expiry Dates",desc:isEs?"La IA auto-detecta fechas de etiquetas.":"AI auto-detects dates from labels."},{n:"3",title:isEs?"Recibe Alertas":"Get Alerts & Act",desc:isEs?"Tarjetas con colores muestran urgencia.":"Color-coded cards show urgency."},{n:"4",title:isEs?"Ahorra":"Save Food & Money",desc:isEs?"Reduce el desperdicio hasta 40% en tres meses.":"Reduce waste by 40% in three months."}].map((s,i) => (
-            <div key={i} className="mkt-step mkt-animate" style={{animationDelay:0.15*i+"s"}}><div className="mkt-step-num">{s.n}</div><div><h3>{s.title}</h3><p>{s.desc}</p></div></div>
-          ))}
-        </div>
-      </div>
-      <div className="mkt-section">
-        <div className="mkt-section-title"><span>{isEs ? "Tu Impacto" : "Your Impact"}</span><h2>{isEs ? "Cada Producto Salvado Importa" : "Every Item Saved Matters"}</h2></div>
-        <div className="mkt-impact">
-          <div className="mkt-impact-card"><div className="icon">💰</div><p><strong>$600–$800</strong> {isEs ? "ahorrados al año" : "saved annually"}</p></div>
-          <div className="mkt-impact-card"><div className="icon">🌍</div><p>{isEs ? "Metano es " : "Methane is "}<strong>25×</strong> {isEs ? "más potente que CO₂" : "more potent than CO₂"}</p></div>
-          <div className="mkt-impact-card"><div className="icon">🍎</div><p>{isEs ? "Reducir desperdicio " : "Reducing waste by "}<strong>25%</strong> {isEs ? "podría alimentar a todos" : "could feed everyone"}</p></div>
-        </div>
-      </div>
-      <div className="mkt-section" style={{textAlign:"center",paddingBottom:"2rem"}}>
-        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"1rem"}}>{isEs ? "¿Listo para Dejar de Desperdiciar?" : "Ready to Stop Wasting Food?"}</h2>
-        <p style={{opacity:0.8,marginBottom:"1.5rem",fontSize:"0.95rem"}}>{isEs ? "Únete a miles ahorrando comida y dinero." : "Join thousands saving food and money."}</p>
-        <button onClick={onLaunchApp} className="mkt-cta">🚀 {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
-      </div>
-      <div className="mkt-footer">🥦 TrackFresh Ai © 2026 — {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
-    </div>
-  );
-}
-```
-
----
-
-**PASTE 3 — Add marketing state**
-
-Press **Cmd+F** and search for:
-```
-const [showMarketing, setShowMarketing] = useState(true);
-  React.useEffect(() => { try { if (sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
-  const handleLaunchApp = () => { setShowMarketing(false); try { sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
-
-
-const [isUnlocked, setIsUnlocked] = useState(false);```
-export default function TrackFreshDashboard()`;
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
@@ -1276,12 +1173,108 @@ function CommunityStewAnim() {
   );
 }
 
+
+function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
+  const isEs = lang === "es";
+  const B = String.fromCodePoint;
+  const broc = B(0x1F966);
+  const rocket = B(0x1F680);
+  const milk = B(0x1F95B);
+  const leafy = B(0x1F96C);
+  const drum = B(0x1F357);
+  const berry = B(0x1FAD0);
+  const cheese = B(0x1F9C0);
+  const pkg = B(0x1F4E6);
+  const cam = B(0x1F4F7);
+  const cart = B(0x1F6D2);
+  const chart = B(0x1F4CA);
+  const snap = B(0x1F4F8);
+  const clock = B(0x23F0);
+  const mic = B(0x1F3A4);
+  const cook = B(0x1F373);
+  const cal = B(0x1F4C5);
+  const warn = B(0x26A0) + B(0xFE0F);
+  const money = B(0x1F4B0);
+  const globe = B(0x1F30D);
+  const apple = B(0x1F34E);
+  const mxFlag = B(0x1F1F2) + B(0x1F1FD);
+  const usFlag = B(0x1F1FA) + B(0x1F1F8);
+  return (
+    <div className="mkt-page">
+      <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+      <nav className="mkt-nav">
+        <div className="mkt-nav-logo">{broc} TrackFresh <span style={{opacity:0.6,fontSize:"0.7em"}}>Ai</span></div>
+        <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
+          <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
+        </div>
+      </nav>
+      <div className="mkt-hero mkt-animate">
+        <h1>{isEs ? "Deja de Desperdiciar Comida." : "Stop Wasting Food."}<br/><span>{isEs ? "Empieza a Ahorrar." : "Start Saving."}</span></h1>
+        <p>{isEs ? "TrackFresh Ai es tu asistente de cocina inteligente \u2014 escanea, rastrea y administra tu comida, planifica comidas, descubre recetas y elimina el desperdicio." : "TrackFresh Ai is your intelligent kitchen assistant \u2014 scan, track, and manage your food, plan meals, discover recipes, and eliminate waste."}</p>
+        <button onClick={onLaunchApp} className="mkt-cta mkt-animate mkt-animate-d2">{rocket} {isEs ? "Abrir TrackFresh" : "Launch TrackFresh"}</button>
+      </div>
+      <div className="mkt-phone mkt-animate mkt-animate-d3">
+        <div className="mkt-phone-inner">
+          <div className="mkt-phone-header">{broc} TrackFresh Ai</div>
+          <div style={{fontSize:"0.65rem",fontWeight:700,color:"#374151",marginBottom:"4px"}}>{isEs ? "Vence Pronto" : "Expiring Soon"}</div>
+          {[{e:milk,n:isEs?"Leche":"Milk",c:"1d",bg:"#fef2f2"},{e:leafy,n:isEs?"Espinacas":"Spinach",c:"3d",bg:"#fefce8"},{e:drum,n:isEs?"Pechuga":"Chicken",c:"2d",bg:"#fef2f2"},{e:berry,n:isEs?"Ar\u00e1ndanos":"Blueberries",c:"5d",bg:"#f0fdf4"},{e:cheese,n:isEs?"Queso":"Cheese",c:"8d",bg:"#f0fdf4"}].map((item,i) => (
+            <div key={i} className="mkt-phone-item" style={{background:item.bg}}><span>{item.e} <strong style={{color:"#111"}}>{item.n}</strong></span><span style={{color:"#6b7280"}}>{item.c}</span></div>
+          ))}
+          <div className="mkt-phone-nav"><span>{pkg} {isEs?"Despensa":"Pantry"}</span><span>{cam} {isEs?"Escanear":"Scan"}</span><span>{cart} {isEs?"Compras":"Shop"}</span><span>{chart} Stats</span></div>
+        </div>
+      </div>
+      <div className="mkt-section mkt-section-dark">
+        <div className="mkt-section-title"><span>{isEs ? "El Problema" : "The Problem"}</span><h2>{isEs ? "El Desperdicio se Esconde en Tu Cocina" : "Food Waste Is Hiding in Your Kitchen"}</h2></div>
+        <div className="mkt-stats">
+          <div><div className="mkt-stat-num">40%</div><div className="mkt-stat-label">{isEs ? "de la comida se desperdicia" : "of food produced is wasted"}</div></div>
+          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al a\u00f1o" : "thrown away per family yearly"}</div></div>
+          <div><div className="mkt-stat-num">43%</div><div className="mkt-stat-label">{isEs ? "del desperdicio ocurre en casa" : "of waste happens at home"}</div></div>
+        </div>
+      </div>
+      <div className="mkt-section">
+        <div className="mkt-section-title"><span>{isEs ? "La Soluci\u00f3n" : "The Solution"}</span><h2>{isEs ? "Conoce TrackFresh Ai" : "Meet TrackFresh Ai"}</h2></div>
+        <div className="mkt-features">
+          {[{icon:snap,title:isEs?"Esc\u00e1ner con IA":"AI Label Scanner",desc:isEs?"Toma foto de cualquier etiqueta.":"Snap a photo of any food label."},{icon:pkg,title:isEs?"C\u00f3digo de Barras":"Barcode Scanner",desc:isEs?"Apunta tu c\u00e1mara a cualquier c\u00f3digo.":"Point your camera at any barcode."},{icon:clock,title:isEs?"Alertas Inteligentes":"Smart Expiry Alerts",desc:isEs?"Niveles de urgencia con colores.":"Color-coded urgency levels."},{icon:mic,title:isEs?"Entrada por Voz":"Voice Input",desc:isEs?"Manos ocupadas? Solo habla.":"Hands full? Just speak."},{icon:cook,title:isEs?"Recetas con IA":"AI Recipes",desc:isEs?"Recetas basadas en lo que tienes.":"Recipes from what you have."},{icon:cal,title:isEs?"Planificador":"Meal Planner",desc:isEs?"La IA planifica tus comidas.":"AI plans your weekly meals."},{icon:cart,title:isEs?"Lista de Compras":"Smart Shopping",desc:isEs?"Lista inteligente con alertas.":"Smart list with alerts."},{icon:warn,title:isEs?"Retiros FDA":"FDA Recalls",desc:isEs?"Alertas de seguridad alimentaria.":"Real-time food safety alerts."}].map((f,i) => (
+            <div key={i} className="mkt-feature mkt-animate" style={{animationDelay:0.1*i+"s"}}><div className="mkt-feature-icon">{f.icon}</div><h3>{f.title}</h3><p>{f.desc}</p></div>
+          ))}
+        </div>
+      </div>
+      <div className="mkt-section mkt-section-dark">
+        <div className="mkt-section-title"><span>{isEs ? "C\u00f3mo Funciona" : "How It Works"}</span><h2>{isEs ? "Cuatro Pasos a Cero Desperdicio" : "Four Steps to Zero Waste"}</h2></div>
+        <div className="mkt-steps">
+          {[{n:"1",title:isEs?"Escanea o Agrega":"Scan or Add",desc:isEs?"Usa el esc\u00e1ner de IA, c\u00f3digo de barras, voz o manual.":"Use AI scanner, barcode, voice, or manual entry."},{n:"2",title:isEs?"Establece Fechas":"Set Expiry Dates",desc:isEs?"La IA auto-detecta fechas de etiquetas.":"AI auto-detects dates from labels."},{n:"3",title:isEs?"Recibe Alertas":"Get Alerts & Act",desc:isEs?"Tarjetas con colores muestran urgencia.":"Color-coded cards show urgency."},{n:"4",title:isEs?"Ahorra":"Save Food & Money",desc:isEs?"Reduce el desperdicio hasta 40%.":"Reduce waste by 40% in three months."}].map((s,i) => (
+            <div key={i} className="mkt-step mkt-animate" style={{animationDelay:0.15*i+"s"}}><div className="mkt-step-num">{s.n}</div><div><h3>{s.title}</h3><p>{s.desc}</p></div></div>
+          ))}
+        </div>
+      </div>
+      <div className="mkt-section">
+        <div className="mkt-section-title"><span>{isEs ? "Tu Impacto" : "Your Impact"}</span><h2>{isEs ? "Cada Producto Salvado Importa" : "Every Item Saved Matters"}</h2></div>
+        <div className="mkt-impact">
+          <div className="mkt-impact-card"><div className="icon">{money}</div><p><strong>$600-$800</strong> {isEs ? "ahorrados al a\u00f1o" : "saved annually"}</p></div>
+          <div className="mkt-impact-card"><div className="icon">{globe}</div><p>{isEs ? "Metano es " : "Methane is "}<strong>25x</strong> {isEs ? "m\u00e1s potente que CO2" : "more potent than CO2"}</p></div>
+          <div className="mkt-impact-card"><div className="icon">{apple}</div><p>{isEs ? "Reducir desperdicio " : "Reducing waste by "}<strong>25%</strong> {isEs ? "alimentar\u00eda a todos" : "could feed everyone"}</p></div>
+        </div>
+      </div>
+      <div className="mkt-section" style={{textAlign:"center",paddingBottom:"2rem"}}>
+        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"1rem"}}>{isEs ? "Listo para Dejar de Desperdiciar?" : "Ready to Stop Wasting Food?"}</h2>
+        <p style={{opacity:0.8,marginBottom:"1.5rem",fontSize:"0.95rem"}}>{isEs ? "\u00danete a miles ahorrando comida y dinero." : "Join thousands saving food and money."}</p>
+        <button onClick={onLaunchApp} className="mkt-cta">{rocket} {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
+      </div>
+      <div className="mkt-footer">{broc} TrackFresh Ai \u00A9 2026 \u2014 {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
+    </div>
+  );
+}
+
 export default function TrackFreshDashboard() {
   const [lang, setLang] = useState("en");
   const changeLang = (l) => { setLang(l); try { localStorage.setItem(LANG_KEY, l); } catch(e) {} };
   React.useEffect(() => { try { const saved = localStorage.getItem(LANG_KEY); if (saved) setLang(saved); } catch(e) {} }, []);
   const t = (key) => { const e = T[key]; return e ? (e[lang] || e.en || key) : key; };
 
+  
+  const [showMarketing, setShowMarketing] = useState(true);
+  React.useEffect(() => { try { if (sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
+  const handleLaunchApp = () => { setShowMarketing(false); try { sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
@@ -1819,8 +1812,9 @@ export default function TrackFreshDashboard() {
   const handlePostRecipe = () => { if (!newRecipeTitle.trim() || !newRecipeBody.trim()) return; setCommunity((prev) => ({ ...prev, recipes: [{ id: crypto.randomUUID(), author: username, title: newRecipeTitle.trim(), body: newRecipeBody.trim(), date: new Date().toLocaleDateString() }, ...prev.recipes] })); setNewRecipeTitle(""); setNewRecipeBody(""); };
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
-if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
-    if (isUnlocked === false) return (
+
+      if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
+  if (isUnlocked === false) return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{backgroundColor: "#faf7f2"}}>
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
         <div className="text-4xl mb-3">🥦</div>
