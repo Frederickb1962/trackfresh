@@ -1283,15 +1283,15 @@ export default function TrackFreshDashboard() {
 
   
   const [showMarketing, setShowMarketing] = useState(true);
-  React.useEffect(() => { try { if (sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
-  const handleLaunchApp = () => { setShowMarketing(false); try { sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
+  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
+  const handleLaunchApp = () => { setShowMarketing(false); try { if (window.sessionStorage) sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
   const handlePwSubmit = () => {
-    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { sessionStorage.setItem("tf_ok", "1"); } catch(e) {} } else { setPwError(true); }
+    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { if (window.sessionStorage) sessionStorage.setItem("tf_ok", "1"); } catch(e) {} } else { setPwError(true); }
   };
-  React.useEffect(() => { try { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); } catch(e) {} }, []);
+  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); } catch(e) {} }, []);
   const [activeTab, setActiveTab] = useState("tracker");
   const [burstingBubble, setBurstingBubble] = useState(null);
   const handleBubbleTap = (target) => {
@@ -1868,7 +1868,6 @@ export default function TrackFreshDashboard() {
           <div className="flex items-center gap-3">
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="rounded-full bg-green-500 px-3 py-1.5 text-sm font-bold text-white hover:bg-green-600 transition-all shadow-md">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             <button onClick={() => setShowHelp(true)} className="text-sm font-semibold text-green-700 hover:text-green-600 transition-colors underline decoration-green-300">{t("howToUse")}</button>
-            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { window.location.href = "https://logout@trackfresh.vercel.app"; } }} className="text-sm font-semibold text-green-600 hover:text-green-800 transition-colors">{t("signOut")}</button>
           </div>
         </div>
 
