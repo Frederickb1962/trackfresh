@@ -327,7 +327,7 @@ const T = {
   enterBeta: { en: "Enter Beta", es: "Entrar a Beta" },
   invalidCode: { en: "Invalid code. Try again.", es: "C\u00f3digo inv\u00e1lido. Intenta de nuevo." },
   contactFreddie: { en: "Contact Freddie for access", es: "Contacta a Freddie para acceso" },
-  welcomeTitle: { en: "Welcome to FreshTrack.ai!", es: "\u00a1Bienvenido a FreshTrack.ai!" },
+  welcomeTitle: { en: "Welcome to TrackFresh.ai!", es: "\u00a1Bienvenido a TrackFresh.ai!" },
   welcomeDesc: { en: "The smart way to track your groceries, reduce food waste, and save money.", es: "La forma inteligente de rastrear tus alimentos, reducir el desperdicio y ahorrar dinero." },
   welcomeF1: { en: "AI-powered label & barcode scanning", es: "Escaneo de etiquetas y c\u00f3digos de barras con IA" },
   welcomeF2: { en: "Smart AI expiry predictions & alerts", es: "Predicciones inteligentes de vencimiento con IA" },
@@ -1825,16 +1825,16 @@ export default function TrackFreshDashboard() {
 
       if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
   if (isUnlocked === false) return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{backgroundColor: "#faf7f2"}}>
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
-        <div className="text-4xl mb-3">🥦</div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-1">FreshTrack<span className="text-green-600">.ai</span></h1>
-        <p className="text-sm text-gray-500 mb-1">{t("betaTesting")}</p>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{background: "linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%)"}}>
+      <div style={{background:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)"}} className="rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
+        <div className="text-5xl mb-2">🥦</div>
+        <h1 className="text-2xl font-extrabold text-gray-800 mb-0">TrackFresh<span style={{color:"#059669"}}>.ai</span></h1>
+        <p className="text-sm font-semibold text-gray-500 mb-1">{t("betaTesting")}</p>
         <p className="text-xs text-gray-400 mb-4">{t("enterAccessCode")}</p>
-        <div className="mb-5"><p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">\ud83c\udf10 Language / Idioma</p><div className="flex justify-center gap-3"><button onClick={() => changeLang("en")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "en" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddfa\ud83c\uddf8 English</button><button onClick={() => changeLang("es")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "es" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddf2\ud83c\uddfd Espa\u00f1ol</button></div></div>
+        <div className="mb-5"><p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">\ud83c\udf10 Language / Idioma</p><div className="flex justify-center gap-3"><button onClick={() => changeLang("en")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "en" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddfa\ud83c\uddf8 English</button><button onClick={() => changeLang("es")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "es" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddf2\ud83c\uddfd Español</button></div></div>
         <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-center text-lg text-gray-800 mb-3 focus:border-green-500 focus:outline-none" />
         {pwError && <p className="text-red-500 text-sm mb-3">{t("invalidCode")}</p>}
-        <button onClick={handlePwSubmit} className="w-full rounded-xl py-3 text-white font-bold text-lg btn-green-3d">{t("enterBeta")}</button>
+        <button onClick={handlePwSubmit} className="w-full rounded-xl py-3 text-white font-bold text-lg shadow-lg" style={{background:"linear-gradient(to bottom, #059669, #047857)",boxShadow:"0 4px 0px #065f46, 0 6px 16px rgba(0,0,0,0.2)"}}>{t("enterBeta")}</button>
         <p className="text-xs text-gray-400 mt-4">{t("contactFreddie")}</p>
       </div>
     </div>
@@ -1847,7 +1847,7 @@ export default function TrackFreshDashboard() {
           <div className="text-5xl mb-3">🥦</div>
           <h2 className="text-2xl font-bold text-green-700 mb-1">{t("welcomeTitle")}</h2>
           <p className="text-gray-500 text-sm mb-3">{t("welcomeDesc")}</p>
-          <div className="mb-5"><p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">\ud83c\udf10 Language / Idioma</p><div className="flex justify-center gap-3"><button onClick={() => changeLang("en")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "en" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddfa\ud83c\uddf8 English</button><button onClick={() => changeLang("es")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "es" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddf2\ud83c\uddfd Espa\u00f1ol</button></div></div>
+          <div className="mb-5"><p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">\ud83c\udf10 Language / Idioma</p><div className="flex justify-center gap-3"><button onClick={() => changeLang("en")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "en" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddfa\ud83c\uddf8 English</button><button onClick={() => changeLang("es")} className={`rounded-xl px-6 py-3 text-base font-bold border-2 transition-all shadow-md ${lang === "es" ? "border-green-600 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-600"}`}>\ud83c\uddf2\ud83c\uddfd Español</button></div></div>
           <div className="text-left bg-green-50 rounded-xl p-4 mb-4 space-y-2">
             <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-gray-700">{t("welcomeF1")}</span></div>
             <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-gray-700">{t("welcomeF2")}</span></div>
