@@ -2814,8 +2814,28 @@ export default function TrackFreshDashboard() {
 
       </div>
     </div>
-      {/* FLOATING LANGUAGE BUTTON */}
-      <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-500 text-white shadow-xl hover:bg-green-600 hover:scale-110 transition-all flex items-center justify-center text-xl font-bold border-2 border-white" style={{ boxShadow: "0 4px 20px rgba(34,197,94,0.4)" }}>{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd" : "\ud83c\uddfa\ud83c\uddf8"}</button>
+    <nav className="bottom-nav">
+      <button onClick={() => setActiveTab("tracker")} className={activeTab === "tracker" ? "nav-active" : ""}>
+        <span className="nav-icon">{String.fromCodePoint(0x1F966)}</span>
+        <span className="nav-label">{t("tracker")}</span>
+      </button>
+      <button onClick={() => setActiveTab("recipes")} className={activeTab === "recipes" ? "nav-active" : ""}>
+        <span className="nav-icon">{String.fromCodePoint(0x1F373)}</span>
+        <span className="nav-label">{t("recipes")}</span>
+      </button>
+      <button onClick={() => setActiveTab("shopping")} className={activeTab === "shopping" ? "nav-active" : ""}>
+        <span className="nav-icon">{String.fromCodePoint(0x1F6D2)}</span>
+        <span className="nav-label">{t("shopping")}</span>
+      </button>
+      <button onClick={() => setActiveTab("meals")} className={activeTab === "meals" ? "nav-active" : ""}>
+        <span className="nav-icon">{String.fromCodePoint(0x1F4C5)}</span>
+        <span className="nav-label">{t("meals")}</span>
+      </button>
+      <button onClick={() => setActiveTab("more")} className={activeTab === "more" || activeTab === "stores-page" || activeTab === "community" ? "nav-active" : ""}>
+        <span className="nav-icon">{String.fromCodePoint(0x2699)}{String.fromCodePoint(0xFE0F)}</span>
+        <span className="nav-label">More</span>
+      </button>
+    </nav>
     </>
   );
 }
