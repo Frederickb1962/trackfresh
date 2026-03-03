@@ -300,6 +300,16 @@ const GLOBAL_STYLES = `
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
+  /* === BOTTOM NAV === */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to bottom, #064e3b, #022c22); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
+  .bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; min-width: 56px; transition: all 0.2s; }
+  .bottom-nav button span.nav-icon { font-size: 1.35rem; transition: transform 0.2s; }
+  .bottom-nav button span.nav-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.03em; }
+  .bottom-nav button.nav-active span.nav-icon { transform: scale(1.15); }
+  .bottom-nav button.nav-active span.nav-label { color: #4ade80; }
+  .bottom-nav button:not(.nav-active) span.nav-label { color: rgba(255,255,255,0.5); }
+  .bottom-nav button:not(.nav-active) span.nav-icon { opacity: 0.6; }
+  .main-content { padding-bottom: 90px !important; }
 `;
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -1282,7 +1292,7 @@ export default function TrackFreshDashboard() {
     if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { sessionStorage.setItem("tf_ok", "1"); } catch(e) {} } else { setPwError(true); }
   };
   React.useEffect(() => { try { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); } catch(e) {} }, []);
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState("tracker");
   const [burstingBubble, setBurstingBubble] = useState(null);
   const handleBubbleTap = (target) => {
     setBurstingBubble(target);
@@ -1852,7 +1862,7 @@ export default function TrackFreshDashboard() {
     )}
 
     <div className="min-h-screen bg-gradient-to-b from-green-50 via-emerald-50/50 to-white p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="mx-auto max-w-2xl space-y-4 main-content">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
           <div className="flex items-center gap-3">
@@ -1863,111 +1873,6 @@ export default function TrackFreshDashboard() {
         </div>
 
 
-
-        {activeTab === "home" && (
-          <div className="flex flex-col items-center py-6">
-            <p className="text-sm text-gray-600 mb-6">✨ Your AI-powered kitchen assistant</p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("tracker-menu")} className={`bubble-green ${burstingBubble === "tracker-menu" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">🥦</span>
-                  <span className="text-xs font-bold mt-1">{t("tracker")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("trackerDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("recipes")} className={`bubble-green ${burstingBubble === "recipes" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">🍳</span>
-                  <span className="text-xs font-bold mt-1">{t("recipes")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("recipesDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("shopping")} className={`bubble-green ${burstingBubble === "shopping" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">🛒</span>
-                  <span className="text-xs font-bold mt-1">{t("shopping")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("shoppingDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("meals")} className={`bubble-green ${burstingBubble === "meals" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">📅</span>
-                  <span className="text-xs font-bold mt-1">{t("meals")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("mealsDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("stores")} className={`bubble-green ${burstingBubble === "stores" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">🏪</span>
-                  <span className="text-xs font-bold mt-1">{t("stores")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("storesDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => handleBubbleTap("community")} className={`bubble-green ${burstingBubble === "community" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">👥</span>
-                  <span className="text-xs font-bold mt-1">{t("communityWord")}</span>
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("communityDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <button onClick={() => { setShowRecallsPanel(true); setFdaLoading(true); fetch("/api/fda-recalls").then(r => r.json()).then(d => { if (d.recalls) setFdaRecalls(d.recalls); setFdaLoading(false); }).catch(e => { console.error("FDA error:", e); setFdaLoading(false); }); }} className="h-20 w-20 rounded-full flex flex-col items-center justify-center text-white shadow-lg btn-green-3d" style={{position:"relative"}}>
-                  <span className="text-2xl">⚠️</span>
-                  <span className="text-xs font-bold mt-1">{t("fdaRecalls")}</span>
-                  {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"-4px",right:"-4px",background:"#ef4444",color:"white",borderRadius:"50%",width:"22px",height:"22px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.65rem",fontWeight:"800",border:"2px solid white",boxShadow:"0 2px 4px rgba(0,0,0,0.3)"}}>{fdaRecalls.length}</span>}
-                </button>
-                <p className="text-sm font-bold text-gray-700 text-center w-24">{t("fdaRecallsDesc")}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "tracker-menu" && (
-          <div className="flex flex-col items-center py-6">
-            <button onClick={() => setActiveTab("home")} className="self-start flex items-center gap-1 text-sm font-semibold text-green-700 mb-4">
-              <span>←</span> {t("back")}
-            </button>
-            <h2 className="text-lg font-bold text-gray-800 mb-1">✨ AI Food Scanner</h2>
-            <p className="text-sm text-gray-500 mb-6">{t("aiScanDesc")}</p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("receipt"); setTimeout(() => { setShowReceiptScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
-                  <span className="text-2xl">📷</span>
-                  <span className="text-xs font-bold mt-1">{t("receipt")}</span>
-                </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("receiptDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("barcode"); setTimeout(() => { setShowSmartScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
-                  <span className="text-2xl">📦</span>
-                  <span className="text-xs font-bold mt-1">{t("barcodeWord")}</span>
-                </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("barcodeDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("label"); setTimeout(() => { setShowSmartScanner(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
-                  <span className="text-2xl">🏷️</span>
-                  <span className="text-xs font-bold mt-1">{t("label")}</span>
-                </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("labelDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("quickadd"); setTimeout(() => { setShowQuickAdd(true); setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className="bubble-green">
-                  <span className="text-2xl">✏️</span>
-                  <span className="text-xs font-bold mt-1">{t("quickAdd")}</span>
-                </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("quickAddDesc")}</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <button onClick={() => { setBurstingBubble("myitems"); setTimeout(() => { setActiveTab("tracker"); setBurstingBubble(null); }, 350); }} className={`bubble-green ${burstingBubble === "myitems" ? "bubble-burst" : ""}`}>
-                  <span className="text-2xl">📋</span>
-                  <span className="text-xs font-bold mt-1">{t("myItems")}</span>
-                </button>
-                <p className="text-xs text-gray-500 text-center w-24">{t("myItemsDesc")}</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {showReceiptScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -2392,8 +2297,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700"><span>←</span> {t("home")}</button>
-              <h2 className="text-lg font-bold text-gray-800">{t("trackedItemsTitle")}</h2>
+              <h2 className="text-lg font-bold text-gray-800">🥦 {t("trackedItemsTitle")}</h2>
               <span className="text-sm text-gray-500">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
@@ -2518,7 +2422,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "recipes" && (
           <Card>
             <div className="mb-3 flex items-center gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button><ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
+            <ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
             <p className="mb-4 text-sm text-gray-600">{t("recipeIntro")}</p>
             <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">{t("noMatches")}</p>}
@@ -2566,7 +2470,7 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center gap-2">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            
                 <ShoppingCart className="h-5 w-5 text-green-600" />
                 <h2 className="text-lg font-bold">{t("shoppingList")}</h2>
                 {shoppingItems.some((it) => it.checked) && (
@@ -2657,7 +2561,7 @@ export default function TrackFreshDashboard() {
           <>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">{t("mealPlanner")}</h2>
@@ -2709,7 +2613,8 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Back</button>
+            
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
               <div style={{position: "absolute", bottom: 82, left: "50%", transform: "translateX(-50%)", width: 180, height: 16, background: "linear-gradient(to bottom, #9ca3af, #6b7280)", borderRadius: 8, zIndex: 11}}></div>
@@ -2803,9 +2708,39 @@ export default function TrackFreshDashboard() {
           </>
         )}
 
-        {activeTab === "stores" && (
+        {activeTab === "more" && (
           <div className="space-y-4">
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> {t("home")}</button>
+            <h2 className="text-lg font-bold text-gray-800">⚙️ More</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => setActiveTab("stores-page")} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                <span className="text-2xl block mb-1">🏪</span>
+                <span className="text-sm font-bold text-gray-800">{t("stores")}</span>
+                <span className="text-xs text-gray-500 block">{t("storesDesc")}</span>
+              </button>
+              <button onClick={() => setActiveTab("community")} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                <span className="text-2xl block mb-1">👥</span>
+                <span className="text-sm font-bold text-gray-800">{t("communityWord")}</span>
+                <span className="text-xs text-gray-500 block">{t("communityDesc")}</span>
+              </button>
+              <button onClick={() => { setShowRecallsPanel(true); }} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all relative">
+                <span className="text-2xl block mb-1">⚠️</span>
+                <span className="text-sm font-bold text-gray-800">{t("fdaRecalls")}</span>
+                <span className="text-xs text-gray-500 block">{t("fdaRecallsDesc")}</span>
+                {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"8px",right:"8px",background:"#ef4444",color:"white",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontWeight:"800"}}>{fdaRecalls.length}</span>}
+              </button>
+              <button onClick={() => setShowHelp(true)} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                <span className="text-2xl block mb-1">❓</span>
+                <span className="text-sm font-bold text-gray-800">{t("howToUse")}</span>
+                <span className="text-xs text-gray-500 block">Help & tips</span>
+              </button>
+            </div>
+            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_mkt_seen"); } catch(e) {} window.location.reload(); } }} className="w-full rounded-xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-600 mt-4">{t("signOut")}</button>
+          </div>
+        )}
+
+        {activeTab === "stores-page" && (
+          <div className="space-y-4">
+            
             <div className="rounded-2xl bg-white p-5 card-3d">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">🏪</span>
