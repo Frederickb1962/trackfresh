@@ -1465,7 +1465,7 @@ export default function TrackFreshDashboard() {
   const [receiptItems, setReceiptItems] = useState([]);
   const [receiptError, setReceiptError] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
-  useEffect(() => { if (!localStorage.getItem("trackfresh.welcomed")) setShowWelcome(true); }, []);
+  useEffect(() => { try { if (!localStorage.getItem("trackfresh.welcomed")) setShowWelcome(true); } catch(e) {} }, []);
   useEffect(() => {
     if (trackedItems.length === 0) return;
     const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2);
@@ -1477,7 +1477,7 @@ export default function TrackFreshDashboard() {
     setCommunity(loadCommunity());
     setShoppingItems(loadShopping());
     setMeals(loadMeals());
-    const savedName = localStorage.getItem(USERNAME_KEY);
+    let savedName = null; try { savedName = localStorage.getItem(USERNAME_KEY); } catch(e) {}
     if (savedName) setUsername(savedName);
   }, []);
   useEffect(() => { saveItems(trackedItems); }, [trackedItems]);
@@ -1818,7 +1818,7 @@ export default function TrackFreshDashboard() {
     setSelectedReceiptItems([]);
   };
 
-  const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); localStorage.setItem(USERNAME_KEY, n); setUsernameInput(""); };
+  const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
   const handlePostRecipe = () => { if (!newRecipeTitle.trim() || !newRecipeBody.trim()) return; setCommunity((prev) => ({ ...prev, recipes: [{ id: crypto.randomUUID(), author: username, title: newRecipeTitle.trim(), body: newRecipeBody.trim(), date: new Date().toLocaleDateString() }, ...prev.recipes] })); setNewRecipeTitle(""); setNewRecipeBody(""); };
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
@@ -1856,7 +1856,7 @@ export default function TrackFreshDashboard() {
             <div className="flex items-center gap-2 text-sm"><span>❄️</span><span className="text-gray-700">{t("welcomeF5")}</span></div>
           </div>
           <p className="text-xs text-gray-400 mb-4">{t("welcomeLocal")}</p>
-          <button onClick={() => { setShowWelcome(false); localStorage.setItem("trackfresh.welcomed", "true"); }} className="w-full rounded-full py-3 text-lg btn-green-3d">🚀 Get Started</button>
+          <button onClick={() => { setShowWelcome(false); try { localStorage.setItem("trackfresh.welcomed", "true"); } catch(e) {} }} className="w-full rounded-full py-3 text-lg btn-green-3d">🚀 Get Started</button>
         </div>
       </div>
     )}
@@ -2642,7 +2642,7 @@ export default function TrackFreshDashboard() {
               <>
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-600">Signed in as <span className="font-semibold text-green-700">{username}</span></p>
-                  <button onClick={() => { setUsername(""); localStorage.removeItem(USERNAME_KEY); }} className="text-xs text-gray-400 underline">{t("changeName")}</button>
+                  <button onClick={() => { setUsername(""); try { localStorage.removeItem(USERNAME_KEY); } catch(e) {} }} className="text-xs text-gray-400 underline">{t("changeName")}</button>
                 </div>
                 <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
                   {[["chat","💬 Chat"],["recipes","📖 Recipes"],["tips","💡 Tips"]].map(([id, label]) => (
