@@ -1371,6 +1371,16 @@ export default function TrackFreshDashboard() {
   const [quickVoiceListening, setQuickVoiceListening] = useState("");
   const [quickVoiceError, setQuickVoiceError] = useState("");
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [multiScanCount, setMultiScanCount] = useState(0);
+  const [multiScanLastItem, setMultiScanLastItem] = useState("");
+  const multiScanTimer = React.useRef(null);
+  const resetMultiScanTimer = () => {
+    if (multiScanTimer.current) clearTimeout(multiScanTimer.current);
+    multiScanTimer.current = setTimeout(() => {
+      setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected("");
+      setMultiScanCount(0); setMultiScanLastItem("");
+    }, 30000);
+  };
   const [barcodeScanKey, setBarcodeScanKey] = useState(0);
   const [barcodeItem, setBarcodeItem] = useState(null);
   const [barcodeScanning, setBarcodeScanning] = useState(false);
@@ -1643,14 +1653,27 @@ export default function TrackFreshDashboard() {
     if (!barcodeItem) return;
     const loc = barcodeLocation || barcodeItem.location;
     const today = new Date().toISOString().split("T")[0];
+    const itemName = barcodeItem.name;
     setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: today, freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
-    setShowBarcodeScanner(false);
+    setMultiScanCount(prev => prev + 1);
+    setMultiScanLastItem(itemName);
     setBarcodeItem(null);
     setBarcodeDetected("");
     setBarcodeLocation("");
     setBarcodeUseBy("");
     setBarcodeFreezeBy("");
     setVoiceError("");
+    setBarcodeScanKey(prev => prev + 1);
+    resetMultiScanTimer();
+  };
+  const handleDoneScanning = () => {
+    setShowBarcodeScanner(false);
+    setBarcodeItem(null);
+    setBarcodeError("");
+    setBarcodeDetected("");
+    setMultiScanCount(0);
+    setMultiScanLastItem("");
+    if (multiScanTimer.current) clearTimeout(multiScanTimer.current);
   };
 
   const parseSpokenDate = (transcript) => {
@@ -2140,7 +2163,11 @@ export default function TrackFreshDashboard() {
         {showBarcodeScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">📦 Scan Barcode</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-bold">📦 Scan Barcode</h2>
+                {multiScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-3 py-1 text-xs font-bold">{multiScanCount} scanned</span>}
+              </div>
+              {multiScanLastItem && <div className="mb-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700 font-semibold animate-pulse">✅ Added: {multiScanLastItem} — Ready for next scan!</div>}
               <p className="mb-4 text-sm text-gray-600">{t("scanBarcodeDesc")}</p>
               {!barcodeItem && (
                 <BarcodeScanner key={barcodeScanKey} onDetected={handleBarcodeDetected} />
@@ -2195,10 +2222,10 @@ export default function TrackFreshDashboard() {
                     </div>
                   )}
                   <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold ${!barcodeLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
-                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
+                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); setBarcodeScanKey(prev => prev + 1); resetMultiScanTimer(); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
                 </div>
               )}
-              <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={handleDoneScanning} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{multiScanCount > 0 ? "✅ Done (" + multiScanCount + " items added)" : t("cancel")}</button>
             </div>
           </div>
         )}
@@ -2353,7 +2380,7 @@ export default function TrackFreshDashboard() {
                 e.target.value = "";
               }} />
               <button onClick={() => document.getElementById("trackerLabelInput").click()} className="w-full rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ {t("label")}</button></div>
-              <button onClick={() => setShowSmartScanner(true)} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
+              <button onClick={() => { setShowSmartScanner(true); resetMultiScanTimer(); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ {t("quickAdd")}</button>
             </div>
             <Card>
