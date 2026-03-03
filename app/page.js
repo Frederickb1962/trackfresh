@@ -1963,14 +1963,16 @@ export default function TrackFreshDashboard() {
       {showHelp && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("howToUse")}</h2>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>🔹 <strong>Tracker:</strong> AI searches 100+ items. Category and location auto-fill intelligently.</li>
-                <li>🔹 Filter by 🧊 {t("help2")}</li>
-                <li>🔹 <strong>Recipes:</strong> AI suggests recipes based on what's in your kitchen.</li>
-                <li>🔹 <strong>Shopping:</strong> Build your shopping list, check off items as you shop.</li>
-                <li>🔹 <strong>Community:</strong> Share recipes, tips, and chat.</li>
-                <li>🔹 {t("help6")}</li>
+              <h2 className="mb-3 text-lg font-bold text-green-700">{lang === "es" ? "C\u00f3mo Usar TrackFresh" : "How to Use TrackFresh"}</h2>
+              <ul className="space-y-3 text-sm text-gray-700">
+                <li className="flex gap-2"><span>\ud83e\udd66</span><span><strong>Tracker:</strong> {lang === "es" ? "La IA escanea un n\u00famero infinito de productos. Categor\u00eda y ubicaci\u00f3n se llenan autom\u00e1ticamente." : "AI scans an infinite number of items. Category and location auto-fill intelligently."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\udcf8</span><span><strong>{lang === "es" ? "Esc\u00e1ner" : "Scanners"}:</strong> {lang === "es" ? "Usa Recibo, Etiqueta, C\u00f3digo de Barras o Agregar R\u00e1pido para a\u00f1adir productos." : "Use Receipt, Label, Barcode, or Quick Add to add items."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\udd0d</span><span><strong>Filter:</strong> {lang === "es" ? "Filtra por ubicaci\u00f3n (Refrigerador, Congelador, Despensa) o categor\u00eda (L\u00e1cteos, Carne, etc.)." : "Filter by location (Fridge, Freezer, Pantry) or category (Dairy, Meat, Produce, etc.)."}</span></li>
+                <li className="flex gap-2"><span>\ud83c\udf73</span><span><strong>{lang === "es" ? "Recetas" : "Recipes"}:</strong> {lang === "es" ? "La IA sugiere recetas basadas en lo que tienes en tu cocina." : "AI suggests recipes based on what\u2019s in your kitchen."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\uded2</span><span><strong>Shopping:</strong> {lang === "es" ? "Crea tu lista de compras y marca lo que compres." : "Build your shopping list and check off items as you shop."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\udcc5</span><span><strong>{lang === "es" ? "Comidas" : "Meals"}:</strong> {lang === "es" ? "La IA planifica tus comidas de la semana." : "AI plans your weekly meals based on your tracked items."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\udc65</span><span><strong>{lang === "es" ? "Comunidad" : "Community"}:</strong> {lang === "es" ? "Comparte recetas, consejos y chatea." : "Share recipes, tips, and chat with others."}</span></li>
+                <li className="flex gap-2"><span>\u26a0\ufe0f</span><span><strong>FDA Recalls:</strong> {lang === "es" ? "Alertas de seguridad alimentaria en tiempo real." : "Real-time food safety alerts from the FDA."}</span></li>
               </ul>
               <button onClick={() => setShowHelp(false)} className="mt-4 rounded-xl px-4 py-2 text-sm btn-green-3d">{t("close")}</button>
             </div>
