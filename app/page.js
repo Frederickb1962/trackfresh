@@ -966,9 +966,11 @@ function SmartScanner({ onResult, onError, captureRef }) {
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("starting");
   const [scanError, setScanError] = useState("");
+  const [showPhotoBtn, setShowPhotoBtn] = useState(false);
   const detectedRef = useRef(false);
   const readerRef = useRef(null);
   const timerRef = useRef(null);
+  const photoTimerRef = useRef(null);
 
   useEffect(() => {
     detectedRef.current = false;
@@ -1009,6 +1011,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
           await videoRef.current.play();
         }
         setStatus("scanning");
+        photoTimerRef.current = setTimeout(() => setShowPhotoBtn(true), 8000);
         try {
           const { BrowserMultiFormatReader } = await import("@zxing/library");
           readerRef.current = new BrowserMultiFormatReader();
@@ -1018,6 +1021,8 @@ function SmartScanner({ onResult, onError, captureRef }) {
               if (timerRef.current) clearTimeout(timerRef.current);
               if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
               setStatus("barcode_found");
+              if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
+              setShowPhotoBtn(false);
               if ('speechSynthesis' in window) {
                 const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
                 u.rate = 1.1;
@@ -1046,6 +1051,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
     return () => {
       if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
       if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
     };
   }, []);
@@ -1063,10 +1069,16 @@ function SmartScanner({ onResult, onError, captureRef }) {
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Scanning for barcode... or tap Take Photo below"}
-            {status === "barcode_found" && "Barcode found! Looking up product..."}
-            {status === "reading_label" && "AI reading label... please wait"}
+            {status === "scanning" && "Point at barcode..."}
+            {status === "barcode_found" && "✅ Barcode found! Looking up product..."}
+            {status === "reading_label" && "📖 AI reading label..."}
           </p>
+          {showPhotoBtn && status === "scanning" && (
+            <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
+              style={{position:"absolute",bottom:"40px",left:"50%",transform:"translateX(-50%)",background:"rgba(251,146,60,0.95)",color:"white",border:"none",borderRadius:"20px",padding:"0.5rem 1.25rem",fontWeight:"bold",fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap"}}>
+              📷 Can't read barcode? Photograph it
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -1622,7 +1634,6 @@ export default function TrackFreshDashboard() {
   };
   const handleAddSmartItemMulti = () => {
     if (!smartResult) return;
-    // Kill voice loop immediately before anything else
     if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
@@ -1634,29 +1645,9 @@ export default function TrackFreshDashboard() {
     setVoiceFlowStep(null);
     resetUniScanTimer();
     setSmartScanKey(prev => prev + 1);
-    speakThen(lang === "es" ? "Guardado. Listo para siguiente." : "Saved. Ready for next item.", () => {
-      setTimeout(() => startScanCommandLoop(), 500);
-    });
   };
 
-  useEffect(() => {
-    if (showSmartScanner) {
-      setVoiceFlowPaused(false);
-      setShowVoiceEditForm(false);
-      setVoiceFlowStep(null);
-      setTimeout(() => {
-        speakThen(
-          lang === "es"
-            ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
-            : "Scanner ready. Point at a barcode or say Capture.",
-          () => startScanCommandLoop()
-        );
-      }, 700);
-    } else {
-      if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    }
-  }, [showSmartScanner]);
+
 
   useEffect(() => {
     if (showSmartScanner) {
