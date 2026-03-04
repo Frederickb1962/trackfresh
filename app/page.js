@@ -1462,6 +1462,8 @@ export default function TrackFreshDashboard() {
   const [uniScanCount, setUniScanCount] = useState(0);
   const [uniScanLastItem, setUniScanLastItem] = useState("");
   const [voiceFlowStep, setVoiceFlowStep] = useState(null);
+  const [voiceFlowPaused, setVoiceFlowPaused] = useState(false);
+  const [showVoiceEditForm, setShowVoiceEditForm] = useState(false);
   const uniScanTimer = React.useRef(null);
   const voiceFlowRef = React.useRef(null);
 
@@ -1484,6 +1486,18 @@ export default function TrackFreshDashboard() {
     return null;
   };
 
+  const speakThen = (text, cb) => {
+    if (!('speechSynthesis' in window)) { setTimeout(cb || (() => {}), 300); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.1; u.pitch = 1;
+    const ms = Math.max(1400, (text.trim().split(/\s+/).length / 154) * 60000 + 900);
+    let done = false;
+    const fire = () => { if (!done) { done = true; if (cb) cb(); } };
+    u.onend = fire; setTimeout(fire, ms);
+    window.speechSynthesis.speak(u);
+  };
+
   const startVoiceCommand = (onResult) => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
@@ -1502,61 +1516,79 @@ export default function TrackFreshDashboard() {
     recog.start();
   };
 
+  const listenForDate = () => {
+    setVoiceFlowStep("listening_date");
+    startVoiceCommand((transcript) => {
+      const t = transcript.toLowerCase();
+      if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); speak(lang === "es" ? "Pausado." : "Paused."); return; }
+      if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); speak(lang === "es" ? "Modo edición." : "Edit mode. Say Return to Scan when done."); return; }
+      if (t.includes("stop") || t.includes("detener")) { handleDoneUniScan(); return; }
+      if (t.includes("skip") || t.includes("omitir")) { speak(lang === "es" ? "Omitido." : "Skipped."); resetSmartScanner(); setTimeout(() => startScanCommandLoop(), 1200); return; }
+      const parsed = parseSpokenDate(transcript);
+      if (parsed) {
+        setSmartUseBy(parsed);
+        setVoiceFlowStep("say_next");
+        speakThen(lang === "es" ? "Fecha capturada. Di Siguiente o Listo." : "Date captured. Say Next or Done.", () => {
+          setVoiceFlowStep("listening_next");
+          startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
+        });
+      } else {
+        speak(lang === "es" ? "No entendí. Intente de nuevo." : "Could not understand. Try again.");
+        setTimeout(() => listenForDate(), 1800);
+      }
+    });
+  };
+
+  const startScanCommandLoop = () => {
+    startVoiceCommand((transcript) => {
+      const t = transcript.toLowerCase();
+      if (t.includes('capture') || t.includes('capturar') || t.includes('photo') || t.includes('foto')) {
+        if (smartCaptureRef && smartCaptureRef.current) smartCaptureRef.current();
+        else setTimeout(() => startScanCommandLoop(), 500);
+      } else if (t.includes('skip') || t.includes('omitir') || t.includes('saltar')) {
+        speakThen(lang === "es" ? "Omitido." : "Skipped.", () => startScanCommandLoop());
+      } else if (t.includes('edit') || t.includes('editar')) {
+        setShowVoiceEditForm(true);
+        speak(lang === "es" ? "Modo edición. Di Volver a Escanear para continuar." : "Edit mode. Say Return to Scan when done.");
+      } else if (t.includes('pause') || t.includes('pausa')) {
+        setVoiceFlowPaused(true);
+        speak(lang === "es" ? "Pausado. Di Continuar." : "Paused. Say Continue to resume.");
+      } else if (t.includes('continue') || t.includes('continuar')) {
+        setVoiceFlowPaused(false);
+        speakThen(lang === "es" ? "Continuando." : "Continuing.", () => startScanCommandLoop());
+      } else if (t.includes('return') || t.includes('volver')) {
+        setShowVoiceEditForm(false);
+        speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop());
+      } else if (t.includes('stop') || t.includes('detener') || t.includes('parar')) {
+        handleDoneUniScan();
+      } else {
+        startScanCommandLoop();
+      }
+    });
+  };
+
   const handleSmartResultMulti = (item) => {
+    if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setSmartResult(item);
     setSmartError("");
+    setShowVoiceEditForm(false);
     resetUniScanTimer();
-    const loc = item.location || "Fridge";
-    setSmartLocation(loc);
+    setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
-    const prompt = lang === "es"
-      ? "Encontrado " + itemName + ". Diga la fecha de vencimiento."
-      : "Found " + itemName + ". Say the expiration date.";
     setVoiceFlowStep("say_date");
-    const utt = speak(prompt);
-    if (utt) {
-      utt.onend = () => {
-        setVoiceFlowStep("listening_date");
-        startVoiceCommand((transcript) => {
-          const parsed = parseSpokenDate(transcript);
-          if (parsed) {
-            setSmartUseBy(parsed);
-            setVoiceFlowStep("say_next");
-            const nextPrompt = lang === "es"
-              ? "Fecha capturada. Diga Siguiente para escanear otro, o Listo para terminar."
-              : "Date captured. Say Next to scan another, or Done to finish.";
-            const utt2 = speak(nextPrompt);
-            if (utt2) {
-              utt2.onend = () => {
-                setVoiceFlowStep("listening_next");
-                startVoiceCommand((cmd) => {
-                  handleVoiceNextDone(cmd);
-                });
-              };
-            }
-          } else {
-            setVoiceFlowStep(null);
-            speak(lang === "es" ? "No entend\u00ed la fecha. Ingr\u00e9sela manualmente." : "Could not understand date. Please enter it manually.");
-          }
-        });
-      };
-    }
+    speakThen(lang === "es" ? "Encontrado " + itemName + ". Diga la fecha de vencimiento." : "Found " + itemName + ". Say the expiration date.", () => listenForDate());
   };
-
   const handleVoiceNextDone = (cmd) => {
-    const isNext = cmd.includes("next") || cmd.includes("siguiente") || cmd.includes("pr\u00f3xima") || cmd.includes("proxima");
-    const isDone = cmd.includes("done") || cmd.includes("listo") || cmd.includes("lista") || cmd.includes("finish") || cmd.includes("terminar");
-    if (isNext) {
-      handleAddSmartItemMulti();
-    } else if (isDone) {
-      handleAddSmartItemMulti();
-      setTimeout(() => handleDoneUniScan(), 300);
-    } else {
-      setVoiceFlowStep("listening_next");
-      startVoiceCommand((cmd2) => { handleVoiceNextDone(cmd2); });
-    }
+    const t = cmd.toLowerCase();
+    if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); speak(lang === "es" ? "Pausado." : "Paused. Say Continue."); return; }
+    if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); speak(lang === "es" ? "Modo edición." : "Edit mode. Say Return to Scan when done."); return; }
+    if (t.includes("stop") || t.includes("detener")) { handleDoneUniScan(); return; }
+    if (t.includes("next") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { handleAddSmartItemMulti(); return; }
+    if (t.includes("done") || t.includes("listo") || t.includes("lista") || t.includes("finish") || t.includes("terminar")) { handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
+    setVoiceFlowStep("listening_next");
+    startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
   };
-
   const handleAddSmartItemMulti = () => {
     if (!smartResult) return;
     const itemName = smartResult.name || "Unknown Item";
@@ -1568,6 +1600,44 @@ export default function TrackFreshDashboard() {
     setVoiceFlowStep(null);
     resetUniScanTimer();
   };
+
+  useEffect(() => {
+    if (showSmartScanner) {
+      setVoiceFlowPaused(false);
+      setShowVoiceEditForm(false);
+      setVoiceFlowStep(null);
+      setTimeout(() => {
+        speakThen(
+          lang === "es"
+            ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
+            : "Scanner ready. Say Capture, Skip, Edit, Pause, or Stop at any time.",
+          () => startScanCommandLoop()
+        );
+      }, 700);
+    } else {
+      if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  }, [showSmartScanner]);
+
+  useEffect(() => {
+    if (showSmartScanner) {
+      setVoiceFlowPaused(false);
+      setShowVoiceEditForm(false);
+      setVoiceFlowStep(null);
+      setTimeout(() => {
+        speakThen(
+          lang === "es"
+            ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
+            : "Scanner ready. Say Capture, Skip, Edit, Pause, or Stop at any time.",
+          () => startScanCommandLoop()
+        );
+      }, 700);
+    } else {
+      if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  }, [showSmartScanner]);
 
   const handleDoneUniScan = () => {
     setShowSmartScanner(false);
@@ -1581,7 +1651,7 @@ export default function TrackFreshDashboard() {
   };
 
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
-  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
@@ -2170,6 +2240,18 @@ export default function TrackFreshDashboard() {
               </div>
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
               {!smartResult && !smartError && (<div>
+                {(voiceFlowStep || voiceFlowPaused) && (
+                  <div style={{background: voiceFlowPaused ? "#7c3aed" : "#1e3a5f", borderRadius:"10px", padding:"0.5rem 0.75rem", marginBottom:"0.5rem", display:"flex", alignItems:"center", gap:"0.5rem"}}>
+                    <span>{voiceFlowPaused ? "⏸" : "🎙️"}</span>
+                    <span style={{color:"white", fontSize:"0.75rem", fontWeight:"bold"}}>
+                      {voiceFlowPaused && "Paused — say Continue"}
+                      {!voiceFlowPaused && voiceFlowStep === "say_date" && (lang === "es" ? "Preparando..." : "Preparing...")}
+                      {!voiceFlowPaused && voiceFlowStep === "listening_date" && (lang === "es" ? "🔴 Di la fecha..." : "🔴 Say the date...")}
+                      {!voiceFlowPaused && voiceFlowStep === "say_next" && "✓ Date saved!"}
+                      {!voiceFlowPaused && voiceFlowStep === "listening_next" && (lang === "es" ? "🔴 Di Siguiente o Listo..." : "🔴 Say Next or Done...")}
+                    </span>
+                  </div>
+                )}
                 <SmartScanner onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
                 <button onClick={async () => {
                   try {
@@ -2278,6 +2360,68 @@ export default function TrackFreshDashboard() {
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{String.fromCodePoint(0x27A1,0xFE0F)} {lang === "es" ? "Agregar y Siguiente" : "Add & Next"}</button>
               <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? String.fromCodePoint(0x2705) + " Done (" + uniScanCount + " items)" : t("cancel")}</button>
               </div>)}
+            </div>
+          </div>
+        )}
+
+        {showVoiceEditForm && smartResult && (
+          <div style={{position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.5)"}} onClick={() => setShowVoiceEditForm(false)}>
+            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto"}} onClick={e => e.stopPropagation()}>
+              <div style={{width:"40px",height:"4px",background:"#e5e7eb",borderRadius:"2px",margin:"0 auto 1rem"}} />
+              <h3 style={{fontWeight:"bold",marginBottom:"0.75rem"}}>✏️ {lang === "es" ? "Editar Item" : "Edit Item"}</h3>
+              <div style={{marginBottom:"0.75rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.25rem"}}>{lang === "es" ? "Nombre" : "Name"}</p>
+                <input value={smartResult.name || ""} onChange={e => setSmartResult(prev => prev ? {...prev, name: e.target.value} : prev)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:"6px",padding:"0.5rem 0.75rem",fontSize:"0.875rem",boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:"0.75rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.25rem"}}>{lang === "es" ? "Fecha de vencimiento" : "Use By Date"}</p>
+                <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:"6px",padding:"0.5rem 0.75rem",fontSize:"0.875rem",boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:"1rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.5rem"}}>{lang === "es" ? "Ubicación" : "Location"}</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0.5rem"}}>
+                  {["Fridge","Freezer","Pantry"].map(loc => (
+                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #16a34a" : "2px solid #e5e7eb",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#f0fdf4" : "white",color: smartLocation === loc ? "#15803d" : "#4b5563",cursor:"pointer"}}>{loc}</button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={() => { setShowVoiceEditForm(false); speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop()); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
+                🎙️ {lang === "es" ? "Volver a Escanear" : "Return to Scan"}
+              </button>
+              <button onClick={() => handleAddSmartItemMulti()} style={{width:"100%",background:"#3b82f6",color:"white",borderRadius:"10px",border:"none",cursor:"pointer",padding:"0.625rem",fontSize:"0.875rem",fontWeight:"bold"}}>
+                ✅ {lang === "es" ? "Guardar y Siguiente" : "Save & Next"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showVoiceEditForm && smartResult && (
+          <div style={{position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.5)"}} onClick={() => setShowVoiceEditForm(false)}>
+            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto"}} onClick={e => e.stopPropagation()}>
+              <div style={{width:"40px",height:"4px",background:"#e5e7eb",borderRadius:"2px",margin:"0 auto 1rem"}} />
+              <h3 style={{fontWeight:"bold",marginBottom:"0.75rem"}}>✏️ {lang === "es" ? "Editar Item" : "Edit Item"}</h3>
+              <div style={{marginBottom:"0.75rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.25rem"}}>{lang === "es" ? "Nombre" : "Name"}</p>
+                <input value={smartResult.name || ""} onChange={e => setSmartResult(prev => prev ? {...prev, name: e.target.value} : prev)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:"6px",padding:"0.5rem 0.75rem",fontSize:"0.875rem",boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:"0.75rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.25rem"}}>{lang === "es" ? "Fecha de vencimiento" : "Use By Date"}</p>
+                <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:"6px",padding:"0.5rem 0.75rem",fontSize:"0.875rem",boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:"1rem"}}>
+                <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.5rem"}}>{lang === "es" ? "Ubicación" : "Location"}</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0.5rem"}}>
+                  {["Fridge","Freezer","Pantry"].map(loc => (
+                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #16a34a" : "2px solid #e5e7eb",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#f0fdf4" : "white",color: smartLocation === loc ? "#15803d" : "#4b5563",cursor:"pointer"}}>{loc}</button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={() => { setShowVoiceEditForm(false); speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop()); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
+                🎙️ {lang === "es" ? "Volver a Escanear" : "Return to Scan"}
+              </button>
+              <button onClick={() => handleAddSmartItemMulti()} style={{width:"100%",background:"#3b82f6",color:"white",borderRadius:"10px",border:"none",cursor:"pointer",padding:"0.625rem",fontSize:"0.875rem",fontWeight:"bold"}}>
+                ✅ {lang === "es" ? "Guardar y Siguiente" : "Save & Next"}
+              </button>
             </div>
           </div>
         )}
