@@ -2170,7 +2170,7 @@ export default function TrackFreshDashboard() {
               </div>
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
               {!smartResult && !smartError && (<div>
-                <SmartScanner onResult={handleSmartResult} onError={handleSmartError} captureRef={smartCaptureRef} />
+                <SmartScanner onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
                 <button onClick={async () => {
                   try {
                     const video = document.querySelector("#smartScannerVideo");
@@ -2188,7 +2188,7 @@ export default function TrackFreshDashboard() {
                             body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
                           });
                           const data = await res.json();
-                          if (data.item && data.item.name) { handleSmartResult({ ...data.item, source: "label" }); }
+                          if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
                           else { handleSmartError(data.error || "Could not read label. Try again."); }
                         } catch (err) { handleSmartError("Scan failed: " + err.message); }
                       };
@@ -2206,7 +2206,7 @@ export default function TrackFreshDashboard() {
                           body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
                         });
                         const data = await res.json();
-                        if (data.item && data.item.name) { handleSmartResult({ ...data.item, source: "label" }); }
+                        if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
                         else { handleSmartError(data.error || "Could not read label. Try again."); }
                       } catch (err) { handleSmartError("Scan failed: " + err.message); }
                     }
