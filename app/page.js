@@ -1018,11 +1018,20 @@ function SmartScanner({ onResult, onError, captureRef }) {
               if (timerRef.current) clearTimeout(timerRef.current);
               if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
               setStatus("barcode_found");
+              if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
+                u.rate = 1.1;
+                window.speechSynthesis.speak(u);
+              }
               try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 8000);
                 const res = await fetch("/api/scan-barcode", {
                   method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ barcode: result.getText() })
+                  body: JSON.stringify({ barcode: result.getText() }),
+                  signal: controller.signal
                 });
+                clearTimeout(timer);
                 const data = await res.json();
                 if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
                 else { detectedRef.current = false; captureAndScan(); }
@@ -1639,7 +1648,7 @@ export default function TrackFreshDashboard() {
         speakThen(
           lang === "es"
             ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
-            : "Scanner ready. Say Capture, Skip, Edit, Pause, or Stop at any time.",
+            : "Scanner ready. Say Capture to photograph, or just point at a barcode. Say Skip, Edit, Pause, or Stop anytime.",
           () => startScanCommandLoop()
         );
       }, 700);
@@ -2282,9 +2291,7 @@ export default function TrackFreshDashboard() {
                   </div>
                 )}
                 <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
-                <button onClick={() => { startScanCommandLoop(); speak(lang === 'es' ? 'Escuchando. Di Capturar, Omitir, Editar o Detener.' : 'Listening. Say Capture, Skip, Edit, or Stop.'); }} style={{width:'100%',marginTop:'0.5rem',padding:'0.75rem',borderRadius:'12px',border:'2px solid #16a34a',background:'#f0fdf4',color:'#15803d',fontWeight:'bold',fontSize:'0.875rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.5rem'}}>
-                  🎙️ {lang === 'es' ? 'Tocar para escuchar' : 'Tap to start listening'}
-                </button>
+
                 <button onClick={async () => {
                   try {
                     const video = document.querySelector("#smartScannerVideo");
