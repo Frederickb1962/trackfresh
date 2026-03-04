@@ -1424,7 +1424,7 @@ export default function TrackFreshDashboard() {
     if (item.date && item.dateFound) setSmartUseBy(item.date);
     if (item.location) setSmartLocation(item.location);
     if (!item.dateFound || !item.date) {
-      setTimeout(() => startVoiceDatePrompt(item.name || "this product"), 500);
+
     }
   };
 
@@ -1620,7 +1620,7 @@ export default function TrackFreshDashboard() {
     setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
     setVoiceFlowStep("say_date");
-    speakThen(lang === "es" ? "Encontrado " + itemName + ". Diga la fecha de vencimiento." : "Found " + itemName + ". Say the expiration date.", () => listenForDate());
+
   };
   const handleVoiceNextDone = (cmd) => {
     const t = cmd.toLowerCase();
@@ -1649,24 +1649,7 @@ export default function TrackFreshDashboard() {
 
 
 
-  useEffect(() => {
-    if (showSmartScanner) {
-      setVoiceFlowPaused(false);
-      setShowVoiceEditForm(false);
-      setVoiceFlowStep(null);
-      setTimeout(() => {
-        speakThen(
-          lang === "es"
-            ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
-            : "Scanner ready. Say Capture, Skip, Edit, Pause, or Stop at any time.",
-          () => startScanCommandLoop()
-        );
-      }, 700);
-    } else {
-      if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} }
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    }
-  }, [showSmartScanner]);
+
 
   const handleDoneUniScan = () => {
     setShowSmartScanner(false);
