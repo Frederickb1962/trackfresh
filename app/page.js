@@ -2253,6 +2253,9 @@ export default function TrackFreshDashboard() {
                   </div>
                 )}
                 <SmartScanner onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
+                <button onClick={() => { startScanCommandLoop(); speak(lang === 'es' ? 'Escuchando. Di Capturar, Omitir, Editar o Detener.' : 'Listening. Say Capture, Skip, Edit, or Stop.'); }} style={{width:'100%',marginTop:'0.5rem',padding:'0.75rem',borderRadius:'12px',border:'2px solid #16a34a',background:'#f0fdf4',color:'#15803d',fontWeight:'bold',fontSize:'0.875rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.5rem'}}>
+                  🎙️ {lang === 'es' ? 'Tocar para escuchar' : 'Tap to start listening'}
+                </button>
                 <button onClick={async () => {
                   try {
                     const video = document.querySelector("#smartScannerVideo");
