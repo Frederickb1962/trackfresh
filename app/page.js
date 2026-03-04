@@ -927,7 +927,7 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
       try {
         const { BrowserMultiFormatReader } = await import("@zxing/library");
         readerRef.current = new BrowserMultiFormatReader();
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", focusMode: "continuous", width: { ideal: 1280 }, height: { ideal: 720 } } }); if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } }); if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
         
         await readerRef.current.decodeFromStream(videoRef.current.srcObject, videoRef.current, (result, err) => {
           if (result && !detectedRef.current) {
@@ -1528,9 +1528,22 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setSmartUseBy(parsed);
         setVoiceFlowStep("say_next");
-        speakThen(lang === "es" ? "Fecha capturada. Di Siguiente o Listo." : "Date captured. Say Next or Done.", () => {
-          setVoiceFlowStep("listening_next");
-          startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
+        const loc = smartLocation || 'Fridge';
+        const locPrompt = lang === 'es'
+          ? 'Fecha capturada. Donde lo guardas? Di Refrigerador, Congelador o Despensa.'
+          : 'Date captured. Where are you storing it? Say Fridge, Freezer, or Pantry.';
+        speakThen(locPrompt, () => {
+          setVoiceFlowStep('listening_location');
+          startVoiceCommand((cmd) => {
+            const t = cmd.toLowerCase();
+            if (t.includes('fridge') || t.includes('refrigerador') || t.includes('refri')) setSmartLocation('Fridge');
+            else if (t.includes('freeze') || t.includes('freezer') || t.includes('congelador')) setSmartLocation('Freezer');
+            else if (t.includes('pantry') || t.includes('despensa')) setSmartLocation('Pantry');
+            speakThen(lang === 'es' ? 'Di Siguiente para continuar o Listo para terminar.' : 'Say Next to continue or Done to finish.', () => {
+              setVoiceFlowStep('listening_next');
+              startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
+            });
+          });
         });
       } else {
         speak(lang === "es" ? "No entendí. Intente de nuevo." : "Could not understand. Try again.");
