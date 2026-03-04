@@ -1648,7 +1648,7 @@ export default function TrackFreshDashboard() {
         speakThen(
           lang === "es"
             ? "Escáner listo. Diga Capturar, Omitir, Editar, Pausar o Detener en cualquier momento."
-            : "Scanner ready. Say Capture to photograph, or just point at a barcode. Say Skip, Edit, Pause, or Stop anytime.",
+            : "Scanner ready. Point at a barcode or say Capture.",
           () => startScanCommandLoop()
         );
       }, 700);
