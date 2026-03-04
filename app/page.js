@@ -1507,12 +1507,20 @@ export default function TrackFreshDashboard() {
     recog.interimResults = false;
     recog.maxAlternatives = 3;
     voiceFlowRef.current = recog;
+    let gotResult = false;
     recog.onresult = (ev) => {
+      gotResult = true;
+      voiceFlowRef.current = null;
       const transcript = ev.results[0][0].transcript.toLowerCase().trim();
       onResult(transcript);
     };
-    recog.onerror = () => { setVoiceFlowStep(null); };
-    recog.onend = () => {};
+    recog.onerror = (e) => {
+      if (e.error === 'aborted') return;
+      setTimeout(() => { if (!gotResult) startVoiceCommand(onResult); }, 300);
+    };
+    recog.onend = () => {
+      setTimeout(() => { if (!gotResult && voiceFlowRef.current === recog) startVoiceCommand(onResult); }, 300);
+    };
     recog.start();
   };
 
