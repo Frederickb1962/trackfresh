@@ -1613,6 +1613,9 @@ export default function TrackFreshDashboard() {
   };
   const handleAddSmartItemMulti = () => {
     if (!smartResult) return;
+    // Kill voice loop immediately before anything else
+    if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
     const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
     setTrackedItems(prev => [newItem, ...prev]);
@@ -1621,10 +1624,9 @@ export default function TrackFreshDashboard() {
     resetSmartScanner();
     setVoiceFlowStep(null);
     resetUniScanTimer();
-    // Reset scanner key so camera reinitializes
     setSmartScanKey(prev => prev + 1);
     speakThen(lang === "es" ? "Guardado. Listo para siguiente." : "Saved. Ready for next item.", () => {
-      setTimeout(() => startScanCommandLoop(), 300);
+      setTimeout(() => startScanCommandLoop(), 500);
     });
   };
 
