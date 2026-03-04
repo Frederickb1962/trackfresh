@@ -1462,6 +1462,7 @@ export default function TrackFreshDashboard() {
   const [uniScanCount, setUniScanCount] = useState(0);
   const [uniScanLastItem, setUniScanLastItem] = useState("");
   const [voiceFlowStep, setVoiceFlowStep] = useState(null);
+  const [smartScanKey, setSmartScanKey] = useState(0);
   const [voiceFlowPaused, setVoiceFlowPaused] = useState(false);
   const [showVoiceEditForm, setShowVoiceEditForm] = useState(false);
   const uniScanTimer = React.useRef(null);
@@ -1491,7 +1492,7 @@ export default function TrackFreshDashboard() {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 1.1; u.pitch = 1;
-    const ms = Math.max(1400, (text.trim().split(/\s+/).length / 154) * 60000 + 900);
+    const ms = Math.max(2000, (text.trim().split(/\s+/).length / 120) * 60000 + 1200);
     let done = false;
     const fire = () => { if (!done) { done = true; if (cb) cb(); } };
     u.onend = fire; setTimeout(fire, ms);
@@ -1620,6 +1621,11 @@ export default function TrackFreshDashboard() {
     resetSmartScanner();
     setVoiceFlowStep(null);
     resetUniScanTimer();
+    // Reset scanner key so camera reinitializes
+    setSmartScanKey(prev => prev + 1);
+    speakThen(lang === "es" ? "Guardado. Listo para siguiente." : "Saved. Ready for next item.", () => {
+      setTimeout(() => startScanCommandLoop(), 300);
+    });
   };
 
   useEffect(() => {
@@ -2273,7 +2279,7 @@ export default function TrackFreshDashboard() {
                     </span>
                   </div>
                 )}
-                <SmartScanner onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
+                <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
                 <button onClick={() => { startScanCommandLoop(); speak(lang === 'es' ? 'Escuchando. Di Capturar, Omitir, Editar o Detener.' : 'Listening. Say Capture, Skip, Edit, or Stop.'); }} style={{width:'100%',marginTop:'0.5rem',padding:'0.75rem',borderRadius:'12px',border:'2px solid #16a34a',background:'#f0fdf4',color:'#15803d',fontWeight:'bold',fontSize:'0.875rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.5rem'}}>
                   🎙️ {lang === 'es' ? 'Tocar para escuchar' : 'Tap to start listening'}
                 </button>
