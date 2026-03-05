@@ -2398,8 +2398,8 @@ export default function TrackFreshDashboard() {
                 <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{String.fromCodePoint(0x27A1,0xFE0F)} {lang === "es" ? "Agregar y Siguiente" : "Add & Next"}</button>
               <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? String.fromCodePoint(0x2705) + " Done (" + uniScanCount + " items)" : t("cancel")}</button>
-              </>}
               </div>)}
+              </>}
             </div>
           </div>
         )}
