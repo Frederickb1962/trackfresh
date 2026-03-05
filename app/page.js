@@ -2531,12 +2531,13 @@ export default function TrackFreshDashboard() {
                   {barcodeLocation && (
                     <div className="space-y-2">
                       <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">{barcodeLocation === "Freezer" ? "Freeze By Date" : "Use By Date"}</label>
-                        <div className="flex gap-2">
-                          <input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                          <button onClick={() => handleVoiceDate("useBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "useBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{voiceListening === "useBy" ? "🎤 Listening..." : "🎤"}</button>
+                        <p className="text-sm font-bold text-gray-700 mb-2">📅 {barcodeLocation === "Freezer" ? "Freeze By Date" : "Exp. Date"} {barcodeUseBy && <span className="text-green-600">✓ {barcodeUseBy}</span>}</p>
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <button onClick={() => handleVoiceDate("useBy")} className={`rounded-xl py-3 text-sm font-bold ${voiceListening === "useBy" ? "bg-red-500 text-white animate-pulse" : "bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 border-2 border-blue-300 pill-3d"}`}>🎤 {voiceListening === "useBy" ? "Listening..." : "Speak Date"}</button>
+                          <button onClick={() => document.getElementById("barcodeDatePicker").showPicker ? document.getElementById("barcodeDatePicker").showPicker() : document.getElementById("barcodeDatePicker").focus()} className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-700 border-2 border-gray-300 pill-3d">📅 Enter Date</button>
                         </div>
-                        {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>}
+                        <input id="barcodeDatePicker" type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
+                        {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>
                       </div>
                       {barcodeLocation === "Fridge" && barcodeItem.category === "Meat" && (
                         <div>
@@ -2665,6 +2666,12 @@ export default function TrackFreshDashboard() {
                     <p className="font-bold text-gray-800">{labelItem.name}</p>
                     <p className="text-xs text-gray-500">{labelItem.category} · {labelItem.location}</p>
                     <p className="text-xs text-gray-600 mt-1">{labelItem.dateType}: {labelItem.date || "Not found"}</p>
+                    <p className="text-sm font-bold text-gray-700 mt-2 mb-1">📅 Exp. Date {labelItem.date && <span className="text-green-600 text-xs font-normal">✓ auto-detected</span>}</p>
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <button onClick={() => { const SR = window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alert("Voice not supported");return;} const r=new SR(); r.lang="en-US"; r.onresult=(ev)=>{ const t=ev.results[0][0].transcript; const p=parseSpokenDate(t); if(p){setLabelItem(prev=>({...prev,date:p,dateFound:true}));} }; r.start(); }} className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 border-2 border-blue-300 pill-3d">🎤 Speak Date</button>
+                      <button onClick={() => document.getElementById("labelDatePicker").showPicker ? document.getElementById("labelDatePicker").showPicker() : document.getElementById("labelDatePicker").focus()} className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-700 border-2 border-gray-300 pill-3d">📅 Enter Date</button>
+                    </div>
+                    <input id="labelDatePicker" type="date" value={labelItem.date||""} onChange={(e) => setLabelItem(prev=>({...prev,date:e.target.value,dateFound:true}))} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                     {labelItem.storageTip && <p className="text-xs text-gray-600 mt-1">💡 {labelItem.storageTip}</p>}
                     {labelItem.openedTip && <p className="text-xs text-orange-600 mt-1">⚠️ {labelItem.openedTip}</p>}
                     {labelItem.daysAfterOpening && <p className="text-xs text-blue-600 mt-1">📅 Use within {labelItem.daysAfterOpening} days of opening</p>}
