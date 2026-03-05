@@ -2628,16 +2628,14 @@ export default function TrackFreshDashboard() {
                 <div style={{padding:"0.5rem 0 1rem"}}>
                   <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#374151",marginBottom:"0.75rem"}}>How many items are you scanning?</p>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
-                    <label className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}>
+                    <button onClick={() => setLabelScanMode("single")} className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}>
                       <span style={{fontSize:"1.75rem"}}>1️⃣</span>
                       <span style={{fontSize:"0.875rem"}}>Single Scan</span>
-                      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]){ setLabelScanMode("single"); handleScanLabel(e.target.files[0]); } e.target.value=""; }} />
-                    </label>
-                    <label className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}>
+                    </button>
+                    <button onClick={() => setLabelScanMode("multi")} className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}>
                       <span style={{fontSize:"1.75rem"}}>📦</span>
                       <span style={{fontSize:"0.875rem"}}>Mult. Scans</span>
-                      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]){ setLabelScanMode("multi"); handleScanLabel(e.target.files[0]); } e.target.value=""; }} />
-                    </label>
+                    </button>
                   </div>
                 </div>
               )}
