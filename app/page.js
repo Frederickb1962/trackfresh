@@ -2541,7 +2541,7 @@ export default function TrackFreshDashboard() {
                       </div>
                       {barcodeLocation === "Fridge" && barcodeItem.category === "Meat" && (
                         <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">Freeze By Date <span className="text-xs text-gray-400">(optional — we will remind you)</span></label>
+                          <label className="mb-1 block text-sm font-medium text-gray-700">Freeze By Date <span className="text-xs text-gray-400">(optional - we will remind you)</span></label>
                           <div className="flex gap-2">
                             <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
                             <button onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 text-gray-800"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
