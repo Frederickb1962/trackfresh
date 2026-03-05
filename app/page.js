@@ -1531,7 +1531,8 @@ export default function TrackFreshDashboard() {
   
   const getBestVoice = () => {
     if (!('speechSynthesis' in window)) return null;
-    const voices = window.speechSynthesis.getVoices();
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) { window.speechSynthesis.getVoices(); return null; }
     const langPref = lang === "es" ? "es" : "en";
     const prefer = langPref === "en"
       ? ["Samantha","Karen","Zoe","Nicky","Ava","Allison","Victoria"]
@@ -1659,8 +1660,14 @@ export default function TrackFreshDashboard() {
     resetUniScanTimer();
     setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
-    setVoiceFlowStep("say_date");
-
+    setVoiceFlowStep(null);
+    const foundMsg = lang === "es" 
+      ? "Encontrado: " + itemName + ". Elige una opcion abajo."
+      : "Found: " + itemName + ". Choose an option below.";
+    const u = new SpeechSynthesisUtterance(foundMsg);
+    u.rate = 0.8; u.pitch = 0.85;
+    const bv = getBestVoice(); if (bv) u.voice = bv;
+    window.speechSynthesis.speak(u);
   };
   const handleVoiceNextDone = (cmd) => {
     const t = cmd.toLowerCase();
