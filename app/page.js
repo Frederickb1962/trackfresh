@@ -1045,7 +1045,29 @@ function SmartScanner({ onResult, onError, captureRef }) {
                 });
                 clearTimeout(timer);
                 const data = await res.json();
-                if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
+                if (data.item) {
+                  // Enrich with food-info for storage tips like Label does
+                  try {
+                    const infoRes = await fetch("/api/food-info", {
+                      method: "POST", headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: data.item.name })
+                    });
+                    if (infoRes.ok) {
+                      const info = await infoRes.json();
+                      onResult({ ...data.item, ...info, name: data.item.name, barcode: result.getText(), source: "barcode",
+                        daysAfterOpening: info.daysAfterOpening || data.item.daysAfterOpening,
+                        storageTip: info.storageTip || data.item.storageTip || "",
+                        openedTip: info.openedTip || data.item.openedTip || "",
+                        category: info.category || data.item.category,
+                        location: info.location || data.item.location
+                      });
+                    } else {
+                      onResult({ ...data.item, barcode: result.getText(), source: "barcode" });
+                    }
+                  } catch(enrichErr) {
+                    onResult({ ...data.item, barcode: result.getText(), source: "barcode" });
+                  }
+                }
                 else { detectedRef.current = false; captureAndScan(); }
               } catch(e) { detectedRef.current = false; captureAndScan(); }
             }
@@ -1663,7 +1685,7 @@ export default function TrackFreshDashboard() {
     if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
-    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     setUniScanCount(prev => prev + 1);
     setUniScanLastItem(itemName);
