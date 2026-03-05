@@ -1392,6 +1392,7 @@ export default function TrackFreshDashboard() {
   const [quickVoiceListening, setQuickVoiceListening] = useState("");
   const [quickVoiceError, setQuickVoiceError] = useState("");
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [scanMode, setScanMode] = useState(null);
   const [multiScanCount, setMultiScanCount] = useState(0);
   const [multiScanLastItem, setMultiScanLastItem] = useState("");
   const multiScanTimer = React.useRef(null);
@@ -1666,9 +1667,14 @@ export default function TrackFreshDashboard() {
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
-    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
-    setShowSmartScanner(false); resetSmartScanner();
+    if (scanMode === "single") {
+      setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
+    } else {
+      setUniScanCount(prev => prev + 1); setUniScanLastItem(newItem.name);
+      resetSmartScanner(); setSmartScanKey(prev => prev + 1); resetUniScanTimer();
+    }
   };
   const [voiceListening, setVoiceListening] = useState("");
   const [voicePromptDone, setVoicePromptDone] = useState(false);
@@ -1866,8 +1872,14 @@ export default function TrackFreshDashboard() {
     setBarcodeUseBy("");
     setBarcodeFreezeBy("");
     setVoiceError("");
-    setBarcodeScanKey(prev => prev + 1);
-    resetMultiScanTimer();
+    if (scanMode === "single") {
+      setShowBarcodeScanner(false);
+      setMultiScanCount(0); setMultiScanLastItem("");
+      if (multiScanTimer.current) clearTimeout(multiScanTimer.current);
+    } else {
+      setBarcodeScanKey(prev => prev + 1);
+      resetMultiScanTimer();
+    }
   };
   const handleDoneScanning = () => {
     setShowBarcodeScanner(false);
@@ -2247,9 +2259,23 @@ export default function TrackFreshDashboard() {
           <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
             <div style={{background:"white",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.75rem"}}>
-                <h2 className="text-lg font-bold">{t("smartScanTitle")}</h2>
-                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
+                <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                  <h2 className="text-lg font-bold">{t("smartScanTitle")}</h2>
+                  {scanMode === "multi" && <span className="rounded-full bg-blue-600 text-white px-2 py-1 text-xs font-bold">Mult. Scans</span>}
+                  {scanMode === "multi" && uniScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-2 py-1 text-xs font-bold">{uniScanCount} added</span>}
+                </div>
+                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); setScanMode(null); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
               </div>
+              {scanMode === null && (
+                <div style={{padding:"0.5rem 0 1rem"}}>
+                  <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#374151",marginBottom:"0.75rem"}}>How many items are you scanning?</p>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
+                    <button onClick={() => setScanMode("single")} className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}><span style={{fontSize:"1.75rem"}}>1️⃣</span><span style={{fontSize:"0.875rem"}}>Single Scan</span></button>
+                    <button onClick={() => setScanMode("multi")} className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}><span style={{fontSize:"1.75rem"}}>📦</span><span style={{fontSize:"0.875rem"}}>Mult. Scans</span></button>
+                  </div>
+                </div>
+              )}
+              {scanMode !== null && <>
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
               {!smartResult && !smartError && (<div>
                 {(voiceFlowStep || voiceFlowPaused) && (
@@ -2372,6 +2398,7 @@ export default function TrackFreshDashboard() {
                 <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{String.fromCodePoint(0x27A1,0xFE0F)} {lang === "es" ? "Agregar y Siguiente" : "Add & Next"}</button>
               <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? String.fromCodePoint(0x2705) + " Done (" + uniScanCount + " items)" : t("cancel")}</button>
+              </>}
               </div>)}
             </div>
           </div>
@@ -2444,8 +2471,22 @@ export default function TrackFreshDashboard() {
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-bold">📦 Scan Barcode</h2>
-                {multiScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-3 py-1 text-xs font-bold">{multiScanCount} scanned</span>}
+                <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                  {scanMode === "multi" && <span className="rounded-full bg-blue-600 text-white px-2 py-1 text-xs font-bold">Mult. Scans</span>}
+                  {scanMode === "multi" && multiScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-2 py-1 text-xs font-bold">{multiScanCount} added</span>}
+                  <button onClick={() => { setShowBarcodeScanner(false); setBarcodeItem(null); setBarcodeError(""); setBarcodeDetected(""); setMultiScanCount(0); setMultiScanLastItem(""); setScanMode(null); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer"}}>&times;</button>
+                </div>
               </div>
+              {scanMode === null && (
+                <div style={{padding:"0.5rem 0 1rem"}}>
+                  <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#374151",marginBottom:"0.75rem"}}>How many items are you scanning?</p>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
+                    <button onClick={() => setScanMode("single")} className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}><span style={{fontSize:"1.75rem"}}>1️⃣</span><span style={{fontSize:"0.875rem"}}>Single Scan</span></button>
+                    <button onClick={() => setScanMode("multi")} className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}><span style={{fontSize:"1.75rem"}}>📦</span><span style={{fontSize:"0.875rem"}}>Mult. Scans</span></button>
+                  </div>
+                </div>
+              )}
+              {scanMode !== null && <>
               {multiScanLastItem && <div className="mb-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700 font-semibold animate-pulse">✅ Added: {multiScanLastItem} — Ready for next scan!</div>}
               <p className="mb-4 text-sm text-gray-600">{t("scanBarcodeDesc")}</p>
               {!barcodeItem && (
@@ -2460,7 +2501,7 @@ export default function TrackFreshDashboard() {
               {barcodeError && (
                 <div className="mt-2 rounded-lg bg-red-50 p-3">
                   <p className="text-sm text-red-600">{barcodeError}</p>
-<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">{t("tryAgain")}</button>
+<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setScanMode(null); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">{t("tryAgain")}</button>
                 </div>
               )}
               {barcodeItem && (
@@ -2504,6 +2545,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); setBarcodeScanKey(prev => prev + 1); resetMultiScanTimer(); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
                 </div>
               )}
+              </>}
               <button onClick={handleDoneScanning} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{multiScanCount > 0 ? "✅ Done (" + multiScanCount + " items added)" : t("cancel")}</button>
             </div>
           </div>
@@ -2659,7 +2701,7 @@ export default function TrackFreshDashboard() {
                 e.target.value = "";
               }} />
               <button onClick={() => document.getElementById("trackerLabelInput").click()} className="w-full rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ {t("label")}</button></div>
-              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
+              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ {t("quickAdd")}</button>
             </div>
             <Card>
