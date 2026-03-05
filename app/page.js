@@ -1032,7 +1032,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
               setShowPhotoBtn(false);
               if ('speechSynthesis' in window) {
                 const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
-                u.rate = 1.1;
+                u.rate = 0.9;
                 window.speechSynthesis.speak(u);
               }
               try {
@@ -1450,7 +1450,7 @@ export default function TrackFreshDashboard() {
       || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
     if (natural) msg.voice = natural;
     msg.pitch = 1.05;
-      msg.rate = 1.15;
+      msg.rate = 0.9;
       msg.onend = () => { startVoiceListening(); };
       window.speechSynthesis.speak(msg);
     };
@@ -1473,11 +1473,11 @@ export default function TrackFreshDashboard() {
         setSmartUseBy(parsed);
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
         const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
-        confirm.rate = 1.15;
+        confirm.rate = 0.9;
         window.speechSynthesis.speak(confirm);
       } else {
         const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
-        retry.rate = 1.0;
+        retry.rate = 0.9;
         window.speechSynthesis.speak(retry);
       }
       setVoiceListening(false);
@@ -1520,7 +1520,7 @@ export default function TrackFreshDashboard() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.1;
+      u.rate = 0.9;
       u.pitch = 1;
       window.speechSynthesis.speak(u);
       return u;
@@ -1532,7 +1532,7 @@ export default function TrackFreshDashboard() {
     if (!('speechSynthesis' in window)) { setTimeout(cb || (() => {}), 300); return; }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.1; u.pitch = 1;
+    u.rate = 0.9; u.pitch = 1;
     const ms = Math.max(2000, (text.trim().split(/\s+/).length / 120) * 60000 + 1200);
     let done = false;
     const fire = () => { if (!done) { done = true; if (cb) cb(); } };
@@ -2648,7 +2648,7 @@ export default function TrackFreshDashboard() {
                       if (data.item.name && !data.item.dateFound) {
                         try {
                           const msg = new SpeechSynthesisUtterance("I found " + data.item.name + ". What is the expiration date?");
-                          msg.rate = 1.0;
+                          msg.rate = 0.9;
                           msg.onend = () => {
                             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (!SR) return;
@@ -2661,7 +2661,7 @@ export default function TrackFreshDashboard() {
                               if (parsed) {
                                 setLabelItem(prev => prev ? {...prev, date: parsed, dateFound: true} : prev);
                                 const ok = new SpeechSynthesisUtterance("Got it. " + t);
-                                ok.rate = 1.0;
+                                ok.rate = 0.9;
                                 window.speechSynthesis.speak(ok);
                               }
                             };
