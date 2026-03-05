@@ -2399,10 +2399,13 @@ export default function TrackFreshDashboard() {
                     {scanningDate ? (
                       <p className="text-sm text-center text-orange-600 font-bold py-2">{t("smartScanDateReading")}</p>
                     ) : (<>
-                      <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2.5 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white mb-2" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
-                    <button onClick={() => startVoiceDatePrompt(smartResult.name)} className="w-full rounded-xl py-2 text-sm font-bold bg-gradient-to-b from-blue-400 to-blue-500 text-white mt-2" style={{border:"none",cursor:"pointer"}}>🎙️ Say Date by Voice</button>
+                      <p className="text-sm font-bold text-gray-700 mb-2">📅 Exp. Date {smartUseBy && <span className="text-green-600 text-xs font-normal">✓ {smartUseBy}</span>}</p>
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <button onClick={() => startVoiceDatePrompt(smartResult.name)} className={`rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 border-2 border-blue-300 pill-3d`}>🎤 Speak Date</button>
+                        <label className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-700 border-2 border-gray-300 pill-3d" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
+                      </div>
+                      <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
                     </>)}
-                    <input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" />
                   </div>)}
                 </div>
                 {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">Freeze By</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
