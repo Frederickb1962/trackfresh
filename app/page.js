@@ -1031,7 +1031,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
               if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
               setShowPhotoBtn(false);
               if ('speechSynthesis' in window) {
-                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
+                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment."); u.rate=0.8; u.pitch=0.85; const _bv=getBestVoice(); if(_bv) u.voice=_bv;
                 u.rate = 0.8;
                 window.speechSynthesis.speak(u);
               }
@@ -1520,12 +1520,31 @@ export default function TrackFreshDashboard() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.8;
-      u.pitch = 0.85;
+      u.rate = 0.8; u.pitch = 0.85;
+      const bv = getBestVoice(); if (bv) u.voice = bv;
       window.speechSynthesis.speak(u);
       return u;
     }
     return null;
+  };
+
+  
+  const getBestVoice = () => {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    const langPref = lang === "es" ? "es" : "en";
+    const prefer = langPref === "en"
+      ? ["Samantha","Karen","Zoe","Nicky","Ava","Allison","Victoria"]
+      : ["Paulina","Monica","Juan"];
+    for (const name of prefer) {
+      const v = voices.find(v => v.name.includes(name) && v.lang.startsWith(langPref));
+      if (v) return v;
+    }
+    const enhanced = voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith(langPref));
+    if (enhanced) return enhanced;
+    const premium = voices.find(v => v.name.includes("Premium") && v.lang.startsWith(langPref));
+    if (premium) return premium;
+    return voices.find(v => v.lang.startsWith(langPref)) || null;
   };
 
   const speakThen = (text, cb) => {
@@ -1533,6 +1552,7 @@ export default function TrackFreshDashboard() {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.8; u.pitch = 0.85;
+    const bv = getBestVoice(); if (bv) u.voice = bv;
     const ms = Math.max(2000, (text.trim().split(/\s+/).length / 120) * 60000 + 1200);
     let done = false;
     const fire = () => { if (!done) { done = true; if (cb) cb(); } };
