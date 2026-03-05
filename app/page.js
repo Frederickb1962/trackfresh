@@ -1438,24 +1438,7 @@ export default function TrackFreshDashboard() {
   const startVoiceDatePrompt = (productName) => {
     setVoicePromptDone(false);
     window.speechSynthesis.cancel();
-    const speak = () => {
-      const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
-    const voices = window.speechSynthesis.getVoices();
-    const natural = voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en")) 
-      || voices.find(v => v.name.includes("Nicky") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Ava") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Allison") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Premium") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
-      || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
-    if (natural) msg.voice = natural;
-    msg.pitch = 0.85;
-      msg.rate = 0.8;
-      msg.onend = () => { startVoiceListening(); };
-      window.speechSynthesis.speak(msg);
-    };
-    if (window.speechSynthesis.getVoices().length > 0) { speak(); }
-    else { window.speechSynthesis.onvoiceschanged = () => { speak(); }; }
+    startVoiceListening();
   };
 
   const startVoiceListening = () => {
