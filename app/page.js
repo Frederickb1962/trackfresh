@@ -2522,12 +2522,16 @@ export default function TrackFreshDashboard() {
                     <p className="text-xs text-green-600 font-semibold mb-1">✅ Product found!</p>
                     <p className="font-bold text-gray-800">{barcodeItem.name}</p>
                     <p className="text-xs text-gray-500">{barcodeItem.category}</p>
+                    {barcodeItem.storageTip && <p className="text-xs text-gray-600 mt-1">💡 {barcodeItem.storageTip}</p>}
+                    {barcodeItem.openedTip && <p className="text-xs text-orange-600 mt-1">⚠️ {barcodeItem.openedTip}</p>}
+                    {barcodeItem.daysAfterOpening && <p className="text-xs text-blue-600 mt-1">📅 Use within {barcodeItem.daysAfterOpening} days of opening</p>}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-2">{t("whereStoring")}</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-green-500 bg-gradient-to-b from-green-50 to-green-100 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>🧊 Fridge{barcodeLocation === "Fridge" && <p className="text-xs font-normal mt-1">Use fresh</p>}</button>
-                      <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-gradient-to-b from-cyan-50 to-cyan-100 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>❄️ Freezer{barcodeLocation === "Freezer" && <p className="text-xs font-normal mt-1">Long term storage</p>}</button>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button onClick={() => { setBarcodeLocation("Fridge"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Fridge" ? "border-green-500 bg-gradient-to-b from-green-50 to-green-100 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>🧊 Fridge</button>
+                      <button onClick={() => setBarcodeLocation("Freezer")} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Freezer" ? "border-cyan-500 bg-gradient-to-b from-cyan-50 to-cyan-100 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>❄️ Freezer</button>
+                      <button onClick={() => { setBarcodeLocation("Pantry"); setBarcodeFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${barcodeLocation === "Pantry" ? "border-amber-500 bg-gradient-to-b from-amber-50 to-amber-100 text-amber-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>🗄️ Pantry</button>
                     </div>
                   </div>
                   {barcodeLocation && (
