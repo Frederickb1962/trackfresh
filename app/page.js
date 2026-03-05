@@ -300,6 +300,13 @@ const GLOBAL_STYLES = `
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
+  /* === GLOBAL VOICE MIC === */
+  .voice-fab { position:fixed; bottom:120px; right:16px; z-index:9000; width:56px; height:56px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; font-size:1.5rem; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition:all 0.2s ease; }
+  .voice-fab-idle { background:linear-gradient(135deg,#059669,#047857); color:white; }
+  .voice-fab-speaking { background:linear-gradient(135deg,#2563eb,#1d4ed8); color:white; animation:voicePulse 1s ease-in-out infinite; }
+  .voice-fab-listening { background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; animation:voicePulse 0.6s ease-in-out infinite; }
+  @keyframes voicePulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
+  .voice-banner { position:fixed; bottom:184px; right:16px; z-index:9000; background:rgba(0,0,0,0.85); color:white; border-radius:12px; padding:8px 14px; font-size:0.75rem; font-weight:600; max-width:260px; }
   /* === BOTTOM NAV === */
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to bottom, #064e3b, #022c22); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
   .bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; min-width: 56px; transition: all 0.2s; }
@@ -1488,6 +1495,19 @@ export default function TrackFreshDashboard() {
   const [showVoiceEditForm, setShowVoiceEditForm] = useState(false);
   const uniScanTimer = React.useRef(null);
   const voiceFlowRef = React.useRef(null);
+
+  const [globalVoiceState, setGlobalVoiceState] = useState("idle");
+  const [globalVoiceBanner, setGlobalVoiceBanner] = useState("");
+  const globalVoiceRef = React.useRef(null);
+  const bannerTimer = React.useRef(null);
+  const showBanner = (text, dur) => { setGlobalVoiceBanner(text); if(bannerTimer.current)clearTimeout(bannerTimer.current); if(dur)bannerTimer.current=setTimeout(()=>setGlobalVoiceBanner(""),dur); };
+  const stopGlobalVoice = () => { if('speechSynthesis' in window)window.speechSynthesis.cancel(); if(globalVoiceRef.current){try{globalVoiceRef.current.abort();}catch(e){} globalVoiceRef.current=null;} setGlobalVoiceState("idle"); setGlobalVoiceBanner(""); };
+  const globalVoiceListen = (onResult) => { const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){showBanner("Voice not supported",3000);setGlobalVoiceState("idle");return;} if(globalVoiceRef.current){try{globalVoiceRef.current.abort();}catch(e){}} const r=new SR(); r.lang=lang==="es"?"es-MX":"en-US"; r.interimResults=false; r.maxAlternatives=3; globalVoiceRef.current=r; setGlobalVoiceState("listening"); let got=false; r.onresult=(ev)=>{got=true;globalVoiceRef.current=null;const t=ev.results[0][0].transcript.toLowerCase().trim();showBanner('"'+t+'"',3000);onResult(t);}; r.onerror=(e)=>{if(e.error==='aborted')return;if(!got){showBanner("Didn't catch that.",3000);setGlobalVoiceState("idle");}}; r.onend=()=>{if(!got)setGlobalVoiceState("idle");}; r.start(); };
+  const globalVoiceSpeak = (text, cb) => { if(!('speechSynthesis' in window)){if(cb)setTimeout(cb,300);return;} window.speechSynthesis.cancel(); setGlobalVoiceState("speaking"); showBanner(text); const u=new SpeechSynthesisUtterance(text); u.rate=1.05; let done=false; const fire=()=>{if(!done){done=true;if(cb)cb();}}; u.onend=fire; setTimeout(fire,4000); window.speechSynthesis.speak(u); };
+  const getVoicePrompt = () => { const isEs=lang==="es"; if(activeTab==="tracker") return isEs?"Estas en el Rastreador. Di una pagina o di Agregar.":"You're on the Tracker. Say a page name like Recipes or Shopping, or say Add."; if(activeTab==="recipes") return isEs?"Estas en Recetas. Di una pagina o Buscar Recetas.":"You're on Recipes. Say a page name, or say Find Recipes."; if(activeTab==="shopping") return isEs?"Estas en Compras. Di una pagina o Agregar.":"You're on Shopping. Say a page name, or say Add."; if(activeTab==="meals") return isEs?"Estas en Comidas. Di una pagina.":"You're on Meals. Say a page name."; return isEs?"Di una pagina: Rastreador, Recetas, Compras, Comidas.":"Say a page: Tracker, Recipes, Shopping, or Meals."; };
+  const handleGlobalVoiceResult = (t) => { if(t.includes("tracker")||t.includes("rastreador")){setActiveTab("tracker");globalVoiceSpeak("Opening Tracker.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("recipe")||t.includes("receta")){setActiveTab("recipes");globalVoiceSpeak("Opening Recipes.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("shopping")||t.includes("compra")){setActiveTab("shopping");globalVoiceSpeak("Opening Shopping.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("meal")||t.includes("comida")){setActiveTab("meals");globalVoiceSpeak("Opening Meals.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("community")||t.includes("comunidad")){setActiveTab("community");globalVoiceSpeak("Opening Community.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("store")||t.includes("tienda")){setActiveTab("stores-page");globalVoiceSpeak("Opening Stores.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("scan")||t.includes("barcode")||t.includes("escanear")){if(activeTab!=="tracker")setActiveTab("tracker");setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);globalVoiceSpeak("Opening scanner.",()=>setGlobalVoiceState("idle"));return;} if((t.includes("add")||t.includes("agregar"))&&activeTab==="tracker"){setShowQuickAdd(true);globalVoiceSpeak("Opening quick add.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("find recipe")||t.includes("suggest")){setActiveTab("recipes");globalVoiceSpeak("Finding recipes.",()=>{setGlobalVoiceState("idle");handleSuggestRecipes();});return;} if(t.includes("recall")||t.includes("fda")){setShowRecallsPanel(true);globalVoiceSpeak("Opening FDA recalls.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("help")||t.includes("ayuda")){setShowHelp(true);globalVoiceSpeak("Opening help.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("stop")||t.includes("cancel")){stopGlobalVoice();return;} globalVoiceSpeak("I didn't understand. Try again.",()=>setGlobalVoiceState("idle")); };
+  const handleGlobalMicTap = () => { if(globalVoiceState!=="idle"){stopGlobalVoice();return;} if(showSmartScanner)return; globalVoiceSpeak(getVoicePrompt(),()=>{globalVoiceListen(handleGlobalVoiceResult);}); };
+
 
   const resetUniScanTimer = () => {
     if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
@@ -3122,6 +3142,10 @@ export default function TrackFreshDashboard() {
 
       </div>
     </div>
+    {!showSmartScanner && !showBarcodeScanner && (<>
+      {globalVoiceBanner && <div className="voice-banner">{globalVoiceBanner}</div>}
+      <button onClick={handleGlobalMicTap} className={`voice-fab ${globalVoiceState==="speaking"?"voice-fab-speaking":globalVoiceState==="listening"?"voice-fab-listening":"voice-fab-idle"}`}>{globalVoiceState==="idle"?"\u{1F3A4}":globalVoiceState==="speaking"?"\u{1F50A}":"\u{1F534}"}</button>
+    </>)}
     <nav className="bottom-nav">
       <button onClick={() => setActiveTab("tracker")} className={activeTab === "tracker" ? "nav-active" : ""}>
         <span className="nav-icon">{String.fromCodePoint(0x1F966)}</span>
