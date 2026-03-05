@@ -1031,8 +1031,8 @@ function SmartScanner({ onResult, onError, captureRef }) {
               if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
               setShowPhotoBtn(false);
               if ('speechSynthesis' in window) {
-                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment."); u.rate=0.8; u.pitch=0.85; const _bv=getBestVoice(); if(_bv) u.voice=_bv;
-                u.rate = 0.8;
+                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
+                u.rate = 0.8; u.pitch = 0.85;
                 window.speechSynthesis.speak(u);
               }
               try {
