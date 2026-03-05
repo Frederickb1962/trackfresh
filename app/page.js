@@ -2009,7 +2009,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType }) });
+        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType }) });
         const data = await res.json();
         if (data.error) { setLabelError(data.error); setLabelScanning(false); return; }
         
