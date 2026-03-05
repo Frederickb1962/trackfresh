@@ -2646,7 +2646,7 @@ export default function TrackFreshDashboard() {
                   <span className="text-3xl mb-2">📷</span>
                   <span className="text-sm font-semibold text-green-600">Tap to photograph label</span>
                   <span className="text-xs text-gray-500 mt-1">Camera opens automatically</span>
-                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]) handleScanLabel(e.target.files[0]); e.target.value=""; }} />
+                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { setLabelError(""); if(e.target.files[0]) handleScanLabel(e.target.files[0]); e.target.value=""; }} />
                 </label>
               )}
               {labelScanning && (
