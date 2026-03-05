@@ -2628,20 +2628,27 @@ export default function TrackFreshDashboard() {
                 <div style={{padding:"0.5rem 0 1rem"}}>
                   <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#374151",marginBottom:"0.75rem"}}>How many items are you scanning?</p>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
-                    <button onClick={() => setLabelScanMode("single")} className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}><span style={{fontSize:"1.75rem"}}>1️⃣</span><span style={{fontSize:"0.875rem"}}>Single Scan</span></button>
-                    <button onClick={() => setLabelScanMode("multi")} className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}><span style={{fontSize:"1.75rem"}}>📦</span><span style={{fontSize:"0.875rem"}}>Mult. Scans</span></button>
+                    <label className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}>
+                      <span style={{fontSize:"1.75rem"}}>1️⃣</span>
+                      <span style={{fontSize:"0.875rem"}}>Single Scan</span>
+                      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]){ setLabelScanMode("single"); handleScanLabel(e.target.files[0]); } e.target.value=""; }} />
+                    </label>
+                    <label className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}>
+                      <span style={{fontSize:"1.75rem"}}>📦</span>
+                      <span style={{fontSize:"0.875rem"}}>Mult. Scans</span>
+                      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]){ setLabelScanMode("multi"); handleScanLabel(e.target.files[0]); } e.target.value=""; }} />
+                    </label>
                   </div>
                 </div>
               )}
               {labelScanMode !== null && <>
               {labelLastItem && <div className="mb-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700 font-semibold animate-pulse">✅ Added: {labelLastItem} — Ready for next scan!</div>}
-              <p className="mb-4 text-sm text-gray-600">{t("scanLabelDesc")}</p>
               {!labelScanning && !labelItem && (
                 <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-8 hover:bg-green-100">
-                  <span className="text-3xl mb-2">🏷️</span>
-                  <span className="text-sm font-semibold text-green-600">{t("tapUpload")}</span>
-                  <span className="text-xs text-gray-500 mt-1">{t("jpgPng")}</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanLabel(e.target.files[0])} />
+                  <span className="text-3xl mb-2">📷</span>
+                  <span className="text-sm font-semibold text-green-600">Tap to photograph label</span>
+                  <span className="text-xs text-gray-500 mt-1">Camera opens automatically</span>
+                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { if(e.target.files[0]) handleScanLabel(e.target.files[0]); e.target.value=""; }} />
                 </label>
               )}
               {labelScanning && (
