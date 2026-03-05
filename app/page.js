@@ -1377,6 +1377,9 @@ export default function TrackFreshDashboard() {
   const [labelItem, setLabelItem] = useState(null);
   const [labelScanning, setLabelScanning] = useState(false);
   const [labelError, setLabelError] = useState("");
+  const [labelScanCount, setLabelScanCount] = useState(0);
+  const [labelLastItem, setLabelLastItem] = useState("");
+  const [labelScanMode, setLabelScanMode] = useState(null);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAddName, setQuickAddName] = useState("");
   const [quickAddDate, setQuickAddDate] = useState("");
@@ -2026,6 +2029,7 @@ export default function TrackFreshDashboard() {
   const handleAddLabelItem = () => {
     if (!labelItem) return;
     const quantity = labelItem.weight || "";
+    const itemName = labelItem.name;
     setTrackedItems((prev) => [...prev, { 
       id: crypto.randomUUID(), 
       name: labelItem.name, 
@@ -2038,7 +2042,13 @@ export default function TrackFreshDashboard() {
       storageTip: labelItem.storageTip || "",
       openedTip: labelItem.openedTip || ""
     }]);
-    setShowLabelScanner(false);
+    setLabelScanCount(prev => prev + 1);
+    setLabelLastItem(itemName);
+    if (labelScanMode === "single") {
+      setShowLabelScanner(false);
+      setLabelScanCount(0); setLabelLastItem("");
+      setLabelScanMode(null);
+    }
     setLabelItem(null);
     setLabelError("");
   };
@@ -2606,7 +2616,25 @@ export default function TrackFreshDashboard() {
         {showLabelScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">🏷️ Scan Package Label</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-bold">🏷️ Scan Package Label</h2>
+                <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                  {labelScanMode === "multi" && <span className="rounded-full bg-blue-600 text-white px-2 py-1 text-xs font-bold">Mult. Scans</span>}
+                  {labelScanMode === "multi" && labelScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-2 py-1 text-xs font-bold">{labelScanCount} added</span>}
+                  <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); setLabelScanCount(0); setLabelLastItem(""); setLabelScanMode(null); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer"}}>&times;</button>
+                </div>
+              </div>
+              {labelScanMode === null && (
+                <div style={{padding:"0.5rem 0 1rem"}}>
+                  <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#374151",marginBottom:"0.75rem"}}>How many items are you scanning?</p>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
+                    <button onClick={() => setLabelScanMode("single")} className="rounded-xl border-2 border-gray-200 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#374151",cursor:"pointer",background:"white"}}><span style={{fontSize:"1.75rem"}}>1️⃣</span><span style={{fontSize:"0.875rem"}}>Single Scan</span></button>
+                    <button onClick={() => setLabelScanMode("multi")} className="rounded-xl border-2 border-blue-400 pill-3d" style={{padding:"1.25rem 0.5rem",display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",fontWeight:"700",color:"#1d4ed8",cursor:"pointer",background:"linear-gradient(to bottom,#eff6ff,#dbeafe)"}}><span style={{fontSize:"1.75rem"}}>📦</span><span style={{fontSize:"0.875rem"}}>Mult. Scans</span></button>
+                  </div>
+                </div>
+              )}
+              {labelScanMode !== null && <>
+              {labelLastItem && <div className="mb-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700 font-semibold animate-pulse">✅ Added: {labelLastItem} — Ready for next scan!</div>}
               <p className="mb-4 text-sm text-gray-600">{t("scanLabelDesc")}</p>
               {!labelScanning && !labelItem && (
                 <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-8 hover:bg-green-100">
@@ -2622,22 +2650,24 @@ export default function TrackFreshDashboard() {
                   <p className="text-sm text-gray-600">{t("readingLabel")}</p>
                 </div>
               )}
-              {labelError && <p className="mt-2 text-sm text-red-600">Error: {labelError}</p>}
+              {labelError && <p className="mt-2 text-sm text-red-600">{labelError}</p>}
               {labelItem && (
                 <div className="space-y-3">
-                  <div className="rounded-lg border p-3 bg-gray-50">
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div><span className="font-semibold text-gray-600">Item:</span><p className="font-bold">{labelItem.name}</p></div>
-                      <div><span className="font-semibold text-gray-600">Date:</span><p className="font-bold">{labelItem.dateType}: {labelItem.date || "Not found"}</p></div>
-                      <div><span className="font-semibold text-gray-600">Category:</span><p>{labelItem.category}</p></div>
-                      <div><span className="font-semibold text-gray-600">Location:</span><p>{labelItem.location}</p></div>
-                    </div>
+                  <div className="rounded-lg border p-3 bg-green-50">
+                    <p className="text-xs text-green-600 font-semibold mb-1">✅ Label read!</p>
+                    <p className="font-bold text-gray-800">{labelItem.name}</p>
+                    <p className="text-xs text-gray-500">{labelItem.category} · {labelItem.location}</p>
+                    <p className="text-xs text-gray-600 mt-1">{labelItem.dateType}: {labelItem.date || "Not found"}</p>
+                    {labelItem.storageTip && <p className="text-xs text-gray-600 mt-1">💡 {labelItem.storageTip}</p>}
+                    {labelItem.openedTip && <p className="text-xs text-orange-600 mt-1">⚠️ {labelItem.openedTip}</p>}
+                    {labelItem.daysAfterOpening && <p className="text-xs text-blue-600 mt-1">📅 Use within {labelItem.daysAfterOpening} days of opening</p>}
                   </div>
-                  <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">Add to Tracker</button>
-                  <button onClick={() => setLabelItem(null)} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
+                  <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">{labelScanMode === "multi" ? "➕ Add & Scan Next" : "Add to Tracker"}</button>
+                  <button onClick={() => { setLabelItem(null); setLabelError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">Scan Another</button>
                 </div>
               )}
-              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); setLabelScanCount(0); setLabelLastItem(""); setLabelScanMode(null); }} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{labelScanCount > 0 ? "✅ Done (" + labelScanCount + " items added)" : t("cancel")}</button>
+              </>}
             </div>
           </div>
         )}
