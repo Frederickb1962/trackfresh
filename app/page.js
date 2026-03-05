@@ -300,13 +300,6 @@ const GLOBAL_STYLES = `
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
-  /* === GLOBAL VOICE MIC === */
-  .voice-fab { position:fixed; bottom:120px; right:16px; z-index:9000; width:56px; height:56px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; font-size:1.5rem; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition:all 0.2s ease; }
-  .voice-fab-idle { background:linear-gradient(135deg,#059669,#047857); color:white; }
-  .voice-fab-speaking { background:linear-gradient(135deg,#2563eb,#1d4ed8); color:white; animation:voicePulse 1s ease-in-out infinite; }
-  .voice-fab-listening { background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; animation:voicePulse 0.6s ease-in-out infinite; }
-  @keyframes voicePulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
-  .voice-banner { position:fixed; bottom:184px; right:16px; z-index:9000; background:rgba(0,0,0,0.85); color:white; border-radius:12px; padding:8px 14px; font-size:0.75rem; font-weight:600; max-width:260px; }
   /* === BOTTOM NAV === */
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to bottom, #064e3b, #022c22); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
   .bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; min-width: 56px; transition: all 0.2s; }
@@ -1032,7 +1025,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
               setShowPhotoBtn(false);
               if ('speechSynthesis' in window) {
                 const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
-                u.rate = 0.8; u.pitch = 0.85;
+                u.rate = 1.1;
                 window.speechSynthesis.speak(u);
               }
               try {
@@ -1045,29 +1038,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
                 });
                 clearTimeout(timer);
                 const data = await res.json();
-                if (data.item) {
-                  // Enrich with food-info for storage tips like Label does
-                  try {
-                    const infoRes = await fetch("/api/food-info", {
-                      method: "POST", headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ name: data.item.name })
-                    });
-                    if (infoRes.ok) {
-                      const info = await infoRes.json();
-                      onResult({ ...data.item, ...info, name: data.item.name, barcode: result.getText(), source: "barcode",
-                        daysAfterOpening: info.daysAfterOpening || data.item.daysAfterOpening,
-                        storageTip: info.storageTip || data.item.storageTip || "",
-                        openedTip: info.openedTip || data.item.openedTip || "",
-                        category: info.category || data.item.category,
-                        location: info.location || data.item.location
-                      });
-                    } else {
-                      onResult({ ...data.item, barcode: result.getText(), source: "barcode" });
-                    }
-                  } catch(enrichErr) {
-                    onResult({ ...data.item, barcode: result.getText(), source: "barcode" });
-                  }
-                }
+                if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
                 else { detectedRef.current = false; captureAndScan(); }
               } catch(e) { detectedRef.current = false; captureAndScan(); }
             }
@@ -1460,7 +1431,24 @@ export default function TrackFreshDashboard() {
   const startVoiceDatePrompt = (productName) => {
     setVoicePromptDone(false);
     window.speechSynthesis.cancel();
-    startVoiceListening();
+    const speak = () => {
+      const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
+    const voices = window.speechSynthesis.getVoices();
+    const natural = voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en")) 
+      || voices.find(v => v.name.includes("Nicky") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Ava") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Allison") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Premium") && v.lang.startsWith("en"))
+      || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
+      || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
+    if (natural) msg.voice = natural;
+    msg.pitch = 1.05;
+      msg.rate = 1.15;
+      msg.onend = () => { startVoiceListening(); };
+      window.speechSynthesis.speak(msg);
+    };
+    if (window.speechSynthesis.getVoices().length > 0) { speak(); }
+    else { window.speechSynthesis.onvoiceschanged = () => { speak(); }; }
   };
 
   const startVoiceListening = () => {
@@ -1478,11 +1466,11 @@ export default function TrackFreshDashboard() {
         setSmartUseBy(parsed);
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
         const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
-        confirm.rate = 0.8;
+        confirm.rate = 1.15;
         window.speechSynthesis.speak(confirm);
       } else {
         const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
-        retry.rate = 0.8;
+        retry.rate = 1.0;
         window.speechSynthesis.speak(retry);
       }
       setVoiceListening(false);
@@ -1501,19 +1489,6 @@ export default function TrackFreshDashboard() {
   const uniScanTimer = React.useRef(null);
   const voiceFlowRef = React.useRef(null);
 
-  const [globalVoiceState, setGlobalVoiceState] = useState("idle");
-  const [globalVoiceBanner, setGlobalVoiceBanner] = useState("");
-  const globalVoiceRef = React.useRef(null);
-  const bannerTimer = React.useRef(null);
-  const showBanner = (text, dur) => { setGlobalVoiceBanner(text); if(bannerTimer.current)clearTimeout(bannerTimer.current); if(dur)bannerTimer.current=setTimeout(()=>setGlobalVoiceBanner(""),dur); };
-  const stopGlobalVoice = () => { if('speechSynthesis' in window)window.speechSynthesis.cancel(); if(globalVoiceRef.current){try{globalVoiceRef.current.abort();}catch(e){} globalVoiceRef.current=null;} setGlobalVoiceState("idle"); setGlobalVoiceBanner(""); };
-  const globalVoiceListen = (onResult) => { const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){showBanner("Voice not supported",3000);setGlobalVoiceState("idle");return;} if(globalVoiceRef.current){try{globalVoiceRef.current.abort();}catch(e){}} const r=new SR(); r.lang=lang==="es"?"es-MX":"en-US"; r.interimResults=false; r.maxAlternatives=3; globalVoiceRef.current=r; setGlobalVoiceState("listening"); let got=false; r.onresult=(ev)=>{got=true;globalVoiceRef.current=null;const t=ev.results[0][0].transcript.toLowerCase().trim();showBanner('"'+t+'"',3000);onResult(t);}; r.onerror=(e)=>{if(e.error==='aborted')return;if(!got){showBanner("Didn't catch that.",3000);setGlobalVoiceState("idle");}}; r.onend=()=>{if(!got)setGlobalVoiceState("idle");}; r.start(); };
-  const globalVoiceSpeak = (text, cb) => { if(!('speechSynthesis' in window)){if(cb)setTimeout(cb,300);return;} window.speechSynthesis.cancel(); setGlobalVoiceState("speaking"); showBanner(text); const u=new SpeechSynthesisUtterance(text); u.rate=0.8; u.pitch=0.85; const bv=getBestVoice(); if(bv) u.voice=bv; let done=false; const fire=()=>{if(!done){done=true;if(cb)cb();}}; u.onend=fire; setTimeout(fire,5000); window.speechSynthesis.speak(u); };
-  const getVoicePrompt = () => { return lang==="es" ? "Por favor elige uno de los botones." : "Please choose one of the link buttons."; };
-  const handleGlobalVoiceResult = (t) => { if(t.includes("tracker")||t.includes("rastreador")){setActiveTab("tracker");globalVoiceSpeak("Opening Tracker.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("recipe")||t.includes("receta")){setActiveTab("recipes");globalVoiceSpeak("Opening Recipes.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("shopping")||t.includes("compra")){setActiveTab("shopping");globalVoiceSpeak("Opening Shopping.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("meal")||t.includes("comida")){setActiveTab("meals");globalVoiceSpeak("Opening Meals.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("community")||t.includes("comunidad")){setActiveTab("community");globalVoiceSpeak("Opening Community.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("store")||t.includes("tienda")){setActiveTab("stores-page");globalVoiceSpeak("Opening Stores.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("scan")||t.includes("barcode")||t.includes("escanear")){if(activeTab!=="tracker")setActiveTab("tracker");setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);globalVoiceSpeak("Opening scanner.",()=>setGlobalVoiceState("idle"));return;} if((t.includes("add")||t.includes("agregar"))&&activeTab==="tracker"){setShowQuickAdd(true);globalVoiceSpeak("Opening quick add.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("find recipe")||t.includes("suggest")){setActiveTab("recipes");globalVoiceSpeak("Finding recipes.",()=>{setGlobalVoiceState("idle");handleSuggestRecipes();});return;} if(t.includes("recall")||t.includes("fda")){setShowRecallsPanel(true);globalVoiceSpeak("Opening FDA recalls.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("help")||t.includes("ayuda")){setShowHelp(true);globalVoiceSpeak("Opening help.",()=>setGlobalVoiceState("idle"));return;} if(t.includes("stop")||t.includes("cancel")){stopGlobalVoice();return;} globalVoiceSpeak("I didn't understand. Try again.",()=>setGlobalVoiceState("idle")); };
-  const handleGlobalMicTap = () => { if(globalVoiceState!=="idle"){stopGlobalVoice();return;} if(showSmartScanner)return; globalVoiceSpeak(getVoicePrompt(),()=>{globalVoiceListen(handleGlobalVoiceResult);}); };
-
-
   const resetUniScanTimer = () => {
     if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
     uniScanTimer.current = setTimeout(() => {
@@ -1525,42 +1500,19 @@ export default function TrackFreshDashboard() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.8; u.pitch = 0.85;
-      const bv = getBestVoice(); if (bv) u.voice = bv;
+      u.rate = 1.1;
+      u.pitch = 1;
       window.speechSynthesis.speak(u);
       return u;
     }
     return null;
   };
 
-  
-  const getBestVoice = () => {
-    if (!('speechSynthesis' in window)) return null;
-    let voices = window.speechSynthesis.getVoices();
-    if (voices.length === 0) { window.speechSynthesis.getVoices(); return null; }
-    const langPref = lang === "es" ? "es" : "en";
-    const prefer = langPref === "en"
-      ? ["Samantha","Karen","Zoe","Nicky","Ava","Allison","Victoria"]
-      : ["Paulina","Monica","Juan"];
-    for (const name of prefer) {
-      const v = voices.find(v => v.name.includes(name) && v.lang.startsWith(langPref));
-      if (v) return v;
-    }
-    const enhanced = voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith(langPref));
-    if (enhanced) return enhanced;
-    const premium = voices.find(v => v.name.includes("Premium") && v.lang.startsWith(langPref));
-    if (premium) return premium;
-    return voices.find(v => v.lang.startsWith(langPref)) || null;
-  };
-
-  React.useEffect(() => { if('speechSynthesis' in window){window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.getVoices();};}}, []);
-
   const speakThen = (text, cb) => {
     if (!('speechSynthesis' in window)) { setTimeout(cb || (() => {}), 300); return; }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.8; u.pitch = 0.85;
-    const bv = getBestVoice(); if (bv) u.voice = bv;
+    u.rate = 1.1; u.pitch = 1;
     const ms = Math.max(2000, (text.trim().split(/\s+/).length / 120) * 60000 + 1200);
     let done = false;
     const fire = () => { if (!done) { done = true; if (cb) cb(); } };
@@ -1667,8 +1619,8 @@ export default function TrackFreshDashboard() {
     resetUniScanTimer();
     setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
-    setVoiceFlowStep(null);
-    // silent - no voice prompt on scan result
+    setVoiceFlowStep("say_date");
+
   };
   const handleVoiceNextDone = (cmd) => {
     const t = cmd.toLowerCase();
@@ -1685,7 +1637,7 @@ export default function TrackFreshDashboard() {
     if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
-    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
+    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     setUniScanCount(prev => prev + 1);
     setUniScanLastItem(itemName);
@@ -1895,24 +1847,7 @@ export default function TrackFreshDashboard() {
       const res = await fetch("/api/scan-barcode", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ barcode }) });
       const data = await res.json();
       if (data.error) { setBarcodeError("Barcode: " + barcode + " — not found in database. Try a different product."); setBarcodeScanning(false); setBarcodeDetected(""); return; }
-      // Enrich with food-info for storage tips, opening warnings & shelf life (matches label scanner quality)
-      let enriched = { ...data.item, barcode };
-      try {
-        const infoRes = await fetch("/api/food-info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: data.item.name }) });
-        if (infoRes.ok) {
-          const info = await infoRes.json();
-          enriched = {
-            ...enriched,
-            daysAfterOpening: info.daysAfterOpening || data.item.daysAfterOpening || null,
-            daysSealed: info.daysSealed || data.item.daysSealed || null,
-            storageTip: info.storageTip || data.item.storageTip || "",
-            openedTip: info.openedTip || data.item.openedTip || "",
-            category: info.category || data.item.category || "Other",
-            location: info.location || data.item.location || "Fridge",
-          };
-        }
-      } catch (enrichErr) { /* enrichment failed gracefully, use raw barcode data */ }
-      setBarcodeItem(enriched);
+      setBarcodeItem({ ...data.item, barcode });
       setBarcodeScanning(false);
 } catch (err) { setBarcodeError("Scan failed. Please try again."); setBarcodeScanning(false); setBarcodeDetected(""); }
   };
@@ -2693,7 +2628,7 @@ export default function TrackFreshDashboard() {
                       if (data.item.name && !data.item.dateFound) {
                         try {
                           const msg = new SpeechSynthesisUtterance("I found " + data.item.name + ". What is the expiration date?");
-                          msg.rate = 0.8;
+                          msg.rate = 1.0;
                           msg.onend = () => {
                             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (!SR) return;
@@ -2706,7 +2641,7 @@ export default function TrackFreshDashboard() {
                               if (parsed) {
                                 setLabelItem(prev => prev ? {...prev, date: parsed, dateFound: true} : prev);
                                 const ok = new SpeechSynthesisUtterance("Got it. " + t);
-                                ok.rate = 0.8;
+                                ok.rate = 1.0;
                                 window.speechSynthesis.speak(ok);
                               }
                             };
@@ -3187,10 +3122,6 @@ export default function TrackFreshDashboard() {
 
       </div>
     </div>
-    {!showSmartScanner && !showBarcodeScanner && (<>
-      {globalVoiceBanner && <div className="voice-banner">{globalVoiceBanner}</div>}
-      <button onClick={handleGlobalMicTap} className={`voice-fab ${globalVoiceState==="speaking"?"voice-fab-speaking":globalVoiceState==="listening"?"voice-fab-listening":"voice-fab-idle"}`}>{globalVoiceState==="idle"?"\u{1F3A4}":globalVoiceState==="speaking"?"\u{1F50A}":"\u{1F534}"}</button>
-    </>)}
     <nav className="bottom-nav">
       <button onClick={() => setActiveTab("tracker")} className={activeTab === "tracker" ? "nav-active" : ""}>
         <span className="nav-icon">{String.fromCodePoint(0x1F966)}</span>
