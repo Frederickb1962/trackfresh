@@ -1449,7 +1449,7 @@ export default function TrackFreshDashboard() {
       || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
       || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
     if (natural) msg.voice = natural;
-    msg.pitch = 1.05;
+    msg.pitch = 1.0;
       msg.rate = 0.9;
       msg.onend = () => { startVoiceListening(); };
       window.speechSynthesis.speak(msg);
