@@ -2537,7 +2537,7 @@ export default function TrackFreshDashboard() {
                           <button onClick={() => document.getElementById("barcodeDatePicker").showPicker ? document.getElementById("barcodeDatePicker").showPicker() : document.getElementById("barcodeDatePicker").focus()} className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-700 border-2 border-gray-300 pill-3d">📅 Enter Date</button>
                         </div>
                         <input id="barcodeDatePicker" type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
-                        {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>
+                        {voiceListening === "useBy" && <p className="text-xs text-green-700 mt-1">Say the date e.g. February 20 2026</p>}
                       </div>
                       {barcodeLocation === "Fridge" && barcodeItem.category === "Meat" && (
                         <div>
