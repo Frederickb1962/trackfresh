@@ -1895,7 +1895,24 @@ export default function TrackFreshDashboard() {
       const res = await fetch("/api/scan-barcode", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ barcode }) });
       const data = await res.json();
       if (data.error) { setBarcodeError("Barcode: " + barcode + " — not found in database. Try a different product."); setBarcodeScanning(false); setBarcodeDetected(""); return; }
-      setBarcodeItem({ ...data.item, barcode });
+      // Enrich with food-info for storage tips, opening warnings & shelf life (matches label scanner quality)
+      let enriched = { ...data.item, barcode };
+      try {
+        const infoRes = await fetch("/api/food-info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: data.item.name }) });
+        if (infoRes.ok) {
+          const info = await infoRes.json();
+          enriched = {
+            ...enriched,
+            daysAfterOpening: info.daysAfterOpening || data.item.daysAfterOpening || null,
+            daysSealed: info.daysSealed || data.item.daysSealed || null,
+            storageTip: info.storageTip || data.item.storageTip || "",
+            openedTip: info.openedTip || data.item.openedTip || "",
+            category: info.category || data.item.category || "Other",
+            location: info.location || data.item.location || "Fridge",
+          };
+        }
+      } catch (enrichErr) { /* enrichment failed gracefully, use raw barcode data */ }
+      setBarcodeItem(enriched);
       setBarcodeScanning(false);
 } catch (err) { setBarcodeError("Scan failed. Please try again."); setBarcodeScanning(false); setBarcodeDetected(""); }
   };
