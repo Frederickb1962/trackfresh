@@ -1834,7 +1834,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType }) });
+        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
         const data = await res.json();
         if (data.error) { setReceiptError(data.error); setReceiptScanning(false); return; }
         setReceiptItems(data.items);
@@ -2009,7 +2009,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType }) });
+        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
         const data = await res.json();
         if (data.error) { setLabelError(data.error); setLabelScanning(false); return; }
         
