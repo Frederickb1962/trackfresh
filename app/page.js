@@ -914,6 +914,14 @@ const LOCATION_ICONS = {
   Pantry: "🗄️",
 };
 
+function AiBadge({ style = {} }) {
+  return (
+    <span style={style}>
+      <span style={{color:"#f97316",fontWeight:"inherit"}}>A</span><span style={{color:"#4ade80",fontStyle:"italic",fontWeight:"inherit",marginLeft:"-0.04em"}}>i</span>
+    </span>
+  );
+}
+
 function Card({ children, className = "" }) {
   return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-sm p-5 card-3d ${className}`}>{children}</div>;
 }
@@ -1272,7 +1280,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
     <div className="mkt-page">
       <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <nav className="mkt-nav">
-        <div className="mkt-nav-logo">{broc} TrackFresh <span style={{opacity:0.6,fontSize:"0.7em"}}>Ai</span></div>
+        <div className="mkt-nav-logo">{broc} TrackFresh <AiBadge style={{fontSize:"0.7em"}} /></div>
         <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
           <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
         </div>
@@ -1284,7 +1292,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       </div>
       <div className="mkt-phone mkt-animate mkt-animate-d3">
         <div className="mkt-phone-inner">
-          <div className="mkt-phone-header">{broc} TrackFresh Ai</div>
+          <div className="mkt-phone-header">{broc} TrackFresh <AiBadge /></div>
           <div style={{fontSize:"0.65rem",fontWeight:700,color:"#374151",marginBottom:"4px"}}>{isEs ? "Vence Pronto" : "Expiring Soon"}</div>
           {[{e:milk,n:isEs?"Leche":"Milk",c:"1d",bg:"#fef2f2"},{e:leafy,n:isEs?"Espinacas":"Spinach",c:"3d",bg:"#fefce8"},{e:drum,n:isEs?"Pechuga":"Chicken",c:"2d",bg:"#fef2f2"},{e:berry,n:isEs?"Ar\u00e1ndanos":"Blueberries",c:"5d",bg:"#f0fdf4"},{e:cheese,n:isEs?"Queso":"Cheese",c:"8d",bg:"#f0fdf4"}].map((item,i) => (
             <div key={i} className="mkt-phone-item" style={{background:item.bg}}><span>{item.e} <strong style={{color:"#111"}}>{item.n}</strong></span><span style={{color:"#6b7280"}}>{item.c}</span></div>
@@ -1301,7 +1309,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
       </div>
       <div className="mkt-section">
-        <div className="mkt-section-title"><span>{isEs ? "La Soluci\u00f3n" : "The Solution"}</span><h2>{isEs ? "Conoce TrackFresh Ai" : "Meet TrackFresh Ai"}</h2></div>
+        <div className="mkt-section-title"><span>{isEs ? "La Soluci\u00f3n" : "The Solution"}</span><h2>{isEs ? <>Conoce TrackFresh <AiBadge /></> : <>Meet TrackFresh <AiBadge /></>}</h2></div>
         <div className="mkt-features">
           {[{icon:snap,title:isEs?"Esc\u00e1ner con IA":"AI Label Scanner",desc:isEs?"Toma foto de cualquier etiqueta.":"Snap a photo of any food label."},{icon:pkg,title:isEs?"C\u00f3digo de Barras":"Barcode Scanner",desc:isEs?"Apunta tu c\u00e1mara a cualquier c\u00f3digo.":"Point your camera at any barcode."},{icon:clock,title:isEs?"Alertas Inteligentes":"Smart Expiry Alerts",desc:isEs?"Niveles de urgencia con colores.":"Color-coded urgency levels."},{icon:mic,title:isEs?"Entrada por Voz":"Voice Input",desc:isEs?"Manos ocupadas? Solo habla.":"Hands full? Just speak."},{icon:cook,title:isEs?"Recetas con IA":"AI Recipes",desc:isEs?"Recetas basadas en lo que tienes.":"Recipes from what you have."},{icon:cal,title:isEs?"Planificador":"Meal Planner",desc:isEs?"La IA planifica tus comidas.":"AI plans your weekly meals."},{icon:cart,title:isEs?"Lista de Compras":"Smart Shopping",desc:isEs?"Lista inteligente con alertas.":"Smart list with alerts."},{icon:warn,title:isEs?"Retiros FDA":"FDA Recalls",desc:isEs?"Alertas de seguridad alimentaria.":"Real-time food safety alerts."}].map((f,i) => (
             <div key={i} className="mkt-feature mkt-animate" style={{animationDelay:0.1*i+"s"}}><div className="mkt-feature-icon">{f.icon}</div><h3>{f.title}</h3><p>{f.desc}</p></div>
@@ -1329,7 +1337,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <p style={{opacity:0.8,marginBottom:"1.5rem",fontSize:"0.95rem"}}>{isEs ? "\u00danete a miles ahorrando comida y dinero." : "Join thousands saving food and money."}</p>
         <button ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta">{rocket} {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
       </div>
-      <div className="mkt-footer">{broc} TrackFresh Ai \u00A9 2026 \u2014 {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
+      <div className="mkt-footer">{broc} TrackFresh <AiBadge /> © 2026 — {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
     </div>
   );
 }
@@ -2155,7 +2163,7 @@ export default function TrackFreshDashboard() {
     <div className="min-h-screen app-bg p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <div className="mx-auto max-w-2xl space-y-4 main-content">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}>🥦 TrackFresh<span style={{color:"#86efac",fontSize:"0.65em",fontWeight:700,opacity:0.9}}>.ai</span></h1>
+          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}>🥦 TrackFresh <AiBadge style={{fontSize:"0.75em"}} /></h1>
           <div className="flex items-center gap-3">
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
           </div>
@@ -2867,14 +2875,14 @@ export default function TrackFreshDashboard() {
         {activeTab === "recipes" && (
           <>
           <div className="mb-3">
-            <span className="app-section-label">AI-Powered</span>
+            <span className="app-section-label"><AiBadge />-Powered</span>
             <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
           </div>
           <Card>
             <div className="mb-3 flex items-center gap-2">
             <ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
             <p className="mb-4 text-sm text-gray-600">{t("recipeIntro")}</p>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> AI is cooking...</> : <><ChefHat className="h-4 w-4" /> Get AI Recipe Ideas</>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge /> is cooking...</> : <><ChefHat className="h-4 w-4" /> Get <AiBadge /> Recipe Ideas</>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">{t("noMatches")}</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -3024,7 +3032,7 @@ export default function TrackFreshDashboard() {
                   <h2 className="text-lg font-bold">{t("mealPlanner")}</h2>
                 </div>
                 <button onClick={handleAiPlanWeek} disabled={aiPlanLoading} className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-lg ${aiPlanLoading ? "bg-gray-400" : "bg-gradient-to-r from-purple-700 to-indigo-800"}`} style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>
-                  {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> AI is planning...</> : "✨ AI Plan My Week"}
+                  {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> <AiBadge /> is planning...</> : <span>✨ <AiBadge /> Plan My Week</span>}
                 </button>
               </div>
               <p className="text-xs text-gray-500 mb-4">{t("mealDesc")}</p>
