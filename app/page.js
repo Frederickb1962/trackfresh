@@ -917,7 +917,7 @@ const LOCATION_ICONS = {
 function AiBadge({ style = {} }) {
   return (
     <span style={{whiteSpace:"nowrap",...style}}>
-      <span style={{color:"#f97316",fontWeight:900,fontSize:"1.1em",lineHeight:1}}>A</span><span style={{color:"#4ade80",fontWeight:900,display:"inline-block",transform:"skewX(-20deg)",marginLeft:"-0.06em",lineHeight:1}}>i</span>
+      <span style={{color:"#f97316",fontWeight:900,fontSize:"1.1em",lineHeight:1}}>A</span><span style={{color:"#4ade80",fontWeight:900,display:"inline-block",transform:"rotate(-22deg)",transformOrigin:"bottom center",marginLeft:"-0.18em",lineHeight:1,verticalAlign:"middle"}}>i</span>
     </span>
   );
 }
