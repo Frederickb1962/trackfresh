@@ -3181,26 +3181,26 @@ export default function TrackFreshDashboard() {
               <h2 className="app-section-h2">⚙️ More</h2>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setActiveTab("stores-page")} className="glass-tile">
-                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>🏪</span>
-                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("stores")}</span>
-                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("storesDesc")}</span>
+              <button onClick={() => setActiveTab("stores-page")} className="glass-scan-btn">
+                <span style={{fontSize:"1.8rem"}}>🏪</span>
+                <span>{t("stores")}</span>
+                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("storesDesc")}</span>
               </button>
-              <button onClick={() => setActiveTab("community")} className="glass-tile">
-                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>👥</span>
-                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("communityWord")}</span>
-                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("communityDesc")}</span>
+              <button onClick={() => setActiveTab("community")} className="glass-scan-btn">
+                <span style={{fontSize:"1.8rem"}}>👥</span>
+                <span>{t("communityWord")}</span>
+                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("communityDesc")}</span>
               </button>
-              <button onClick={() => { setShowRecallsPanel(true); }} className="glass-tile" style={{position:"relative"}}>
-                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>⚠️</span>
-                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("fdaRecalls")}</span>
-                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("fdaRecallsDesc")}</span>
-                {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"8px",right:"8px",background:"#ef4444",color:"white",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontWeight:"800"}}>{fdaRecalls.length}</span>}
+              <button onClick={() => { setShowRecallsPanel(true); }} className="glass-scan-btn" style={{position:"relative"}}>
+                <span style={{fontSize:"1.8rem"}}>⚠️</span>
+                <span>{t("fdaRecalls")}</span>
+                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("fdaRecallsDesc")}</span>
+                {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"6px",right:"6px",background:"#ef4444",color:"white",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontWeight:"800"}}>{fdaRecalls.length}</span>}
               </button>
-              <button onClick={() => setShowHelp(true)} className="glass-tile">
-                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>❓</span>
-                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("howToUse")}</span>
-                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>Help &amp; tips</span>
+              <button onClick={() => setShowHelp(true)} className="glass-scan-btn">
+                <span style={{fontSize:"1.8rem"}}>❓</span>
+                <span>{t("howToUse")}</span>
+                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>Help &amp; tips</span>
               </button>
             </div>
             <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_mkt_seen"); } catch(e) {} window.location.reload(); } }} className="w-full rounded-xl py-3 text-sm font-bold mt-4" style={{background:"rgba(239,68,68,0.18)",border:"1px solid rgba(239,68,68,0.35)",color:"#fca5a5"}}>{t("signOut")}</button>
