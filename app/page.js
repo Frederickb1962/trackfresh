@@ -318,6 +318,9 @@ const GLOBAL_STYLES = `
   .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 14px; padding: 0.85rem 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(4px); width: 100%; }
   .glass-scan-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
+  .glass-scan-btn-apricot { background: rgba(251,160,90,0.28) !important; border-color: rgba(251,160,90,0.55) !important; }
+  .glass-scan-btn-apricot:hover { background: rgba(251,160,90,0.42) !important; }
+  .glass-scan-btn-apricot:active { background: rgba(251,160,90,0.18) !important; }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
   .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
@@ -2754,7 +2757,7 @@ export default function TrackFreshDashboard() {
               <span style={{color:"rgba(255,255,255,0.65)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              <button onClick={() => setShowReceiptScanner(true)} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>📷</span>Receipt</button>
+              <button onClick={() => setShowReceiptScanner(true)} className="glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>📷</span>Receipt</button>
               <div><input type="file" accept="image/*" capture="environment" id="trackerLabelInput" style={{display:"none"}} onChange={async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -2805,9 +2808,9 @@ export default function TrackFreshDashboard() {
                 reader.readAsDataURL(file);
                 e.target.value = "";
               }} />
-              <button onClick={() => { setLabelItem(null); setLabelError(""); setLabelScanMode(null); setLabelScanCount(0); setLabelLastItem(""); setShowLabelScanner(true); }} className="w-full glass-scan-btn"><span style={{fontSize:"1.5rem"}}>🏷️</span>{t("label")}</button></div>
-              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>📦</span>Barcode</button>
-              <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>✏️</span>{t("quickAdd")}</button>
+              <button onClick={() => { setLabelItem(null); setLabelError(""); setLabelScanMode(null); setLabelScanCount(0); setLabelLastItem(""); setShowLabelScanner(true); }} className="w-full glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>🏷️</span>{t("label")}</button></div>
+              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>📦</span>Barcode</button>
+              <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>✏️</span>{t("quickAdd")}</button>
             </div>
             <Card>
               <div className="mb-3 flex items-center justify-between">
