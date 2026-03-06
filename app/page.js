@@ -308,9 +308,23 @@ const GLOBAL_STYLES = `
   .bottom-nav button.nav-active span.nav-icon { transform: scale(1.15); }
   .bottom-nav button.nav-active span.nav-label { color: #4ade80; }
   .bottom-nav button:not(.nav-active) span.nav-label { color: rgba(255,255,255,0.5); }
-  .bottom-nav button:not(.nav-active) span.nav-icon { opacity: 0.6; }
+  .bottom-nav button:not(.nav-active) span.nav-icon { opacity: 0.85; }
   .main-content { padding-bottom: 90px !important; }
+
+  /* === APP INTERIOR THEME (matches landing page) === */
+  .app-bg { background: linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%); background-attachment: fixed; }
+  .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
+  .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 14px; padding: 0.85rem 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(4px); width: 100%; }
+  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
+  .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
+  .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .glass-tile:active { transform: translateY(1px); }
+  .app-header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 999px; padding: 0.4rem 0.85rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+  .app-header-btn:hover { background: rgba(255,255,255,0.25); }
 `;
+
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
@@ -1217,7 +1231,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const handleAutoScroll = () => {
     window.scrollTo(0, 0);
     const scrollStep = () => {
-      window.scrollBy(0, 1);
+      window.scrollBy(0, 2);
       if (bottomBtnRef.current) {
         const rect = bottomBtnRef.current.getBoundingClientRect();
         if (rect.top <= window.innerHeight * 0.55) {
@@ -2138,12 +2152,12 @@ export default function TrackFreshDashboard() {
       </div>
     )}
 
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-emerald-50/50 to-white p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+    <div className="min-h-screen app-bg p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <div className="mx-auto max-w-2xl space-y-4 main-content">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">🥦 TrackFresh</h1>
+          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}>🥦 TrackFresh<span style={{color:"#86efac",fontSize:"0.65em",fontWeight:700,opacity:0.9}}>.ai</span></h1>
           <div className="flex items-center gap-3">
-            <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="rounded-full bg-green-500 px-3 py-1.5 text-sm font-bold text-white hover:bg-green-600 transition-all shadow-md">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
+            <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
           </div>
         </div>
 
@@ -2725,11 +2739,14 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold text-gray-800">🥦 {t("trackedItemsTitle")}</h2>
-              <span className="text-sm text-gray-500">{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
+              <div>
+                <span className="app-section-label">Pantry</span>
+                <h2 className="app-section-h2" style={{marginBottom:0}}>🥦 {t("trackedItemsTitle")}</h2>
+              </div>
+              <span style={{color:"rgba(255,255,255,0.65)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              <button onClick={() => setShowReceiptScanner(true)} className="rounded-xl bg-gradient-to-b from-green-100 to-green-200 py-3 text-xs font-bold text-green-800 btn-3d border border-green-300">📷 Receipt</button>
+              <button onClick={() => setShowReceiptScanner(true)} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>📷</span>Receipt</button>
               <div><input type="file" accept="image/*" capture="environment" id="trackerLabelInput" style={{display:"none"}} onChange={async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -2780,9 +2797,9 @@ export default function TrackFreshDashboard() {
                 reader.readAsDataURL(file);
                 e.target.value = "";
               }} />
-              <button onClick={() => { setLabelItem(null); setLabelError(""); setLabelScanMode(null); setLabelScanCount(0); setLabelLastItem(""); setShowLabelScanner(true); }} className="w-full rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">🏷️ {t("label")}</button></div>
-              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="rounded-xl bg-gradient-to-b from-orange-100 to-orange-200 py-3 text-xs font-bold text-orange-800 btn-3d border border-orange-300">📦 Barcode</button>
-              <button onClick={() => setShowQuickAdd(true)} className="rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 py-3 text-xs font-bold text-amber-800 btn-3d border border-amber-300">✏️ {t("quickAdd")}</button>
+              <button onClick={() => { setLabelItem(null); setLabelError(""); setLabelScanMode(null); setLabelScanCount(0); setLabelLastItem(""); setShowLabelScanner(true); }} className="w-full glass-scan-btn"><span style={{fontSize:"1.5rem"}}>🏷️</span>{t("label")}</button></div>
+              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>📦</span>Barcode</button>
+              <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn"><span style={{fontSize:"1.5rem"}}>✏️</span>{t("quickAdd")}</button>
             </div>
             <Card>
               <div className="mb-3 flex items-center justify-between">
@@ -2848,6 +2865,11 @@ export default function TrackFreshDashboard() {
           </>
         )}
         {activeTab === "recipes" && (
+          <>
+          <div className="mb-3">
+            <span className="app-section-label">AI-Powered</span>
+            <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
+          </div>
           <Card>
             <div className="mb-3 flex items-center gap-2">
             <ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
@@ -2892,13 +2914,17 @@ export default function TrackFreshDashboard() {
             )}
             {!recipesGenerated && <div className="mt-4 rounded-lg bg-gray-50 p-4 text-sm text-gray-500">You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}</div>}
           </Card>
+          </>
         )}
 
         {activeTab === "shopping" && (
           <>
+            <div className="mb-3">
+              <span className="app-section-label">Grocery</span>
+              <h2 className="app-section-h2">🛒 {t("shoppingList")}</h2>
+            </div>
             <Card>
               <div className="mb-3 flex items-center gap-2">
-            
                 <ShoppingCart className="h-5 w-5 text-green-600" />
                 <h2 className="text-lg font-bold">{t("shoppingList")}</h2>
                 {shoppingItems.some((it) => it.checked) && (
@@ -2987,9 +3013,12 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "meals" && (
           <>
+            <div className="mb-3">
+              <span className="app-section-label">Weekly</span>
+              <h2 className="app-section-h2">📅 {t("mealPlanner")}</h2>
+            </div>
             <Card>
               <div className="mb-3 flex items-center justify-between">
-            
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📅</span>
                   <h2 className="text-lg font-bold">{t("mealPlanner")}</h2>
@@ -3041,7 +3070,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold text-green-700 mb-3"><span>←</span> Back</button>
+            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}>← Back</button>
             
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
@@ -3138,37 +3167,46 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "more" && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-gray-800">⚙️ More</h2>
+            <div>
+              <span className="app-section-label">Settings</span>
+              <h2 className="app-section-h2">⚙️ More</h2>
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setActiveTab("stores-page")} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
-                <span className="text-2xl block mb-1">🏪</span>
-                <span className="text-sm font-bold text-gray-800">{t("stores")}</span>
-                <span className="text-xs text-gray-500 block">{t("storesDesc")}</span>
+              <button onClick={() => setActiveTab("stores-page")} className="glass-tile">
+                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>🏪</span>
+                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("stores")}</span>
+                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("storesDesc")}</span>
               </button>
-              <button onClick={() => setActiveTab("community")} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
-                <span className="text-2xl block mb-1">👥</span>
-                <span className="text-sm font-bold text-gray-800">{t("communityWord")}</span>
-                <span className="text-xs text-gray-500 block">{t("communityDesc")}</span>
+              <button onClick={() => setActiveTab("community")} className="glass-tile">
+                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>👥</span>
+                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("communityWord")}</span>
+                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("communityDesc")}</span>
               </button>
-              <button onClick={() => { setShowRecallsPanel(true); }} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all relative">
-                <span className="text-2xl block mb-1">⚠️</span>
-                <span className="text-sm font-bold text-gray-800">{t("fdaRecalls")}</span>
-                <span className="text-xs text-gray-500 block">{t("fdaRecallsDesc")}</span>
+              <button onClick={() => { setShowRecallsPanel(true); }} className="glass-tile" style={{position:"relative"}}>
+                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>⚠️</span>
+                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("fdaRecalls")}</span>
+                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>{t("fdaRecallsDesc")}</span>
                 {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"8px",right:"8px",background:"#ef4444",color:"white",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontWeight:"800"}}>{fdaRecalls.length}</span>}
               </button>
-              <button onClick={() => setShowHelp(true)} className="rounded-xl bg-gradient-to-b from-white to-gray-50 border-2 border-gray-100 p-4 text-center shadow-sm hover:shadow-md hover:border-green-200 transition-all">
-                <span className="text-2xl block mb-1">❓</span>
-                <span className="text-sm font-bold text-gray-800">{t("howToUse")}</span>
-                <span className="text-xs text-gray-500 block">Help & tips</span>
+              <button onClick={() => setShowHelp(true)} className="glass-tile">
+                <span style={{fontSize:"2rem",display:"block",marginBottom:"0.4rem"}}>❓</span>
+                <span style={{fontSize:"0.9rem",fontWeight:800,display:"block",color:"#fff"}}>{t("howToUse")}</span>
+                <span style={{fontSize:"0.72rem",display:"block",marginTop:"0.2rem",color:"rgba(255,255,255,0.75)"}}>Help &amp; tips</span>
               </button>
             </div>
-            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_mkt_seen"); } catch(e) {} window.location.reload(); } }} className="w-full rounded-xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-600 mt-4">{t("signOut")}</button>
+            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_mkt_seen"); } catch(e) {} window.location.reload(); } }} className="w-full rounded-xl py-3 text-sm font-bold mt-4" style={{background:"rgba(239,68,68,0.18)",border:"1px solid rgba(239,68,68,0.35)",color:"#fca5a5"}}>{t("signOut")}</button>
           </div>
         )}
 
         {activeTab === "stores-page" && (
           <div className="space-y-4">
-            
+            <div className="flex items-center gap-3 mb-1">
+              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
+              <div>
+                <span className="app-section-label">Online</span>
+                <h2 className="app-section-h2" style={{marginBottom:0}}>🏪 {t("shopOnline")}</h2>
+              </div>
+            </div>
             <div className="rounded-2xl bg-white p-5 card-3d">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">🏪</span>
