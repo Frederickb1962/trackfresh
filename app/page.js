@@ -916,8 +916,8 @@ const LOCATION_ICONS = {
 
 function AiBadge({ style = {} }) {
   return (
-    <span style={style}>
-      <span style={{color:"#f97316",fontWeight:"inherit"}}>A</span><span style={{color:"#4ade80",fontStyle:"italic",fontWeight:"inherit",marginLeft:"-0.04em"}}>i</span>
+    <span style={{whiteSpace:"nowrap",...style}}>
+      <span style={{color:"#f97316",fontWeight:900,fontSize:"1.1em",lineHeight:1}}>A</span><span style={{color:"#4ade80",fontWeight:900,display:"inline-block",transform:"skewX(-20deg)",marginLeft:"-0.06em",lineHeight:1}}>i</span>
     </span>
   );
 }
@@ -1280,7 +1280,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
     <div className="mkt-page">
       <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <nav className="mkt-nav">
-        <div className="mkt-nav-logo">{broc} TrackFresh <AiBadge style={{fontSize:"0.7em"}} /></div>
+        <div className="mkt-nav-logo">{broc} TrackFresh <AiBadge /></div>
         <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
           <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
         </div>
@@ -2163,7 +2163,7 @@ export default function TrackFreshDashboard() {
     <div className="min-h-screen app-bg p-4"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       <div className="mx-auto max-w-2xl space-y-4 main-content">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}>🥦 TrackFresh <AiBadge style={{fontSize:"0.75em"}} /></h1>
+          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}>🥦 TrackFresh <AiBadge /></h1>
           <div className="flex items-center gap-3">
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
           </div>
