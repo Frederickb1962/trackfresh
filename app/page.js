@@ -321,6 +321,7 @@ const GLOBAL_STYLES = `
   .glass-scan-btn-apricot { background: rgba(255,255,255,0.12) !important; border: 3px solid #ff6600 !important; }
   .glass-scan-btn-apricot:hover { background: rgba(255,255,255,0.2) !important; border-color: #ff8c00 !important; }
   .glass-scan-btn-apricot:active { background: rgba(255,255,255,0.08) !important; }
+  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #ff6600 !important; backdrop-filter: blur(4px); }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
   .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
@@ -2812,7 +2813,7 @@ export default function TrackFreshDashboard() {
               <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>📦</span>Barcode</button>
               <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn glass-scan-btn-apricot"><span style={{fontSize:"1.5rem"}}>✏️</span>{t("quickAdd")}</button>
             </div>
-            <Card>
+            <Card className="tracker-items-card">
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {trackedItems.length > 0 && <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>}
@@ -2831,7 +2832,7 @@ export default function TrackFreshDashboard() {
                 ))}
               </div>
               {filteredItems.length === 0 ? (
-                <p className="text-sm text-gray-600">{t("noFilter")}</p>
+                <p className="text-sm text-white/70">{t("noFilter")}</p>
               ) : (
                 <div className="space-y-2">
                   {filteredItems.map((it) => {
