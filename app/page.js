@@ -1207,6 +1207,30 @@ function CommunityStewAnim() {
 
 function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const isEs = lang === "es";
+  const scrollFrameRef = React.useRef(null);
+  const bottomBtnRef = React.useRef(null);
+
+  React.useEffect(() => {
+    return () => { if (scrollFrameRef.current) cancelAnimationFrame(scrollFrameRef.current); };
+  }, []);
+
+  const handleAutoScroll = () => {
+    window.scrollTo(0, 0);
+    const scrollStep = () => {
+      window.scrollBy(0, 1);
+      if (bottomBtnRef.current) {
+        const rect = bottomBtnRef.current.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.55) {
+          cancelAnimationFrame(scrollFrameRef.current);
+          onLaunchApp();
+          return;
+        }
+      }
+      scrollFrameRef.current = requestAnimationFrame(scrollStep);
+    };
+    scrollFrameRef.current = requestAnimationFrame(scrollStep);
+  };
+
   const B = String.fromCodePoint;
   const broc = B(0x1F966);
   const rocket = B(0x1F680);
@@ -1242,7 +1266,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       <div className="mkt-hero mkt-animate">
         <h1>{isEs ? "Deja de Desperdiciar Comida." : "Stop Wasting Food."}<br/><span>{isEs ? "Empieza a Ahorrar." : "Start Saving."}</span></h1>
         <p>{isEs ? "TrackFresh Ai es tu asistente de cocina inteligente \u2014 escanea, rastrea y administra tu comida, planifica comidas, descubre recetas y elimina el desperdicio." : "TrackFresh Ai is your intelligent kitchen assistant \u2014 scan, track, and manage your food, plan meals, discover recipes, and eliminate waste."}</p>
-        <button onClick={onLaunchApp} className="mkt-cta mkt-animate mkt-animate-d2">{rocket} {isEs ? "Abrir TrackFresh" : "Launch TrackFresh"}</button>
+        <button onClick={handleAutoScroll} className="mkt-cta mkt-animate mkt-animate-d2">{rocket} {isEs ? "Abrir TrackFresh" : "Launch TrackFresh"}</button>
       </div>
       <div className="mkt-phone mkt-animate mkt-animate-d3">
         <div className="mkt-phone-inner">
@@ -1289,7 +1313,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       <div className="mkt-section" style={{textAlign:"center",paddingBottom:"2rem"}}>
         <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"1rem"}}>{isEs ? "Listo para Dejar de Desperdiciar?" : "Ready to Stop Wasting Food?"}</h2>
         <p style={{opacity:0.8,marginBottom:"1.5rem",fontSize:"0.95rem"}}>{isEs ? "\u00danete a miles ahorrando comida y dinero." : "Join thousands saving food and money."}</p>
-        <button onClick={onLaunchApp} className="mkt-cta">{rocket} {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
+        <button ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta">{rocket} {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
       </div>
       <div className="mkt-footer">{broc} TrackFresh Ai \u00A9 2026 \u2014 {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
     </div>
@@ -1380,6 +1404,7 @@ export default function TrackFreshDashboard() {
   const [labelScanCount, setLabelScanCount] = useState(0);
   const [labelLastItem, setLabelLastItem] = useState("");
   const [labelScanMode, setLabelScanMode] = useState(null);
+  const [labelScanKey, setLabelScanKey] = useState(0);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAddName, setQuickAddName] = useState("");
   const [quickAddDate, setQuickAddDate] = useState("");
@@ -2049,6 +2074,8 @@ export default function TrackFreshDashboard() {
       setShowLabelScanner(false);
       setLabelScanCount(0); setLabelLastItem("");
       setLabelScanMode(null);
+    } else {
+      setLabelScanKey(prev => prev + 1);
     }
     setLabelItem(null);
     setLabelError("");
@@ -2654,7 +2681,7 @@ export default function TrackFreshDashboard() {
               {labelScanMode !== null && <>
               {labelLastItem && <div className="mb-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700 font-semibold animate-pulse">✅ Added: {labelLastItem} — Ready for next scan!</div>}
               {!labelScanning && !labelItem && (
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-8 hover:bg-green-100">
+                <label key={labelScanKey} className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-8 hover:bg-green-100">
                   <span className="text-3xl mb-2">📷</span>
                   <span className="text-sm font-semibold text-green-600">{labelScanMode === "multi" ? "Tap to scan next item" : "Tap to photograph label"}</span>
                   <span className="text-xs text-gray-500 mt-1">Tap to open camera</span>
