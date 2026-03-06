@@ -318,9 +318,9 @@ const GLOBAL_STYLES = `
   .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 14px; padding: 0.85rem 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(4px); width: 100%; }
   .glass-scan-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
-  .glass-scan-btn-apricot { background: rgba(255,102,0,0.32) !important; border-color: rgba(255,102,0,0.6) !important; }
-  .glass-scan-btn-apricot:hover { background: rgba(255,102,0,0.48) !important; }
-  .glass-scan-btn-apricot:active { background: rgba(255,102,0,0.2) !important; }
+  .glass-scan-btn-apricot { background: rgba(255,255,255,0.12) !important; border: 3px solid #ff6600 !important; }
+  .glass-scan-btn-apricot:hover { background: rgba(255,255,255,0.2) !important; border-color: #ff8c00 !important; }
+  .glass-scan-btn-apricot:active { background: rgba(255,255,255,0.08) !important; }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
   .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
