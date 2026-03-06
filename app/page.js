@@ -2940,10 +2940,10 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleClearChecked} className="ml-auto rounded bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">{t("clearChecked")}</button>
                 )}
               </div>
-              <div className="flex gap-2 mb-2">
-                <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Add item…" className="rounded-xl px-3 py-2 text-sm btn-green-3d" />
-                <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Qty" className="rounded-xl px-3 py-2 text-sm btn-green-3d" />
-                <button onClick={handleAddShoppingItem} className="rounded-xl px-3 py-2 text-sm btn-green-3d">{t("addBtn")}</button>
+              <div className="flex gap-2 mb-2 w-full">
+                <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Add item…" className="flex-1 rounded-xl px-3 py-2 text-sm" />
+                <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder="Qty" className="w-16 rounded-xl px-3 py-2 text-sm" />
+                <button onClick={handleAddShoppingItem} className="rounded-xl px-4 py-2 text-sm btn-green-3d">{t("addBtn")}</button>
               </div>
               {shoppingItems.length === 0 ? (
                 <p className="text-sm text-gray-500 mt-3">{t("emptyList")}</p>
