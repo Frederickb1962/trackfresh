@@ -2764,7 +2764,7 @@ export default function TrackFreshDashboard() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1];
         const mediaType = file.type;
-        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
+        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType || "image/jpeg" }) });
         const data = await res.json();
         if (data.error) { setReceiptError(data.error); setReceiptScanning(false); return; }
         setReceiptItems(data.items);
