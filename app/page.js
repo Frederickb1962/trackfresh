@@ -3293,13 +3293,16 @@ export default function TrackFreshDashboard() {
                 </div>
                 <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); setScanMode(null); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
               </div>
+              {uniScanCount > 0 && (
+                <div style={{background:"#ecfdf5",borderRadius:"10px",padding:"0.5rem 0.75rem",marginBottom:"0.5rem",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <span style={{fontSize:"0.8rem",fontWeight:700,color:"#059669"}}>📦 {uniScanCount} {lang === "es" ? "artículo" + (uniScanCount > 1 ? "s" : "") + " escaneado" + (uniScanCount > 1 ? "s" : "") : "item" + (uniScanCount > 1 ? "s" : "") + " scanned"}</span>
+                  {uniScanLastItem && <span style={{fontSize:"0.7rem",color:"#6b7280"}}>{lang === "es" ? "Último" : "Last"}: {uniScanLastItem}</span>}
+                </div>
+              )}
               {scanMode === null && (
-                <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"14px",padding:"1rem"}}>
-                  <p style={{textAlign:"center",fontSize:"0.875rem",fontWeight:"600",color:"#fff",marginBottom:"0.75rem"}}>{t("howManyItems")}</p>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
-                    <button onClick={() => setScanMode("single")} className="glass-scan-btn" style={{padding:"1.25rem 0.5rem"}}><span style={{fontSize:"1.75rem"}}>1️⃣</span><span style={{fontSize:"0.875rem"}}>{t("singleScan")}</span></button>
-                    <button onClick={() => setScanMode("multi")} className="glass-scan-btn" style={{padding:"1.25rem 0.5rem"}}><span style={{fontSize:"1.75rem"}}>📦</span><span style={{fontSize:"0.875rem"}}>{t("multiScans")}</span></button>
-                  </div>
+                <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"14px",padding:"1rem",textAlign:"center"}}>
+                  <p style={{fontSize:"0.875rem",fontWeight:"600",color:"#fff",marginBottom:"0.5rem"}}>{lang === "es" ? "📸 Apunta a un recibo, etiqueta o código de barras" : "📸 Point at a receipt, label, or barcode"}</p>
+                  <button onClick={() => setScanMode("multi")} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem"}}><span style={{fontSize:"1.25rem"}}>🚀</span> {lang === "es" ? "Comenzar" : "Start Scanning"}</button>
                 </div>
               )}
               {scanMode !== null && <>
@@ -3399,6 +3402,7 @@ export default function TrackFreshDashboard() {
                     ))}
                   </div>
                   <button onClick={handleAddSmartMultiItems} className="w-full rounded-xl py-3 text-sm font-bold btn-green-3d text-white">{lang === "es" ? `✅ Agregar ${selectedSmartMulti.length} Productos` : `✅ Add ${selectedSmartMulti.length} Items`}</button>
+                  <button onClick={() => { handleAddSmartMultiItems(); setTimeout(() => { setShowSmartMultiReview(false); setSmartMultiItems([]); setSelectedSmartMulti([]); resetSmartScanner(); setSmartScanKey(prev => prev + 1); }, 100); }} className="w-full mt-2 rounded-xl py-2 text-sm font-bold bg-blue-500 text-white shadow-md" style={{boxShadow:"0 3px 0 #1d4ed8"}}>{lang === "es" ? "✅ Agregar y Escanear Otro" : "✅ Add & Scan Another"}</button>
                   <button onClick={() => { setShowSmartMultiReview(false); setSmartMultiItems([]); setSelectedSmartMulti([]); resetSmartScanner(); setSmartScanKey(prev => prev + 1); }} className="w-full mt-2 rounded-xl border py-2 text-sm font-bold text-gray-600 pill-3d">{lang === "es" ? "Escanear de Nuevo" : "Scan Again"}</button>
                 </div>
               )}
@@ -3467,8 +3471,8 @@ export default function TrackFreshDashboard() {
                 {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">{t("freezeByLabel")}</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
                 <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
                 <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
-                <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{t("addAndNext")}</button>
-              <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? (lang === "es" ? "✅ Listo (" + uniScanCount + " artículos)" : "✅ Done (" + uniScanCount + " items)") : t("cancel")}</button>
+                <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{lang === "es" ? "✅ Agregar y Escanear Otro" : "✅ Add & Scan Another"}</button>
+              <button onClick={() => { if (smartResult) handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 100); }} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? (lang === "es" ? `✅ Listo (${uniScanCount + (smartResult ? 1 : 0)} artículos)` : `✅ Done (${uniScanCount + (smartResult ? 1 : 0)} items)`) : (smartResult ? (lang === "es" ? "✅ Agregar y Cerrar" : "✅ Add & Close") : t("cancel"))}</button>
               </div>)}
               </>}
             </div>
@@ -3993,7 +3997,7 @@ export default function TrackFreshDashboard() {
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.6rem",borderRadius:"999px",padding:"0.15rem 0.65rem",boxShadow:"0 2px 6px rgba(232,166,60,0.35)"}}>⭐ {lang === "es" ? "Empieza aquí" : "Start here for best results"}</span>
                   </div>
                   <button
-                    onClick={() => { window.scrollTo(0,0);setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }}
+                    onClick={() => { window.scrollTo(0,0);setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("multi");sessionItemsRef.current=[]; }}
                     style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.6rem",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.95rem",padding:"1rem 1.25rem",borderRadius:"14px",border:"none",cursor:"pointer",boxShadow:"0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)",transition:"all 0.18s ease",marginBottom:"1rem",WebkitTapHighlightColor:"transparent"}}
                     onMouseOver={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 7px 0 #8C5A10,0 12px 26px rgba(0,0,0,0.32),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
                     onMouseOut={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
@@ -4060,7 +4064,7 @@ export default function TrackFreshDashboard() {
                   <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
                 </div>
                 <div>
-                  <button onClick={() => { window.scrollTo(0,0); setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📸</span>{lang === "es" ? "Escanear — Recibos, Etiquetas o Códigos" : "Scan — Receipts, Labels or Barcodes"}</button>
+                  <button onClick={() => { window.scrollTo(0,0); setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("multi"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📸</span>{lang === "es" ? "Escanear — Recibos, Etiquetas o Códigos" : "Scan — Receipts, Labels or Barcodes"}</button>
                   <div style={{textAlign:"center",marginBottom:"0.75rem"}}>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Escanea todo con una sola cámara" : "One scanner for everything"}</span>
                   </div>
