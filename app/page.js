@@ -1330,11 +1330,11 @@ function SmartScanner({ onResult, onError, captureRef }) {
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("starting");
   const [scanError, setScanError] = useState("");
-  const [showPhotoBtn, setShowPhotoBtn] = useState(false);
+  const [countdown, setCountdown] = useState(null);
   const detectedRef = useRef(false);
   const readerRef = useRef(null);
   const timerRef = useRef(null);
-  const photoTimerRef = useRef(null);
+  const countdownRef = useRef(null);
 
   useEffect(() => {
     detectedRef.current = false;
@@ -1343,15 +1343,16 @@ function SmartScanner({ onResult, onError, captureRef }) {
     async function captureAndScan() {
       if (detectedRef.current) return;
       detectedRef.current = true;
-      setStatus("reading_label");
+      setStatus("reading");
+      setCountdown(null);
       if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas) { onError("Camera not ready"); return; }
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
       canvas.getContext("2d").drawImage(video, 0, 0);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
       const base64 = dataUrl.split(",")[1];
       try {
         const res = await fetch("/api/scan-smart", {
@@ -1361,8 +1362,23 @@ function SmartScanner({ onResult, onError, captureRef }) {
         const data = await res.json();
         if (data.items && data.items.length > 0) { onResult({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: data.items[0].source || "label" }); }
         else if (data.item) { onResult({ ...data.item, source: data.item.source || "label" }); }
-        else { onError(data.error || "Could not read label. Try again."); }
+        else { onError(data.error || "Could not read. Try again."); }
       } catch (e) { onError("Scan failed: " + e.message); }
+    }
+
+    function startCountdown() {
+      let count = 3;
+      setCountdown(count);
+      countdownRef.current = setInterval(() => {
+        count--;
+        if (count <= 0) {
+          clearInterval(countdownRef.current);
+          setCountdown(null);
+          captureAndScan();
+        } else {
+          setCountdown(count);
+        }
+      }, 1000);
     }
 
     async function start() {
@@ -1376,47 +1392,39 @@ function SmartScanner({ onResult, onError, captureRef }) {
           await videoRef.current.play();
         }
         setStatus("scanning");
-        photoTimerRef.current = setTimeout(() => setShowPhotoBtn(true), 8000);
+        // Try barcode detection first
         try {
           const { BrowserMultiFormatReader } = await import("@zxing/library");
           readerRef.current = new BrowserMultiFormatReader();
           readerRef.current.decodeFromStream(stream, videoRef.current, async (result) => {
             if (result && !detectedRef.current) {
               detectedRef.current = true;
-              if (timerRef.current) clearTimeout(timerRef.current);
+              if (countdownRef.current) clearInterval(countdownRef.current);
+              setCountdown(null);
               if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
               setStatus("barcode_found");
-              if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
-              setShowPhotoBtn(false);
-              if ('speechSynthesis' in window) {
-                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
-                u.rate = 1.1;
-                window.speechSynthesis.speak(u);
-              }
               try {
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 8000);
                 const res = await fetch("/api/scan-barcode", {
                   method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ barcode: result.getText() }),
-                  signal: controller.signal
+                  body: JSON.stringify({ barcode: result.getText() })
                 });
-                clearTimeout(timer);
                 const data = await res.json();
                 if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
-                else { detectedRef.current = false; captureAndScan(); }
-              } catch(e) { detectedRef.current = false; captureAndScan(); }
+                else { detectedRef.current = false; startCountdown(); }
+              } catch(e) { detectedRef.current = false; startCountdown(); }
             }
           });
-        } catch(e) { /* barcode lib failed, wait for timer */ }
-        if (captureRef) captureRef.current = () => { if (!detectedRef.current) captureAndScan(); };
+        } catch(e) { /* barcode lib failed */ }
+        // Auto-capture after 3 second countdown (unless barcode found first)
+        timerRef.current = setTimeout(() => { if (!detectedRef.current) startCountdown(); }, 2000);
+        if (captureRef) captureRef.current = () => { if (!detectedRef.current) { if (countdownRef.current) clearInterval(countdownRef.current); setCountdown(null); captureAndScan(); } };
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
     start();
     return () => {
       if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
       if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
     };
   }, []);
@@ -1429,19 +1437,21 @@ function SmartScanner({ onResult, onError, captureRef }) {
           <canvas ref={canvasRef} style={{ display: "none" }} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"280px",height:"200px",opacity:0.7}} />}
-            {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"280px",height:"200px",opacity:0.8}} />}
+            {status === "reading" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"280px",height:"200px",opacity:0.8}} />}
             {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"280px",height:"200px",background:"rgba(34,197,94,0.15)"}} />}
+            {countdown !== null && <div style={{fontSize:"4rem",fontWeight:900,color:"#fff",textShadow:"0 4px 20px rgba(0,0,0,0.7)"}}>{countdown}</div>}
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Point at a receipt, label, or barcode"}
+            {status === "scanning" && countdown === null && "Point at a receipt, label, or barcode..."}
+            {status === "scanning" && countdown !== null && "Hold steady — capturing..."}
             {status === "barcode_found" && "✅ Barcode found! Looking up product..."}
-            {status === "reading_label" && "📖 AI reading item..."}
+            {status === "reading" && "📖 AI reading..."}
           </p>
-          {status === "scanning" && (
+          {status === "scanning" && countdown === null && (
             <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
-              style={{position:"absolute",bottom:"44px",left:"50%",transform:"translateX(-50%)",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",border:"none",borderRadius:"24px",padding:"0.75rem 1.5rem",fontWeight:800,fontSize:"0.9rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 0 #8C5A10,0 6px 16px rgba(0,0,0,0.3)"}}>
-              📸 Capture
+              style={{position:"absolute",bottom:"44px",left:"50%",transform:"translateX(-50%)",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",border:"none",borderRadius:"24px",padding:"0.65rem 1.25rem",fontWeight:800,fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 0 #8C5A10,0 6px 16px rgba(0,0,0,0.3)",opacity:0.85}}>
+              📸 Tap to capture now
             </button>
           )}
         </div>
