@@ -1,40 +1,48 @@
+
 "use client";
 
 const GLOBAL_STYLES = `
   .btn-3d {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.08) 100%);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 60%, rgba(0,0,0,0.1) 100%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.22), 0 6px 12px rgba(0,0,0,0.18), inset 0 1.5px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.12);
     transition: all 0.15s ease;
     position: relative;
     font-weight: 700 !important;
     letter-spacing: 0.02em;
+    border-radius: 10px;
   }
   .btn-3d.text-white, .btn-3d .text-white {
     color: #fff !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
   }
   .btn-3d:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.22), 0 8px 16px rgba(0,0,0,0.22), inset 0 1.5px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.12);
+    transform: translateY(-2px);
   }
   .btn-3d:active {
-    box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 3px rgba(0,0,0,0.1);
-    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.22), 0 2px 4px rgba(0,0,0,0.12), inset 0 2px 4px rgba(0,0,0,0.12);
+    transform: translateY(3px);
+    transition-duration: 0.08s;
   }
   .pill-3d {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.04) 100%);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.06) 100%);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.25);
     transition: all 0.15s ease;
     font-weight: 600 !important;
   }
   .pill-3d:hover {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
-    transform: translateY(-1px);
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+  .pill-3d:active {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(2px);
+    transition-duration: 0.08s;
   }
   .pill-3d-active {
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.08) 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.2);
     font-weight: 700 !important;
   }
   input[type="text"], input[type="date"], input[type="number"], select, textarea,
@@ -55,20 +63,25 @@ const GLOBAL_STYLES = `
     background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(0,0,0,0.02) 100%) !important;
   }
   .btn-green-3d {
-    background: linear-gradient(to bottom, #15803d, #14532d) !important;
+    background: linear-gradient(to bottom, #16a34a, #14532d) !important;
     color: #ffffff !important;
     font-weight: 800 !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
-    box-shadow: 0 4px 0px #0f3d20, 0 6px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+    box-shadow: 0 5px 0px #0a2e16, 0 8px 16px rgba(0,0,0,0.35), inset 0 1.5px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
     border: none !important;
-    border-radius: 0.75rem;
+    border-radius: 12px;
     transition: all 0.12s ease;
     -webkit-font-smoothing: antialiased;
   }
   .btn-green-3d:hover {
-    background: linear-gradient(to bottom, #16a34a, #15803d) !important;
-    box-shadow: 0 5px 0px #0f3d20, 0 8px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
-    transform: translateY(-1px);
+    background: linear-gradient(to bottom, #22c55e, #15803d) !important;
+    box-shadow: 0 7px 0px #0a2e16, 0 10px 20px rgba(0,0,0,0.4), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px);
+  }
+  .btn-green-3d:active {
+    box-shadow: 0 1px 0px #0a2e16, 0 2px 6px rgba(0,0,0,0.25), inset 0 2px 4px rgba(0,0,0,0.15) !important;
+    transform: translateY(4px);
+    transition-duration: 0.08s;
   }
   .bubble-blue {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%);
@@ -255,89 +268,184 @@ const GLOBAL_STYLES = `
   .mkt-page { min-height: 100vh; background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
   .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto; }
   .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
-  .mkt-hero { text-align: center; padding: 3rem 1.5rem 2rem; max-width: 700px; margin: 0 auto; }
-  .mkt-hero h1 { font-size: 2.4rem; font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
-  .mkt-hero h1 span { color: #fbbf24; }
-  .mkt-hero p { font-size: 1rem; opacity: 0.85; line-height: 1.6; margin-bottom: 2rem; }
-  .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 1.1rem; padding: 0.9rem 2.5rem; border-radius: 999px; border: none; cursor: pointer; box-shadow: 0 4px 0px #92400e, 0 6px 16px rgba(0,0,0,0.3); transition: all 0.15s; text-decoration: none; }
-  .mkt-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 0px #92400e, 0 8px 20px rgba(0,0,0,0.35); }
-  .mkt-cta:active { transform: translateY(2px); box-shadow: 0 1px 0px #92400e, 0 2px 6px rgba(0,0,0,0.2); }
-  .mkt-phone { max-width: 280px; margin: 2rem auto; background: #111; border-radius: 28px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-  .mkt-phone-inner { background: linear-gradient(to bottom, #f0fdf4, #fff); border-radius: 20px; padding: 1rem; }
-  .mkt-phone-header { text-align: center; font-size: 0.85rem; font-weight: 800; color: #15803d; margin-bottom: 0.5rem; }
-  .mkt-phone-item { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.5rem; border-radius: 8px; margin-bottom: 4px; font-size: 0.7rem; }
-  .mkt-phone-nav { display: flex; justify-content: space-around; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb; }
-  .mkt-phone-nav span { font-size: 0.55rem; color: #6b7280; font-weight: 600; }
-  .mkt-section { padding: 3rem 1.5rem; max-width: 800px; margin: 0 auto; }
+  .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #F0C070, #E8A63C); color: #000; font-weight: 800; font-size: 1.05rem; padding: 1rem 2.35rem; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.15); transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; -webkit-tap-highlight-color:transparent; }
+  .mkt-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 0px #8C5A10, 0 14px 32px rgba(0,0,0,0.36), 0 0 22px rgba(232,166,60,0.28), inset 0 1.5px 0 rgba(255,255,255,0.45); }
+  .mkt-cta:active { transform: translateY(4px); box-shadow: 0 1px 0px #8C5A10, 0 2px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
+  .mkt-cta-ghost { display: inline-block; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); color: #fff; font-weight: 700; font-size: 1.05rem; padding: 0.97rem 2.1rem; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.52); cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3); -webkit-tap-highlight-color:transparent; }
+  .mkt-cta-ghost:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.27), rgba(255,255,255,0.11)); border-color: rgba(255,255,255,0.88); box-shadow: 0 6px 0 rgba(0,0,0,0.22), 0 10px 22px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-2px); }
+  .mkt-cta-ghost:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
+  .mkt-hero { text-align: center; padding: 1.5rem 1.5rem 0.5rem; max-width: 680px; margin: 0 auto; }
+  .mkt-hero-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #86efac; margin-bottom: 0.6rem; display: block; }
+  .mkt-hero h1 { font-size: 2.9rem; font-weight: 900; line-height: 1.03; margin-bottom: 0.75rem; letter-spacing: -0.025em; }
+  .mkt-hero h1 span { color: #B7D63A; }
+  .mkt-hero-sub { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.4; margin-bottom: 0.65rem; }
+  .mkt-hero-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
+  .mkt-section { padding: 0.5rem 1.5rem; max-width: 800px; margin: 0 auto; }
   .mkt-section-dark { background: rgba(0,0,0,0.15); }
-  .mkt-section-title { text-align: center; margin-bottom: 0.5rem; }
-  .mkt-section-title > span { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: inline-block; border: 3px solid #ff6600; border-radius: 999px; padding: 0.15rem 0.75rem; }
-  .mkt-section-title h2 { font-size: 1.8rem; font-weight: 900; margin-top: 0.5rem; }
-  .mkt-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; text-align: center; }
-  .mkt-stat-num { font-size: 2rem; font-weight: 900; color: #fbbf24; }
-  .mkt-stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem; }
-  .mkt-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
-  @media (max-width: 500px) { .mkt-features { grid-template-columns: 1fr; } .mkt-stats { grid-template-columns: 1fr; gap: 1.5rem; } .mkt-hero h1 { font-size: 1.8rem; } }
-  .mkt-feature { background: rgba(255,255,255,0.1); border: 3px solid #ff6600; border-radius: 16px; padding: 1.25rem; backdrop-filter: blur(4px); transition: transform 0.2s, background 0.2s; }
-  .mkt-feature:hover { transform: translateY(-4px); background: rgba(255,255,255,0.15); }
-  .mkt-feature-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .mkt-feature h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
-  .mkt-feature p { font-size: 0.8rem; opacity: 0.75; line-height: 1.4; }
-  .mkt-steps { counter-reset: step; margin-top: 2rem; }
-  .mkt-step { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.5rem; }
-  .mkt-step-num { min-width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; box-shadow: 0 3px 0 #92400e; }
-  .mkt-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
-  .mkt-step p { font-size: 0.85rem; opacity: 0.8; line-height: 1.5; }
-  .mkt-impact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
-  .mkt-impact-card { background: rgba(255,255,255,0.08); border: 3px solid #ff6600; border-radius: 12px; padding: 1rem; text-align: center; }
-  .mkt-impact-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-  .mkt-impact-card p { font-size: 0.8rem; opacity: 0.85; line-height: 1.4; }
-  .mkt-impact-card strong { color: #fbbf24; }
-  .mkt-footer { text-align: center; padding: 2rem 1.5rem; opacity: 0.6; font-size: 0.75rem; }
-  @keyframes mktFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .mkt-animate { animation: mktFadeIn 0.6s ease-out both; }
+  .mkt-section-title { text-align: center; margin-bottom: 0.4rem; }
+  .mkt-section-title h2 { font-size: 1.6rem; font-weight: 900; margin-top: 0; letter-spacing: -0.01em; }
+  .mkt-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0; text-align: center; padding: 0.1rem 0; }
+  .mkt-stat-num { font-size: 1.65rem; font-weight: 900; color: #B7D63A; }
+  .mkt-stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 0.1rem; }
+  /* Dashboard mockup */
+  .mkt-dashboard { max-width: 540px; margin: 0.75rem auto; background: linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%); border-radius: 20px; padding: 1.25rem; box-shadow: 0 24px 64px rgba(0,0,0,0.4); color: #fff; border: 2px solid rgba(183,214,58,0.55); }
+  .mkt-dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; padding-bottom: 0.625rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .mkt-dash-title { font-size: 0.875rem; font-weight: 800; color: #fff; }
+  .mkt-dash-date { font-size: 0.7rem; color: rgba(255,255,255,0.55); font-weight: 600; }
+  .mkt-dash-section { margin-bottom: 0.75rem; }
+  .mkt-dash-section-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
+  .mkt-dash-item { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.6rem; border-radius: 10px; margin-bottom: 0.3rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); }
+  .mkt-dash-item-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
+  .mkt-dash-badge { font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+  .mkt-dash-badge-red { background: rgba(220,38,38,0.25); color: #fca5a5; border: 1px solid rgba(220,38,38,0.5); }
+  .mkt-dash-badge-yellow { background: rgba(163,230,53,0.15); color: #a3e635; border: 1px solid rgba(163,230,53,0.4); }
+  .mkt-dash-badge-green { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+  .mkt-dash-badge-blue { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25); }
+  .mkt-dash-use-soon { background: rgba(183,214,58,0.12); border: 1.5px solid rgba(183,214,58,0.45); border-radius: 10px; padding: 0.55rem 0.65rem; }
+  .mkt-dash-use-soon-label { font-size: 0.6rem; font-weight: 700; color: #B7D63A; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+  .mkt-dash-use-soon-items { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .mkt-dash-use-soon-chip { background: rgba(183,214,58,0.2); color: #B7D63A; font-size: 0.65rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 999px; border: 1px solid rgba(183,214,58,0.4); }
+  /* Benefit cards */
+  .mkt-benefits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem; margin-top: 0.15rem; }
+  .mkt-benefit-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 0.35rem 0.5rem; backdrop-filter: blur(4px); transition: transform 0.2s, background 0.2s; width: calc(50% - 0.1rem); max-width: 280px; }
+  .mkt-benefit-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+  .mkt-benefit-icon { font-size: 1.2rem; margin-bottom: 0.1rem; }
+  .mkt-benefit-card h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.1rem; }
+  .mkt-benefit-card p { font-size: 0.75rem; opacity: 0.72; line-height: 1.2; }
+  /* 3-step */
+  .mkt-3steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; margin-top: 0.3rem; text-align: center; }
+  .mkt-3step { padding: 0.15rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+  .mkt-3step-num { width: 32px; height: 32px; background: linear-gradient(135deg, #F0C070, #E8A63C); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; margin: 0; flex-shrink: 0; box-shadow: 0 2px 0 #8C5A10; }
+  .mkt-3step h3 { font-size: 1rem; font-weight: 800; margin: 0; }
+  .mkt-footer { text-align: center; padding: 1.25rem 1.5rem; opacity: 0.6; font-size: 0.75rem; }
+  @media (max-width: 560px) { .mkt-3steps { grid-template-columns: repeat(3, 1fr); gap: 0.3rem; } .mkt-stats { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; } .mkt-hero h1 { font-size: 2.1rem; } .mkt-dashboard { margin: 0.75rem 0.75rem; } }
+  @keyframes mktFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .mkt-animate { animation: mktFadeIn 0.45s ease-out both; }
+  @keyframes heroSlideFromLeft { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes heroSlideFromRight { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
+  .hero-slide-left { display: inline-block; animation: heroSlideFromLeft 0.52s cubic-bezier(0.22,1,0.36,1) both; }
+  .hero-slide-right { display: inline-block; animation: heroSlideFromRight 0.52s cubic-bezier(0.22,1,0.36,1) both; }
   .mkt-animate-d1 { animation-delay: 0.1s; }
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
   /* === TOP NAV === */
-  .top-nav { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, #011f14, #01160e); border-bottom: 2px solid rgba(255,102,0,0.35); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.55); overflow-x: auto; }
-  .top-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 0.45rem 0.5rem; min-width: 56px; transition: all 0.2s; flex-shrink: 0; border-radius: 8px; }
-  .top-nav button span.nav-icon { font-size: 1.6rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  @keyframes navWobble { 0%,100% { transform: rotate(0deg); } 4% { transform: rotate(-11deg); } 8% { transform: rotate(10deg); } 12% { transform: rotate(-5deg); } 16% { transform: rotate(0deg); } }
+  .top-nav { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, #7c2d12, #c2410c); border-bottom: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.55); overflow-x: auto; }
+  .top-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 0.45rem 0.5rem; min-width: 56px; flex-shrink: 0; border-radius: 8px; }
+  .top-nav button span.nav-icon { font-size: 1.6rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
   .top-nav button span.nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em; }
-  .top-nav button.nav-active { background: rgba(255,102,0,0.15); box-shadow: 0 0 10px rgba(255,102,0,0.25), inset 0 0 8px rgba(255,102,0,0.08); }
-  .top-nav button.nav-active span.nav-icon { transform: scale(1.18); filter: drop-shadow(0 0 4px rgba(255,102,0,0.6)) drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
-  .top-nav button.nav-active span.nav-label { color: #ff8533; text-shadow: 0 0 6px rgba(255,102,0,0.7); }
-  .top-nav button:not(.nav-active) span.nav-label { color: rgba(255,160,80,0.7); }
-  .top-nav button:not(.nav-active) span.nav-icon { opacity: 0.75; }
-  .top-nav button:not(:last-child) { border-right: 1px solid rgba(255,102,0,0.2); }
+  .top-nav button.nav-active { background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(255,255,255,0.2), inset 0 0 8px rgba(255,255,255,0.08); }
+  .top-nav button.nav-active span.nav-icon { transform: scale(1.18); filter: drop-shadow(0 0 5px rgba(255,255,255,0.7)) drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .top-nav button.nav-active span.nav-label { color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+  .top-nav button:not(.nav-active) span.nav-label { color: rgba(255,255,255,0.75); }
+  .top-nav button:not(.nav-active) span.nav-icon { opacity: 0.85; }
+  .top-nav button:not(:last-child) { border-right: 1px solid rgba(0,0,0,0.2); }
+  .top-nav button:nth-child(1) { animation: navWobble 4.2s 0.0s infinite; }
+  .top-nav button:nth-child(2) { animation: navWobble 4.2s 0.7s infinite; }
+  .top-nav button:nth-child(3) { animation: navWobble 4.2s 1.4s infinite; }
+  .top-nav button:nth-child(4) { animation: navWobble 4.2s 2.1s infinite; }
+  .top-nav button:nth-child(5) { animation: navWobble 4.2s 2.8s infinite; }
+  .top-nav button:nth-child(6) { animation: navWobble 4.2s 3.5s infinite; }
   .main-content { padding-bottom: 5.5rem !important; }
   /* === FOOTER NAV === */
-  .footer-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to top, #01160e, #011f14); border-top: 2px solid rgba(255,102,0,0.35); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 24px rgba(0,0,0,0.55); padding: 0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom)); overflow-x: auto; }
-  .footer-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.35rem 0.5rem; min-width: 52px; flex-shrink: 0; transition: all 0.2s; border-radius: 8px; }
-  .footer-nav button span.footer-icon { font-size: 1.45rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  .footer-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to top, #7c2d12, #c2410c); border-top: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 24px rgba(0,0,0,0.55); padding: 0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom)); overflow-x: auto; }
+  .footer-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.35rem 0.5rem; min-width: 52px; flex-shrink: 0; border-radius: 8px; }
+  .footer-nav button span.footer-icon { font-size: 1.45rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
   .footer-nav button span.footer-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.02em; text-align: center; line-height: 1.2; }
-  .footer-nav button.footer-active { background: rgba(255,102,0,0.15); box-shadow: 0 0 10px rgba(255,102,0,0.25), inset 0 0 8px rgba(255,102,0,0.08); }
-  .footer-nav button.footer-active span.footer-icon { transform: scale(1.18); filter: drop-shadow(0 0 4px rgba(255,102,0,0.6)) drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
-  .footer-nav button.footer-active span.footer-label { color: #ff8533; text-shadow: 0 0 6px rgba(255,102,0,0.7); }
-  .footer-nav button:not(.footer-active) span.footer-label { color: rgba(255,160,80,0.7); }
-  .footer-nav button:not(.footer-active) span.footer-icon { opacity: 0.75; }
+  .footer-nav button.footer-active { background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(255,255,255,0.2), inset 0 0 8px rgba(255,255,255,0.08); }
+  .footer-nav button.footer-active span.footer-icon { transform: scale(1.18); filter: drop-shadow(0 0 5px rgba(255,255,255,0.7)) drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .footer-nav button.footer-active span.footer-label { color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+  .footer-nav button:not(.footer-active) span.footer-label { color: rgba(255,255,255,0.75); }
+  .footer-nav button:not(.footer-active) span.footer-icon { opacity: 0.85; }
+  .footer-nav button:not(:last-child) { border-right: 1px solid rgba(0,0,0,0.2); }
+  .footer-nav button:nth-child(1) { animation: navWobble 4.2s 0.0s infinite; }
+  .footer-nav button:nth-child(2) { animation: navWobble 4.2s 0.7s infinite; }
+  .footer-nav button:nth-child(3) { animation: navWobble 4.2s 1.4s infinite; }
+  .footer-nav button:nth-child(4) { animation: navWobble 4.2s 2.1s infinite; }
+  .footer-nav button:nth-child(5) { animation: navWobble 4.2s 2.8s infinite; }
+  .footer-nav button:nth-child(6) { animation: navWobble 4.2s 3.5s infinite; }
   .footer-nav button:not(:last-child) { border-right: 1px solid rgba(255,102,0,0.2); }
+  .cart-icon { display: inline-block; filter: drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13); }
+  /* Enter Beta button — override inline box-shadow on hover/active */
+  .enter-beta-btn { transition: transform 0.16s ease, box-shadow 0.16s ease !important; }
+  .enter-beta-btn:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 18px rgba(0,0,0,0.18), 0 2px 8px rgba(210,130,40,0.22) !important; }
+  .enter-beta-btn:active { transform: translateY(2px) scale(0.97) !important; box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important; transition-duration: 0.08s !important; }
+  /* Landing store tile hover */
+  .mkt-store-card { transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; }
+  .mkt-store-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.35) !important; }
+  .mkt-store-card:active { transform: translateY(1px); transition-duration: 0.08s; }
 
   /* === APP INTERIOR THEME (matches landing page) === */
   .app-bg { background: linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%); background-attachment: fixed; }
   .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
   .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 14px; padding: 0.85rem 0.5rem; background: rgba(255,255,255,0.12); border: 3px solid #ff6600; color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(4px); width: 100%; }
+  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); border: 2px solid #B7D63A; border-bottom: 3px solid rgba(80,105,15,0.7); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); width: 100%; box-shadow: 0 4px 0 rgba(80,105,15,0.5), 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.22); -webkit-tap-highlight-color:transparent; }
   @keyframes letterPop { 0%,100% { transform:scale(1); color:#f97316; text-shadow:none; } 4% { transform:scale(1.28); color:#fde68a; text-shadow:0 0 10px rgba(251,191,36,0.9),0 0 4px rgba(249,115,22,0.7); } 10% { transform:scale(1); color:#f97316; text-shadow:none; } }
-  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #ff8c00; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #B7D63A; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
-  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #ff6600 !important; backdrop-filter: blur(4px); }
+  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #B7D63A !important; backdrop-filter: blur(4px); }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
   .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
-  .app-header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 999px; padding: 0.4rem 0.85rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
-  .app-header-btn:hover { background: rgba(255,255,255,0.25); }
+  .app-header-btn { background: none; border: none; border-radius: 0; padding: 0.4rem 0.5rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+  .app-header-btn:hover { opacity: 0.75; }
+  .back-btn { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; font-size: 1rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; padding: 0; line-height: 1; }
+  .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.35); }
+  @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
+  @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
+  .arrow-up   { color:#B7D63A; display:inline-block; animation:arrowBounceUp   1.1s ease-in-out infinite; }
+  /* === TUTORIAL === */
+  @keyframes tutSlideUp { from { opacity:0; transform:translateY(60px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes tutEmojiPop { 0%,100% { transform:scale(1) rotate(0deg); } 20% { transform:scale(1.45) rotate(-10deg); } 45% { transform:scale(1.2) rotate(8deg); } 65% { transform:scale(1.3) rotate(-4deg); } 82% { transform:scale(1.1) rotate(2deg); } }
+  @keyframes tutStepIn { from { opacity:0; transform:translateX(36px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes tutBtnPulse { 0%,100% { box-shadow:0 0 0 0 rgba(183,214,58,0.55); } 50% { box-shadow:0 0 0 7px rgba(183,214,58,0); } }
+  .tut-pulse { animation: tutBtnPulse 2.5s infinite; }
+  .tut-modal { animation: tutSlideUp 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .tut-step { animation: tutStepIn 0.28s ease both; }
+  @keyframes flashRed { 0%,100% { opacity:1; background:rgba(220,38,38,0.25); } 50% { opacity:0.45; background:rgba(220,38,38,0.05); } }
+  .flash-red { animation: flashRed 1.1s ease-in-out infinite; }
+  @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
+  @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
+  .arrow-up   { color:#B7D63A; display:inline-block; animation:arrowBounceUp   1.1s ease-in-out infinite; }
+
+  /* ── Premium polish ── */
+  /* 1. Dashboard tile — lift on hover (desktop) + visible tap feedback (mobile) */
+  .dash-tile { background:linear-gradient(175deg,rgba(255,255,255,0.26) 0%,rgba(255,255,255,0.08) 55%,rgba(0,0,0,0.08) 100%); border:1.5px solid rgba(255,255,255,0.28); border-bottom:3.5px solid rgba(0,0,0,0.35); border-radius:20px; padding:1rem 0.5rem; display:flex; flex-direction:column; align-items:center; gap:0.4rem; cursor:pointer; transition:transform 0.18s ease, box-shadow 0.18s ease; backdrop-filter:blur(8px); width:100%; -webkit-tap-highlight-color:transparent; box-shadow:0 6px 0 rgba(0,0,0,0.35), 0 10px 18px rgba(0,0,0,0.25), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:hover { transform:translateY(-3px); box-shadow:0 9px 0 rgba(0,0,0,0.35), 0 14px 24px rgba(0,0,0,0.28), inset 0 1.5px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:active { transform:translateY(5px) scale(0.96); box-shadow:0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 2px 6px rgba(0,0,0,0.1), 0 0 0 2.5px rgba(183,214,58,0.5), 0 0 18px rgba(183,214,58,0.22); outline:none; transition-duration:0.08s; }
+  /* 2. I Opened Something — visible on tap */
+  .opened-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(to bottom, rgba(183,214,58,0.22), rgba(183,214,58,0.1)); border:1.5px solid rgba(183,214,58,0.55); border-bottom:2.5px solid rgba(70,90,10,0.4); border-radius:12px; padding:0.6rem; cursor:pointer; color:#B7D63A; font-weight:800; font-size:0.82rem; transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 0 rgba(70,90,10,0.35), 0 6px 14px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+  .opened-btn:hover { transform:translateY(-2px); background:linear-gradient(to bottom, rgba(183,214,58,0.32), rgba(183,214,58,0.16)); box-shadow:0 6px 0 rgba(70,90,10,0.35), 0 10px 20px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.2); border-color:rgba(183,214,58,0.8); }
+  .opened-btn:active { transform:translateY(4px); background:rgba(183,214,58,0.28); box-shadow:0 1px 0 rgba(70,90,10,0.35), inset 0 2px 4px rgba(0,0,0,0.1); transition-duration:0.08s; }
+  /* 3. Tab fade-up transition — increased distance for visibility */
+  @keyframes tabFadeUp { from { opacity:0; } to { opacity:1; } }
+  .tab-enter { animation:tabFadeUp 0.28s ease-out both; }
+  @keyframes trackerLinkPulse { 0%{opacity:0} 25%{opacity:1} 100%{opacity:0} }
+  .tracker-link-overlay { position:fixed; inset:0; background:rgba(183,214,58,0.06); pointer-events:none; z-index:9990; animation:trackerLinkPulse 0.85s ease-out forwards; }
+  @keyframes trackerEntryGlow { 0%{box-shadow:0 0 0 0 rgba(183,214,58,0);} 25%{box-shadow:0 0 0 3px rgba(183,214,58,0.5), 0 0 22px rgba(183,214,58,0.22);} 100%{box-shadow:0 0 0 0 rgba(183,214,58,0);} }
+  .tracker-entry-flash { animation:trackerEntryGlow 0.65s ease-out both; border-radius:12px; }
+  @keyframes trackerTilePulse { 0%{transform:translateY(0) scale(1);box-shadow:0 6px 0 rgba(0,0,0,0.35),0 10px 18px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.28);filter:brightness(1);} 20%{transform:translateY(4px) scale(0.93);box-shadow:0 1px 0 rgba(0,0,0,0.3),0 0 0 3px rgba(183,214,58,0.65),0 0 28px rgba(183,214,58,0.35),inset 0 1px 0 rgba(255,255,255,0.15);filter:brightness(1.25);} 60%{transform:translateY(4px) scale(0.93);box-shadow:0 1px 0 rgba(0,0,0,0.3),0 0 0 3px rgba(183,214,58,0.5),0 0 22px rgba(183,214,58,0.25),inset 0 1px 0 rgba(255,255,255,0.15);filter:brightness(1.15);} 100%{transform:translateY(0) scale(1);box-shadow:0 6px 0 rgba(0,0,0,0.35),0 10px 18px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.28);filter:brightness(1);} }
+  .tracker-tile-active { animation:trackerTilePulse 0.7s ease-out both; }
+  /* 4. Card depth */
+  .card-premium { box-shadow:0 4px 6px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.95); }
+  /* 5. Urgency pulse — red only, more visible */
+  @keyframes urgencyGlow { 0%,100% { box-shadow:0 0 0 0 rgba(220,38,38,0.6); } 50% { box-shadow:0 0 0 6px rgba(220,38,38,0); } }
+  .urgency-pulse { animation:urgencyGlow 1.6s ease-in-out infinite; }
+  /* CTA tap/hover feedback */
+  .mkt-cta:hover { transform:translateY(-2px); box-shadow:0 6px 0px #8C5A10, 0 10px 24px rgba(0,0,0,0.35), 0 0 18px rgba(232,166,60,0.3); }
+  .mkt-cta:active { transform:translateY(2px); box-shadow:0 1px 0px #8C5A10, 0 2px 8px rgba(0,0,0,0.25); }
+  /* glass-scan-btn tap feedback */
+  .glass-scan-btn:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.1)); border-color: #B7D63A; transform: translateY(-3px); box-shadow: 0 7px 0 rgba(80,105,15,0.5), 0 10px 20px rgba(0,0,0,0.25), 0 0 14px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.28); }
+  .glass-scan-btn:active { transform: translateY(3px); background: rgba(255,255,255,0.1); box-shadow: 0 1px 0 rgba(150,50,0,0.5), 0 2px 6px rgba(0,0,0,0.15), inset 0 2px 4px rgba(0,0,0,0.1); transition-duration: 0.08s; }
+  @keyframes mic-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+  @keyframes tf-first-item { 0%{opacity:0;transform:translateY(5px)} 12%{opacity:1;transform:translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateY(-3px)} }
+  .tf-first-item-msg { animation: tf-first-item 2.2s ease forwards; pointer-events:none; }
+  .voice-mic-btn { display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.65);cursor:pointer;font-size:1rem;transition:all 0.2s;flex-shrink:0; }
+  .voice-mic-btn:hover { background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4); }
+  .voice-mic-btn.listening { background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.55);color:#ef4444;animation:mic-pulse 1.1s infinite; }
 `;
 
 
@@ -440,8 +548,8 @@ const T = {
   quickAddTitleDesc: { en: "Select a food from the list or type your own.", es: "Selecciona un alimento o escribe el tuyo." },
   foodItem: { en: "Food Item", es: "Alimento" },
   recipeSugg: { en: "Recipe Suggestions", es: "Sugerencias de Recetas" },
-  recipeIntro: { en: "Recipes matched to your ingredients, prioritizing what expires soonest. Tap a recipe to see full cooking instructions.", es: "Recetas con tus ingredientes, priorizando lo que vence primero." },
-  noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or onions.", es: "Sin coincidencias. Agrega m\u00e1s productos." },
+recipeIntro: { en: "Matched to what's in your fridge, pantry & freezer.", es: "Basado en lo que tienes en tu refrigerador, despensa y congelador." },
+noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or onions.", es: "Sin coincidencias. Agrega más alimentos como huevos, zanahorias o cebollas." },
   ingredientsWord: { en: "Ingredients", es: "Ingredientes" },
   instructionsWord: { en: "Instructions", es: "Instrucciones" },
   shoppingList: { en: "Shopping List", es: "Lista de Compras" },
@@ -585,9 +693,71 @@ const COMMUNITY_KEY = "trackfresh.community";
 const USERNAME_KEY = "trackfresh.username";
 const SHOPPING_KEY = "trackfresh.shopping";
 const MEAL_KEY = "trackfresh.meals";
+const SAVED_RECIPES_KEY = "trackfresh.savedRecipes";
+const RECIPE_MODE_KEY = "trackfresh.recipeMode";
 
 const CATEGORIES = ["Produce", "Dairy", "Meat", "Pantry", "Leftovers", "Other"];
 const LOCATIONS = ["Fridge", "Freezer", "Pantry"];
+
+const SHELF_LIFE_AFTER_OPENING = [
+  { keys: ["ketchup"],                     days: 180 },
+  { keys: ["mustard"],                     days: 365 },
+  { keys: ["pickle"],                      days: 90  },
+  { keys: ["mayo", "mayonnaise"],          days: 60  },
+  { keys: ["salsa"],                       days: 14  },
+  { keys: ["pasta sauce","tomato sauce","marinara","spaghetti sauce"], days: 7 },
+  { keys: ["milk"],                        days: 7   },
+  { keys: ["almond milk","oat milk","soy milk"], days: 10 },
+  { keys: ["salad dressing","dressing","vinaigrette"], days: 60 },
+  { keys: ["jam", "jelly", "preserves"],   days: 180 },
+  { keys: ["peanut butter","almond butter","nut butter"], days: 90 },
+  { keys: ["soy sauce"],                   days: 730 },
+  { keys: ["worcestershire"],              days: 365 },
+  { keys: ["hot sauce","sriracha","tabasco"], days: 180 },
+  { keys: ["olive oil","vegetable oil","canola oil"], days: 60 },
+  { keys: ["coconut oil"],                 days: 365 },
+  { keys: ["cream cheese"],               days: 10  },
+  { keys: ["sour cream"],                 days: 14  },
+  { keys: ["cottage cheese"],             days: 7   },
+  { keys: ["yogurt"],                     days: 14  },
+  { keys: ["butter"],                     days: 30  },
+  { keys: ["heavy cream","whipping cream","half and half"], days: 7 },
+  { keys: ["orange juice","apple juice","grape juice","juice"], days: 7 },
+  { keys: ["salami","pepperoni"],         days: 21  },
+  { keys: ["deli meat","lunch meat","turkey breast","ham slices"], days: 5 },
+  { keys: ["bread","bagel","buns","rolls"], days: 7 },
+  { keys: ["parmesan","romano"],          days: 30  },
+  { keys: ["cheddar","mozzarella","swiss","provolone","cheese"], days: 21 },
+  { keys: ["hummus"],                     days: 7   },
+  { keys: ["guacamole"],                  days: 3   },
+  { keys: ["wine"],                       days: 5   },
+  { keys: ["coffee","cold brew"],         days: 14  },
+  { keys: ["maple syrup","syrup"],        days: 365 },
+  { keys: ["honey"],                      days: 9999},
+  { keys: ["salted caramel","bbq sauce","barbecue"], days: 120 },
+  { keys: ["fish sauce","oyster sauce"],  days: 180 },
+  { keys: ["chicken broth","beef broth","vegetable broth"], days: 5 },
+];
+
+function getShelfLifeDays(name) {
+  const lower = (name || "").toLowerCase();
+  for (const entry of SHELF_LIFE_AFTER_OPENING) {
+    if (entry.keys.some(k => lower.includes(k))) return entry.days;
+  }
+  return null;
+}
+
+function addDaysToDate(dateStr, days) {
+  const d = new Date(dateStr + "T12:00:00");
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split("T")[0];
+}
+
+function fuzzyMatchItems(query, items) {
+  const q = query.toLowerCase().trim();
+  if (!q) return items;
+  return items.filter(it => it.name.toLowerCase().includes(q));
+}
 
 const FOOD_DB = [
   // === PRODUCE ===
@@ -857,6 +1027,12 @@ const RECIPE_DB = [
   { name: "Pan Seared Salmon", ingredients: ["salmon","butter","lemon","garlic"], requires: ["salmon"], description: "Crispy skin salmon with lemon butter.", time: "15 min", instructions: "1. Pat salmon dry and season with salt and pepper.\n2. Heat oil over medium-high heat.\n3. Place skin side down and press gently.\n4. Cook 4-5 minutes until skin is crispy.\n5. Flip and cook 2-3 more minutes.\n6. Add butter and lemon juice and serve.", temps: [{"label":"Safe Minimum","temp":"145F","color":"bg-green-100 text-green-800","safe":true}] },
 ];
 
+function fmtDate(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 function daysUntil(dateString) {
   if (!dateString) return null;
   const today = new Date();
@@ -885,62 +1061,77 @@ function suggestRecipes(trackedItems) {
   return scored.slice(0, 5);
 }
 
-function loadItems() {
+// Returns the earliest relevant date for an item — used for sorting, daysLeft, and urgency.
+function effectiveDate(it) {
+  const pkg  = it.useByDate ? new Date(it.useByDate  + "T00:00:00").getTime() : null;
+  const open = it.openUseBy ? new Date(it.openUseBy  + "T00:00:00").getTime() : null;
+  if (pkg !== null && open !== null) return Math.min(pkg, open);
+  if (pkg  !== null) return pkg;
+  if (open !== null) return open;
+  return null;
+}
+
+function loadItems(key = STORAGE_KEY) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     const parsed = raw ? JSON.parse(raw) : [];
     return parsed.map((it) => ({
-      id: it.id ?? crypto.randomUUID(),
-      name: (it.name ?? "").trim(),
-      useByDate: it.useByDate ?? "",
-      openDate: it.openDate ?? "",
-      category: it.category ?? "Other",
-      quantity: it.quantity ?? "",
-      location: it.location ?? "Fridge",
+      id:               it.id ?? crypto.randomUUID(),
+      name:             (it.name ?? "").trim(),
+      useByDate:        it.useByDate        ?? "",
+      openDate:         it.openDate         ?? "",
+      openUseBy:        it.openUseBy        ?? null,
+      category:         it.category         ?? "Other",
+      quantity:         it.quantity         ?? "",
+      location:         it.location         ?? "Fridge",
+      storageTip:       it.storageTip       ?? "",
+      openedTip:        it.openedTip        ?? "",
+      daysAfterOpening: it.daysAfterOpening ?? null,
+      freezeBy:         it.freezeBy         ?? "",
     }));
   } catch (e) { return []; }
 }
 
-function saveItems(items) {
+function saveItems(items, key = STORAGE_KEY) {
   const sorted = [...items].sort((a, b) => {
-    const da = a.useByDate ? new Date(a.useByDate + "T00:00:00").getTime() : Infinity;
-    const db = b.useByDate ? new Date(b.useByDate + "T00:00:00").getTime() : Infinity;
+    const da = effectiveDate(a) ?? Infinity;
+    const db = effectiveDate(b) ?? Infinity;
     return da - db;
   });
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted)); } catch (e) {}
+  try { localStorage.setItem(key, JSON.stringify(sorted)); } catch (e) {}
 }
 
-function loadCommunity() {
+function loadCommunity(key = COMMUNITY_KEY) {
   try {
-    const raw = localStorage.getItem(COMMUNITY_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : { recipes: [], tips: [], chat: [] };
   } catch (e) { return { recipes: [], tips: [], chat: [] }; }
 }
 
-function saveCommunity(data) {
-  try { localStorage.setItem(COMMUNITY_KEY, JSON.stringify(data)); } catch (e) {}
+function saveCommunity(data, key = COMMUNITY_KEY) {
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
 }
 
-function loadShopping() {
+function loadShopping(key = SHOPPING_KEY) {
   try {
-    const raw = localStorage.getItem(SHOPPING_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch (e) { return []; }
 }
 
-function saveShopping(items) {
-  try { localStorage.setItem(SHOPPING_KEY, JSON.stringify(items)); } catch (e) {}
+function saveShopping(items, key = SHOPPING_KEY) {
+  try { localStorage.setItem(key, JSON.stringify(items)); } catch (e) {}
 }
 
-function loadMeals() {
+function loadMeals(key = MEAL_KEY) {
   try {
-    const raw = localStorage.getItem(MEAL_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : {};
   } catch (e) { return {}; }
 }
 
-function saveMeals(meals) {
-  try { localStorage.setItem(MEAL_KEY, JSON.stringify(meals)); } catch (e) {}
+function saveMeals(meals, key = MEAL_KEY) {
+  try { localStorage.setItem(key, JSON.stringify(meals)); } catch (e) {}
 }
 
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
@@ -1004,8 +1195,77 @@ function BloomText({ text, duration = 8 }) {
   );
 }
 
+const PILL = {base:{display:"inline-flex",alignItems:"center",gap:"0.25rem",borderRadius:"999px",padding:"0.18rem 0.6rem",fontSize:"0.63rem",fontWeight:700,lineHeight:1.4},gray:{background:"#f3f4f6",color:"#374151"},orange:{background:"#f5fad0",color:"#5a6e0a"},blue:{background:"#eff6ff",color:"#1d4ed8"},cyan:{background:"#ecfeff",color:"#0e7490"}};
+function TipPill({ type, children }) { return <span style={{...PILL.base,...PILL[type]}}>{children}</span>; }
+
+function ShoppingAutocomplete({ value, onChange, onSelect, onAddItem, lang }) {
+  const fn = (name) => (lang === "es" && FOOD_ES[name]) ? FOOD_ES[name] : name;
+  const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
+  const ref = useRef(null);
+
+  const matches = useMemo(() => {
+    if (!value || value.length < 1) return [];
+    const q = value.toLowerCase();
+    return FOOD_DB.filter((f) => f.name.toLowerCase().includes(q) || (FOOD_ES[f.name] && FOOD_ES[f.name].toLowerCase().includes(q))).slice(0, 8);
+  }, [value]);
+
+  useEffect(() => { setHighlighted(0); }, [matches]);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      if (open && matches.length > 0) { e.preventDefault(); onSelect(matches[highlighted]); setOpen(false); }
+      else { onAddItem && onAddItem(); }
+      return;
+    }
+    if (!open || matches.length === 0) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setHighlighted((h) => Math.min(h + 1, matches.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setHighlighted((h) => Math.max(h - 1, 0)); }
+    else if (e.key === "Escape") { setOpen(false); }
+  };
+
+  return (
+    <div className="relative flex-1" ref={ref}>
+      <input
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+        onFocus={() => { if (value) setOpen(true); }}
+        onKeyDown={handleKeyDown}
+        placeholder={lang === "es" ? "Agregar artículo..." : "Add item..."}
+        className="w-full rounded-xl px-3 py-2 text-sm text-gray-900"
+      />
+      {open && matches.length > 0 && (
+        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg" style={{maxHeight:"220px",overflowY:"auto"}}>
+          {matches.map((f, i) => (
+            <button
+              key={f.name}
+              onMouseDown={() => { onSelect(f); setOpen(false); }}
+              onMouseEnter={() => setHighlighted(i)}
+              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
+            >
+              <span>{fn(f.name)}</span>
+              <div className="flex items-center gap-1">
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[f.location]}`}>{LOCATION_ICONS[f.location]} {f.location}</span>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[f.category]}`}>{f.category}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Card({ children, className = "", style = {} }) {
-  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-sm p-5 card-3d ${className}`} style={style}>{children}</div>;
+  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-md p-5 card-3d card-premium ${className}`} style={style}>{children}</div>;
 }
 
 function TabBar({ active, onChange }) {
@@ -1313,6 +1573,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const isEs = lang === "es";
   const scrollFrameRef = React.useRef(null);
   const bottomBtnRef = React.useRef(null);
+  const howItWorksRef = React.useRef(null);
 
   React.useEffect(() => {
     return () => { if (scrollFrameRef.current) cancelAnimationFrame(scrollFrameRef.current); };
@@ -1321,7 +1582,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const handleAutoScroll = () => {
     window.scrollTo(0, 0);
     const scrollStep = () => {
-      window.scrollBy(0, 2);
+      window.scrollBy(0, 7);
       if (bottomBtnRef.current) {
         const rect = bottomBtnRef.current.getBoundingClientRect();
         if (rect.top <= window.innerHeight * 0.55) {
@@ -1333,6 +1594,10 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       scrollFrameRef.current = requestAnimationFrame(scrollStep);
     };
     scrollFrameRef.current = requestAnimationFrame(scrollStep);
+  };
+
+  const handleSeeHow = () => {
+    if (howItWorksRef.current) howItWorksRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const B = String.fromCodePoint;
@@ -1361,68 +1626,242 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   return (
     <div className="mkt-page">
       <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+
+      {/* Nav */}
       <nav className="mkt-nav">
         <div className="mkt-nav-logo"><TrackFreshLogo /></div>
         <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
           <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
+          <button onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem"}}>{isEs ? "Abrir" : "Launch"}</button>
         </div>
       </nav>
-      <div className="mkt-hero mkt-animate">
-        <h1>{isEs ? "Deja de Desperdiciar Comida." : "Stop Wasting Food."}<br/><span>{isEs ? "Empieza a Ahorrar." : "Start Saving."}</span></h1>
-        <p>{isEs ? "TrackFresh.AI es tu asistente de cocina inteligente \u2014 escanea, rastrea y administra tu comida, planifica comidas, descubre recetas y elimina el desperdicio." : "TrackFresh.AI is your intelligent kitchen assistant \u2014 scan, track, and manage your food, plan meals, discover recipes, and eliminate waste."}</p>
-        <button onClick={handleAutoScroll} className="mkt-cta mkt-animate mkt-animate-d2">{rocket} {isEs ? "Abrir TrackFresh" : "Launch TrackFresh"}</button>
-      </div>
-      <div className="mkt-phone mkt-animate mkt-animate-d3">
-        <div className="mkt-phone-inner">
-          <div className="mkt-phone-header"><TrackFreshLogo /></div>
-          <div style={{fontSize:"0.65rem",fontWeight:700,color:"#374151",marginBottom:"4px"}}>{isEs ? "Vence Pronto" : "Expiring Soon"}</div>
-          {[{e:milk,n:isEs?"Leche":"Milk",c:"1d",bg:"#fef2f2"},{e:leafy,n:isEs?"Espinacas":"Spinach",c:"3d",bg:"#fefce8"},{e:drum,n:isEs?"Pechuga":"Chicken",c:"2d",bg:"#fef2f2"},{e:berry,n:isEs?"Ar\u00e1ndanos":"Blueberries",c:"5d",bg:"#f0fdf4"},{e:cheese,n:isEs?"Queso":"Cheese",c:"8d",bg:"#f0fdf4"}].map((item,i) => (
-            <div key={i} className="mkt-phone-item" style={{background:item.bg}}><span>{item.e} <strong style={{color:"#111"}}>{item.n}</strong></span><span style={{color:"#6b7280"}}>{item.c}</span></div>
-          ))}
-          <div className="mkt-phone-nav"><span>{pkg} {isEs?"Despensa":"Pantry"}</span><span>{cam} {isEs?"Escanear":"Scan"}</span><span>{cart} {isEs?"Compras":"Shop"}</span><span>{chart} Stats</span></div>
+
+      {/* Hero */}
+<div className="mkt-hero">
+  <span className="mkt-hero-eyebrow mkt-animate">
+    {isEs ? "Menos Desperdicio. Mejor Cocina." : "Waste Less. Eat Better."}
+  </span>
+
+<h1 className="mkt-hero-title">
+  <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina." : "Your Kitchen."}</span>
+  {" "}
+  <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Tu Comida." : "Your Food."}</span>
+  <br/>
+  <span className="hero-slide-left" style={{animationDelay:"0.45s"}}>{isEs ? "Todo" : "Fully"}</span>
+  {" "}
+  <span className="hero-slide-right" style={{animationDelay:"0.45s"}}>{isEs ? "Rastreado." : "Tracked."}</span>
+</h1>
+
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s"}}>{isEs
+      ? "Finalmente: sabe cuándo esa botella de ketchup, frasco de mayonesa o frasco de pepinillos en tu refrigerador realmente vencen."
+      : "Finally—know when that bottle of ketchup, jar of mayo, or jar of pickles in your fridge actually expire."}
+  </p>
+
+  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s"}}>
+    {isEs
+      ? "Escanea alimentos, rastrea fechas de vencimiento y siempre sabe lo que hay en tu refrigerador, congelador y despensa."
+      : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
+  </p>
+
+        <div className="mkt-hero-btns mkt-animate" style={{animationDelay:"0.82s"}}>
+          <button onClick={onLaunchApp} className="mkt-cta">{isEs ? "Empieza a Rastrear" : "Start Tracking Your Food"}</button>
+          <button onClick={handleSeeHow} className="mkt-cta-ghost">{isEs ? "Cómo Funciona" : "See How It Works"}</button>
         </div>
       </div>
-      <div className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><span>{isEs ? "El Problema" : "The Problem"}</span><h2>{isEs ? "El Desperdicio se Esconde en Tu Cocina" : "Food Waste Is Hiding in Your Kitchen"}</h2></div>
+
+      {/* Dashboard mockup */}
+      <div className="mkt-dashboard mkt-animate mkt-animate-d2">
+        <div className="mkt-dash-header">
+          <span className="mkt-dash-title">🥦 {isEs ? "Mi Cocina" : "My Kitchen"}</span>
+          <span className="mkt-dash-date">{isEs ? "Hoy" : "Today"}</span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
+          <div>
+            <div className="mkt-dash-section">
+              <div className="mkt-dash-section-label">🧊 {isEs ? "Refrigerador" : "Fridge"}</div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥛 {isEs ? "Leche" : "Milk"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "3 días" : "3 days"}</span></div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥬 {isEs ? "Espinacas" : "Spinach"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "2 días" : "2 days"}</span></div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍓 {isEs ? "Fresas" : "Strawberries"}</span><span className="mkt-dash-badge mkt-dash-badge-red">{isEs ? "1 día" : "1 day"}</span></div>
+            </div>
+            <div className="mkt-dash-section">
+              <div className="mkt-dash-section-label">❄️ {isEs ? "Congelador" : "Freezer"}</div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍗 {isEs ? "Pollo" : "Chicken"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "2 meses" : "2 mo."}</span></div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🦐 {isEs ? "Camarón" : "Shrimp"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "3 meses" : "3 mo."}</span></div>
+            </div>
+          </div>
+          <div>
+            <div className="mkt-dash-section">
+              <div className="mkt-dash-section-label">🏺 {isEs ? "Despensa" : "Pantry"}</div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍝 Pasta</span><span className="mkt-dash-badge mkt-dash-badge-blue">{isEs ? "1 año" : "1 yr"}</span></div>
+              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍅 {isEs ? "Salsa" : "Tom. Sauce"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "8 meses" : "8 mo."}</span></div>
+            </div>
+            <div className="mkt-dash-use-soon">
+              <div className="mkt-dash-use-soon-label">⚡ {isEs ? "Usar Pronto" : "Use Soon"}</div>
+              <div className="mkt-dash-use-soon-items">
+                <span className="mkt-dash-use-soon-chip">🍓 {isEs ? "Fresas" : "Strawberries"}</span>
+                <span className="mkt-dash-use-soon-chip">🥬 {isEs ? "Espinacas" : "Spinach"}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="mkt-section mkt-section-dark mkt-animate mkt-animate-d1">
         <div className="mkt-stats">
           <div><div className="mkt-stat-num">40%</div><div className="mkt-stat-label">{isEs ? "de la comida se desperdicia" : "of food produced is wasted"}</div></div>
-          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al a\u00f1o" : "thrown away per family yearly"}</div></div>
+          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al año" : "thrown away per family yearly"}</div></div>
           <div><div className="mkt-stat-num">43%</div><div className="mkt-stat-label">{isEs ? "del desperdicio ocurre en casa" : "of waste happens at home"}</div></div>
         </div>
       </div>
+
+      {/* Why TrackFresh Works */}
       <div className="mkt-section">
-        <div className="mkt-section-title"><span>{isEs ? "La Soluci\u00f3n" : "The Solution"}</span><h2><span style={{display:"block",fontSize:"0.5em",fontWeight:700,opacity:0.75,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"0.3em"}}>{isEs ? "Conoce" : "Meet"}</span><TrackFreshLogo /></h2></div>
-        <div className="mkt-features">
-          {[{icon:snap,title:isEs?"Esc\u00e1ner con IA":"AI Label Scanner",desc:isEs?"Toma foto de cualquier etiqueta.":"Snap a photo of any food label."},{icon:pkg,title:isEs?"C\u00f3digo de Barras":"Barcode Scanner",desc:isEs?"Apunta tu c\u00e1mara a cualquier c\u00f3digo.":"Point your camera at any barcode."},{icon:clock,title:isEs?"Alertas Inteligentes":"Smart Expiry Alerts",desc:isEs?"Niveles de urgencia con colores.":"Color-coded urgency levels."},{icon:mic,title:isEs?"Entrada por Voz":"Voice Input",desc:isEs?"Manos ocupadas? Solo habla.":"Hands full? Just speak."},{icon:cook,title:isEs?"Recetas con IA":"AI Recipes",desc:isEs?"Recetas basadas en lo que tienes.":"Recipes from what you have."},{icon:cal,title:isEs?"Planificador":"Meal Planner",desc:isEs?"La IA planifica tus comidas.":"AI plans your weekly meals."},{icon:cart,title:isEs?"Lista de Compras":"Smart Shopping",desc:isEs?"Lista inteligente con alertas.":"Smart list with alerts."},{icon:warn,title:isEs?"Retiros FDA":"FDA Recalls",desc:isEs?"Alertas de seguridad alimentaria.":"Real-time food safety alerts."}].map((f,i) => (
-            <div key={i} className="mkt-feature mkt-animate" style={{animationDelay:0.1*i+"s"}}><div className="mkt-feature-icon">{f.icon}</div><h3>{f.title}</h3><p>{f.desc}</p></div>
+        <div style={{maxWidth:"720px",margin:"0 auto"}}>
+          <div className="mkt-section-title" style={{marginBottom:"0.5rem"}}><h2>{isEs ? "Por Qué Funciona TrackFresh" : "Why TrackFresh Works"}</h2></div>
+          <div className="mkt-benefits" style={{marginTop:"0.15rem",gap:"0.2rem"}}>
+            {[
+              {icon:"👁️", title:isEs?"Sabe lo que tienes":"Know what you have",          desc:isEs?"Deja de olvidar lo que ya tienes en tu cocina.":"Stop forgetting what's already in your kitchen."},
+              {icon:"⏱️", title:isEs?"Usa antes de que venza":"Use food before it expires", desc:isEs?"Obtén visibilidad clara de lo que necesita atención primero.":"Get clear visibility into what needs attention first."},
+              {icon:"🛒", title:isEs?"Compra más inteligente":"Shop smarter",              desc:isEs?"Evita comprar duplicados y desperdiciar dinero.":"Avoid buying duplicates and wasting money."},
+              {icon:"🍳", title:isEs?"Planifica comidas fácilmente":"Plan meals more easily", desc:isEs?"Convierte lo que ya tienes en ideas de comidas simples.":"Turn what you already own into simple meal ideas."},
+            ].map((b,i) => (
+              <div key={i} className="mkt-benefit-card mkt-animate" style={{animationDelay:0.1*i+"s",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                <div className="mkt-benefit-icon">{b.icon}</div>
+                <h3>{b.title}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works */}
+      <div ref={howItWorksRef} className="mkt-section mkt-section-dark">
+        <div className="mkt-section-title"><h2>{isEs ? "Cómo Funciona" : "How It Works"}</h2></div>
+        <div className="mkt-3steps">
+          {[
+            {n:"1", title:isEs?"Escanea":"Scan",  desc:isEs?"Agrega alimentos por código de barras o etiqueta.":"Add groceries by barcode or label."},
+            {n:"2", title:isEs?"Rastrea":"Track", desc:isEs?"Organiza la comida en tu refrigerador, congelador y despensa.":"Organize food in your fridge, freezer, and pantry."},
+            {n:"3", title:isEs?"Usa":"Use",       desc:isEs?"Ve qué usar primero antes de que se eche a perder.":"See what to use first before it goes bad."},
+          ].map((s,i) => (
+            <div key={i} className="mkt-3step mkt-animate" style={{animationDelay:0.12*i+"s"}}>
+              <div className="mkt-3step-num">{s.n}</div>
+              <h3>{s.title}</h3>
+            </div>
           ))}
         </div>
       </div>
-      <div className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><span>{isEs ? "C\u00f3mo Funciona" : "How It Works"}</span><h2>{isEs ? "Cinco Pasos a Cero Desperdicio" : "Five Steps to Zero Waste"}</h2></div>
-        <div className="mkt-steps">
-          {[{n:"1",title:isEs?"Escanea o Agrega":"Scan or Add",desc:isEs?"Usa el escáner de IA, código de barras, voz o manual.":"Use AI scanner, barcode, voice, or manual entry."},{n:"2",title:isEs?"Establece Fechas":"Set Expiry Dates",desc:isEs?"La IA auto-detecta fechas de etiquetas.":"AI auto-detects dates from labels."},{n:"3",title:isEs?"Recibe Alertas":"Get Alerts & Act",desc:isEs?"Tarjetas con colores muestran urgencia.":"Color-coded cards show urgency."},{n:"4",title:isEs?"Planifica Comidas":"Plan Your Meals",desc:isEs?"La IA planifica tu semana y genera lista de compras.":"AI plans your week and builds your shopping list."},{n:"5",title:isEs?'"Composting"':'"Composting"',desc:isEs?"Ya sea en interior o exterior, compostea o descompone rápidamente los alimentos sobrantes.":"Whether indoors or outdoors, quickly compost or break down leftover food."}].map((s,i) => (
-            <div key={i} className="mkt-step mkt-animate" style={{animationDelay:0.15*i+"s"}}><div className="mkt-step-num">{s.n}</div><div><h3>{s.title}</h3><p>{s.desc}</p></div></div>
+
+      {/* Statement */}
+      <div className="mkt-animate mkt-animate-d3" style={{background:"rgba(0,0,0,0.22)",padding:"0.75rem 1.5rem",textAlign:"center"}}>
+        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"0",letterSpacing:"-0.01em"}}>{isEs ? "Más Que un Rastreador. Una Cocina Más Inteligente." : "More Than a Tracker. A Smarter Kitchen."}</h2>
+      </div>
+
+      {/* Stores */}
+      <div className="mkt-section mkt-animate mkt-animate-d2">
+        <div className="mkt-section-title"><h2>{isEs ? "Enlaza y Compra en Línea" : "Link And Shop Online"}</h2></div>
+        <p style={{textAlign:"center",opacity:0.75,marginBottom:"0.6rem",fontSize:"0.85rem"}}>{isEs ? "Conecta directamente con tus tiendas favoritas." : "Shop directly from your favorite stores."}</p>
+        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:"0.5rem"}}>
+          {[
+            {logo:"https://www.google.com/s2/favicons?domain=amazon.com&sz=128",         name:"Amazon Fresh"},
+            {logo:"https://www.google.com/s2/favicons?domain=kroger.com&sz=128",          name:"Kroger"},
+            {logo:"https://www.google.com/s2/favicons?domain=walmart.com&sz=128",         name:"Walmart"},
+            {logo:"https://www.google.com/s2/favicons?domain=wholefoodsmarket.com&sz=128",name:"Whole Foods"},
+            {logo:"https://www.google.com/s2/favicons?domain=target.com&sz=128",          name:"Target"},
+            {logo:"https://www.google.com/s2/favicons?domain=costco.com&sz=128",          name:"Costco"},
+            {logo:"https://www.google.com/s2/favicons?domain=traderjoes.com&sz=128",      name:"Trader Joe's"},
+            {logo:"https://www.google.com/s2/favicons?domain=instacart.com&sz=128",       name:"Instacart"},
+          ].map(({logo,name}) => (
+            <div key={name} className="mkt-store-card" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",background:"rgba(255,255,255,0.1)",borderRadius:"14px",padding:"0.5rem 0.65rem",minWidth:"80px",border:"1px solid rgba(255,255,255,0.18)"}}>
+              <div style={{width:44,height:44,background:"#fff",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:3}}>
+                <img src={logo} alt={name} style={{width:38,height:38,objectFit:"contain"}} onError={e=>{e.target.parentNode.innerHTML='<span style="font-size:1.4rem">🏪</span>';}} />
+              </div>
+              <span style={{fontSize:"0.6rem",fontWeight:700,color:"rgba(255,255,255,0.92)",textAlign:"center"}}>{name}</span>
+            </div>
           ))}
         </div>
       </div>
-      <div className="mkt-section">
-        <div className="mkt-section-title"><span>{isEs ? "Tu Impacto" : "Your Impact"}</span><h2>{isEs ? "Cada Producto Salvado Importa" : "Every Item Saved Matters"}</h2></div>
-        <div className="mkt-impact">
-          <div className="mkt-impact-card"><div className="icon">{money}</div><p><strong>$600-$800</strong> {isEs ? "ahorrados al a\u00f1o" : "saved annually"}</p></div>
-          <div className="mkt-impact-card"><div className="icon">{globe}</div><p>{isEs ? "Metano es " : "Methane is "}<strong>25x</strong> {isEs ? "m\u00e1s potente que CO2" : "more potent than CO2"}</p></div>
-          <div className="mkt-impact-card"><div className="icon">{apple}</div><p>{isEs ? "Reducir desperdicio " : "Reducing waste by "}<strong>25%</strong> {isEs ? "alimentar\u00eda a todos" : "could feed everyone"}</p></div>
-        </div>
+
+      {/* Final CTA */}
+      <div className="mkt-section mkt-animate mkt-animate-d4" style={{textAlign:"center",paddingTop:"0.5rem",paddingBottom:"1.5rem"}}>
+        <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.6rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
+        <button ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.6rem 2.5rem"}}>{isEs ? "Empieza a Rastrear tu Comida" : "Start Tracking Your Food"}</button>
       </div>
-      <div className="mkt-section" style={{textAlign:"center",paddingBottom:"2rem"}}>
-        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"1rem"}}>{isEs ? "Listo para Dejar de Desperdiciar?" : "Ready to Stop Wasting Food?"}</h2>
-        <p style={{opacity:0.8,marginBottom:"1.5rem",fontSize:"0.95rem"}}>{isEs ? "\u00danete a miles ahorrando comida y dinero." : "Join thousands saving food and money."}</p>
-        <button ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta">{rocket} {isEs ? "Abrir TrackFresh Ahora" : "Launch TrackFresh Now"}</button>
-      </div>
+
       <div className="mkt-footer"><TrackFreshLogo /> © 2026 — {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
     </div>
   );
 }
+
+const TUTORIALS = {
+  home: [
+    { emoji: "🥦", title: "Welcome to TrackFresh.AI!", body: "Your intelligent kitchen assistant — tracks food, surfaces expiry urgency, suggests recipes, plans meals, and manages your shopping list. All your data saves automatically." },
+    { emoji: "⚡", title: "Your Kitchen Today", body: "The dashboard reads your tracked items and tells you exactly what needs attention — Use Today, Use Soon, Use This Week, or Everything Looks Fresh. It updates automatically as items change." },
+    { emoji: "⚡", title: "Use Soon Tile", body: "The full-width Use Soon tile at the top of the dashboard shows how many items are expiring in 1–3 days. Tap it to see everything sorted by urgency across Fridge, Freezer, and Pantry." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on the dashboard or in Tracker to mark any item as opened. TrackFresh calculates a use-by date based on shelf life after opening and starts a new countdown." },
+    { emoji: "🥗", title: "Set Up Dietary Needs", body: "Go to the Dietary tab and add household restrictions plus individual profiles for each family member. Recipes, shopping alerts, and your meal plan all adapt automatically." },
+  ],
+  tracker: [
+    { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
+    { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
+    { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
+    { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
+  ],
+  recipes: [
+    { emoji: "🍳", title: "Recipes From Your Fridge", body: "Tap 'Get AI Recipe Ideas' and TrackFresh builds recipes around what you already have, prioritizing whatever expires soonest. No more forgotten produce!" },
+    { emoji: "🥦", title: "Use What I Have Mode", body: "Strict mode — only uses your tracked items plus basic pantry staples like salt and oil. Perfect for using up what's already in your kitchen without an extra shopping trip." },
+    { emoji: "✨", title: "Suggest Missing Ingredients", body: "AI adds 1–2 extra ingredients with real brand names (e.g. 'Heinz Ketchup') to complete a dish. Items you already have are marked ✓, extras marked 'need:'." },
+    { emoji: "🔒", title: "Dietary Filters Active", body: "Every recipe respects the restrictions you've set in the Dietary tab — for the whole household and each individual family member." },
+  ],
+  shopping: [
+    { emoji: "🛒", title: "Your Smart Shopping List", body: "Add items with an optional quantity, check them off as you shop, and your list saves automatically — even if you close the app mid-shop." },
+    { emoji: "🔄", title: "Used Items — Restock", body: "When you mark a tracked item as used, it moves to the 'Recently Used — Restock' section as a reminder. Check it off once it's in your cart." },
+    { emoji: "⚠️", title: "Allergen Warnings", body: "Shopping items that match your dietary restrictions are automatically flagged with a red ⚠️ badge — no extra setup needed." },
+    { emoji: "🤖", title: "Auto-Add from Meals", body: "When AI plans your weekly meals, missing ingredients are added to your shopping list with a meal tag showing which meal they belong to." },
+  ],
+  meals: [
+    { emoji: "📅", title: "Plan Your Whole Week", body: "Monday through Sunday — Breakfast, Lunch, and Dinner. Each slot shows the meal name and a toggle to view full ingredients and step-by-step instructions." },
+    { emoji: "🤖", title: "AI Plans for Everyone", body: "Tap 'AI Plan My Week' and TrackFresh fills all 21 meals using your tracked food, prioritizing items expiring soonest. Every meal respects your household and family member dietary restrictions." },
+    { emoji: "✏️", title: "Edit Any Meal", body: "Tap ✕ on any slot to clear it, then tap the slot to pick a different meal. Add custom meal names or search the built-in recipe list. Changes save instantly." },
+    { emoji: "🎯", title: "Tap to See the Recipe", body: "Tap ▼ on any AI-planned meal to expand the full recipe card — ingredients list and cooking instructions included." },
+  ],
+  composting: [
+    { emoji: "🌱", title: "Close the Loop", body: "Food you can't eat doesn't have to be trash. Composting turns scraps into rich soil and keeps methane out of landfills." },
+    { emoji: "🪣", title: "Choose Your Method", body: "Tumbler, Worm Bin, Bokashi, Electric Recycler, or Traditional Bin — each section explains the pros, cons, setup, and what it accepts." },
+    { emoji: "🌍", title: "Real Impact", body: "The average family wastes 30% of the food they buy. Composting that waste meaningfully shrinks your carbon footprint every week." },
+    { emoji: "🛒", title: "Shop Composting Gear", body: "Tap the Shop button in any composting section to find quality gear from our sustainability partners." },
+  ],
+  community: [
+    { emoji: "👥", title: "Community Chat", body: "Connect with other TrackFresh users. Share what you cooked, ask food questions, and cheer each other on. A daily tip posts every morning to kick off the conversation." },
+    { emoji: "🤖", title: "Ask AI by Text", body: "Type a food question and tap 'Ask AI Text' — TrackFresh AI answers in the chat. Storage, cooking, shelf life, and reducing waste are its specialties." },
+    { emoji: "🎤", title: "Ask AI by Voice", body: "Tap '🎤 Ask AI' to speak your question. Your voice is transcribed and sent to AI automatically — no typing needed." },
+    { emoji: "💡", title: "Recipes & Tips Tabs", body: "Share a recipe in the Recipes tab to add it to the community cookbook. Post a tip in the Tips tab to help others waste less." },
+  ],
+  more: [
+    { emoji: "💬", title: "Suggestions", body: "Share feedback on any section of the app — rate your experience and leave ideas. Your input shapes what gets built next." },
+    { emoji: "👤", title: "Your Username", body: "Your username appears in Community when you post. Change it anytime from the Community tab." },
+    { emoji: "🌐", title: "English / Spanish", body: "Switch between English and Español with one tap. Every label, button, tip, and category updates instantly. Your preference saves automatically." },
+    { emoji: "💾", title: "Data Always Saves", body: "All tracked items, meal plans, shopping lists, dietary profiles, and community posts save to your device automatically. No account needed." },
+  ],
+  "stores-page": [
+    { emoji: "🏪", title: "Linked Stores", body: "Connect your favorite grocery stores to TrackFresh so you can shop smarter and compare prices easily." },
+    { emoji: "🔗", title: "Coming Soon", body: "Deep store integrations are on the way — tap an item on your shopping list and jump straight to the store's product page." },
+    { emoji: "💰", title: "Partner Discounts", body: "Partner stores offer TrackFresh users exclusive deals. Check back often for new savings." },
+  ],
+  dietary: [
+    { emoji: "🥗", title: "Household Restrictions", body: "Set restrictions that apply to everyone — vegetarian, vegan, gluten-free, keto, nut-free, dairy-free, and more. These filter every recipe and meal plan automatically." },
+    { emoji: "👨‍👩‍👧", title: "Family Member Profiles", body: "Add a name for each household member and set their individual restrictions. The app merges everyone's needs so every suggested meal is safe for the whole family." },
+    { emoji: "⚠️", title: "Allergen Alerts in Shopping", body: "Shopping list items that match any active restriction are flagged with a red ⚠️ badge automatically — no extra setup needed." },
+    { emoji: "🎯", title: "Active Across the App", body: "Dietary profiles are live in Recipes, Shopping allergen warnings, and the AI Meal Planner. The more you set up here, the smarter the whole app gets." },
+  ],
+  partners: [
+    { emoji: "🤝", title: "TrackFresh Partners", body: "Our partners share our mission — less food waste, healthier kitchens, and a greener planet for everyone." },
+    { emoji: "🎁", title: "Exclusive Benefits", body: "As a TrackFresh user you unlock special offers from partner brands in food, wellness, and sustainability." },
+    { emoji: "🌿", title: "Join the Movement", body: "Every partnership supports our goal: helping 1 million families reduce food waste by 2027." },
+  ],
+};
 
 export default function TrackFreshDashboard() {
   const [lang, setLang] = useState("en");
@@ -1438,11 +1877,35 @@ export default function TrackFreshDashboard() {
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
   const handlePwSubmit = () => {
-    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { if (window.sessionStorage) sessionStorage.setItem("tf_ok", "1"); } catch(e) {} } else { setPwError(true); }
+    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {} if (pwInput === "fresh2026") setIsAdmin(true); } else { setPwError(true); }
   };
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); } catch(e) {} }, []);
-  const [activeTab, setActiveTab] = useState("tracker");
+  const [isAdmin, setIsAdmin] = useState(false);
+  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
+  const [activeTab, setActiveTab] = useState("home");
+  const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
+  const trackerTopRef = React.useRef(null);
+  const [trackerEntryFlash, setTrackerEntryFlash] = useState(false);
+  const [trackerLinkOverlay, setTrackerLinkOverlay] = useState(false);
+  const [trackerTileFlash, setTrackerTileFlash] = useState(false);
+  useEffect(() => {
+    if (trackerEntryFlash) {
+      const t = setTimeout(() => setTrackerEntryFlash(false), 650);
+      return () => clearTimeout(t);
+    }
+  }, [trackerEntryFlash]);
+  const handleGoToTracker = () => {
+    setTrackerTileFlash(true);
+    setTrackerLinkOverlay(true);
+    setTimeout(() => {
+      setTrackerEntryFlash(true);
+      setActiveTab("tracker");
+    }, 240);
+    setTimeout(() => {
+      setTrackerTileFlash(false);
+      setTrackerLinkOverlay(false);
+    }, 900);
+  };
   const handleBubbleTap = (target) => {
     setBurstingBubble(target);
     setTimeout(() => {
@@ -1451,6 +1914,8 @@ export default function TrackFreshDashboard() {
     }, 550);
   };
   const [trackedItems, setTrackedItems] = useState([]);
+  const [justAddedFirst, setJustAddedFirst] = useState(false);
+  const prevItemCount = React.useRef(0);
   const [itemName, setItemName] = useState("");
   const [useByDate, setUseByDate] = useState("");
   const [openDate, setOpenDate] = useState("");
@@ -1472,6 +1937,8 @@ export default function TrackFreshDashboard() {
   const [fdaRecalls, setFdaRecalls] = useState([]);
   const [fdaLoading, setFdaLoading] = useState(false);
   const [showRecallsPanel, setShowRecallsPanel] = useState(false);
+  const [recipeMode, setRecipeMode] = useState("suggest");
+  const [editDateListening, setEditDateListening] = useState(false);
 
   useEffect(() => {
     if (!showRecallsPanel) return;
@@ -1637,6 +2104,23 @@ export default function TrackFreshDashboard() {
   const [showVoiceEditForm, setShowVoiceEditForm] = useState(false);
   const uniScanTimer = React.useRef(null);
   const voiceFlowRef = React.useRef(null);
+  const voiceCmdRef = React.useRef(null);
+  const voiceFeedbackTimer = React.useRef(null);
+  const [showExpiryVoice, setShowExpiryVoice] = useState(false);
+  const [expiryVoiceItems, setExpiryVoiceItems] = useState([]);
+  const [expiryVoiceLog, setExpiryVoiceLog] = useState([]);
+  const [expiryVoiceStatus, setExpiryVoiceStatus] = useState("speaking");
+  const expiryVoiceRef = React.useRef(null);
+  const [voiceCmdActive, setVoiceCmdActive] = useState(false);
+  const [voiceCmdFeedback, setVoiceCmdFeedback] = useState("");
+  const [showOpenedModal, setShowOpenedModal] = useState(false);
+  const [openedSearch, setOpenedSearch] = useState("");
+  const [openedConfirm, setOpenedConfirm] = useState(null);
+  const [showOpenedDateEdit, setShowOpenedDateEdit] = useState(false);
+  const [openedEditDate, setOpenedEditDate] = useState("");
+  const [openedModalOffset, setOpenedModalOffset] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
 
   const resetUniScanTimer = () => {
     if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
@@ -1812,7 +2296,7 @@ export default function TrackFreshDashboard() {
   };
 
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
-  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
@@ -1838,6 +2322,19 @@ export default function TrackFreshDashboard() {
     const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2);
     if (urgent.length > 0) { setAlertItem({ name: urgent[0].name, daysLeft: urgent[0].daysLeft }); setShowAlert(true); }
   }, [trackedItems.length]);
+  useEffect(() => {
+    if (!showOpenedModal) { setOpenedModalOffset(0); return; }
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      setOpenedModalOffset(kbHeight);
+    };
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    update();
+    return () => { vv.removeEventListener("resize", update); vv.removeEventListener("scroll", update); };
+  }, [showOpenedModal]);
 
   useEffect(() => {
     setTrackedItems(loadItems());
@@ -1851,6 +2348,9 @@ export default function TrackFreshDashboard() {
   useEffect(() => { saveCommunity(community); }, [community]);
   useEffect(() => { saveShopping(shoppingItems); }, [shoppingItems]);
   useEffect(() => { saveMeals(meals); }, [meals]);
+  useEffect(() => { try { localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(savedRecipes)); } catch(e) {} }, [savedRecipes]);
+  useEffect(() => { try { localStorage.setItem(RECIPE_MODE_KEY, recipeMode); } catch(e) {} }, [recipeMode]);
+  useEffect(() => { try { window.scrollTo(0, 0); } catch(e) {} }, [activeTab]);
 
   const handleSetMeal = (day, slot, meal) => {
     setMeals((prev) => ({ ...prev, [`${day}-${slot}`]: meal }));
@@ -1888,6 +2388,16 @@ export default function TrackFreshDashboard() {
   // All known tag keys → human-readable labels (shared between household and per-member use)
   const ALL_TAG_LABELS = {vegetarian:"Vegetarian",vegan:"Vegan",glutenFree:"Gluten-Free",dairyFree:"Dairy-Free",nutFree:"Nut-Free",lowSodium:"Low Sodium",highProtein:"High Protein",lowSugar:"Low Sugar",halal:"Halal",kosher:"Kosher",keto:"Keto"};
 
+  const ALLERGEN_KEYWORDS = {
+    "Nut-Free":    ["nut","peanut","almond","cashew","walnut","pecan","pistachio","hazelnut","macadamia"],
+    "Dairy-Free":  ["milk","cheese","butter","cream","yogurt","dairy","whey","lactose","brie","cheddar","mozzarella","parmesan"],
+    "Gluten-Free": ["wheat","bread","flour","gluten","pasta","noodle","cereal","barley","rye","cracker","biscuit","bagel","pretzel"],
+    "Vegan":       ["meat","chicken","beef","pork","fish","salmon","tuna","shrimp","egg","honey","gelatin","lard"],
+    "Vegetarian":  ["meat","chicken","beef","pork","fish","salmon","tuna","shrimp","turkey","bacon","ham","sausage"],
+    "Low Sodium":  ["salt","soy sauce","pickle","chip","pretzel","jerky","anchovy","capers"],
+    "Low Sugar":   ["candy","sugar","syrup","soda","juice","cookie","cake","chocolate","jam","jelly"],
+  };
+
   // Derived dietary profile — merges household + all family member restrictions.
   // Shape: { household: string[], members: {name, tags}[], combinedTags: string[] }
   // combinedTags = union of all active restrictions across the household.
@@ -1901,7 +2411,11 @@ export default function TrackFreshDashboard() {
     return { household: householdTags, members: memberProfiles, combinedTags };
   }, [dietaryRestrictions, familyMembers]);
 
-  const itemsWithCountdown = useMemo(() => trackedItems.map((it) => ({ ...it, daysLeft: daysUntil(it.useByDate) })), [trackedItems]);
+  const itemsWithCountdown = useMemo(() => trackedItems.map((it) => {
+    const eff = effectiveDate(it);
+    const daysLeft = eff !== null ? Math.ceil((eff - new Date().setHours(0,0,0,0)) / 86400000) : null;
+    return { ...it, daysLeft };
+  }), [trackedItems]);
 
   const filteredItems = useMemo(() => {
     return itemsWithCountdown.filter((it) => {
@@ -1933,11 +2447,11 @@ export default function TrackFreshDashboard() {
     setItemName(""); setUseByDate(""); setOpenDate(""); setCategory("Other"); setQuantity(""); setLocation("Fridge");
   };
 
-  const addToShoppingIfMissing = (item) => {
+  const addToShoppingIfMissing = (item, source) => {
     setShoppingItems((prev) => {
       const exists = prev.some((s) => s.name.toLowerCase() === item.name.toLowerCase());
       if (exists) return prev;
-      return [...prev, { id: crypto.randomUUID(), name: item.name, checked: false }];
+      return [...prev, { id: crypto.randomUUID(), name: item.name, checked: false, ...(source ? { source } : {}) }];
     });
   };
 
@@ -1950,10 +2464,249 @@ export default function TrackFreshDashboard() {
   const handleEditItem = (id) => { const item = trackedItems.find(it => it.id === id); if (item) setEditingItem({ ...item }); };
   const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
 
+  const handleMarkOpened = (item, dateStr) => {
+    const shelfDays = getShelfLifeDays(item.name);
+    const openUseBy = shelfDays ? addDaysToDate(dateStr, shelfDays) : null;
+    setTrackedItems(prev => prev.map(it => it.id === item.id ? { ...it, openDate: dateStr, openUseBy } : it));
+    setOpenedConfirm({ item: { ...item, openDate: dateStr, openUseBy }, openDate: dateStr, openUseBy, shelfDays });
+    setShowOpenedDateEdit(false);
+  };
+
   const handleUseTodayItem = (id) => {
     const item = trackedItems.find((it) => it.id === id);
-    if (item) addToShoppingIfMissing(item);
+    if (item) addToShoppingIfMissing(item, "used");
     setTrackedItems((prev) => prev.filter((it) => it.id !== id));
+  };
+
+  const triggerVoiceCommand = () => {
+    const isEs = lang === "es";
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setVoiceCmdFeedback(isEs ? "Tu navegador no soporta voz." : "Voice input isn't supported in this browser.");
+      if (voiceFeedbackTimer.current) clearTimeout(voiceFeedbackTimer.current);
+      voiceFeedbackTimer.current = setTimeout(() => setVoiceCmdFeedback(""), 3500);
+      return;
+    }
+    if (voiceCmdRef.current) {
+      try { voiceCmdRef.current.abort(); } catch(e) {}
+      voiceCmdRef.current = null;
+      setVoiceCmdActive(false);
+      return;
+    }
+    const recog = new SR();
+    recog.lang = isEs ? "es-MX" : "en-US";
+    recog.interimResults = false;
+    recog.maxAlternatives = 3;
+    voiceCmdRef.current = recog;
+    setVoiceCmdActive(true);
+
+    const finish = (feedback) => {
+      voiceCmdRef.current = null;
+      setVoiceCmdActive(false);
+      if (feedback) {
+        setVoiceCmdFeedback(feedback);
+        if (voiceFeedbackTimer.current) clearTimeout(voiceFeedbackTimer.current);
+        voiceFeedbackTimer.current = setTimeout(() => setVoiceCmdFeedback(""), 4500);
+      }
+    };
+
+    recog.onresult = (ev) => {
+      const t = ev.results[0][0].transcript.toLowerCase().trim();
+
+      if (/\b(opened?|abrí|abri|abrir)\b/.test(t)) {
+        const m = t.match(/(?:opened?|abrí|abri|abrir)\s+(?:el\s+|la\s+|los\s+|las\s+|the\s+)?(.+)/);
+        const query = m?.[1]?.replace(/[?.!,]+$/,"").trim();
+        const found = query && trackedItems.find(it => it.name.toLowerCase().includes(query));
+        if (found) {
+          const today = new Date().toISOString().split("T")[0];
+          handleMarkOpened(found, today);
+          setShowOpenedModal(true);
+          finish(isEs ? `${found.name} marcado como abierto.` : `Marked ${found.name} as opened.`);
+        } else {
+          setShowOpenedModal(true); setOpenedSearch(query || ""); setOpenedConfirm(null); setShowOpenedDateEdit(false);
+          finish(query
+            ? (isEs ? `No encontré "${query}". Búscalo en el modal.` : `Couldn't find "${query}" — search in the panel.`)
+            : (isEs ? "¿Qué abriste? Búscalo en el modal." : "What did you open? Search below."));
+        }
+        return;
+      }
+
+      if (/\b(add|agregar|añadir|track|log)\b/.test(t)) {
+        const m = t.match(/(?:add|agregar|añadir|track|log)\s+(?:a\s+|an\s+|some\s+|un\s+|una\s+|unos\s+)?(.+)/);
+        const name = m?.[1]?.replace(/[?.!,]+$/,"").trim() || "";
+        setItemName(name);
+        setShowQuickAdd(true);
+        finish(name
+          ? (isEs ? `Listo para agregar ${name}.` : `Ready to add ${name}.`)
+          : (isEs ? "Abriendo agregar rápido." : "Opening quick add."));
+        return;
+      }
+
+      if (/\b(expir|venc|use\s+soon|usar\s+pronto|going\s+bad|por\s+vencer)\b/.test(t)) {
+        const soon = trackedItems.filter(it => { const d = daysUntil(it.useByDate); return d !== null && d >= 0 && d <= 3; });
+        finish(soon.length === 0
+          ? (isEs ? "Todo fresco — nada vence pronto." : "Everything looks good — nothing expiring soon.")
+          : (isEs
+              ? `${soon.length} artículo${soon.length>1?"s":""} vencen pronto: ${soon.slice(0,3).map(it=>it.name).join(", ")}.`
+              : `${soon.length} item${soon.length>1?"s":""} expiring soon: ${soon.slice(0,3).map(it=>it.name).join(", ")}.`));
+        return;
+      }
+
+      if (/\b(use\s+first|usar\s+primero|what.*(use|eat|cook)|qué\s+(usar|comer|cocinar))\b/.test(t)) {
+        const urgent = trackedItems.filter(it => { const d = daysUntil(it.useByDate); return d !== null && d >= 0; }).sort((a,b) => daysUntil(a.useByDate) - daysUntil(b.useByDate));
+        if (!urgent.length) { finish(isEs ? "Tu cocina está fresca." : "Your kitchen is looking fresh — nothing urgent."); return; }
+        const first = urgent[0];
+        const dl = daysUntil(first.useByDate);
+        finish(isEs
+          ? `Usa ${first.name} primero — ${dl===0?"vence hoy":`${dl} día${dl===1?"":"s"}`}.`
+          : `Use ${first.name} first — ${dl===0?"expires today":`${dl} day${dl===1?"":"s"} left`}.`);
+        return;
+      }
+
+      if (/\b(have|got|tengo|is\s+there|hay|do\s+i\s+have|tienes)\b/.test(t)) {
+        const m = t.match(/(?:have|got|tengo|is\s+there|hay|do\s+i\s+have|tienes)\s+(?:any\s+|some\s+|a\s+|an\s+|un\s+|una\s+|unos\s+)?(.+?)(?:\?)?$/);
+        const query = m?.[1]?.replace(/[?.!,]+$/,"").trim();
+        const found = query && trackedItems.find(it => it.name.toLowerCase().includes(query));
+        if (found) finish(isEs
+          ? `Sí, tienes ${found.name}${found.useByDate?` — usar antes del ${fmtDate(found.useByDate)}`:""}.`
+          : `Yes, you have ${found.name}${found.useByDate?` — use by ${fmtDate(found.useByDate)}`:""}.`);
+        else if (query) finish(isEs ? `No encuentro "${query}" en tu cocina.` : `I don't see "${query}" in your kitchen.`);
+        else finish(isEs ? "¿Qué artículo buscas?" : "Which item are you looking for?");
+        return;
+      }
+
+      finish(isEs
+        ? "No entendí. Intenta: 'Agregar leche' o '¿Qué vence pronto?'"
+        : "I didn't catch that. Try: 'Add milk' or 'What expires soon?'");
+    };
+
+    recog.onerror = (e) => {
+      if (e.error === "aborted") { finish(""); return; }
+      finish(isEs ? "No pude escucharte. Intenta de nuevo." : "Couldn't hear you. Try again.");
+    };
+    recog.onend = () => { if (voiceCmdRef.current === recog) finish(""); };
+    recog.start();
+  };
+
+  const parseSpokenDateNoYear = (text) => {
+    const months = { january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12 };
+    const t = text.toLowerCase().trim();
+    const match = t.match(/^([a-z]+)\s+(\d{1,2})(?:\s+(\d{2,4}))?$/);
+    if (!match) return null;
+    const month = months[match[1]]; if (!month) return null;
+    const day = parseInt(match[2]);
+    let year = match[3] ? (match[3].length === 2 ? 2000 + parseInt(match[3]) : parseInt(match[3])) : null;
+    if (!year) { const now = new Date(); year = now.getFullYear(); if (new Date(year, month-1, day) < now) year++; }
+    return new Date(year, month-1, day).toISOString().split("T")[0];
+  };
+
+  const parseProductAndDate = (transcript) => {
+    const monthRegex = /\b(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\b/i;
+    const monthMatch = transcript.match(monthRegex);
+    if (!monthMatch) return null;
+    const monthIdx = transcript.toLowerCase().indexOf(monthMatch[0].toLowerCase());
+    const productName = transcript.substring(0, monthIdx).trim().replace(/[,\s]+$/, "");
+    const datePart = transcript.substring(monthIdx).trim();
+    if (!productName) return null;
+    const date = parseSpokenDate(datePart) || parseSpokenDateNoYear(datePart);
+    if (!date) return null;
+    return { productName, date };
+  };
+
+  const matchItemByName = (spokenName, items) => {
+    const spoken = spokenName.toLowerCase().trim();
+    if (!spoken || !items.length) return null;
+    let found = items.find(it => it.name.toLowerCase() === spoken);
+    if (found) return found;
+    found = items.find(it => it.name.toLowerCase().includes(spoken));
+    if (found) return found;
+    found = items.find(it => { const words = it.name.toLowerCase().split(/\s+/).filter(w => w.length > 2); return words.some(w => spoken.includes(w)); });
+    if (found) return found;
+    const spokenWords = spoken.split(/\s+/).filter(w => w.length > 2);
+    let best = 0, bestItem = null;
+    for (const it of items) {
+      const nameWords = it.name.toLowerCase().split(/\s+/);
+      const score = spokenWords.filter(sw => nameWords.some(nw => nw.includes(sw) || sw.includes(nw))).length;
+      if (score > best) { best = score; bestItem = it; }
+    }
+    return best > 0 ? bestItem : null;
+  };
+
+  const expirySpeak = (text, onDone) => {
+    setExpiryVoiceStatus("speaking");
+    if (!("speechSynthesis" in window)) { if (onDone) setTimeout(onDone, 300); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05; u.pitch = 1.0;
+    const ms = Math.max(1500, (text.split(" ").length / 2.2) * 1000 + 800);
+    let fired = false;
+    const fire = () => { if (!fired) { fired = true; if (onDone) onDone(); } };
+    u.onend = fire; setTimeout(fire, ms);
+    window.speechSynthesis.speak(u);
+  };
+
+  const listenForExpiryDates = (items, attemptsLeft) => {
+    if (attemptsLeft <= 0) { setExpiryVoiceStatus("done"); setTimeout(() => setShowExpiryVoice(false), 1500); return; }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setShowExpiryVoice(false); return; }
+    setExpiryVoiceStatus("listening");
+    const recognition = new SR();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    expiryVoiceRef.current = recognition;
+    recognition.onresult = (event) => {
+      expiryVoiceRef.current = null;
+      const transcript = event.results[0][0].transcript.toLowerCase().trim();
+      const isDone = transcript.includes("done") || transcript.includes("that's all") || transcript.includes("stop") || transcript.includes("finish") || transcript.includes("all done") || transcript.includes("that is all") || transcript.includes("skip") || transcript.includes("not now") || transcript.includes("no thanks") || transcript.includes("cancel") || /\bno\b/.test(transcript) || /\bnope\b/.test(transcript);
+      if (isDone) {
+        setExpiryVoiceStatus("done");
+        expirySpeak("All done! Expiry dates saved.", () => setTimeout(() => setShowExpiryVoice(false), 1200));
+        return;
+      }
+      const parsed = parseProductAndDate(transcript);
+      if (parsed) {
+        const matched = matchItemByName(parsed.productName, items);
+        if (matched) {
+          setTrackedItems(prev => prev.map(it => it.id === matched.id ? {...it, useByDate: parsed.date} : it));
+          const d = new Date(parsed.date + "T12:00:00");
+          const dateStr = d.toLocaleDateString("en-US", {month:"long", day:"numeric"});
+          const shortYear = d.getFullYear() !== new Date().getFullYear() ? " " + d.getFullYear() : "";
+          setExpiryVoiceLog(prev => [...prev, {name: matched.name, dateStr: dateStr + shortYear}]);
+          expirySpeak(`Got it, ${matched.name} expires ${dateStr + shortYear}.`, () => listenForExpiryDates(items, attemptsLeft - 1));
+        } else {
+          expirySpeak("I didn't find that item. Try again or say done.", () => listenForExpiryDates(items, attemptsLeft - 1));
+        }
+      } else {
+        expirySpeak("Try saying the product name then the date, like: milk, March 20 2026.", () => listenForExpiryDates(items, attemptsLeft - 1));
+      }
+    };
+    recognition.onerror = (e) => {
+      if (e.error === "aborted") return;
+      expiryVoiceRef.current = null;
+      if (e.error === "no-speech" && attemptsLeft > 1) { listenForExpiryDates(items, attemptsLeft - 1); }
+      else { setExpiryVoiceStatus("done"); setTimeout(() => setShowExpiryVoice(false), 1500); }
+    };
+    recognition.start();
+  };
+
+  const startExpiryVoiceFlow = (items) => {
+    if (!items || !items.length) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR || !("speechSynthesis" in window)) return;
+    const flowItems = items.map(it => ({id: it.id, name: it.name}));
+    setExpiryVoiceItems(flowItems);
+    setExpiryVoiceLog([]);
+    setExpiryVoiceStatus("speaking");
+    setShowExpiryVoice(true);
+    expirySpeak("Would you like to tell me the expiration dates for your recent scan? Just speak the product name and expiration date and I will do the rest.", () => listenForExpiryDates(flowItems, 12));
+  };
+
+  const stopExpiryVoiceFlow = () => {
+    if (expiryVoiceRef.current) { try { expiryVoiceRef.current.abort(); } catch(e) {} expiryVoiceRef.current = null; }
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setShowExpiryVoice(false);
+    setExpiryVoiceLog([]);
   };
 
   const [recipesLoading, setRecipesLoading] = useState(false);
@@ -2269,7 +3022,7 @@ export default function TrackFreshDashboard() {
         </div>
         <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl px-4 py-3 text-center text-lg mb-3 focus:outline-none" style={{background:"rgba(255,255,255,0.1)",border:"2px solid rgba(255,102,0,0.4)",color:"#fff",caretColor:"#ff6600"}} />
         {pwError && <p className="text-red-400 text-sm mb-3">{t("invalidCode")}</p>}
-        <button onClick={handlePwSubmit} className="glass-scan-btn w-full py-3 text-base font-bold">{t("enterBeta")}</button>
+        <button onClick={handlePwSubmit} style={{width:"100%",padding:"0.95rem 1.5rem",borderRadius:"16px",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#1a0a00",fontWeight:800,fontSize:"1.05rem",border:"none",cursor:"pointer",boxShadow:"0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45)",letterSpacing:"0.01em"}}>{t("enterBeta")}</button>
         <p className="text-xs text-green-300/60 mt-4">{t("contactFreddie")}</p>
       </div>
     </div>
@@ -2310,38 +3063,17 @@ export default function TrackFreshDashboard() {
         <div className="mx-auto max-w-2xl px-4 pt-3 pb-2 flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
           <div className="flex items-center gap-2">
+            <button onClick={() => { setTutorialStep(0); setShowTutorial(true); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
-            <button onClick={() => { setIsUnlocked(false); try { sessionStorage.removeItem("tf_ok"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
+            {activeTab !== "home" && (
+              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"}>←</button>
+            )}
+            {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
+            <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
           </div>
         </div>
-        <nav className="top-nav">
-          <button onClick={() => setActiveTab("tracker")} className={activeTab === "tracker" ? "nav-active" : ""}>
-            <span className="nav-icon">{String.fromCodePoint(0x1F966)}</span>
-            <span className="nav-label">{t("tracker")}</span>
-          </button>
-          <button onClick={() => setActiveTab("recipes")} className={activeTab === "recipes" ? "nav-active" : ""}>
-            <span className="nav-icon">{String.fromCodePoint(0x1F373)}</span>
-            <span className="nav-label">{t("recipes")}</span>
-          </button>
-          <button onClick={() => setActiveTab("shopping")} className={activeTab === "shopping" ? "nav-active" : ""}>
-            <span className="nav-icon">{String.fromCodePoint(0x1F6D2)}</span>
-            <span className="nav-label">{t("shopping")}</span>
-          </button>
-          <button onClick={() => setActiveTab("meals")} className={activeTab === "meals" ? "nav-active" : ""}>
-            <span className="nav-icon">{String.fromCodePoint(0x1F4C5)}</span>
-            <span className="nav-label">{t("meals")}</span>
-          </button>
-          <button onClick={() => setActiveTab("composting")} className={activeTab === "composting" ? "nav-active" : ""}>
-            <span className="nav-icon">🌱</span>
-            <span className="nav-label">{lang === "es" ? "Compost" : "Compost"}</span>
-          </button>
-          <button onClick={() => setActiveTab("more")} className={activeTab === "more" || activeTab === "stores-page" || activeTab === "community" || activeTab === "partners" || activeTab === "dietary" ? "nav-active" : ""}>
-            <span className="nav-icon">{String.fromCodePoint(0x2699)}{String.fromCodePoint(0xFE0F)}</span>
-            <span className="nav-label">More</span>
-          </button>
-        </nav>
       </div>
-      <div className="mx-auto max-w-2xl space-y-4 main-content px-4 pt-4">
+      <div key={activeTab} className="mx-auto max-w-2xl space-y-4 px-4 pt-4 pb-8 tab-enter">
 
 
 
@@ -2918,151 +3650,398 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
-        {activeTab === "tracker" && (
-          <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
-            <div style={{order:1}}>
-              <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Start To Track Items</p>
-              <div className="grid grid-cols-4 gap-1.5">
-              <button onClick={() => setShowReceiptScanner(true)} className="glass-scan-btn" style={{padding:"0.65rem 0.25rem",fontSize:"0.65rem"}}><span style={{fontSize:"1.2rem"}}>📷</span>{t("scanReceipts")}</button>
-              <div><input type="file" accept="image/*" capture="environment" id="trackerLabelInput" style={{display:"none"}} onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                setLabelError("");
-                setLabelItem(null);
-                setShowLabelScanner(true);
-                const reader = new FileReader();
-                reader.onload = async () => {
-                  const base64 = reader.result.split(",")[1];
-                  try {
-                    const res = await fetch("/api/scan-label", {
-                      method: "POST", headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ imageData: base64, mediaType: file.type || "image/jpeg" })
-                    });
-                    const data = await res.json();
-                    if (data.item && data.item.name) {
-                      setLabelItem(data.item);
-                      if (data.item.name && !data.item.dateFound) {
-                        try {
-                          const msg = new SpeechSynthesisUtterance("I found " + data.item.name + ". What is the expiration date?");
-                          msg.rate = 1.0;
-                          msg.onend = () => {
-                            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                            if (!SR) return;
-                            const rec = new SR();
-                            rec.lang = lang === "es" ? "es-MX" : "en-US";
-                            rec.interimResults = false;
-                            rec.onresult = (ev) => {
-                              const t = ev.results[0][0].transcript;
-                              const parsed = parseSpokenDate(t);
-                              if (parsed) {
-                                setLabelItem(prev => prev ? {...prev, date: parsed, dateFound: true} : prev);
-                                const ok = new SpeechSynthesisUtterance("Got it. " + t);
-                                ok.rate = 1.0;
-                                window.speechSynthesis.speak(ok);
-                              }
-                            };
-                            rec.start();
-                          };
-                          window.speechSynthesis.speak(msg);
-                        } catch(err) {}
-                      }
-                    } else {
-                      setLabelError(data.error || "Could not read label. Try again.");
-                    }
-                  } catch (err) { setLabelError("Scan failed: " + err.message); }
-                };
-                reader.readAsDataURL(file);
-                e.target.value = "";
-              }} />
-              <button onClick={() => { setLabelItem(null); setLabelError(""); setLabelScanMode(null); setLabelScanCount(0); setLabelLastItem(""); setShowLabelScanner(true); }} className="w-full glass-scan-btn" style={{padding:"0.65rem 0.25rem",fontSize:"0.65rem"}}><span style={{fontSize:"1.2rem"}}>🏷️</span>{t("scanLabels")}</button></div>
-              <button onClick={async () => { try { const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { alert("TrackFresh needs camera & microphone access. Go to Settings > Safari > Camera & Microphone and allow trackfresh.ai, then try again."); return; } setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); resetUniScanTimer(); setScanMode(null); }} className="glass-scan-btn" style={{padding:"0.65rem 0.25rem",fontSize:"0.65rem"}}><span style={{fontSize:"1.2rem"}}>📦</span>{t("scanBarcodes")}</button>
-              <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{padding:"0.65rem 0.25rem",fontSize:"0.65rem"}}><span style={{fontSize:"1.2rem"}}>✏️</span>{t("quickAdd")}</button>
-              </div>
-            </div>
-            <div style={{order:2}}>
-              <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Organize Tracked Items</p>
-            <Card className="tracker-items-card">
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {trackedItems.length > 0 && <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>}
-                </div>
-                <span style={{color:"rgba(255,255,255,0.65)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
-              </div>
-              <div className="mb-2 flex flex-wrap gap-1">
-                {["All", ...LOCATIONS].map((l) => {
-                  const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
-                  const label = lang === "es" ? LOC_ES[l] : l;
-                  return (
-                    <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
-                      {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
+        {activeTab === "home" && (
+          <div ref={homeTopRef}>
+            {/* ── Your Kitchen Today panel ── always visible ── */}
+            {(() => {
+              const isEs = lang === "es";
+              const expired       = [...itemsWithCountdown].filter(it => it.daysLeft !== null && it.daysLeft < 0).sort((a,b) => a.daysLeft - b.daysLeft);
+              const expiringToday = [...itemsWithCountdown].filter(it => it.daysLeft !== null && it.daysLeft === 0);
+              const useSoon       = [...itemsWithCountdown].filter(it => it.daysLeft !== null && it.daysLeft >= 1 && it.daysLeft <= 3).sort((a,b) => a.daysLeft - b.daysLeft);
+              const fresh         = [...itemsWithCountdown].filter(it => it.daysLeft !== null && it.daysLeft > 3).sort((a,b) => a.daysLeft - b.daysLeft);
+              const showItems     = [...expired, ...expiringToday, ...useSoon, ...fresh].slice(0, 6);
+              const attentionCount = expired.length + expiringToday.length + useSoon.length;
+              let subtitle;
+              if (attentionCount > 0) subtitle = isEs ? `${attentionCount} artículo${attentionCount>1?"s":""} necesitan tu atención` : `${attentionCount} item${attentionCount>1?"s":""} need your attention`;
+              else                    subtitle = isEs ? "Todo se ve bien hoy" : "Everything looks good today";
+              const accentColor = expired.length > 0 ? "#dc2626" : expiringToday.length > 0 ? "#fbbf24" : useSoon.length > 0 ? "#a3e635" : "#4ade80";
+
+              const KRow = ({ item }) => {
+                const d = item.daysLeft;
+                let dot, textColor, statusLabel;
+                if (d < 0)       { dot = "🔴"; textColor = "#fca5a5"; statusLabel = isEs ? "Fecha pasada" : "Past Date"; }
+                else if (d === 0){ dot = "🔴"; textColor = "#fbbf24"; statusLabel = isEs ? "Hoy" : "Today"; }
+                else if (d <= 3) { dot = "🟠"; textColor = "#a3e635"; statusLabel = `${d} ${isEs?"día"+(d===1?"":"s"):"day"+(d===1?"":"s")}`; }
+                else if (d <= 7) { dot = "🟡"; textColor = "#a3e635"; statusLabel = `${d} ${isEs?(d===1?"día":"días"):(d===1?"day":"days")}`; }
+                else             { dot = "🟢"; textColor = "#4ade80"; statusLabel = `${d} ${isEs?(d===1?"día":"días"):(d===1?"day":"days")}`; }
+                return (
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0.35rem 0",borderBottom:"1px solid rgba(255,255,255,0.07)"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem",minWidth:0}}>
+                      <span style={{fontSize:"0.75rem",flexShrink:0}}>{dot}</span>
+                      <span style={{fontSize:"0.82rem",fontWeight:600,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</span>
+                      {item.openDate && <span style={{fontSize:"0.6rem",color:"#B7D63A",fontWeight:700,flexShrink:0}}>📂</span>}
+                    </div>
+                    <span style={{fontSize:"0.72rem",fontWeight:700,color:textColor,whiteSpace:"nowrap",marginLeft:"0.5rem"}}>{statusLabel}</span>
+                  </div>
+                );
+              };
+
+              if (trackedItems.length === 0) {
+                return (
+                  <>
+                    <div style={{marginBottom:"0.75rem"}}>
+                      <h2 className="app-section-h2" style={{margin:0}}>🍽️ {isEs?"Tu Cocina Hoy":"Your Kitchen Today"}</h2>
+                    </div>
+                    <div style={{textAlign:"center",padding:"2.25rem 1.5rem 2rem",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.13)",borderRadius:"20px",backdropFilter:"blur(8px)",marginBottom:"1.25rem"}}>
+                      <div style={{fontSize:"2.5rem",marginBottom:"0.85rem",lineHeight:1}}>🥦</div>
+                      <p style={{color:"rgba(255,255,255,0.92)",fontWeight:700,fontSize:"1.05rem",marginBottom:"0.55rem",lineHeight:1.4}}>
+                        {isEs ? "Tu Cocina Hoy cobrará vida a medida que construyas tu inventario." : "Your Kitchen Today will come to life as you build your inventory."}
+                      </p>
+                      <p style={{color:"rgba(255,255,255,0.92)",fontWeight:500,fontSize:"0.88rem",lineHeight:1.55,margin:"0 0 1.5rem"}}>
+                        {isEs ? "Empieza agregando artículos en Rastreador." : "Start by adding items in Tracker."}
+                      </p>
+                      <button onClick={handleGoToTracker} className="glass-scan-btn" style={{fontSize:"0.88rem",padding:"0.7rem 1.75rem"}}>
+                        {isEs ? "Ir al Rastreador →" : "Go to Tracker →"}
+                      </button>
+                    </div>
+                  </>
+                );
+              }
+
+              return (
+                <>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.75rem",gap:"0.75rem"}}>
+                    <div style={{minWidth:0}}>
+                      <h2 className="app-section-h2" style={{margin:0}}>🍽️ {isEs?"Tu Cocina Hoy":"Your Kitchen Today"}</h2>
+                      <div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.75)",marginTop:"0.2rem",fontWeight:500}}>{subtitle}</div>
+                    </div>
+                    <button onClick={() => setActiveTab("use-soon")} style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",background:"rgba(134,239,172,0.12)",border:"1px solid rgba(134,239,172,0.3)",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
+                      {isEs?"Ver Todo":"See All"} ›
                     </button>
-                  );
-                })}
-              </div>
-              <div className="mb-3 flex flex-wrap gap-1">
-                {["All", ...CATEGORIES].map((c) => {
-                  const CAT_ES = {All:"Todo",Produce:"Verduras",Dairy:"Lácteos",Meat:"Carne",Pantry:"Despensa",Leftovers:"Sobras",Other:"Otro"};
-                  const label = lang === "es" ? CAT_ES[c] : c;
-                  return (
-                    <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>{label}</button>
-                  );
-                })}
-              </div>
-              {filteredItems.length === 0 ? (
-                <p className="text-sm text-white/70">{t("noFilter")}</p>
-              ) : (
-                <div className="space-y-2">
-                  {filteredItems.map((it) => {
-                    const urgent = it.daysLeft !== null && it.daysLeft <= 3;
-                    const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
-                    return (
-                      <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-gradient-to-r from-red-50 to-red-100/50 shadow-sm" : soon ? "border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50/50 shadow-sm" : "bg-white shadow-sm hover:shadow-md transition-shadow"}`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold">{it.name}</span>
-                              {it.quantity && <span className="text-xs text-gray-500">{it.quantity}</span>}
-                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
-                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
-                            </div>
-                            <div className="text-xs text-gray-600 mt-0.5">Use by: {it.useByDate}{it.openDate ? " • Opened: " + it.openDate : ""}</div>
-                            {it.daysAfterOpening && <div className="text-xs text-orange-600 mt-0.5">📂 After opening: use within {it.daysAfterOpening} days</div>}
-                            {it.storageTip && <div className="text-xs text-green-700 mt-0.5">💡 {it.storageTip}</div>}
-                            {it.openedTip && <div className="text-xs text-orange-500 mt-0.5">⚠️ {it.openedTip}</div>}
-                          </div>
-                          <div className="flex items-center gap-2 ml-2">
-                            <div className="text-right" style={{minWidth:"3.2rem"}}>
-                              {it.daysLeft === null ? (
-                                <div style={{display:"inline-block",background:"rgba(156,163,175,0.2)",borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.8rem",fontWeight:700,color:"#9ca3af",whiteSpace:"nowrap"}}>—</div>
-                              ) : (() => {
-                                const d = it.daysLeft;
-                                const [bg, color, border] = d <= 2 ? ["rgba(220,38,38,0.15)","#dc2626","rgba(220,38,38,0.5)"] : d <= 4 ? ["rgba(234,88,12,0.15)","#ea580c","rgba(234,88,12,0.5)"] : d <= 7 ? ["rgba(202,138,4,0.15)","#ca8a04","rgba(202,138,4,0.5)"] : ["rgba(22,163,74,0.15)","#16a34a","rgba(22,163,74,0.5)"];
-                                return (
-                                  <div>
-                                    <div style={{display:"inline-block",background:bg,border:`1.5px solid ${border}`,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
-                                    <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{t("days")}</div>
-                                    {d <= 2 && <div style={{fontSize:"0.6rem",fontWeight:700,color:"#dc2626",letterSpacing:"0.02em",marginTop:"0.1rem",whiteSpace:"nowrap"}}>Expiring Soon</div>}
-                                  </div>
-                                );
-                              })()}
-                            </div>
-                            <div className="flex flex-col gap-1">
-                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
-                              {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
-                              )}
-                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
-                              <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">{t("remove")}</button>
-                            </div>
-                          </div>
+                  </div>
+                  <div style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.12)",borderLeft:`4px solid ${accentColor}`,borderRadius:"18px",padding:"1rem 1.1rem",marginBottom:"1.25rem",backdropFilter:"blur(8px)"}}>
+                    {(() => {
+                      const soonItems = [...expiringToday, ...useSoon];
+                      const names = soonItems.slice(0, 2).map(it => it.name);
+                      let msg;
+                      if (names.length === 0) { msg = isEs ? "Todo se ve fresco — ¡buen trabajo!" : "Everything looks fresh — great job."; }
+                      else if (names.length === 1) { msg = isEs ? `Usa tu ${names[0]} pronto.` : `Use your ${names[0]} soon.`; }
+                      else { msg = isEs ? `Usa tu ${names[0]} y ${names[1]} pronto.` : `Use your ${names[0]} and ${names[1]} soon.`; }
+                      return (
+                        <p style={{fontSize:"0.78rem",fontWeight:600,color:soonItems.length > 0 ? "rgba(163,230,53,0.9)" : "rgba(74,222,128,0.85)",marginBottom:"0.75rem",lineHeight:1.45}}>{msg}</p>
+                      );
+                    })()}
+                    {showItems.length > 0 ? (
+                      <div style={{marginBottom:"0.75rem"}}>{showItems.map(it => <KRow key={it.id} item={it} />)}</div>
+                    ) : (
+                      <div style={{textAlign:"center",padding:"0.75rem 0 0.875rem",color:"#86efac",fontSize:"0.82rem",fontWeight:600}}>✅ {isEs?"Todo fresco — ¡buen trabajo!":"Everything looks fresh — great job!"}</div>
+                    )}
+                    <p style={{color:"rgba(255,255,255,0.72)",fontSize:"0.88rem",fontWeight:500,marginBottom:"0.6rem",textAlign:"center",lineHeight:1.45}}>
+                      {isEs ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}
+                    </p>
+                    <button
+                      onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }}
+                      className="glass-scan-btn w-full"
+                      style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}
+                    >
+                      <span style={{fontSize:"1.4rem"}}>📂</span>
+                      <span style={{fontWeight:800}}>{isEs ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
+
+            <div className="grid grid-cols-3 gap-3">
+              {trackedItems.length > 0 && (() => {
+                const urgentCount = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft <= 3).length;
+                const weekCount   = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft > 3 && it.daysLeft <= 7).length;
+                const totalAlert  = urgentCount + weekCount;
+                return (
+                  <button key="use-soon" onClick={() => setActiveTab("use-soon")} style={{gridColumn:"1/-1",background: urgentCount > 0 ? "linear-gradient(135deg,rgba(220,38,38,0.25),rgba(234,88,12,0.2))" : "rgba(255,255,255,0.1)",border: urgentCount > 0 ? "1.5px solid rgba(220,38,38,0.55)" : "1.5px solid rgba(183,214,58,0.45)",borderRadius:"16px",padding:"0.875rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",cursor:"pointer",transition:"all 0.15s",backdropFilter:"blur(6px)",textAlign:"left"}}>
+                    <span style={{fontSize:"2.2rem",flexShrink:0}}>⚡</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:800,color:"#fff",fontSize:"0.95rem",lineHeight:1.2}}>{lang==="es"?"Usar Pronto":"Use Soon"}</div>
+                      <div style={{fontSize:"0.7rem",color:"#86efac",fontWeight:600,marginTop:"0.2rem"}}>
+                        {urgentCount > 0
+                          ? (lang==="es" ? `${urgentCount} ítem${urgentCount>1?"s":""} expiran en 1–3 días` : `${urgentCount} item${urgentCount>1?"s":""} expiring in 1–3 days`)
+                          : weekCount > 0
+                          ? (lang==="es" ? `${weekCount} ítem${weekCount>1?"s":""} esta semana` : `${weekCount} item${weekCount>1?"s":""} to use this week`)
+                          : (lang==="es" ? "Todo fresco — revisa diario" : "All fresh — check daily")}
+                      </div>
+                    </div>
+                    {totalAlert > 0 && <span className={urgentCount > 0 ? "urgency-pulse" : ""} style={{background: urgentCount > 0 ? "#dc2626" : "#B7D63A",color:"#fff",fontWeight:800,fontSize:"0.75rem",borderRadius:"999px",padding:"0.2rem 0.6rem",flexShrink:0,display:"inline-block"}}>{totalAlert}</span>}
+                    <span style={{color:"rgba(255,255,255,0.4)",fontSize:"1.1rem",flexShrink:0}}>›</span>
+                  </button>
+                );
+              })()}
+              {[
+                { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: lang === "es" ? "Rastrea tu Comida" : "Track Your Food",    action: () => setActiveTab("tracker") },
+                { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",       sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",  action: () => setActiveTab("recipes") },
+                { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Compras" : "Shopping",      sub: lang === "es" ? "Tu Lista" : "Build Your List",              action: () => setActiveTab("shopping") },
+                { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
+                { icon: "🌱",                           label: lang === "es" ? "Compost" : "Compost",       sub: lang === "es" ? "Salva El Mundo" : "Save The World",         action: () => setActiveTab("composting") },
+                { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
+                { icon: "👥",                           label: lang === "es" ? "Comunidad" : "Community",   sub: lang === "es" ? "Comparte" : "Share",                        action: () => setActiveTab("community") },
+                { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
+                { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",  sub: lang === "es" ? "Orientación" : "Guidance",                  action: () => setShowHelp(true) },
+                { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
+                { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",         sub: lang === "es" ? "Necesidades" : "Dietary Needs",             action: () => setActiveTab("dietary") },
+                { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("more") },
+              ].map(({ icon, label, sub, action }) => {
+                const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
+                const isShoppingTile = label === (lang === "es" ? "Compras" : "Shopping");
+                return (
+                  <button key={label} onClick={action} className={`dash-tile${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
+                    <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
+                    <span style={{fontSize:"0.7rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",textAlign:"center",lineHeight:1.2}}>{label}</span>
+                    {sub && <span style={{fontSize:"0.6rem",fontWeight:600,color:"#86efac",textAlign:"center",lineHeight:1.2}}>{sub}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "tracker" && (
+          <div ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+
+            {/* Header — always visible */}
+            <div className={trackerEntryFlash ? "tracker-entry-flash" : ""} style={{marginBottom:"0.5rem",padding:trackerEntryFlash?"0.4rem 0.5rem":"0",transition:"padding 0s"}}>
+              <h2 className="text-xl font-semibold" style={{margin:0,color:"#fff"}}>
+                {lang === "es" ? "Rastrea tu Comida" : "Keep Track of Your Food"}
+              </h2>
+            </div>
+
+            {trackedItems.length === 0 ? (
+              /* ── EMPTY STATE ── */
+              <>
+                <div style={{textAlign:"center",padding:"1.25rem 1rem 1rem",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"16px",backdropFilter:"blur(6px)"}}>
+                  <div style={{fontSize:"2rem",marginBottom:"0.5rem",lineHeight:1}}>🥦</div>
+                  <p style={{color:"rgba(255,255,255,0.9)",fontWeight:700,fontSize:"1rem",marginBottom:"0.35rem",lineHeight:1.4}}>
+                    {lang === "es" ? "Empieza agregando artículos en Rastreador." : "Start by adding items below."}
+                  </p>
+                  <p style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontSize:"0.8rem",lineHeight:1.5,margin:0}}>
+                    {lang === "es" ? "Aquí es donde llevarás un registro de todo lo que tienes." : "This is where you'll keep track of everything you have."}
+                  </p>
+                </div>
+
+                <div>
+                  <div style={{textAlign:"center",marginBottom:"0.5rem"}}>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.6rem",borderRadius:"999px",padding:"0.15rem 0.65rem",boxShadow:"0 2px 6px rgba(232,166,60,0.35)"}}>⭐ {lang === "es" ? "Empieza aquí" : "Start here for best results"}</span>
+                  </div>
+                  <button
+                    onClick={() => { setShowReceiptScanner(true); }}
+                    style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.6rem",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.95rem",padding:"1rem 1.25rem",borderRadius:"14px",border:"none",cursor:"pointer",boxShadow:"0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)",transition:"all 0.18s ease",marginBottom:"1rem",WebkitTapHighlightColor:"transparent"}}
+                    onMouseOver={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 7px 0 #8C5A10,0 12px 26px rgba(0,0,0,0.32),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
+                    onMouseOut={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
+                  >
+                    <span style={{fontSize:"1.4rem",lineHeight:1}}>📷</span>
+                    <span>{lang === "es" ? "Escanear Recibos al Rastreador" : "Scan Grocery Receipts to Tracker"}</span>
+                  </button>
+                  <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"0.75rem"}}>
+                    <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
+                    <span style={{color:"rgba(255,255,255,0.3)",fontSize:"0.68rem",fontWeight:600,letterSpacing:"0.06em",whiteSpace:"nowrap"}}>{lang==="es"?"O AGREGA DE OTRA MANERA":"OR ADD ANOTHER WAY"}</span>
+                    <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+                    {[
+                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan a single item's barcode or label", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
+                      { icon:"📦", primary: lang==="es"?"Escanea varios códigos de barras o etiquetas a la vez":"Scan several barcodes or labels at once", secondary:"Scan Multiple", onClick: ()=>{ setShowMultiScanner(true);setMultiScanStatus("camera");setMultiItems([]);setMultiScanError(""); }},
+                    ].map(({icon,primary,secondary,onClick})=>(
+                      <button key={secondary} onClick={onClick} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
+                        onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
+                        onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
+                      >
+                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>{icon}</span>
+                        <div style={{textAlign:"left"}}>
+                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{primary}</div>
+                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{secondary}</div>
                         </div>
+                      </button>
+                    ))}
+                    {/* Quick Add + Voice row */}
+                    <div style={{display:"flex",gap:"0.5rem"}}>
+                      <button onClick={() => setShowQuickAdd(true)} style={{flex:1,display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
+                        onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
+                        onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
+                      >
+                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
+                        <div style={{textAlign:"left"}}>
+                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
+                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
+                        </div>
+                      </button>
+                      <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.09)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"rgba(255,255,255,0.18)"}`,borderRadius:"14px",padding:"0.75rem 1rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
+                        <span style={{fontSize:"1.3rem",lineHeight:1}}>🎤</span>
+                        <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* ── POPULATED STATE ── */
+              <>
+                {/* Summary bar */}
+                {(() => {
+                  const soonCount = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft >= 0 && it.daysLeft <= 3).length;
+                  const msg = soonCount > 0
+                    ? (lang === "es" ? `Tienes ${soonCount} artículo${soonCount > 1 ? "s" : ""} para usar pronto.` : `You have ${soonCount} item${soonCount > 1 ? "s" : ""} to use soon.`)
+                    : (lang === "es" ? "Todo fresco — ¡buen trabajo!" : "Everything looks fresh — great job!");
+                  const isAlert = soonCount > 0;
+                  if (justAddedFirst) {
+                    return (
+                      <div className="tf-first-item-msg" style={{textAlign:"center",padding:"0.65rem 1rem",background:"rgba(134,239,172,0.08)",border:"1px solid rgba(134,239,172,0.2)",borderRadius:"12px"}}>
+                        <span style={{color:"rgba(255,255,255,0.92)",fontSize:"0.85rem",fontWeight:500,lineHeight:1.4}}>
+                          🌱 {lang === "es" ? "Tu cocina está empezando a tomar forma." : "Your kitchen is starting to take shape."}
+                        </span>
                       </div>
                     );
-                  })}
+                  }
+                  return (
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.6rem 0.9rem",background: isAlert ? "rgba(251,191,36,0.1)" : "rgba(34,197,94,0.08)",border:`1px solid ${isAlert ? "rgba(251,191,36,0.25)" : "rgba(34,197,94,0.2)"}`,borderRadius:"12px"}}>
+                      <span style={{fontSize:"0.95rem",flexShrink:0}}>{isAlert ? "⚠️" : "✅"}</span>
+                      <span style={{color: isAlert ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.72)",fontSize:"0.83rem",fontWeight:500,lineHeight:1.4}}>{msg}</span>
+                    </div>
+                  );
+                })()}
+
+                {/* Track Your Food + scan actions */}
+                <div>
+                  <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
+                  <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
                 </div>
-              )}
-            </Card>
-            </div>
+                <div>
+                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</button>
+                  <div style={{textAlign:"center",marginBottom:"0.75rem"}}>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</button>
+                    <button onClick={() => { setShowMultiScanner(true); setMultiScanStatus("camera"); setMultiItems([]); setMultiScanError(""); }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📦</span>Scan Multiple</button>
+                  </div>
+                  <div style={{display:"flex",gap:"0.5rem",marginTop:"0.5rem"}}>
+                    <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.75rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar manualmente":"Add manually"}</button>
+                    <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.12)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"#B7D63A"}`,borderRadius:"12px",padding:"0.65rem 0.9rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
+                      <span style={{fontSize:"1.1rem",lineHeight:1}}>🎤</span>
+                      <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mark What You've Opened */}
+                <div>
+                  <p style={{color:"rgba(255,255,255,0.72)",fontSize:"0.88rem",fontWeight:500,marginBottom:"0.6rem",textAlign:"center",lineHeight:1.45}}>
+                    {lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}
+                  </p>
+                  <button onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
+                    <span style={{fontSize:"1.4rem"}}>📂</span>
+                    <span style={{fontWeight:800}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
+                  </button>
+                </div>
+
+                {/* Items card */}
+                <div>
+                  <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Organize Tracked Items</p>
+                  <Card className="tracker-items-card">
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>
+                      </div>
+                      <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
+                    </div>
+                    <div className="mb-2 flex flex-wrap gap-1">
+                      {["All", ...LOCATIONS].map((l) => {
+                        const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
+                        const label = lang === "es" ? LOC_ES[l] : l;
+                        return (
+                          <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
+                            {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mb-3 flex flex-wrap gap-1">
+                      {["All", ...CATEGORIES].map((c) => {
+                        const CAT_ES = {All:"Todo",Produce:"Verduras",Dairy:"Lácteos",Meat:"Carne",Pantry:"Despensa",Leftovers:"Sobras",Other:"Otro"};
+                        const label = lang === "es" ? CAT_ES[c] : c;
+                        return (
+                          <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>{label}</button>
+                        );
+                      })}
+                    </div>
+                    {filteredItems.length === 0 ? (
+                      <p className="text-sm text-white/70">{t("noFilter")}</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {filteredItems.map((it) => {
+                          const urgent = it.daysLeft !== null && it.daysLeft <= 3;
+                          const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
+                          return (
+                            <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-gradient-to-r from-red-50 to-red-100/50 shadow-sm" : soon ? "border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50/50 shadow-sm" : "bg-white shadow-sm hover:shadow-md transition-shadow"}`}>
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-semibold">{it.name}</span>
+                                    {it.quantity && <span className="text-xs text-gray-500">{it.quantity}</span>}
+                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
+                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
+                                  </div>
+                                  <div className="text-xs mt-0.5">
+                                    {it.openDate ? (
+                                      <span style={{color:"#15803d",fontWeight:700}}>
+                                        📂 Opened {fmtDate(it.openDate)}
+                                        {it.openUseBy && it.daysLeft !== null
+                                          ? ` · Use within ${it.daysLeft} day${it.daysLeft === 1 ? "" : "s"}`
+                                          : ""}
+                                      </span>
+                                    ) : it.useByDate ? (
+                                      <span className="text-gray-500">Use by {fmtDate(it.useByDate)}</span>
+                                    ) : null}
+                                  </div>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {it.storageTip && <TipPill type="gray">💡 {it.storageTip}</TipPill>}
+                                    {it.openedTip && <TipPill type="orange">⚠️ {it.openedTip}</TipPill>}
+                                    {it.daysAfterOpening && <TipPill type="blue">📅 Use within {it.daysAfterOpening} days of opening</TipPill>}
+                                    {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 ml-2">
+                                  <div className="text-right" style={{minWidth:"3.2rem"}}>
+                                    {it.daysLeft === null ? (
+                                      <div className="flash-red" onClick={() => handleEditItem(it.id)} style={{display:"inline-block",border:"1.5px solid rgba(220,38,38,0.7)",borderRadius:"999px",padding:"0.18rem 0.45rem",fontSize:"0.65rem",fontWeight:800,color:"#dc2626",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.3}}>Add<br/>Date</div>
+                                    ) : (() => {
+                                      const d = it.daysLeft;
+                                      const [bg, color, border] = d <= 2 ? ["rgba(220,38,38,0.15)","#dc2626","rgba(220,38,38,0.5)"] : d <= 4 ? ["rgba(234,88,12,0.15)","#ea580c","rgba(234,88,12,0.5)"] : d <= 7 ? ["rgba(202,138,4,0.15)","#ca8a04","rgba(202,138,4,0.5)"] : ["rgba(22,163,74,0.15)","#16a34a","rgba(22,163,74,0.5)"];
+                                      return (
+                                        <div>
+                                          <div style={{display:"inline-block",background:bg,border:`1.5px solid ${border}`,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
+                                          <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{t("days")}</div>
+                                          {d <= 2 && <div style={{fontSize:"0.6rem",fontWeight:700,color:"#dc2626",letterSpacing:"0.02em",marginTop:"0.1rem",whiteSpace:"nowrap"}}>Expiring Soon</div>}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
+                                    {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
+                                      <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
+                                    )}
+                                    <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
+                                    <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">{t("remove")}</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </Card>
+                </div>
+              </>
+            )}
           </div>
         )}
         {activeTab === "recipes" && (
@@ -3071,37 +4050,50 @@ export default function TrackFreshDashboard() {
             <span className="app-section-label"><AiBadge />-Powered</span>
             <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
           </div>
-          <Card>
+          <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
             <div className="mb-3 flex items-center gap-2">
-            <ChefHat className="h-5 w-5 text-orange-500" /><h2 className="text-lg font-bold">{t("recipeSugg")}</h2></div>
-            <p className="mb-4 text-sm"><BloomText text={t("recipeIntro")} duration={8} /></p>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> Get <AiBadge style={{fontSize:"1.5em"}} /> Recipe Ideas</>}</button>
-            {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm text-gray-500">{t("noMatches")}</p>}
+              <ChefHat className="h-5 w-5" style={{color:"#B7D63A"}} /><h2 className="text-lg font-bold text-white">{t("recipeSugg")}</h2>
+            </div>
+            <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.8)",lineHeight:1.55}}>
+              {lang === "es" ? "Basado en lo que tienes. " : "Matched to what's in your fridge, pantry & freezer. "}
+              <span style={{color:"#fbbf24",fontWeight:800,textShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>{lang === "es" ? "Prioriza lo que vence pronto" : "Prioritizes what expires soonest"}</span>
+              {lang === "es" ? " — puede sugerir 1-2 ingredientes extra." : " — may suggest 1-2 extra ingredients to complete a dish."}
+            </p>
+            <div className="flex gap-2 mb-3">
+              <button onClick={() => setRecipeMode("strict")} className="flex-1 rounded-xl py-2 px-3 text-xs font-bold border-2 transition-all" style={recipeMode === "strict" ? {background:"rgba(21,128,61,0.7)",borderColor:"#4ade80",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(74,222,128,0.4)",color:"#86efac"}}>🥦 {lang === "es" ? "Usar Lo Que Tengo" : "Use What I Have"}</button>
+              <button onClick={() => setRecipeMode("suggest")} className="flex-1 rounded-xl py-2 px-3 text-xs font-bold border-2 transition-all" style={recipeMode === "suggest" ? {background:"rgba(29,78,216,0.7)",borderColor:"#93c5fd",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(147,197,253,0.4)",color:"#93c5fd"}}>✨ {lang === "es" ? "Sugerir Faltantes" : "Suggest Additional Ingredients"}</button>
+            </div>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> Get <AiBadge style={{fontSize:"1.5em"}} /> Recipe Ideas</>}</button>
+            {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("noMatches")}</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
                 {recipeSuggestions.map((r, i) => (
-                  <div key={i} className="rounded-lg border border-orange-100 bg-orange-50 overflow-hidden">
-                    <button onClick={() => setExpandedRecipe(expandedRecipe === i ? null : i)} className="w-full p-4 text-left">
+                  <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
+                    <button onClick={() => setExpandedRecipe(expandedRecipe === i ? null : i)} className="w-full p-4 text-left" style={{borderRadius:"inherit",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.06)"} onMouseLeave={e=>e.currentTarget.style.background=""}>
                       <div className="flex items-start justify-between">
-                        <h3 className="font-bold text-gray-800">{r.name}</h3>
+                        <div>
+                          <h3 className="font-bold text-white">{r.name}</h3>
+                          <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{lang === "es" ? "Incluye ingredientes y pasos" : "Includes ingredients & steps"}</p>
+                        </div>
                         <div className="flex items-center gap-2 ml-2 shrink-0">
-                          <span className="rounded bg-orange-200 px-2 py-0.5 text-xs font-semibold text-orange-800">⏱ {r.time}</span>
-                          <span className="text-gray-400 text-sm">{expandedRecipe === i ? "▲" : "▼"}</span>
+                          <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
+                          {expandedRecipe !== i && <span style={{color:"rgba(255,255,255,0.45)",fontWeight:700,fontSize:"1rem"}}>→</span>}
+                          <span className={expandedRecipe === i ? "arrow-up" : "arrow-down"}>{expandedRecipe === i ? "▲" : "▼"}</span>
                         </div>
                       </div>
-                      <p className="mt-1 text-sm text-gray-600">{r.description}</p>
+                      <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {r.difficulty && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-700">{r.difficulty}</span>}
+                        {r.difficulty && <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(168,85,247,0.25)",color:"#d8b4fe"}}>{r.difficulty}</span>}
                         {(r.usesExpiring || []).map((name, j) => (
-                          <span key={j} className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">⚡ {name}</span>
+                          <span key={j} className="rounded-full px-2 py-0.5 text-xs font-medium" style={{background:"rgba(220,38,38,0.25)",color:"#fca5a5"}}>⚡ {name}</span>
                         ))}
                       </div>
                     </button>
                     {expandedRecipe === i && (
-                      <div className="border-t border-orange-200 bg-white px-4 py-3">
-                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-gray-700">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm text-gray-600 flex items-center gap-1"><span className="text-green-500">•</span> {ing}</li>)}</ul></>)}
-                        <h4 className="mb-2 text-sm font-bold text-gray-700">{t("instructionsWord")}</h4>
-                        <p className="whitespace-pre-line text-sm text-gray-700 leading-relaxed">{r.instructions}</p>
+                      <div className="px-4 py-3" style={{background:"rgba(0,0,0,0.3)",borderTop:"1px solid rgba(255,255,255,0.1)"}}>
+                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm flex items-center gap-1" style={{color:"rgba(255,255,255,0.8)"}}><span style={{color:"#4ade80"}}>•</span> {ing}</li>)}</ul></>)}
+                        <h4 className="mb-2 text-sm font-bold text-white">{t("instructionsWord")}</h4>
+                        <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
                           <button onClick={() => handleSaveRecipeToCommunity(r)} disabled={savedRecipes.includes(r.name)} className="glass-scan-btn px-3 py-1.5 text-xs disabled:opacity-40">
                             {savedRecipes.includes(r.name) ? "Saved to Community" : "Save to Community"}
@@ -3113,7 +4105,7 @@ export default function TrackFreshDashboard() {
                 ))}
               </div>
             )}
-            {!recipesGenerated && <div className="mt-4 rounded-lg bg-gray-50 p-4 text-sm text-gray-500">You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}</div>}
+            {!recipesGenerated && <div className="mt-4 rounded-xl p-4 text-sm" style={{background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.6)"}}>You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}</div>}
           </Card>
           </>
         )}
@@ -3122,40 +4114,77 @@ export default function TrackFreshDashboard() {
           <>
             <div className="mb-3">
               <span className="app-section-label">Grocery</span>
-              <h2 className="app-section-h2">🛒 {t("shoppingList")}</h2>
+              <h2 className="app-section-h2"><span className="cart-icon">🛒</span> {t("shoppingList")}</h2>
             </div>
-            <Card style={{background:"linear-gradient(160deg,#047857 0%,#059669 50%,#10b981 100%)",border:"2px solid rgba(255,102,0,0.55)"}}>
+            <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
               <div className="mb-3 flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" style={{color:"#ff6600"}} />
+                <ShoppingCart className="h-5 w-5" style={{color:"#B7D63A"}} />
                 <h2 className="text-lg font-bold text-white">{t("shoppingList")}</h2>
                 {shoppingItems.some((it) => it.checked) && (
                   <button onClick={handleClearChecked} className="ml-auto rounded px-3 py-1 text-xs font-semibold text-red-200" style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,100,100,0.5)"}}>{t("clearChecked")}</button>
                 )}
               </div>
-              <div className="flex gap-2 mb-2 w-full">
-                <input value={newShoppingItem} onChange={(e) => setNewShoppingItem(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder={t("addItemPlaceholder")} className="flex-1 rounded-xl px-3 py-2 text-sm text-gray-900" />
-                <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder={t("qtyPlaceholder")} className="w-16 rounded-xl px-3 py-2 text-sm text-gray-900" />
-                <button onClick={handleAddShoppingItem} className="glass-scan-btn px-4 py-2 text-sm">{t("addBtn")}</button>
+              <div className="flex flex-col gap-2 mb-2 w-full">
+                <ShoppingAutocomplete
+                  value={newShoppingItem}
+                  onChange={setNewShoppingItem}
+                  onSelect={(f) => {
+                    const name = (lang === "es" && FOOD_ES[f.name]) ? FOOD_ES[f.name] : f.name;
+                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name, qty: newShoppingQty.trim(), checked: false }]);
+                    setNewShoppingItem(""); setNewShoppingQty("");
+                  }}
+                  onAddItem={handleAddShoppingItem}
+                  lang={lang}
+                />
+                <div className="flex gap-2">
+                  <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder={t("qtyPlaceholder")} className="w-24 rounded-xl px-3 py-2 text-sm text-gray-900" />
+                  <button onClick={handleAddShoppingItem} className="glass-scan-btn flex-1 py-2 text-sm" style={{background:"rgba(255,102,0,0.22)",boxShadow:"0 2px 10px rgba(255,102,0,0.3)"}}>{t("addBtn")}</button>
+                </div>
               </div>
-              {shoppingItems.length === 0 ? (
+              {shoppingItems.filter(it => it.source !== "used").length === 0 ? (
                 <p className="text-sm text-green-100 mt-3">{t("emptyList")}</p>
               ) : (
                 <div className="mt-3 space-y-2">
-                  {shoppingItems.map((it) => (
-                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.6 : 1}}>
+                  {shoppingItems.filter(it => it.source !== "used").sort((a, b) => (a.checked ? 1 : 0) - (b.checked ? 1 : 0)).map((it) => {
+                    const nameLower = it.name.toLowerCase();
+                    const flaggedAllergens = activeDietaryProfile.combinedTags.filter(tag => (ALLERGEN_KEYWORDS[tag] || []).some(kw => nameLower.includes(kw)));
+                    return (
+                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.14)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.28)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.85 : 1}}>
                       <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
                       <div className="flex-1">
-                        <span className={`text-sm ${it.checked ? "line-through text-white/40" : "text-white font-semibold"}`}>{it.name}{it.qty ? " — " + it.qty : ""}</span>
-                        {it.forMeal && <div className="mt-0.5"><span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(255,102,0,0.3)"}}>📅 {it.forMeal}</span></div>}
+                        <span className={`text-sm ${it.checked ? "line-through text-white/65" : "text-white font-semibold"}`}>{it.name}{it.qty ? " — " + it.qty : ""}</span>
+                        <div className="flex flex-wrap gap-1 mt-0.5">
+                          {it.forMeal && <span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(183,214,58,0.3)"}}>📅 {it.forMeal}</span>}
+                          {flaggedAllergens.map(tag => <span key={tag} className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(239,68,68,0.3)",color:"#fca5a5"}}>⚠️ {tag}</span>)}
+                        </div>
                       </div>
-                      <button onClick={() => handleRemoveShoppingItem(it.id)} className="text-xs text-white/50 hover:text-red-300">✕</button>
+                      <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </Card>
+            {shoppingItems.some(it => it.source === "used") && (
+              <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
+                <h3 className="mb-1 font-bold text-white">🔄 Recently Used — Restock</h3>
+                <p className="mb-3 text-xs text-green-100">Items you've used up. Tap to check off once you've added them to your cart.</p>
+                <div className="space-y-2">
+                  {shoppingItems.filter(it => it.source === "used").map((it) => (
+                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.18)", border: it.checked ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(255,165,0,0.45)", opacity: it.checked ? 0.85 : 1}}>
+                      <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
+                      <div className="flex-1">
+                        <span className={`text-sm ${it.checked ? "line-through text-white/65" : "text-white font-semibold"}`}>{it.name}</span>
+                        <div className="mt-0.5"><span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(183,214,58,0.35)",color:"#D4E87A"}}>🔄 Used</span></div>
+                      </div>
+                      <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
             {expiringSoon.length > 0 && (
-              <Card style={{background:"linear-gradient(160deg,#047857 0%,#059669 50%,#10b981 100%)",border:"2px solid rgba(255,102,0,0.55)"}}>
+              <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
                 <h3 className="mb-2 font-bold text-white">{t("expiringSoonTitle")}</h3>
                 <p className="mb-3 text-xs text-green-100">{t("expiringSoonDesc")}</p>
                 <div className="space-y-2">
@@ -3370,63 +4399,8 @@ export default function TrackFreshDashboard() {
           </>
         )}
 
-        {activeTab === "more" && (
-          <div className="space-y-4">
-            <div>
-              <span className="app-section-label">Settings</span>
-              <h2 className="app-section-h2">⚙️ More</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setActiveTab("stores-page")} className="glass-scan-btn">
-                <span style={{fontSize:"1.8rem"}}>🏪</span>
-                <span>{t("stores")}</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("storesDesc")}</span>
-              </button>
-              <button onClick={() => setActiveTab("community")} className="glass-scan-btn">
-                <span style={{fontSize:"1.8rem"}}>👥</span>
-                <span>{t("communityWord")}</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("communityDesc")}</span>
-              </button>
-              <button onClick={() => { setShowRecallsPanel(true); }} className="glass-scan-btn" style={{position:"relative"}}>
-                <span style={{fontSize:"1.8rem"}}>⚠️</span>
-                <span>{t("fdaRecalls")}</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>{t("fdaRecallsDesc")}</span>
-                {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"6px",right:"6px",background:"#ef4444",color:"white",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontWeight:"800"}}>{fdaRecalls.length}</span>}
-              </button>
-              <button onClick={() => setShowHelp(true)} className="glass-scan-btn">
-                <span style={{fontSize:"1.8rem"}}>❓</span>
-                <span>{t("howToUse")}</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>Help &amp; tips</span>
-              </button>
-              <button onClick={() => setActiveTab("partners")} className="glass-scan-btn">
-                <span style={{fontSize:"1.8rem"}}>🤝</span>
-                <span>Partners</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>Work with us</span>
-              </button>
-              <button onClick={() => setActiveTab("dietary")} className="glass-scan-btn">
-                <span style={{fontSize:"1.8rem"}}>🥗</span>
-                <span>Dietary Needs</span>
-                <span style={{fontSize:"0.65rem",opacity:0.75,fontWeight:400}}>Manage family food preferences and restrictions.</span>
-              </button>
-            </div>
-            <button onClick={() => { if (window.confirm(t("signOutConfirm"))) { try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_mkt_seen"); } catch(e) {} window.location.reload(); } }} className="w-full rounded-xl py-3 text-sm font-bold mt-4" style={{background:"rgba(239,68,68,0.18)",border:"1px solid rgba(239,68,68,0.35)",color:"#fca5a5"}}>{t("signOut")}</button>
-          </div>
-        )}
-
         {activeTab === "dietary" && (
           <div className="space-y-4">
-
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
-              <div>
-                <span className="app-section-label">Family</span>
-                <h2 className="app-section-h2" style={{marginBottom:0}}>🥗 Dietary Needs</h2>
-              </div>
-            </div>
-            <p className="text-sm text-green-200">Manage family food preferences and restrictions.</p>
-
-            {/* Household restrictions */}
             <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
               <div className="flex items-center gap-2 mb-3">
                 <span style={{fontSize:"1.4rem"}}>🏠</span>
@@ -3570,7 +4544,8 @@ export default function TrackFreshDashboard() {
             <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",textAlign:"center",padding:"1.75rem 1.25rem"}}>
               <div style={{fontSize:"2.5rem",marginBottom:"0.5rem"}}>🌍</div>
               <h2 className="text-xl font-extrabold text-white mb-2">The TrackFresh.AI Ecosystem</h2>
-              <p className="text-sm text-green-200 leading-relaxed">TrackFresh connects consumers, supermarkets, food brands, and composting companies — all in one privacy-first platform.</p>
+              <p className="text-sm text-green-200 leading-relaxed">TrackFresh connects home cooks, grocery retailers, food brands, and sustainability partners — building a smarter, less wasteful food system together.</p>
+              <p className="text-sm text-white font-semibold mt-3">One platform. One goal: waste less, eat better.</p>
               <div className="grid grid-cols-4 gap-2 mt-4">
                 {[["🛒","Shoppers"],["🏪","Supermarkets"],["🏭","Brands"],["🌱","Composting"]].map(([icon, label]) => (
                   <div key={label} className="rounded-xl py-2 px-1 text-center" style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)"}}>
@@ -3685,10 +4660,9 @@ export default function TrackFreshDashboard() {
               <a href="mailto:hello@trackfresh.ai" className="glass-scan-btn text-sm py-3 mb-2" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>✉️ hello@trackfresh.ai</a>
               <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center",opacity:0.75}}>📋 Download Partner Deck →</a>
             </Card>
-
           </div>
         )}
-
+                    
         {activeTab === "stores-page" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-1">
@@ -3698,78 +4672,66 @@ export default function TrackFreshDashboard() {
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🏪 {t("shopOnline")}</h2>
               </div>
             </div>
-            <div className="rounded-2xl bg-white p-5 card-3d">
+
+            <div
+              className="rounded-2xl p-5 card-3d"
+              style={{
+                background: "linear-gradient(160deg,#064e3b 0%,#065f46 55%,#047857 100%)",
+                border: "1.5px solid rgba(183,214,58,0.3)"
+              }}
+            >
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">🏪</span>
-                <h2 className="text-lg font-bold">{t("shopOnline")}</h2>
+                <h2 className="text-lg font-bold text-white">{t("shopOnline")}</h2>
               </div>
-              <p className="text-sm text-gray-500 mb-4">{t("shopOnlineDesc")}</p>
+              <p className="text-sm text-green-100 mb-4">{t("shopOnlineDesc")}</p>
+
               <div className="grid grid-cols-2 gap-3">
-
-                <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🛒</span>
+                <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/amazon.com" alt="Amazon Fresh" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Amazon Fresh</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.kroger.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🏬</span>
+                <a href="https://www.kroger.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/kroger.com" alt="Kroger" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Kroger</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.walmart.com/cp/food/976759" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🔵</span>
+                <a href="https://www.walmart.com/cp/food/976759" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/walmart.com" alt="Walmart" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Walmart</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.wholefoodsmarket.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🥬</span>
+                <a href="https://www.wholefoodsmarket.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/wholefoodsmarket.com" alt="Whole Foods" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Whole Foods</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.target.com/c/grocery/-/N-5xt1a" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🎯</span>
+                <a href="https://www.target.com/c/grocery/-/N-5xt1a" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/target.com" alt="Target" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Target</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.costco.com/grocery-household.html" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">📦</span>
+                <a href="https://www.costco.com/grocery-household.html" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/costco.com" alt="Costco" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Costco</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
-                <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🌺</span>
+                <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://logo.clearbit.com/traderjoes.com" alt="Trader Joe's" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Trader Joe&apos;s</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
-
-                <a href="https://www.instacart.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🥕</span>
-                  <span className="text-sm font-bold text-white">Instacart</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
-                </a>
-
-                <a href="https://www.freshdirect.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🍎</span>
-                  <span className="text-sm font-bold text-white">FreshDirect</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
-                </a>
-
-                <a href="https://www.mortonwilliams.com" target="_blank" rel="noopener noreferrer" className="glass-scan-btn">
-                  <span className="text-3xl">🏙️</span>
-                  <span className="text-sm font-bold text-white">Morton Williams</span>
-                  <span className="text-xs text-green-300 font-semibold">{t("shopNow")}</span>
-                </a>
-
               </div>
             </div>
           </div>
-        )}
+        )}          
 
         {activeTab === "composting" && (
           <>
@@ -3935,34 +4897,246 @@ export default function TrackFreshDashboard() {
       </div>
     </div>
 
-    {/* Footer navigation — More sub-pages */}
-    <nav className="footer-nav">
-      <button onClick={() => setActiveTab("stores-page")} className={activeTab === "stores-page" ? "footer-active" : ""}>
-        <span className="footer-icon">🏪</span>
-        <span className="footer-label">Stores</span>
-      </button>
-      <button onClick={() => setActiveTab("community")} className={activeTab === "community" ? "footer-active" : ""}>
-        <span className="footer-icon">👥</span>
-        <span className="footer-label">Community</span>
-      </button>
-      <button onClick={() => setShowRecallsPanel(true)} className={showRecallsPanel ? "footer-active" : ""} style={{position:"relative"}}>
-        <span className="footer-icon">⚠️</span>
-        <span className="footer-label">FDA Recalls</span>
-        {fdaRecalls.length > 0 && <span style={{position:"absolute",top:"2px",right:"4px",background:"#ef4444",color:"white",borderRadius:"50%",width:"16px",height:"16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.55rem",fontWeight:800}}>{fdaRecalls.length}</span>}
-      </button>
-      <button onClick={() => setShowHelp(true)} className={showHelp ? "footer-active" : ""}>
-        <span className="footer-icon">❓</span>
-        <span className="footer-label">How to Use</span>
-      </button>
-      <button onClick={() => setActiveTab("partners")} className={activeTab === "partners" ? "footer-active" : ""}>
-        <span className="footer-icon">🤝</span>
-        <span className="footer-label">Partners</span>
-      </button>
-      <button onClick={() => setActiveTab("dietary")} className={activeTab === "dietary" ? "footer-active" : ""}>
-        <span className="footer-icon">🥗</span>
-        <span className="footer-label">Dietary</span>
-      </button>
-    </nav>
+        {showExpiryVoice && (
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:10500,display:"flex",alignItems:"flex-end",justifyContent:"center",padding:"1rem"}}>
+            <div style={{background:"white",borderRadius:"20px 20px 16px 16px",width:"100%",maxWidth:"440px",boxShadow:"0 -4px 32px rgba(0,0,0,0.25)",display:"flex",flexDirection:"column",maxHeight:"62vh",overflow:"hidden"}}>
+              {/* Sticky header */}
+              <div style={{flexShrink:0,padding:"1rem 1.25rem 0.75rem",borderBottom:"1px solid #f3f4f6"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                    <span style={{fontSize:"1.4rem"}}>{expiryVoiceStatus === "listening" ? "🔴" : expiryVoiceStatus === "done" ? "✅" : "🎙️"}</span>
+                    <div>
+                      <p style={{fontWeight:900,fontSize:"0.95rem",color:"#064e3b"}}>Expiry Date Assistant</p>
+                      <p style={{fontSize:"0.72rem",color:"#6b7280",marginTop:"0.1rem"}}>
+                        {expiryVoiceStatus === "speaking" && "Speaking…"}
+                        {expiryVoiceStatus === "listening" && "🔴 Listening — say product name + date"}
+                        {expiryVoiceStatus === "done" && "All done!"}
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={stopExpiryVoiceFlow} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>&times;</button>
+                </div>
+              </div>
+
+              {/* Scrollable middle — instructions + item list */}
+              <div style={{flex:"1 1 auto",overflowY:"auto",padding:"0.75rem 1.25rem"}}>
+                {expiryVoiceStatus === "listening" && (
+                  <div style={{background:"#f5fad0",border:"2px solid #D4E87A",borderRadius:"12px",padding:"0.65rem",marginBottom:"0.6rem"}}>
+                    <p style={{fontSize:"0.8rem",fontWeight:700,color:"#5a6e0a",marginBottom:"0.3rem",textAlign:"center"}}>
+                      Say: <span style={{background:"#064e3b",color:"white",borderRadius:"6px",padding:"0.1rem 0.45rem",fontFamily:"monospace",fontSize:"0.78rem"}}>product name</span>
+                      {" + "}
+                      <span style={{background:"#B7D63A",color:"#000",borderRadius:"6px",padding:"0.1rem 0.45rem",fontFamily:"monospace",fontSize:"0.78rem"}}>month day year</span>
+                    </p>
+                    <p style={{fontSize:"0.72rem",color:"#5a6e0a",textAlign:"center",marginBottom:"0.3rem"}}>
+                      e.g. <em>"Milk, <strong>March 20 2026</strong>"</em> &nbsp;·&nbsp; <em>"Chicken <strong>Apr 5</strong>"</em>
+                    </p>
+                    <p style={{fontSize:"0.65rem",color:"#6b7280",textAlign:"center"}}>Say <strong>"no"</strong>, <strong>"skip"</strong>, or <strong>"done"</strong> to exit</p>
+                  </div>
+                )}
+
+                {(() => {
+                  const loggedNames = new Set(expiryVoiceLog.map(e => e.name));
+                  const remaining = expiryVoiceItems.filter(it => !loggedNames.has(it.name));
+                  return (
+                    <>
+                      {expiryVoiceLog.length > 0 && (
+                        <div style={{marginBottom:"0.5rem"}}>
+                          {expiryVoiceLog.map((entry, i) => (
+                            <div key={i} style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.35rem 0.6rem",borderRadius:"8px",background:"#f0fdf4",border:"1px solid #86efac",marginBottom:"0.25rem"}}>
+                              <span style={{color:"#16a34a",fontWeight:900,fontSize:"0.85rem"}}>✓</span>
+                              <span style={{flex:1,fontSize:"0.8rem",fontWeight:600,color:"#064e3b"}}>{entry.name}</span>
+                              <span style={{fontSize:"0.75rem",color:"#6b7280"}}>{entry.dateStr}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {remaining.length > 0 && expiryVoiceStatus !== "done" && (
+                        <div>
+                          <p style={{fontSize:"0.68rem",fontWeight:700,color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"0.35rem"}}>Still needed ({remaining.length}):</p>
+                          <div style={{display:"flex",flexWrap:"wrap",gap:"0.3rem"}}>
+                            {remaining.map((it, i) => (
+                              <span key={i} style={{background:"#f3f4f6",border:"1px solid #e5e7eb",borderRadius:"999px",padding:"0.2rem 0.6rem",fontSize:"0.72rem",fontWeight:600,color:"#374151"}}>{it.name}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Sticky footer — always visible */}
+              <div style={{flexShrink:0,padding:"0.75rem 1.25rem 1rem",borderTop:"1px solid #f3f4f6"}}>
+                <button onClick={stopExpiryVoiceFlow} style={{width:"100%",background:"linear-gradient(to bottom,#059669,#047857)",color:"white",border:"none",borderRadius:"12px",padding:"0.75rem",fontSize:"0.875rem",fontWeight:800,cursor:"pointer",boxShadow:"0 3px 0 #065f46"}}>
+                  ✅ Done — Skip Remaining
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showOpenedModal && (() => {
+          const today = new Date().toISOString().split("T")[0];
+          const allItems = itemsWithCountdown;
+          const recentItems = [...allItems].slice(0, 5);
+          const fridgeItems = allItems.filter(it => (it.location ?? "Fridge") === "Fridge");
+          const freezerItems = allItems.filter(it => it.location === "Freezer");
+          const pantryItems = allItems.filter(it => it.location === "Pantry");
+          const searchResults = openedSearch.trim() ? fuzzyMatchItems(openedSearch, allItems) : [];
+
+          const ItemRow = ({ item }) => (
+            <button onClick={() => handleMarkOpened(item, today)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"10px",padding:"0.6rem 0.75rem",marginBottom:"0.35rem",cursor:"pointer",textAlign:"left"}}>
+              <div>
+                <div style={{fontWeight:700,color:"#fff",fontSize:"0.875rem"}}>{item.name}</div>
+                <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.75)",marginTop:"0.1rem"}}>{item.location ?? "Fridge"}{item.useByDate ? " · " + (lang==="es"?"Vence":"Exp") + " " + item.useByDate : ""}</div>
+              </div>
+              {item.openDate && <span style={{fontSize:"0.65rem",background:"rgba(183,214,58,0.25)",color:"#B7D63A",border:"1px solid rgba(183,214,58,0.4)",borderRadius:"999px",padding:"0.1rem 0.45rem",fontWeight:700,whiteSpace:"nowrap"}}>📂 {lang==="es"?"Abierto":"Opened"}</span>}
+            </button>
+          );
+
+          const GroupSection = ({ label, items }) => items.length === 0 ? null : (
+            <div style={{marginBottom:"0.875rem"}}>
+              <p style={{fontSize:"0.63rem",fontWeight:700,color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.4rem"}}>{label}</p>
+              {items.map(it => <ItemRow key={it.id} item={it} />)}
+            </div>
+          );
+
+          return (
+            <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.65)",backdropFilter:"blur(4px)",display:"flex",flexDirection:"column",justifyContent:"flex-end",paddingBottom:openedModalOffset,transition:"padding-bottom 0.2s ease"}}>
+              <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 60%,#047857 100%)",borderRadius:"20px 20px 0 0",padding:"1.25rem 1.25rem calc(env(safe-area-inset-bottom) + 0.75rem)",maxHeight:`calc(90vh - ${openedModalOffset}px)`,display:"flex",flexDirection:"column",boxShadow:"0 -8px 40px rgba(0,0,0,0.45)",transition:"max-height 0.2s ease"}}>
+
+                {/* Header */}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"1rem",flexShrink:0}}>
+                  <h3 style={{color:"#fff",fontWeight:800,fontSize:"1.1rem",margin:0}}>📂 {lang==="es"?"Marcar Lo Que Abrí":"Mark What You've Opened"}</h3>
+                  <button onClick={() => { setShowOpenedModal(false); setOpenedConfirm(null); }} style={{background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:32,height:32,color:"#fff",fontWeight:700,cursor:"pointer",fontSize:"1.1rem",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                </div>
+
+                {openedConfirm ? (
+                  /* Confirmation screen */
+                  <div style={{textAlign:"center",padding:"0.5rem 0",flex:1,display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                    <div style={{fontSize:"3rem",marginBottom:"0.75rem"}}>✅</div>
+                    <h3 style={{color:"#fff",fontWeight:800,fontSize:"1.1rem",marginBottom:"0.35rem"}}>{openedConfirm.item.name}</h3>
+                    <p style={{color:"rgba(255,255,255,0.92)",fontSize:"0.875rem",marginBottom:"0.25rem"}}>
+                      {lang==="es"?"Marcado como abierto":"Marked as opened"} — {openedConfirm.openDate}
+                    </p>
+                    {openedConfirm.openUseBy && (
+                      <p style={{color:"#86efac",fontWeight:700,fontSize:"0.875rem",marginBottom:"0.25rem"}}>
+                        {lang==="es"?"Usar antes de":"Suggested use by"}: {openedConfirm.openUseBy}
+                        {openedConfirm.shelfDays && <span style={{color:"rgba(255,255,255,0.75)",fontWeight:400}}> ({openedConfirm.shelfDays} {lang==="es"?"días tras abrir":"days after opening"})</span>}
+                      </p>
+                    )}
+                    {!openedConfirm.openUseBy && (
+                      <p style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",marginBottom:"0.25rem"}}>{lang==="es"?"Sin referencia de duración conocida. Puedes editar la fecha de uso.":"No shelf-life reference found — you can set a use-by date manually."}</p>
+                    )}
+
+                    {showOpenedDateEdit ? (
+                      <div style={{marginTop:"0.75rem",display:"flex",gap:"0.5rem",alignItems:"center",justifyContent:"center",flexWrap:"wrap"}}>
+                        <input type="date" value={openedEditDate} onChange={e => setOpenedEditDate(e.target.value)} style={{borderRadius:"8px",padding:"0.5rem",border:"1.5px solid rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.875rem"}} />
+                        <button onClick={() => { if (openedEditDate) handleMarkOpened(openedConfirm.item, openedEditDate); setShowOpenedDateEdit(false); }} className="glass-scan-btn" style={{padding:"0.4rem 1rem",fontSize:"0.8rem"}}>{lang==="es"?"Guardar":"Save"}</button>
+                        <button onClick={() => setShowOpenedDateEdit(false)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem"}}>{lang==="es"?"Cancelar":"Cancel"}</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => { setOpenedEditDate(openedConfirm.openDate); setShowOpenedDateEdit(true); }} style={{background:"transparent",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"999px",padding:"0.3rem 1rem",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem",marginTop:"0.75rem",display:"inline-block"}}>
+                        ✏️ {lang==="es"?"Editar fecha":"Edit date"}
+                      </button>
+                    )}
+
+                    <button onClick={() => { setShowOpenedModal(false); setOpenedConfirm(null); }} className="glass-scan-btn w-full" style={{marginTop:"1.25rem",fontWeight:800}}>
+                      {lang==="es"?"Listo":"Done"}
+                    </button>
+                    <button onClick={() => setOpenedConfirm(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem",marginTop:"0.5rem"}}>
+                      ← {lang==="es"?"Marcar otro":"Mark another"}
+                    </button>
+                  </div>
+                ) : (
+                  /* Search + inventory list */
+                  <>
+                    {/* Search row */}
+                    <div style={{position:"relative",marginBottom:"0.875rem",flexShrink:0}}>
+                      <input
+                        value={openedSearch}
+                        onChange={e => setOpenedSearch(e.target.value)}
+                        placeholder={lang==="es"?"Busca o escribe un producto…":"Search or say an item name…"}
+                        autoFocus
+                        style={{width:"100%",padding:"0.75rem 3rem 0.75rem 0.875rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.25)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.9rem",outline:"none",boxSizing:"border-box"}}
+                      />
+                      <button
+                        onClick={() => {
+                          if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) { alert(lang==="es"?"Voz no disponible en este navegador.":"Voice input not available in this browser."); return; }
+                          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                          const sr = new SR(); sr.lang = lang === "es" ? "es-US" : "en-US"; sr.interimResults = false; sr.maxAlternatives = 1;
+                          sr.onresult = e => setOpenedSearch(e.results[0][0].transcript);
+                          sr.start();
+                        }}
+                        title={lang==="es"?"Hablar":"Speak item name"}
+                        style={{position:"absolute",right:"0.5rem",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:34,height:34,cursor:"pointer",fontSize:"1.1rem",display:"flex",alignItems:"center",justifyContent:"center"}}
+                      >🎤</button>
+                    </div>
+
+                    {/* List */}
+                    <div style={{overflowY:"auto",flex:1}}>
+                      {openedSearch.trim() ? (
+                        searchResults.length === 0
+                          ? <p style={{color:"rgba(255,255,255,0.75)",fontSize:"0.85rem",textAlign:"center",paddingTop:"1rem"}}>{lang==="es"?"Sin resultados.":"No matching items found."}</p>
+                          : <GroupSection label={lang==="es"?"Resultados":"Results"} items={searchResults} />
+                      ) : allItems.length === 0 ? (
+                        <p style={{color:"rgba(255,255,255,0.75)",fontSize:"0.85rem",textAlign:"center",paddingTop:"1rem"}}>{lang==="es"?"Sin artículos rastreados todavía.":"No tracked items yet. Add food in the Tracker tab first."}</p>
+                      ) : (
+                        <>
+                          <GroupSection label={lang==="es"?"⏱ Recientes":"⏱ Recent Items"} items={recentItems} />
+                          <GroupSection label={lang==="es"?"🧊 Refrigerador":"🧊 Fridge"} items={fridgeItems} />
+                          <GroupSection label={lang==="es"?"❄️ Congelador":"❄️ Freezer"} items={freezerItems} />
+                          <GroupSection label={lang==="es"?"🏺 Despensa":"🏺 Pantry"} items={pantryItems} />
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
+      {showTutorial && (() => {
+        const tabKey = TUTORIALS[activeTab] ? activeTab : "home";
+        const steps = TUTORIALS[tabKey];
+        const step = steps[Math.min(tutorialStep, steps.length - 1)];
+        const isLast = tutorialStep >= steps.length - 1;
+        return (
+          <div className="fixed inset-0 z-[100] flex items-end justify-center" style={{background:"rgba(0,0,0,0.65)",backdropFilter:"blur(4px)"}} onClick={() => setShowTutorial(false)}>
+            <div className="tut-modal w-full max-w-lg rounded-t-3xl p-6" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 60%,#047857 100%)",border:"2px solid rgba(183,214,58,0.55)",borderBottom:"none",boxShadow:"0 -8px 40px rgba(0,0,0,0.45)"}} onClick={e => e.stopPropagation()}>
+              <div className="mx-auto mb-4 h-1 w-12 rounded-full" style={{background:"rgba(255,255,255,0.3)"}} />
+              <div className="flex justify-center gap-2 mb-5">
+                {steps.map((_, i) => (
+                  <div key={i} onClick={() => setTutorialStep(i)} style={{width: i === tutorialStep ? "1.6rem" : "0.45rem", height:"0.45rem", borderRadius:"999px", background: i === tutorialStep ? "#B7D63A" : "rgba(255,255,255,0.3)", transition:"all 0.3s", cursor:"pointer"}} />
+                ))}
+              </div>
+              <div key={tutorialStep} className="tut-step">
+                <div className="text-center mb-3">
+                  <span style={{fontSize:"4rem", display:"inline-block", animation:"tutEmojiPop 0.7s ease both"}}>{step.emoji}</span>
+                </div>
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-extrabold text-white mb-2" style={{textShadow:"0 2px 6px rgba(0,0,0,0.3)"}}>{step.title}</h2>
+                  <p className="text-green-100 text-sm leading-relaxed">{step.body}</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                {tutorialStep > 0 && (
+                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn">←</button>
+                )}
+                {!isLast ? (
+                  <button onClick={() => setTutorialStep(s => s + 1)} className="flex-1 rounded-2xl py-3 text-sm font-bold glass-scan-btn" style={{border:"2px solid #B7D63A"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
+                ) : (
+                  <button onClick={() => setShowTutorial(false)} className="flex-1 rounded-2xl py-3 text-base font-extrabold" style={{background:"#E8A63C",border:"2px solid #F0C070",color:"#000"}}>🎉 {lang === "es" ? "¡Listo!" : "Got it!"}</button>
+                )}
+              </div>
+              {!isLast && <button onClick={() => setShowTutorial(false)} className="mt-3 w-full text-center text-xs" style={{color:"rgba(255,255,255,0.35)",background:"none",border:"none",cursor:"pointer"}}>{lang === "es" ? "saltar tutorial" : "skip tutorial"}</button>}
+            </div>
+          </div>
+        );
+      })()}
+
     </>
   );
 }
+

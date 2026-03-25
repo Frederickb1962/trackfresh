@@ -15,7 +15,7 @@ export async function POST(req) {
 
     const resp = await client.messages.create({
       model: "claude-sonnet-4-5",
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [
         {
           role: "user",
@@ -42,8 +42,30 @@ Reply ONLY with valid JSON, no markdown, no backticks:
     });
 
     let text = resp.content[0].text.trim();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const data = JSON.parse(text);
+    text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // Response was truncated — extract any complete recipe objects
+      const matches = [...text.matchAll(/\{[^{}]*"name"\s*:[^{}]*"instructions"\s*:[^{}]*\}/gs)];
+      if (matches.length > 0) {
+        const recipes = matches.map(m => { try { return JSON.parse(m[0]); } catch { return null; } }).filter(Boolean);
+        data = { recipes };
+      } else {
+        // Try salvaging the recipes array even if truncated
+        const arrStart = text.indexOf('"recipes"');
+        if (arrStart !== -1) {
+          const slice = text.slice(arrStart);
+          const items = [...slice.matchAll(/\{"name"[\s\S]*?"usesExpiring"[\s\S]*?\]\s*\}/g)];
+          const recipes = items.map(m => { try { return JSON.parse(m[0]); } catch { return null; } }).filter(Boolean);
+          data = { recipes };
+        } else {
+          throw new Error("Could not parse recipe response");
+        }
+      }
+    }
     return NextResponse.json(data);
   } catch (e) {
     console.error("Recipe suggestion error:", e);
