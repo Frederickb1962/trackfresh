@@ -1325,16 +1325,50 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
-function SmartScanner({ onResult, onError, captureRef }) {
+function SmartScanner({ onResult, onError, captureRef, lang }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("starting");
   const [scanError, setScanError] = useState("");
-  const [countdown, setCountdown] = useState(null);
   const detectedRef = useRef(false);
   const readerRef = useRef(null);
   const timerRef = useRef(null);
-  const countdownRef = useRef(null);
+  const voiceRef = useRef(null);
+
+  const speak = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.1; u.pitch = 1;
+      window.speechSynthesis.speak(u);
+    }
+  };
+
+  const listenForCommand = (onCmd) => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
+    const recog = new SR();
+    recog.lang = lang === "es" ? "es-MX" : "en-US";
+    recog.interimResults = false;
+    recog.maxAlternatives = 3;
+    voiceRef.current = recog;
+    let gotResult = false;
+    recog.onresult = (ev) => {
+      gotResult = true;
+      voiceRef.current = null;
+      const t = ev.results[0][0].transcript.toLowerCase().trim();
+      onCmd(t);
+    };
+    recog.onerror = (e) => {
+      if (e.error === 'aborted') return;
+      setTimeout(() => { if (!gotResult) listenForCommand(onCmd); }, 300);
+    };
+    recog.onend = () => {
+      setTimeout(() => { if (!gotResult && voiceRef.current === recog) listenForCommand(onCmd); }, 300);
+    };
+    recog.start();
+  };
 
   useEffect(() => {
     detectedRef.current = false;
@@ -1344,8 +1378,9 @@ function SmartScanner({ onResult, onError, captureRef }) {
       if (detectedRef.current) return;
       detectedRef.current = true;
       setStatus("reading");
-      setCountdown(null);
+      if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
       if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      speak(lang === "es" ? "Capturando..." : "Capturing...");
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas) { onError("Camera not ready"); return; }
@@ -1362,23 +1397,22 @@ function SmartScanner({ onResult, onError, captureRef }) {
         const data = await res.json();
         if (data.items && data.items.length > 0) { onResult({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: data.items[0].source || "label" }); }
         else if (data.item) { onResult({ ...data.item, source: data.item.source || "label" }); }
-        else { onError(data.error || "Could not read. Try again."); }
+        else { onError(data.error || "Could not read. Say capture to try again."); }
       } catch (e) { onError("Scan failed: " + e.message); }
     }
 
-    function startCountdown() {
-      let count = 3;
-      setCountdown(count);
-      countdownRef.current = setInterval(() => {
-        count--;
-        if (count <= 0) {
-          clearInterval(countdownRef.current);
-          setCountdown(null);
+    function startListening() {
+      setStatus("listening");
+      listenForCommand((cmd) => {
+        if (cmd.includes("capture") || cmd.includes("captura") || cmd.includes("photo") || cmd.includes("foto") || cmd.includes("scan") || cmd.includes("escanea")) {
           captureAndScan();
+        } else if (cmd.includes("stop") || cmd.includes("done") || cmd.includes("listo") || cmd.includes("detener") || cmd.includes("parar")) {
+          onError("__done__");
         } else {
-          setCountdown(count);
+          speak(lang === "es" ? "Di capturar cuando estés listo." : "Say capture when ready.");
+          startListening();
         }
-      }, 1000);
+      });
     }
 
     async function start() {
@@ -1392,17 +1426,17 @@ function SmartScanner({ onResult, onError, captureRef }) {
           await videoRef.current.play();
         }
         setStatus("scanning");
-        // Try barcode detection first
+        // Try barcode detection
         try {
           const { BrowserMultiFormatReader } = await import("@zxing/library");
           readerRef.current = new BrowserMultiFormatReader();
           readerRef.current.decodeFromStream(stream, videoRef.current, async (result) => {
             if (result && !detectedRef.current) {
               detectedRef.current = true;
-              if (countdownRef.current) clearInterval(countdownRef.current);
-              setCountdown(null);
+              if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
               if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
               setStatus("barcode_found");
+              speak(lang === "es" ? "Código de barras encontrado." : "Barcode found.");
               try {
                 const res = await fetch("/api/scan-barcode", {
                   method: "POST", headers: { "Content-Type": "application/json" },
@@ -1410,21 +1444,27 @@ function SmartScanner({ onResult, onError, captureRef }) {
                 });
                 const data = await res.json();
                 if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
-                else { detectedRef.current = false; startCountdown(); }
-              } catch(e) { detectedRef.current = false; startCountdown(); }
+                else { detectedRef.current = false; speak(lang === "es" ? "No encontrado. Di capturar para la etiqueta." : "Not found. Say capture to scan the label."); startListening(); }
+              } catch(e) { detectedRef.current = false; startListening(); }
             }
           });
         } catch(e) { /* barcode lib failed */ }
-        // Auto-capture after 3 second countdown (unless barcode found first)
-        timerRef.current = setTimeout(() => { if (!detectedRef.current) startCountdown(); }, 2000);
-        if (captureRef) captureRef.current = () => { if (!detectedRef.current) { if (countdownRef.current) clearInterval(countdownRef.current); setCountdown(null); captureAndScan(); } };
+        // Prompt user with voice
+        timerRef.current = setTimeout(() => {
+          if (!detectedRef.current) {
+            speak(lang === "es" ? "Apunta a tu artículo. Di capturar cuando estés listo." : "Point at your item. Say capture when ready.");
+            startListening();
+          }
+        }, 2000);
+        if (captureRef) captureRef.current = () => { if (!detectedRef.current) { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} } captureAndScan(); } };
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
     start();
     return () => {
       if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (countdownRef.current) clearInterval(countdownRef.current);
+      if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
     };
   }, []);
@@ -1436,22 +1476,22 @@ function SmartScanner({ onResult, onError, captureRef }) {
           <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "420px", objectFit: "cover" }} />
           <canvas ref={canvasRef} style={{ display: "none" }} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"280px",height:"200px",opacity:0.7}} />}
+            {(status === "scanning" || status === "listening") && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"280px",height:"200px",opacity:0.7}} />}
             {status === "reading" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"280px",height:"200px",opacity:0.8}} />}
             {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"280px",height:"200px",background:"rgba(34,197,94,0.15)"}} />}
-            {countdown !== null && <div style={{fontSize:"4rem",fontWeight:900,color:"#fff",textShadow:"0 4px 20px rgba(0,0,0,0.7)"}}>{countdown}</div>}
+            {status === "listening" && <div style={{position:"absolute",bottom:"80px",background:"rgba(239,68,68,0.9)",borderRadius:"999px",padding:"0.4rem 1rem",display:"flex",alignItems:"center",gap:"0.4rem"}}><span style={{fontSize:"1rem"}}>🎤</span><span style={{color:"#fff",fontSize:"0.75rem",fontWeight:700}}>Listening...</span></div>}
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && countdown === null && "Point at a receipt, label, or barcode..."}
-            {status === "scanning" && countdown !== null && "Hold steady — capturing..."}
-            {status === "barcode_found" && "✅ Barcode found! Looking up product..."}
-            {status === "reading" && "📖 AI reading..."}
+            {status === "scanning" && (lang === "es" ? "Preparando..." : "Getting ready...")}
+            {status === "listening" && (lang === "es" ? "🎤 Di \"capturar\" cuando estés listo" : "🎤 Say \"capture\" when ready")}
+            {status === "barcode_found" && "✅ Barcode found!"}
+            {status === "reading" && (lang === "es" ? "📖 IA leyendo..." : "📖 AI reading...")}
           </p>
-          {status === "scanning" && countdown === null && (
+          {(status === "scanning" || status === "listening") && (
             <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
               style={{position:"absolute",bottom:"44px",left:"50%",transform:"translateX(-50%)",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",border:"none",borderRadius:"24px",padding:"0.65rem 1.25rem",fontWeight:800,fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 0 #8C5A10,0 6px 16px rgba(0,0,0,0.3)",opacity:0.85}}>
-              📸 Tap to capture now
+              📸 {lang === "es" ? "o toca aquí" : "or tap here"}
             </button>
           )}
         </div>
@@ -2271,6 +2311,8 @@ export default function TrackFreshDashboard() {
       setSelectedSmartMulti(item._allItems.map((_, i) => i));
       setShowSmartMultiReview(true);
       setSmartError("");
+      const count = item._allItems.length;
+      speak(lang === "es" ? `Encontré ${count} productos. Revisa la lista.` : `Found ${count} items. Review the list.`);
       return;
     }
     setSmartResult(item);
@@ -2279,6 +2321,7 @@ export default function TrackFreshDashboard() {
     resetUniScanTimer();
     setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
+    speak(lang === "es" ? `Encontré ${itemName}. Revisa los detalles.` : `Found ${itemName}. Review the details.`);
     setVoiceFlowStep("say_date");
 
   };
@@ -2322,7 +2365,7 @@ export default function TrackFreshDashboard() {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   };
 
-  const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
+  const handleSmartError = (msg) => { if (msg === "__done__") { handleDoneUniScan(); return; } setSmartError(msg); setSmartResult(null); };
 
   const handleAddSmartMultiItems = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -3330,7 +3373,7 @@ export default function TrackFreshDashboard() {
                     </span>
                   </div>
                 )}
-                <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
+                <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} lang={lang} />
 
                 <button onClick={async () => {
                   try {
