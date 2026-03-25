@@ -8,3 +8,7 @@ trackfresh.zip
 node_modules/
 trackfresh.zip
 .next/
+.env
+.env.local
+.env.localecho
+.env.*
