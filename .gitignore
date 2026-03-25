@@ -16,3 +16,4 @@ trackfresh.zip
 .env.local
 .env.localecho
 .env.*
+.env.localcd
