@@ -1368,7 +1368,7 @@ function SmartScanner({ onResult, onError, captureRef }) {
     async function start() {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 }, advanced: [{ torch: false }] }
+          video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 }, advanced: [{ torch: false }] }
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -1425,12 +1425,12 @@ function SmartScanner({ onResult, onError, captureRef }) {
     <div className="relative">
       {scanError ? <p className="text-sm text-red-600 p-4">{scanError}</p> : (
         <div className="relative overflow-hidden rounded-xl bg-black">
-          <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "280px", objectFit: "cover" }} />
+          <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "420px", objectFit: "cover" }} />
           <canvas ref={canvasRef} style={{ display: "none" }} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"220px",height:"140px",opacity:0.7}} />}
-            {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"220px",height:"140px",opacity:0.8}} />}
-            {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"220px",height:"140px",background:"rgba(34,197,94,0.15)"}} />}
+            {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"280px",height:"200px",opacity:0.7}} />}
+            {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"280px",height:"200px",opacity:0.8}} />}
+            {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"280px",height:"200px",background:"rgba(34,197,94,0.15)"}} />}
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
