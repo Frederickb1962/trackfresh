@@ -2027,6 +2027,11 @@ export default function TrackFreshDashboard() {
   const [barcodeUseBy, setBarcodeUseBy] = useState("");
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
   const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const [showMultiScanner, setShowMultiScanner] = useState(false);
+  const [multiScanStatus, setMultiScanStatus] = useState("camera");
+  const [multiItems, setMultiItems] = useState([]);
+  const [multiScanError, setMultiScanError] = useState("");
+  const [selectedMultiItems, setSelectedMultiItems] = useState([]);
   const smartCaptureRef = useRef(null);
   const [smartResult, setSmartResult] = useState(null);
   const [smartError, setSmartError] = useState("");
@@ -2296,6 +2301,38 @@ export default function TrackFreshDashboard() {
   };
 
   const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
+
+  const handleMultiScan = async (file) => {
+    setMultiScanStatus("scanning");
+    setMultiScanError("");
+    setMultiItems([]);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64 = e.target.result.split(",")[1];
+        const mType = file.type || "image/jpeg";
+        const res = await fetch("/api/scan-multi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mType }) });
+        const data = await res.json();
+        if (data.error) { setMultiScanError(data.error); setMultiScanStatus("camera"); return; }
+        if (!data.items || data.items.length === 0) { setMultiScanError(lang === "es" ? "No se encontraron productos." : "No food items found. Try again."); setMultiScanStatus("camera"); return; }
+        setMultiItems(data.items);
+        setSelectedMultiItems(data.items.map((_, i) => i));
+        setMultiScanStatus("review");
+      };
+      reader.readAsDataURL(file);
+    } catch (err) { setMultiScanError(err.message); setMultiScanStatus("camera"); }
+  };
+
+  const handleAddMultiItems = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const newItems = selectedMultiItems.map(i => multiItems[i]).filter(Boolean).map(item => ({
+      id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: today,
+      category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
+      daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
+    }));
+    setTrackedItems(prev => [...newItems, ...prev]);
+    setShowMultiScanner(false); setMultiItems([]); setMultiScanStatus("camera"); setSelectedMultiItems([]);
+  };
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
@@ -3646,6 +3683,67 @@ export default function TrackFreshDashboard() {
               )}
               <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); setLabelScanCount(0); setLabelLastItem(""); setLabelScanMode(null); }} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{labelScanCount > 0 ? (lang === "es" ? "✅ Listo (" + labelScanCount + " artículos)" : "✅ Done (" + labelScanCount + " items added)") : t("cancel")}</button>
               </>}
+            </div>
+          </div>
+        )}
+
+        {showMultiScanner && (
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
+            <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold">📦 {lang === "es" ? "Escanear Múltiples" : "Scan Multiple"}</h2>
+                <button onClick={() => { setShowMultiScanner(false); setMultiItems([]); setMultiScanStatus("camera"); setMultiScanError(""); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
+              </div>
+
+              {multiScanStatus === "camera" && (
+                <>
+                  <p className="text-sm text-gray-600 mb-4">{lang === "es" ? "Toma una foto de varios productos juntos. La IA identificará cada uno." : "Take a photo of several products together. AI will identify each one."}</p>
+                  <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"14px",padding:"1rem"}}>
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="glass-scan-btn" style={{cursor:"pointer"}}>
+                        <span style={{fontSize:"1.75rem"}}>📸</span>
+                        <span style={{fontSize:"0.875rem"}}>{lang === "es" ? "Tomar Foto" : "Take Photo"}</span>
+                        <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleMultiScan(e.target.files[0])} />
+                      </label>
+                      <label className="glass-scan-btn" style={{cursor:"pointer"}}>
+                        <span style={{fontSize:"1.75rem"}}>🖼️</span>
+                        <span style={{fontSize:"0.875rem"}}>{lang === "es" ? "Subir Foto" : "Upload Photo"}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleMultiScan(e.target.files[0])} />
+                      </label>
+                    </div>
+                  </div>
+                  {multiScanError && <p className="text-sm text-red-600 mt-3 text-center">{multiScanError}</p>}
+                </>
+              )}
+
+              {multiScanStatus === "scanning" && (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-3 animate-pulse">📦</div>
+                  <p className="text-sm font-bold text-green-700">{lang === "es" ? "IA identificando productos..." : "AI identifying products..."}</p>
+                </div>
+              )}
+
+              {multiScanStatus === "review" && (
+                <>
+                  <p className="text-sm text-gray-600 mb-3">{lang === "es" ? `Se encontraron ${multiItems.length} productos. Deselecciona los que no quieras.` : `Found ${multiItems.length} items. Uncheck any you don't want.`}</p>
+                  <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
+                    {multiItems.map((item, i) => (
+                      <label key={i} className="flex items-center gap-3 p-2 rounded-lg border hover:bg-green-50 cursor-pointer">
+                        <input type="checkbox" checked={selectedMultiItems.includes(i)} onChange={() => setSelectedMultiItems(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])} className="w-4 h-4" />
+                        <div className="flex-1">
+                          <p className="text-sm font-bold">{item.name}</p>
+                          <div className="flex gap-1 mt-0.5">
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other}`}>{item.category}</span>
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[item.location] || LOCATION_COLORS.Fridge}`}>{LOCATION_ICONS[item.location] || "🧊"} {item.location}</span>
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  <button onClick={handleAddMultiItems} className="w-full rounded-xl py-3 text-sm font-bold btn-green-3d text-white">{lang === "es" ? `✅ Agregar ${selectedMultiItems.length} Productos` : `✅ Add ${selectedMultiItems.length} Items to Tracker`}</button>
+                  <button onClick={() => { setMultiScanStatus("camera"); setMultiItems([]); setMultiScanError(""); }} className="w-full mt-2 rounded-xl border py-2 text-sm font-bold text-gray-600 pill-3d">{lang === "es" ? "Escanear de Nuevo" : "Scan Again"}</button>
+                </>
+              )}
             </div>
           </div>
         )}
