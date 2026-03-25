@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <!-- Full-bleed base — no transparency in PNG corners -->
+  <rect width="180" height="180" fill="#16a34a"/>
+
+  <!-- Green border (solid, no gradient) -->
+  <rect width="180" height="180" rx="34" fill="#22c55e"/>
+
+  <!-- Orange background (solid) -->
+  <rect x="7" y="7" width="166" height="166" rx="28" fill="#f97316"/>
+
+  <!-- Subtle inner highlight at top -->
+  <rect x="7" y="7" width="166" height="55" rx="28" fill="#fb923c"/>
+
+  <!-- ── Bold white T ── -->
+  <!-- Crossbar -->
+  <rect x="18" y="32" width="144" height="38" rx="13" fill="#ffffff"/>
+  <!-- Stem -->
+  <rect x="65" y="57" width="50"  height="95" rx="10" fill="#ffffff"/>
+  <!-- Serif base bar -->
+  <rect x="46" y="136" width="88" height="17" rx="8"  fill="#ffffff"/>
+  <!-- Serif top-left shoulder -->
+  <rect x="18" y="56" width="30"  height="15" rx="7"  fill="#ffffff"/>
+  <!-- Serif top-right shoulder -->
+  <rect x="132" y="56" width="30" height="15" rx="7"  fill="#ffffff"/>
+
+  <!-- Notch center of crossbar top -->
+  <ellipse cx="90" cy="32" rx="12" ry="8" fill="#f97316"/>
+</svg>

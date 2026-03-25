@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TrackFresh.AI — User Flows & Process Guide</title>
+<style>
+  :root {
+    --green-dark:  #064e3b;
+    --green-mid:   #065f46;
+    --green-light: #22c55e;
+    --green-pale:  #f0fdf4;
+    --green-ring:  #86efac;
+    --orange:      #ff6600;
+    --orange-mid:  #f97316;
+    --orange-pale: #fff7ed;
+    --orange-ring: #fed7aa;
+    --blue:        #1d4ed8;
+    --blue-pale:   #dbeafe;
+    --white:       #ffffff;
+    --gray-50:     #f9fafb;
+    --gray-100:    #f3f4f6;
+    --gray-200:    #e5e7eb;
+    --gray-500:    #6b7280;
+    --gray-700:    #374151;
+    --gray-900:    #111827;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(160deg, var(--green-dark) 0%, var(--green-mid) 45%, #047857 100%);
+    min-height: 100vh;
+    color: var(--gray-900);
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+  }
+  .page-header .logo {
+    font-size: 2.6rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+  .page-header .logo .a { color: var(--orange-mid); }
+  .page-header .logo .i { color: var(--green-light); display: inline-block; transform: rotate(-8deg); }
+  .page-header .subtitle {
+    font-size: 1rem;
+    opacity: 0.8;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .page-header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--green-ring);
+  }
+
+  /* ── Section wrapper ── */
+  .section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--gray-100);
+  }
+  .section-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 1.3rem; font-weight: 900; color: var(--green-dark); }
+  .section-desc  { font-size: 0.85rem; color: var(--gray-500); margin-top: 0.2rem; }
+
+  /* ── Flow nodes ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .node {
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    min-width: 130px;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .node-trigger {
+    background: var(--orange);
+    color: white;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    box-shadow: 0 3px 0 #c2410c;
+  }
+
+  .node-step {
+    background: var(--green-pale);
+    border: 2px solid var(--green-ring);
+    color: var(--green-dark);
+  }
+
+  .node-ai {
+    background: linear-gradient(135deg, #1e3a5f, #1d4ed8);
+    color: white;
+    border: 2px solid #3b82f6;
+  }
+
+  .node-result {
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .node-success {
+    background: linear-gradient(135deg, #065f46, #047857);
+    color: white;
+    border: none;
+    font-weight: 800;
+  }
+
+  .node-decision {
+    background: var(--orange-pale);
+    border: 2px solid var(--orange-ring);
+    color: #92400e;
+    border-radius: 12px;
+  }
+
+  .node-info {
+    background: var(--blue-pale);
+    border: 2px solid #93c5fd;
+    color: var(--blue);
+    font-size: 0.75rem;
+  }
+
+  .node-optional {
+    background: #faf5ff;
+    border: 2px dashed #c4b5fd;
+    color: #6d28d9;
+    font-size: 0.78rem;
+  }
+
+  /* ── Arrows ── */
+  .arrow-down {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 1rem;
+    margin: 0.1rem 0;
+  }
+  .arrow-down::before {
+    content: "↓";
+    font-size: 1.1rem;
+    color: var(--gray-500);
+    font-weight: 700;
+  }
+
+  .arrow-right {
+    display: flex;
+    align-items: center;
+    padding: 0 0.4rem;
+    font-size: 1rem;
+    color: var(--gray-500);
+    font-weight: 700;
+    align-self: center;
+  }
+
+  /* ── Branch / parallel ── */
+  .branch {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    width: 100%;
+    margin: 0.3rem 0;
+  }
+
+  .branch-col {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-start;
+  }
+
+  .branch-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--orange);
+    margin-bottom: 0.1rem;
+  }
+
+  .vertical-connector {
+    width: 2px;
+    background: var(--gray-200);
+    margin: 0 1rem;
+    align-self: stretch;
+    min-height: 20px;
+  }
+
+  /* ── Step list (for simpler flows) ── */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .step-num {
+    background: var(--orange);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .step-content .step-title { font-weight: 700; font-size: 0.88rem; color: var(--gray-900); }
+  .step-content .step-detail { font-size: 0.78rem; color: var(--gray-500); margin-top: 0.15rem; line-height: 1.4; }
+
+  /* ── Pill tags ── */
+  .pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin: 0.1rem;
+  }
+  .pill-green  { background: var(--green-pale);  border: 1px solid var(--green-ring);  color: var(--green-dark); }
+  .pill-orange { background: var(--orange-pale); border: 1px solid var(--orange-ring); color: #92400e; }
+  .pill-blue   { background: var(--blue-pale);   border: 1px solid #93c5fd;            color: var(--blue); }
+  .pill-gray   { background: var(--gray-100);    border: 1px solid var(--gray-200);    color: var(--gray-700); }
+  .pill-purple { background: #faf5ff;            border: 1px solid #c4b5fd;            color: #6d28d9; }
+
+  /* ── Note callout ── */
+  .note {
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+  }
+  .note-green  { background: var(--green-pale);  border-left: 4px solid var(--green-light); color: var(--green-dark); }
+  .note-orange { background: var(--orange-pale); border-left: 4px solid var(--orange);       color: #92400e; }
+  .note-blue   { background: var(--blue-pale);   border-left: 4px solid var(--blue);         color: var(--blue); }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 2px dashed var(--gray-200); margin: 1.5rem 0; }
+
+  /* ── Sub-heading ── */
+  .sub-heading {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    margin: 1.2rem 0 0.6rem;
+  }
+
+  /* ── Table of contents ── */
+  .toc {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+  .toc h2 { font-size: 1rem; font-weight: 800; color: var(--green-dark); margin-bottom: 1rem; }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    color: var(--gray-700);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .toc-item:hover { background: var(--green-pale); border-color: var(--green-ring); color: var(--green-dark); }
+
+  /* ── Outcome box ── */
+  .outcome {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #065f46, #047857);
+    color: white;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  .outcome-icon { font-size: 1.3rem; }
+
+  /* ── Two col layout ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .col-card {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 14px;
+    padding: 1rem;
+  }
+  .col-card-title {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--green-dark);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.78rem;
+    margin-top: 3rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ HEADER -->
+<div class="page-header">
+  <div class="logo">🥦 TrackFresh.<span class="a">A</span><span class="i">i</span></div>
+  <div class="subtitle">User Flows &amp; Process Guide</div>
+  <div class="badge">All major features · Button-by-button walkthrough</div>
+</div>
+
+<!-- ══════════════════════════════════════════════ TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>📋 Contents</h2>
+  <div class="toc-grid">
+    <a href="#receipt"   class="toc-item">📷 Receipt Scanner</a>
+    <a href="#smart"     class="toc-item">📸 Smart Scan</a>
+    <a href="#multi"     class="toc-item">📦 Scan Multiple</a>
+    <a href="#quickadd"  class="toc-item">✏️ Quick Add</a>
+    <a href="#tracker"   class="toc-item">🗂️ Tracker Actions</a>
+    <a href="#shopping"  class="toc-item">🛒 Shopping List</a>
+    <a href="#recipes"   class="toc-item">🍳 Recipe Suggestions</a>
+    <a href="#meals"     class="toc-item">📅 Meal Planner</a>
+    <a href="#dietary"   class="toc-item">🥗 Dietary Needs</a>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 1. RECEIPT SCANNER -->
+<div class="section" id="receipt">
+  <div class="section-header">
+    <div class="section-icon">📷</div>
+    <div>
+      <div class="section-title">Receipt Scanner</div>
+      <div class="section-desc">Scan a grocery receipt to bulk-add food items with AI-estimated shelf life</div>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Tap "📷 Scan Receipts" button</div>
+        <div class="step-detail">Located at the top of the Tracker tab — full-width button marked ⭐ Start here for best results.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Modal opens → Take Photo or Upload</div>
+        <div class="step-detail">Point camera at the paper receipt or upload an image from your photo library.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">AI scans receipt <span class="pill pill-blue">Claude claude-sonnet-4-6</span></div>
+        <div class="step-detail">Extracts only food &amp; beverage items. Skips non-food (toiletries, cleaning supplies, etc.). For each item determines: name, category, storage location, days sealed, days after opening, storage tips.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Review list of found items</div>
+        <div class="step-detail">Each item shown with: name, category pill, storage location, tip badges. Items are pre-selected.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Tap "Add to Tracker" — all items saved</div>
+        <div class="step-detail">All scanned items are added to Tracked Items with today as open date. Storage tips persist for each item.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-orange" style="margin-top:1rem;">
+    💡 <strong>Best results:</strong> Lay receipt flat, good lighting, keep the full receipt in frame. Works with most supermarket / warehouse club receipts.
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> Items appear in Tracker with expiry estimates and storage tip badges</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 2. SMART SCAN -->
+<div class="section" id="smart">
+  <div class="section-header">
+    <div class="section-icon">📸</div>
+    <div>
+      <div class="section-title">Smart Scan</div>
+      <div class="section-desc">Scan a single product — AI reads the barcode and/or label in one photo</div>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Tap "📸 Smart Scan" button</div>
+        <div class="step-detail">Located in the 3-button row on the Tracker tab. Requests camera permission if not yet granted.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Choose scan mode</div>
+        <div class="step-detail">
+          <span class="pill pill-green">1️⃣ Single Scan</span> — add one item, modal closes after.<br>
+          <span class="pill pill-orange">📦 Multi Scan</span> — camera resets after each add; keep scanning until done.
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Point camera at product → Tap "📸 Take Photo"</div>
+        <div class="step-detail">Green guide box shows the ideal framing area. Works for barcodes, front-of-pack labels, or both visible at once.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">AI analyzes photo <span class="pill pill-blue">/api/scan-smart</span></div>
+        <div class="step-detail">
+          Claude detects barcode number if visible →
+          <span class="pill pill-blue">Open Food Facts lookup</span> for verified name/category.<br>
+          Falls back to AI label reading if no barcode or OFO has no match.<br>
+          Also reads expiration date, storage tips, days after opening.
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Review result card</div>
+        <div class="step-detail">Shows: product name, source badge (📊 Barcode lookup / 🤖 AI label scan), category, storage tips as colored pills.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Set storage location</div>
+        <div class="step-detail">
+          <span class="pill pill-green">Fridge</span>
+          <span class="pill pill-blue">Freezer</span>
+          <span class="pill pill-orange">Pantry</span> — pre-selected by AI, user can override.
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-title">Enter expiration date (if not auto-detected)</div>
+        <div class="step-detail">
+          <span class="pill pill-blue">🎤 Speak Date</span> — say e.g. "June 15 2026", fills automatically.<br>
+          <span class="pill pill-gray">📅 Enter Date</span> — opens native date picker.<br>
+          <span class="pill pill-orange">📷 Scan Expiry Label</span> — take a second photo of just the date stamp.
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <div class="step-title">Tap "Add to Tracker" (single) or "Add &amp; Next" (multi)</div>
+        <div class="step-detail">Single mode: modal closes. Multi mode: camera resets immediately for the next item. Tap "✅ Done (N items)" to finish.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> Item saved to Tracker with full details, tips, and expiry countdown</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 3. SCAN MULTIPLE -->
+<div class="section" id="multi">
+  <div class="section-header">
+    <div class="section-icon">📦</div>
+    <div>
+      <div class="section-title">Scan Multiple Items</div>
+      <div class="section-desc">One photo → AI identifies every product in frame at once</div>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Tap "📦 Scan Multiple" button</div>
+        <div class="step-detail">Middle button in the 3-button row on Tracker tab.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Arrange products &amp; take photo</div>
+        <div class="step-detail">Lay items on a counter, or line up on the shelf. Fit all products inside the wide green guide frame. Tap "📸 Take Photo".</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">AI identifies all products <span class="pill pill-blue">/api/scan-multi</span></div>
+        <div class="step-detail">Claude identifies every distinct food item it can see. For each item with a visible barcode: Open Food Facts lookup for enriched name &amp; category. Returns array of all found items simultaneously.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Review scrollable list — "N items found"</div>
+        <div class="step-detail">
+          Each item card shows:
+          <ul style="margin-top:0.3rem;margin-left:1.2rem;font-size:0.78rem;color:#6b7280;">
+            <li>Checkbox (checked by default — uncheck to skip)</li>
+            <li>Editable product name field</li>
+            <li>Source badge: 📊 Barcode or 🤖 AI scan</li>
+            <li>Category pill</li>
+            <li>Storage location dropdown (Fridge / Freezer / Pantry)</li>
+            <li>Use By date picker</li>
+            <li>Storage tip</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Tap "✅ Add N items to Tracker"</div>
+        <div class="step-detail">Only checked items are added. Or tap "📸 Scan Again" to return to camera for another batch.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-green">
+    💡 <strong>Tip for barcodes:</strong> Face all barcodes toward camera. 3–6 items per photo is ideal — too many makes barcodes too small to read reliably.
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> All selected items added to Tracker in one tap</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 4. QUICK ADD -->
+<div class="section" id="quickadd">
+  <div class="section-header">
+    <div class="section-icon">✏️</div>
+    <div>
+      <div class="section-title">Quick Add</div>
+      <div class="section-desc">Manually enter a food item without scanning</div>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Tap "✏️ Quick Add" button</div>
+        <div class="step-detail">Right button in the 3-button row on Tracker tab. Opens inline form.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Type item name + optional voice 🎤</div>
+        <div class="step-detail">Text field for product name. 🎤 mic button dictates the name by voice.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Set quantity, category, location</div>
+        <div class="step-detail">Quantity text field · Category dropdown · Location dropdown (Fridge / Freezer / Pantry / Counter).</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Enter expiration date + optional voice 🎤</div>
+        <div class="step-detail">Date picker field. 🎤 voice button listens for spoken date like "March 20 2026".</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Tap "Add to Tracker"</div>
+        <div class="step-detail">Item saved. Form clears. Cancel button discards without saving.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> Item added to Tracker with manual details</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 5. TRACKER ITEM ACTIONS -->
+<div class="section" id="tracker">
+  <div class="section-header">
+    <div class="section-icon">🗂️</div>
+    <div>
+      <div class="section-title">Tracker — Item Actions</div>
+      <div class="section-desc">What each button on a tracked item does</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <div class="col-card">
+      <div class="col-card-title">✏️ Edit</div>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num" style="background:#6b7280">1</div>
+          <div class="step-content">
+            <div class="step-title">Opens Edit Item modal</div>
+            <div class="step-detail">Edit name, use-by date, quantity, location, category.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:#6b7280">2</div>
+          <div class="step-content">
+            <div class="step-title">🎤 Speak Date button on date field</div>
+            <div class="step-detail">Say the expiration date aloud (e.g. "June 15 2026") — fills automatically. Button turns 🔴 while listening.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:#6b7280">3</div>
+          <div class="step-content">
+            <div class="step-title">Save → updates item in Tracker</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-card">
+      <div class="col-card-title">✅ Used It!</div>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num" style="background:#16a34a">1</div>
+          <div class="step-content">
+            <div class="step-title">Removes item from Tracker</div>
+            <div class="step-detail">Item is marked as used and removed from the active tracked list.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:#16a34a">2</div>
+          <div class="step-content">
+            <div class="step-title">Auto-adds to Shopping List</div>
+            <div class="step-detail">Item appears in "🔄 Recently Used — Restock" section of Shopping List with a 🔄 badge, reminding you to restock it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-card">
+      <div class="col-card-title">🗑️ Delete</div>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num" style="background:#dc2626">1</div>
+          <div class="step-content">
+            <div class="step-title">Removes item permanently</div>
+            <div class="step-detail">No restock reminder added to shopping. Item is deleted without confirmation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-card">
+      <div class="col-card-title">🔍 Filter &amp; Sort</div>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num" style="background:#1d4ed8">1</div>
+          <div class="step-content">
+            <div class="step-title">Filter by location</div>
+            <div class="step-detail">Tap Fridge / Freezer / Pantry pills to show only items in that location.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:#1d4ed8">2</div>
+          <div class="step-content">
+            <div class="step-title">Sort by expiry urgency</div>
+            <div class="step-detail">Items auto-sort: 🔴 Expiring ≤3 days · 🟡 Soon ≤7 days · ✅ Fresh.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note note-orange" style="margin-top:1rem;">
+    ⚠️ <strong>Expiry alerts:</strong> A red bell notification appears automatically when any item has ≤2 days remaining. Tap "Find Recipes" in the alert to go straight to recipe suggestions using expiring items.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 6. SHOPPING LIST -->
+<div class="section" id="shopping">
+  <div class="section-header">
+    <div class="section-icon">🛒</div>
+    <div>
+      <div class="section-title">Shopping List</div>
+      <div class="section-desc">Build your list manually, from expiring items, or from used items needing restock</div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Sections in Shopping List</div>
+
+  <div class="two-col">
+    <div class="col-card" style="border-color:#fed7aa">
+      <div class="col-card-title" style="color:#92400e">🔥 Expiring Soon</div>
+      <div style="font-size:0.8rem;color:#6b7280;line-height:1.5;">
+        Auto-populated by the Tracker. Shows items expiring within <strong>7 days</strong>. Tap any item to add it to your main shopping list for repurchase.
+      </div>
+    </div>
+    <div class="col-card" style="border-color:#a7f3d0">
+      <div class="col-card-title" style="color:#065f46">🔄 Recently Used — Restock</div>
+      <div style="font-size:0.8rem;color:#6b7280;line-height:1.5;">
+        Auto-populated when you tap <strong>"✅ Used It!"</strong> on a Tracker item. Shows items you recently finished so you remember to buy more.
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Main Shopping List — Buttons</div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">➕</div>
+      <div class="step-content">
+        <div class="step-title">Add Item button</div>
+        <div class="step-detail">Type item name in the input field at the top and tap ➕ to add to main list. Full-width input row.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">✓</div>
+      <div class="step-content">
+        <div class="step-title">Check off item</div>
+        <div class="step-detail">Tap the checkbox to mark as bought. Item gets a strikethrough. Stays on list until cleared.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">🗑️</div>
+      <div class="step-content">
+        <div class="step-title">Remove item</div>
+        <div class="step-detail">Tap trash icon to remove individual item from list.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">🗑️</div>
+      <div class="step-content">
+        <div class="step-title">Clear checked</div>
+        <div class="step-detail">Removes all checked/bought items from the list in one tap.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">💾</div> All shopping list data persists across sessions via localStorage</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 7. RECIPES -->
+<div class="section" id="recipes">
+  <div class="section-header">
+    <div class="section-icon">🍳</div>
+    <div>
+      <div class="section-title">Recipe Suggestions</div>
+      <div class="section-desc">AI generates 5 recipes prioritizing your expiring items</div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Mode Selection</div>
+
+  <div class="two-col">
+    <div class="col-card" style="border-color:#a7f3d0">
+      <div class="col-card-title" style="color:#065f46">✅ Use What I Have</div>
+      <div style="font-size:0.8rem;color:#6b7280;line-height:1.5;">
+        <strong>Strict mode.</strong> Only suggests recipes using tracked items already in your kitchen. Basic pantry staples (salt, oil, water) are allowed. No extra shopping needed.
+      </div>
+    </div>
+    <div class="col-card" style="border-color:#fed7aa">
+      <div class="col-card-title" style="color:#92400e">🛒 Suggest Additional Ingredients</div>
+      <div style="font-size:0.8rem;color:#6b7280;line-height:1.5;">
+        <strong>Flexible mode.</strong> Allows up to 1–2 extra ingredients to complete a dish. Extra items shown with real brand names (e.g. "need: Heinz Ketchup"). Your existing items marked ✓.
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Flow</div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Navigate to Recipes tab</div>
+        <div class="step-detail">Tap 🍳 in the bottom navigation bar.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Select mode</div>
+        <div class="step-detail">Toggle between "Use What I Have" and "Suggest Additional Ingredients" using the mode buttons above the generate button.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Tap "🤖 Get AI Recipe Ideas"</div>
+        <div class="step-detail">Sends your tracked items list + selected mode to Claude AI. Items expiring soonest are prioritized.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">5 recipe cards generated</div>
+        <div class="step-detail">Each card shows: name, description, ingredients (with ✓ for items you have), step-by-step instructions, estimated cook time, difficulty, and which expiring items it uses.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Save or use a recipe</div>
+        <div class="step-detail">Tap 💾 Save to bookmark the recipe. Tap "Add missing ingredients to shopping list" to send needed items directly to Shopping List.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-blue">
+    📌 <strong>Saved recipes</strong> persist across sessions. Access them anytime from the Saved Recipes section at the top of the Recipes tab.
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> Recipes tailored to what's expiring, with optional shopping list integration</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 8. MEAL PLANNER -->
+<div class="section" id="meals">
+  <div class="section-header">
+    <div class="section-icon">📅</div>
+    <div>
+      <div class="section-title">Meal Planner</div>
+      <div class="section-desc">Plan meals for the week using tracked items — AI can auto-suggest</div>
+    </div>
+  </div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Navigate to Meals tab</div>
+        <div class="step-detail">Tap 📅 in the bottom navigation bar.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Tap "🤖 AI Suggest Meals" (optional)</div>
+        <div class="step-detail">AI generates a week of meal suggestions based on your tracked items and any dietary restrictions set in Dietary Needs. Prioritizes items expiring soon.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Manually add meals per day slot</div>
+        <div class="step-detail">Each day has Breakfast / Lunch / Dinner / Snack slots. Type or search a meal name and tap ➕ to add to that slot.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Tap "🛒 Add ingredients to Shopping List"</div>
+        <div class="step-detail">For any planned meal, tap this button to automatically send the meal's ingredients to your Shopping List — only adds items you don't already have tracked.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Remove / edit meals</div>
+        <div class="step-detail">Tap ✕ on any meal slot to remove it. Tap a meal name to edit it inline.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-green">
+    💡 Meal plan data persists across sessions. The plan is tied to the current week view.
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">✅</div> Week planned · Missing ingredients auto-added to Shopping List</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ 9. DIETARY NEEDS -->
+<div class="section" id="dietary">
+  <div class="section-header">
+    <div class="section-icon">🥗</div>
+    <div>
+      <div class="section-title">Dietary Needs</div>
+      <div class="section-desc">Track dietary restrictions and preferences for every household member</div>
+    </div>
+  </div>
+
+  <div class="sub-heading">Household Dietary Tags</div>
+
+  <div style="margin-bottom:1rem;line-height:1.8;font-size:0.83rem;color:#374151;">
+    Toggle on/off for the whole household:
+    <br>
+    <span class="pill pill-orange">🌾 Gluten Free</span>
+    <span class="pill pill-green">🥛 Dairy Free</span>
+    <span class="pill pill-blue">🥦 Vegetarian</span>
+    <span class="pill pill-green">🌱 Vegan</span>
+    <span class="pill pill-orange">🥜 Nut Allergy</span>
+    <span class="pill pill-blue">🐟 No Seafood</span>
+    <span class="pill pill-purple">🍖 Halal</span>
+    <span class="pill pill-gray">✡️ Kosher</span>
+    <span class="pill pill-orange">🌶️ Low Sodium</span>
+    <span class="pill pill-blue">🩸 Diabetic Friendly</span>
+    <span class="pill pill-green">💪 High Protein</span>
+    <span class="pill pill-gray">🍽️ Low Calorie</span>
+  </div>
+
+  <div class="sub-heading">Family Member Profiles</div>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Add family member</div>
+        <div class="step-detail">Type their name in the input field → tap ➕ Add. Member appears as an expandable card.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Expand member card → toggle their restrictions</div>
+        <div class="step-detail">Each member has individual dietary restriction tags (same set as household tags). Active restrictions shown as colored pills on the card summary.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Edit member name</div>
+        <div class="step-detail">Tap ✏️ on member card to rename inline. Tap ✓ Save or ✕ Cancel.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Remove member</div>
+        <div class="step-detail">Tap 🗑️ to remove the member and their restrictions from the profile.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note note-blue">
+    🤖 <strong>AI integration:</strong> Dietary restrictions from both household settings and family member profiles are passed to the Meal Planner AI when generating meal suggestions, so recommendations respect all active restrictions automatically.
+  </div>
+
+  <div class="outcome"><div class="outcome-icon">💾</div> All dietary data persists across sessions via localStorage</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ FOOTER -->
+<div class="page-footer">
+  TrackFresh.AI &nbsp;·&nbsp; trackfresh.ai &nbsp;·&nbsp; User Flows Guide
+</div>
+
+</body>
+</html>
