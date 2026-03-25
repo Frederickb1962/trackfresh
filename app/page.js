@@ -1434,14 +1434,14 @@ function SmartScanner({ onResult, onError, captureRef }) {
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Point at barcode..."}
+            {status === "scanning" && "Point at a receipt, label, or barcode"}
             {status === "barcode_found" && "✅ Barcode found! Looking up product..."}
-            {status === "reading_label" && "📖 AI reading label..."}
+            {status === "reading_label" && "📖 AI reading item..."}
           </p>
-          {showPhotoBtn && status === "scanning" && (
+          {status === "scanning" && (
             <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
-              style={{position:"absolute",bottom:"40px",left:"50%",transform:"translateX(-50%)",background:"rgba(251,146,60,0.95)",color:"white",border:"none",borderRadius:"20px",padding:"0.5rem 1.25rem",fontWeight:"bold",fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap"}}>
-              📷 Can't read barcode? Photograph it
+              style={{position:"absolute",bottom:"44px",left:"50%",transform:"translateX(-50%)",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",border:"none",borderRadius:"24px",padding:"0.75rem 1.5rem",fontWeight:800,fontSize:"0.9rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 0 #8C5A10,0 6px 16px rgba(0,0,0,0.3)"}}>
+              📸 Capture
             </button>
           )}
         </div>
@@ -3331,13 +3331,14 @@ export default function TrackFreshDashboard() {
                       reader.onload = async () => {
                         const base64 = reader.result.split(",")[1];
                         try {
-                          const res = await fetch("/api/scan-label", {
+                          const res = await fetch("/api/scan-smart", {
                             method: "POST", headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
                           });
                           const data = await res.json();
-                          if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
-                          else { handleSmartError(data.error || "Could not read label. Try again."); }
+                          if (data.items && data.items.length > 0) { handleSmartResultMulti({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: "label" }); }
+                          else if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
+                          else { handleSmartError(data.error || "Could not read. Try again."); }
                         } catch (err) { handleSmartError("Scan failed: " + err.message); }
                       };
                       reader.readAsDataURL(blob);
@@ -3349,17 +3350,36 @@ export default function TrackFreshDashboard() {
                       const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
                       const base64 = dataUrl.split(",")[1];
                       try {
-                        const res = await fetch("/api/scan-label", {
+                        const res = await fetch("/api/scan-smart", {
                           method: "POST", headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
                         });
                         const data = await res.json();
-                        if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
-                        else { handleSmartError(data.error || "Could not read label. Try again."); }
+                        if (data.items && data.items.length > 0) { handleSmartResultMulti({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: "label" }); }
+                        else if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
+                        else { handleSmartError(data.error || "Could not read. Try again."); }
                       } catch (err) { handleSmartError("Scan failed: " + err.message); }
                     }
                   } catch (err) { handleSmartError("Capture failed: " + err.message); }
                 }} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">📸 Take Photo</button>
+                <label className="w-full rounded-xl py-3 text-sm font-bold mt-2 btn-green-3d text-center block cursor-pointer" style={{background:"rgba(255,255,255,0.12)",border:"1.5px solid rgba(255,255,255,0.25)",color:"#fff"}}>🖼️ {lang === "es" ? "Subir Foto de Galería" : "Upload Photo from Gallery"}
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = async (ev) => {
+                      const base64 = ev.target.result.split(",")[1];
+                      const mType = file.type || "image/jpeg";
+                      try {
+                        const res = await fetch("/api/scan-smart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mType }) });
+                        const data = await res.json();
+                        if (data.items && data.items.length > 0) { handleSmartResultMulti({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: "label" }); }
+                        else if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
+                        else { handleSmartError(data.error || "Could not read. Try again."); }
+                      } catch (err) { handleSmartError("Scan failed: " + err.message); }
+                    };
+                    reader.readAsDataURL(file);
+                  }} />
+                </label>
               </div>)}
               {showSmartMultiReview && smartMultiItems.length > 0 && (
                 <div className="mt-3">
