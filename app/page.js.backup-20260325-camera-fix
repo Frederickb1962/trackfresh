@@ -3078,7 +3078,7 @@ export default function TrackFreshDashboard() {
 
 
         {showReceiptScanner && (
-          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-2 text-lg font-bold">{t("scanReceiptTitle")}</h2>
               <p className="mb-4 text-sm text-gray-600">{t("scanReceiptDesc")}</p>
@@ -3223,7 +3223,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showSmartScanner && (
-          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"1rem",paddingTop:"2rem",overflowY:"auto"}}>
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
             <div style={{background:"white",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.75rem"}}>
                 <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
@@ -3437,7 +3437,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showBarcodeScanner && (
-          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-bold">{t("scanBarcodeTitle")}</h2>
@@ -3471,7 +3471,7 @@ export default function TrackFreshDashboard() {
               {barcodeError && (
                 <div className="mt-2 rounded-lg bg-red-50 p-3">
                   <p className="text-sm text-red-600">{barcodeError}</p>
-<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setScanMode(null); setTimeout(() => { window.scrollTo(0,0); setShowBarcodeScanner(true); }, 1000); }} className="mt-2 text-xs text-green-700 underline">{t("tryAgain")}</button>
+<button onClick={() => { setBarcodeError(""); setBarcodeDetected(""); setBarcodeItem(null); setBarcodeScanning(false); setShowBarcodeScanner(false); setScanMode(null); setTimeout(() => setShowBarcodeScanner(true), 1000); }} className="mt-2 text-xs text-green-700 underline">{t("tryAgain")}</button>
                 </div>
               )}
               {barcodeItem && (
@@ -3579,7 +3579,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showLabelScanner && (
-          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-bold">{t("scanLabelTitle")}</h2>
@@ -3831,7 +3831,7 @@ export default function TrackFreshDashboard() {
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.6rem",borderRadius:"999px",padding:"0.15rem 0.65rem",boxShadow:"0 2px 6px rgba(232,166,60,0.35)"}}>⭐ {lang === "es" ? "Empieza aquí" : "Start here for best results"}</span>
                   </div>
                   <button
-                    onClick={() => { window.scrollTo(0,0); setShowReceiptScanner(true); }}
+                    onClick={() => { setShowReceiptScanner(true); }}
                     style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.6rem",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.95rem",padding:"1rem 1.25rem",borderRadius:"14px",border:"none",cursor:"pointer",boxShadow:"0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)",transition:"all 0.18s ease",marginBottom:"1rem",WebkitTapHighlightColor:"transparent"}}
                     onMouseOver={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 7px 0 #8C5A10,0 12px 26px rgba(0,0,0,0.32),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
                     onMouseOut={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
@@ -3846,7 +3846,7 @@ export default function TrackFreshDashboard() {
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
                     {[
-                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan a single item's barcode or label", secondary:"Smart Scan", onClick: ()=>{ window.scrollTo(0,0);setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
+                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan a single item's barcode or label", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
                       { icon:"📦", primary: lang==="es"?"Escanea varios códigos de barras o etiquetas a la vez":"Scan several barcodes or labels at once", secondary:"Scan Multiple", onClick: ()=>{ setShowMultiScanner(true);setMultiScanStatus("camera");setMultiItems([]);setMultiScanError(""); }},
                     ].map(({icon,primary,secondary,onClick})=>(
                       <button key={secondary} onClick={onClick} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
@@ -3913,12 +3913,12 @@ export default function TrackFreshDashboard() {
                   <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
                 </div>
                 <div>
-                  <button onClick={() => { window.scrollTo(0,0); setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</button>
+                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</button>
                   <div style={{textAlign:"center",marginBottom:"0.75rem"}}>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => { window.scrollTo(0,0); setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</button>
+                    <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</button>
                     <button onClick={() => { setShowMultiScanner(true); setMultiScanStatus("camera"); setMultiItems([]); setMultiScanError(""); }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📦</span>Scan Multiple</button>
                   </div>
                   <div style={{display:"flex",gap:"0.5rem",marginTop:"0.5rem"}}>
