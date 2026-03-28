@@ -1325,15 +1325,16 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
-function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
+function SmartScanner({ onResult, onError, captureRef }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("starting");
   const [scanError, setScanError] = useState("");
   const [showPhotoBtn, setShowPhotoBtn] = useState(false);
   const detectedRef = useRef(false);
+  const readerRef = useRef(null);
+  const timerRef = useRef(null);
   const photoTimerRef = useRef(null);
-  const autoScanTimerRef = useRef(null);
 
   useEffect(() => {
     detectedRef.current = false;
@@ -1343,6 +1344,7 @@ function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
       if (detectedRef.current) return;
       detectedRef.current = true;
       setStatus("reading_label");
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas) { onError("Camera not ready"); return; }
@@ -1352,20 +1354,13 @@ function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
       const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
       const base64 = dataUrl.split(",")[1];
       try {
-        const res = await fetch("/api/scan-smart", {
+        const res = await fetch("/api/scan-label", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
         });
         const data = await res.json();
-        const items = data.items || [];
-        if (items.length === 0) {
-          onError(data.error || "Could not read label. Try again.");
-        } else if (items.length === 1 && (!mode || mode === "single")) {
-          onResult({ ...items[0] });
-        } else {
-          if (onMultiResult) onMultiResult(items.slice(0, 6));
-          else items.slice(0, 6).forEach(item => onResult({ ...item }));
-        }
+        if (data.item) { onResult({ ...data.item, source: "label" }); }
+        else { onError(data.error || "Could not read label. Try again."); }
       } catch (e) { onError("Scan failed: " + e.message); }
     }
 
@@ -1380,16 +1375,47 @@ function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
           await videoRef.current.play();
         }
         setStatus("scanning");
-        // Show button after 1s, auto-trigger AI scan after 3s
-        photoTimerRef.current = setTimeout(() => setShowPhotoBtn(true), 1000);
-        autoScanTimerRef.current = setTimeout(() => { if (!detectedRef.current) captureAndScan(); }, 3000);
+        photoTimerRef.current = setTimeout(() => setShowPhotoBtn(true), 8000);
+        try {
+          const { BrowserMultiFormatReader } = await import("@zxing/library");
+          readerRef.current = new BrowserMultiFormatReader();
+          readerRef.current.decodeFromStream(stream, videoRef.current, async (result) => {
+            if (result && !detectedRef.current) {
+              detectedRef.current = true;
+              if (timerRef.current) clearTimeout(timerRef.current);
+              if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+              setStatus("barcode_found");
+              if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
+              setShowPhotoBtn(false);
+              if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance("Barcode found. Searching, just one moment.");
+                u.rate = 1.1;
+                window.speechSynthesis.speak(u);
+              }
+              try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 8000);
+                const res = await fetch("/api/scan-barcode", {
+                  method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ barcode: result.getText() }),
+                  signal: controller.signal
+                });
+                clearTimeout(timer);
+                const data = await res.json();
+                if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
+                else { detectedRef.current = false; captureAndScan(); }
+              } catch(e) { detectedRef.current = false; captureAndScan(); }
+            }
+          });
+        } catch(e) { /* barcode lib failed, wait for timer */ }
         if (captureRef) captureRef.current = () => { if (!detectedRef.current) captureAndScan(); };
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
     start();
     return () => {
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      if (timerRef.current) clearTimeout(timerRef.current);
       if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
-      if (autoScanTimerRef.current) clearTimeout(autoScanTimerRef.current);
       if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
     };
   }, []);
@@ -1403,16 +1429,18 @@ function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"220px",height:"140px",opacity:0.7}} />}
             {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"220px",height:"140px",opacity:0.8}} />}
+            {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"220px",height:"140px",background:"rgba(34,197,94,0.15)"}} />}
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
-            {status === "scanning" && "Point camera at food item..."}
+            {status === "scanning" && "Point at barcode..."}
+            {status === "barcode_found" && "✅ Barcode found! Looking up product..."}
             {status === "reading_label" && "📖 AI reading label..."}
           </p>
           {showPhotoBtn && status === "scanning" && (
             <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
               style={{position:"absolute",bottom:"40px",left:"50%",transform:"translateX(-50%)",background:"rgba(251,146,60,0.95)",color:"white",border:"none",borderRadius:"20px",padding:"0.5rem 1.25rem",fontWeight:"bold",fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap"}}>
-              📷 Take Photo
+              📷 Can't read barcode? Photograph it
             </button>
           )}
         </div>
@@ -2073,9 +2101,6 @@ export default function TrackFreshDashboard() {
   const [uniScanLastItem, setUniScanLastItem] = useState("");
   const [voiceFlowStep, setVoiceFlowStep] = useState(null);
   const [smartScanKey, setSmartScanKey] = useState(0);
-  const [smartMultiItems, setSmartMultiItems] = useState([]);
-  const [selectedSmartItems, setSelectedSmartItems] = useState([]);
-  const [smartScanning, setSmartScanning] = useState(false);
   const [voiceFlowPaused, setVoiceFlowPaused] = useState(false);
   const [showVoiceEditForm, setShowVoiceEditForm] = useState(false);
   const uniScanTimer = React.useRef(null);
@@ -2271,50 +2296,8 @@ export default function TrackFreshDashboard() {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   };
 
-  const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); setSmartScanning(false); };
-
-  const takeSmartPhoto = async () => {
-    if (smartScanning) return;
-    setSmartScanning(true);
-    try {
-      let base64 = null;
-      const video = document.querySelector("#smartScannerVideo");
-      if (!video || !video.srcObject) { handleSmartError("Camera not ready. Try again."); return; }
-      try {
-        const track = video.srcObject.getVideoTracks()[0];
-        if (typeof ImageCapture !== "undefined") {
-          const ic = new ImageCapture(track);
-          const blob = await ic.takePhoto();
-          base64 = await new Promise(resolve => { const r = new FileReader(); r.onload = () => resolve(r.result.split(",")[1]); r.readAsDataURL(blob); });
-        } else {
-          const canvas = document.createElement("canvas");
-          canvas.width = video.videoWidth || 1280; canvas.height = video.videoHeight || 720;
-          canvas.getContext("2d").drawImage(video, 0, 0);
-          base64 = canvas.toDataURL("image/jpeg", 0.95).split(",")[1];
-        }
-      } catch(e) { handleSmartError("Capture failed: " + e.message); return; }
-      const res = await fetch("/api/scan-smart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" }) });
-      const data = await res.json();
-      const items = data.items || [];
-      if (items.length === 0) {
-        handleSmartError(data.error || "No items detected. Try again.");
-      } else if (items.length === 1 && scanMode === "single") {
-        handleSmartResultMulti({ ...items[0] });
-      } else {
-        setSmartMultiItems(items.slice(0, 6));
-        setSelectedSmartItems(items.slice(0, 6).map((_, i) => i));
-        setSmartError("");
-      }
-    } catch(err) { handleSmartError("Scan failed: " + err.message); }
-    setSmartScanning(false);
-  };
-
-  const handleAddSmartMultiItems = () => {
-    const toAdd = smartMultiItems.filter((_, i) => selectedSmartItems.includes(i)).map(item => ({ id: crypto.randomUUID(), name: item.name || "Unknown Item", useByDate: item.date || "", openDate: new Date().toISOString().split("T")[0], category: item.category || "Other", quantity: "1", location: item.location || "Fridge", daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || "" }));
-    if (toAdd.length > 0) setTrackedItems(prev => [...toAdd, ...prev]);
-    setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
-  };
-  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); setSmartMultiItems([]); setSelectedSmartItems([]); setSmartScanning(false); };
+  const handleSmartError = (msg) => { setSmartError(msg); setSmartResult(null); };
+  const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
@@ -2844,32 +2827,15 @@ export default function TrackFreshDashboard() {
 
   const parseSpokenDate = (transcript) => {
     const months = { january:1, february:2, march:3, april:4, may:5, june:6, july:7, august:8, september:9, october:10, november:11, december:12, jan:1, feb:2, mar:3, apr:4, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
-    // Normalize spoken year words → digits before matching
-    let t = transcript.toLowerCase().trim()
-      .replace(/\btwenty[\s-]?twenty[\s-]?six\b/g,   "2026")
-      .replace(/\btwenty[\s-]?twenty[\s-]?seven\b/g, "2027")
-      .replace(/\btwenty[\s-]?twenty[\s-]?eight\b/g, "2028")
-      .replace(/\btwenty[\s-]?twenty[\s-]?nine\b/g,  "2029")
-      .replace(/\btwenty[\s-]?twenty[\s-]?five\b/g,  "2025")
-      .replace(/\btwenty[\s-]?twenty\b/g,             "2020")
-      .replace(/\btwenty[\s-]six\b/g,   "2026")
-      .replace(/\btwenty[\s-]seven\b/g, "2027")
-      .replace(/\btwenty[\s-]eight\b/g, "2028")
-      .replace(/\btwenty[\s-]nine\b/g,  "2029")
-      .replace(/\btwenty[\s-]five\b/g,  "2025")
-      .replace(/\btwenty[\s-]four\b/g,  "2024");
-    // Pattern 1: "month day [year]" — year is optional
-    const match = t.match(/([a-z]+)\s+(\d{1,2})\s*,?\s*(\d{4})?/);
+    const t = transcript.toLowerCase().trim();
+    const match = t.match(/([a-z]+)\s+(\d{1,2})\s*,?\s*(\d{4})/);
     if (match) {
       const month = months[match[1]];
       if (month) {
-        const day = parseInt(match[2]);
-        let year = match[3] ? parseInt(match[3]) : null;
-        if (!year) { const now = new Date(); year = now.getFullYear(); if (new Date(year, month-1, day) < now) year++; }
-        return new Date(year, month-1, day).toISOString().split("T")[0];
+        const d = new Date(parseInt(match[3]), month - 1, parseInt(match[2]));
+        return d.toISOString().split("T")[0];
       }
     }
-    // Pattern 2: MM/DD/YYYY or MM-DD-YYYY
     const match2 = t.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
     if (match2) {
       const yr = match2[3].length === 2 ? "20" + match2[3] : match2[3];
@@ -2948,178 +2914,6 @@ export default function TrackFreshDashboard() {
     recognition.onerror = () => { setQuickVoiceError("Could not hear you. Please try again."); setQuickVoiceListening(""); };
     recognition.onend = () => setQuickVoiceListening("");
     recognition.start();
-  };
-
-  const handleSpeakToAdd = () => {
-    if (!("speechSynthesis" in window)) return;
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-
-    // Local flow state — avoids stale closure on React state
-    const f = { name: "", category: "Other", location: "Fridge", date: "", cancelled: false };
-    let activeRecog = null;
-
-    const stopAll = (closeModal = true) => {
-      f.cancelled = true;
-      if (activeRecog) { try { activeRecog.abort(); } catch(e) {} activeRecog = null; }
-      window.speechSynthesis.cancel();
-      if (closeModal) setShowQuickAdd(false);
-    };
-
-    const speak = (text, onDone) => {
-      if (f.cancelled) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.0; u.pitch = 1.0;
-      let fired = false;
-      const fire = () => { if (!fired && !f.cancelled) { fired = true; onDone(); } };
-      u.onend = fire;
-      setTimeout(fire, Math.max(1400, text.split(" ").length / 2.5 * 1000 + 700));
-      window.speechSynthesis.speak(u);
-    };
-
-    const listen = (onResult, onFail) => {
-      if (f.cancelled) return;
-      const recog = new SR();
-      activeRecog = recog;
-      recog.lang = "en-US";
-      recog.interimResults = false;
-      recog.maxAlternatives = 3;
-      let settled = false;
-      const settle = (fn) => { if (settled || f.cancelled) return; settled = true; activeRecog = null; if (!f.cancelled) fn(); };
-      const timer = setTimeout(() => settle(onFail), 6000);
-      recog.onresult = (e) => {
-        clearTimeout(timer);
-        const t = e.results[0][0].transcript.trim();
-        settle(() => {
-          if (/\b(cancel|stop|never mind|nevermind)\b/i.test(t)) { stopAll(); return; }
-          onResult(t);
-        });
-      };
-      recog.onerror = () => { clearTimeout(timer); settle(onFail); };
-      recog.onend = () => clearTimeout(timer);
-      try { recog.start(); } catch(e) { settle(onFail); }
-    };
-
-    const parseCat = (t) => {
-      if (/produce|fruit|vegeta|fresh/i.test(t)) return "Produce";
-      if (/dairy|milk|cheese|yogurt|butter/i.test(t)) return "Dairy";
-      if (/meat|chicken|beef|pork|fish|seafood|protein|poultry/i.test(t)) return "Meat";
-      if (/pantry|dry|can|grain|pasta|rice|staple/i.test(t)) return "Pantry";
-      return "Other";
-    };
-
-    const parseLoc = (t) => {
-      if (/freez/i.test(t)) return "Freezer";
-      if (/pantry/i.test(t)) return "Pantry";
-      return "Fridge";
-    };
-
-    const tc = (s) => s.replace(/\b\w/g, c => c.toUpperCase());
-
-    const stepItem = () => {
-      speak("What's the food item?", () =>
-        speak("Please let me know when ready.", () =>
-          listen(
-            (t) => { f.name = tc(t); setQuickAddName(f.name); speak("Got it, " + f.name + ".", () => stepCategory()); },
-            () => speak("I didn't catch that.", () => stepItem())
-          )
-        )
-      );
-    };
-
-    const stepCategory = () => {
-      speak("Category: Produce, Dairy, Meat, Pantry, or Other?", () =>
-        speak("Please let me know when ready.", () =>
-          listen(
-            (t) => { f.category = parseCat(t); setQuickAddCategory(f.category); speak("Got it, " + f.category + ".", () => stepLocation()); },
-            () => speak("I didn't catch that.", () => stepCategory())
-          )
-        )
-      );
-    };
-
-    const stepLocation = () => {
-      speak("Location: Fridge, Freezer, or Pantry?", () =>
-        speak("Please let me know when ready.", () =>
-          listen(
-            (t) => { f.location = parseLoc(t); setQuickAddLocation(f.location); speak("Got it, " + f.location + ".", () => stepDate()); },
-            () => speak("I didn't catch that.", () => stepLocation())
-          )
-        )
-      );
-    };
-
-    const stepDate = () => {
-      speak("Expiration date?", () =>
-        speak("Please let me know when ready.", () =>
-          listen(
-            (t) => {
-              const parsed = parseSpokenDate(t);
-              if (parsed) {
-                f.date = parsed; setQuickAddDate(parsed);
-                speak("Got it.", () => stepConfirm());
-              } else {
-                speak("I didn't catch a date. Skipping.", () => stepConfirm());
-              }
-            },
-            () => speak("Skipping date.", () => stepConfirm())
-          )
-        )
-      );
-    };
-
-    const stepConfirm = () => {
-      speak("Ready to add " + f.name + "?", () =>
-        listen(
-          (t) => {
-            if (/\b(yes|yeah|yep|sure|ok|okay|add|go ahead|do it)\b/i.test(t)) {
-              doAdd();
-            } else {
-              speak("Got it, cancelling.", () => stopAll());
-            }
-          },
-          () => speak("Say yes to add, or cancel to stop.", () => stepConfirm())
-        )
-      );
-    };
-
-    const doAdd = async () => {
-      if (f.cancelled) return;
-      let foodInfo = {};
-      try {
-        const res = await fetch("/api/food-info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: f.name }) });
-        if (res.ok) foodInfo = await res.json();
-      } catch(e) {}
-      if (f.cancelled) return;
-      const today = new Date();
-      const useBy = f.date || (foodInfo.daysSealed ? new Date(today.getTime() + foodInfo.daysSealed * 86400000).toISOString().split("T")[0] : "");
-      const cat = f.category !== "Other" ? f.category : (foodInfo.category || f.category);
-      const loc = f.location !== "Fridge" ? f.location : (foodInfo.location || f.location);
-      setTrackedItems(prev => [...prev, { id: crypto.randomUUID(), name: f.name, category: cat, location: loc, quantity: "", useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
-      setShowQuickAdd(false);
-      setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
-      speak("Item added! Say Next to add another, or Done to finish.", () =>
-        listen(
-          (t) => {
-            if (/\b(next|another|more|again)\b/i.test(t)) {
-              f.name = ""; f.category = "Other"; f.location = "Fridge"; f.date = ""; f.cancelled = false;
-              setShowQuickAdd(true);
-              setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
-              speak("Ready when you are.", () => stepItem());
-            } else {
-              window.speechSynthesis.cancel();
-            }
-          },
-          () => window.speechSynthesis.cancel()
-        )
-      );
-    };
-
-    // Kick off the flow
-    setShowQuickAdd(true);
-    setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
-    speak("Ready when you are.", () => stepItem());
   };
 
   const handleQuickAdd = async () => {
@@ -3332,7 +3126,7 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="glass-scan-btn w-full py-2.5 text-sm">✅ Add Selected Items</button>
+                  <button onClick={handleAddReceiptItems} className="glass-scan-btn w-full py-2.5 text-sm">{lang === "es" ? `Agregar ${selectedReceiptItems.length} productos al Rastreador` : `Add ${selectedReceiptItems.length} Items to Tracker`}</button>
                 </div>
               )}
               <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
@@ -3451,7 +3245,7 @@ export default function TrackFreshDashboard() {
               )}
               {scanMode !== null && <>
               <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
-              {!smartResult && !smartError && smartMultiItems.length === 0 && (<div>
+              {!smartResult && !smartError && (<div>
                 {(voiceFlowStep || voiceFlowPaused) && (
                   <div style={{background: voiceFlowPaused ? "#7c3aed" : "#1e3a5f", borderRadius:"10px", padding:"0.5rem 0.75rem", marginBottom:"0.5rem", display:"flex", alignItems:"center", gap:"0.5rem"}}>
                     <span>{voiceFlowPaused ? "⏸" : "🎙️"}</span>
@@ -3464,14 +3258,49 @@ export default function TrackFreshDashboard() {
                     </span>
                   </div>
                 )}
-                <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} mode={scanMode} onMultiResult={(items) => { setSmartMultiItems(items); setSelectedSmartItems(items.map((_,i)=>i)); }} />
-                {smartScanning ? (
-                  <div className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d text-center">⏳ Analyzing photo...</div>
-                ) : (
-                  <button onClick={takeSmartPhoto} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">
-                    {scanMode === "multi" ? "📸 Take Photo — Detect Multiple Items" : "📸 Take Photo"}
-                  </button>
-                )}
+                <SmartScanner key={smartScanKey} onResult={handleSmartResultMulti} onError={handleSmartError} captureRef={smartCaptureRef} />
+
+                <button onClick={async () => {
+                  try {
+                    const video = document.querySelector("#smartScannerVideo");
+                    if (!video || !video.srcObject) { handleSmartError("Camera not ready"); return; }
+                    const track = video.srcObject.getVideoTracks()[0];
+                    if (typeof ImageCapture !== "undefined") {
+                      const capture = new ImageCapture(track);
+                      const blob = await capture.takePhoto();
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = reader.result.split(",")[1];
+                        try {
+                          const res = await fetch("/api/scan-label", {
+                            method: "POST", headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+                          });
+                          const data = await res.json();
+                          if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
+                          else { handleSmartError(data.error || "Could not read label. Try again."); }
+                        } catch (err) { handleSmartError("Scan failed: " + err.message); }
+                      };
+                      reader.readAsDataURL(blob);
+                    } else {
+                      const canvas = document.createElement("canvas");
+                      canvas.width = video.videoWidth || 1280;
+                      canvas.height = video.videoHeight || 720;
+                      canvas.getContext("2d").drawImage(video, 0, 0);
+                      const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+                      const base64 = dataUrl.split(",")[1];
+                      try {
+                        const res = await fetch("/api/scan-label", {
+                          method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+                        });
+                        const data = await res.json();
+                        if (data.item && data.item.name) { handleSmartResultMulti({ ...data.item, source: "label" }); }
+                        else { handleSmartError(data.error || "Could not read label. Try again."); }
+                      } catch (err) { handleSmartError("Scan failed: " + err.message); }
+                    }
+                  } catch (err) { handleSmartError("Capture failed: " + err.message); }
+                }} className="w-full rounded-xl py-3 text-sm font-bold mt-3 btn-green-3d">📸 Take Photo</button>
               </div>)}
               {smartError && (<div className="text-center py-6"><p className="text-sm text-red-600 mb-3">{smartError}</p><button onClick={resetSmartScanner} className="rounded-xl px-6 py-2 text-sm font-bold btn-green-3d">{t("smartScanRetry")}</button></div>)}
               {smartResult && (<div className="mt-3">
@@ -3541,27 +3370,6 @@ export default function TrackFreshDashboard() {
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{t("addAndNext")}</button>
               <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? (lang === "es" ? "✅ Listo (" + uniScanCount + " artículos)" : "✅ Done (" + uniScanCount + " items)") : t("cancel")}</button>
               </div>)}
-              {smartMultiItems.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Found {smartMultiItems.length} item{smartMultiItems.length > 1 ? "s" : ""} — select which to add:</p>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.5rem",marginBottom:"0.75rem"}}>
-                    {smartMultiItems.map((item, i) => (
-                      <div key={i} onClick={() => setSelectedSmartItems(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])} style={{border: selectedSmartItems.includes(i) ? "2px solid #16a34a" : "2px solid #e5e7eb", borderRadius:"10px", padding:"0.6rem 0.65rem", cursor:"pointer", background: selectedSmartItems.includes(i) ? "#f0fdf4" : "white", transition:"all 0.12s"}}>
-                        <div style={{display:"flex",alignItems:"flex-start",gap:"0.4rem"}}>
-                          <input type="checkbox" readOnly checked={selectedSmartItems.includes(i)} style={{marginTop:"2px",accentColor:"#16a34a",flexShrink:0}} />
-                          <div style={{minWidth:0}}>
-                            <p style={{fontWeight:700,fontSize:"0.8rem",color:"#111",lineHeight:1.25,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</p>
-                            <p style={{fontSize:"0.65rem",color:"#6b7280",marginTop:"0.15rem"}}>{item.location || "Fridge"} · {item.category || "Other"}</p>
-                            {item.dateFound && item.date && <p style={{fontSize:"0.62rem",color:"#16a34a",marginTop:"0.1rem"}}>Exp {item.date}</p>}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button onClick={handleAddSmartMultiItems} disabled={selectedSmartItems.length === 0} className={`w-full rounded-xl py-3 text-sm font-bold mb-2 ${selectedSmartItems.length === 0 ? "bg-gray-200 text-gray-400" : "btn-green-3d"}`}>✅ Add {selectedSmartItems.length} Selected Item{selectedSmartItems.length !== 1 ? "s" : ""}</button>
-                  <button onClick={() => { setSmartMultiItems([]); setSelectedSmartItems([]); setSmartError(""); setSmartScanKey(prev => prev + 1); }} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 pill-3d">{t("smartScanRetry")}</button>
-                </div>
-              )}
               </>}
             </div>
           </div>
@@ -4115,8 +3923,7 @@ export default function TrackFreshDashboard() {
                     <button onClick={() => { setShowMultiScanner(true); setMultiScanStatus("camera"); setMultiItems([]); setMultiScanError(""); }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📦</span>Scan Multiple</button>
                   </div>
                   <div style={{display:"flex",gap:"0.5rem",marginTop:"0.5rem"}}>
-                    <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.5rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
-                    <button onClick={handleSpeakToAdd} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.5rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>🎤</span>{lang==="es"?"Hablar":"Speak to Add"}</button>
+                    <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.75rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar manualmente":"Add manually"}</button>
                     <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.12)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"#B7D63A"}`,borderRadius:"12px",padding:"0.65rem 0.9rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
                       <span style={{fontSize:"1.1rem",lineHeight:1}}>🎤</span>
                       <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
@@ -5147,7 +4954,6 @@ export default function TrackFreshDashboard() {
         )}
 
         {showUseSoonPanel && (() => {
-          const isEs = lang === "es";
           const soonItems = [...itemsWithCountdown]
             .filter(it => it.daysLeft !== null && it.daysLeft <= 7)
             .sort((a, b) => a.daysLeft - b.daysLeft);

@@ -5,7 +5,9 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req) {
   try {
-    const { image, mimeType } = await req.json();
+    const body = await req.json();
+    const image = body.image || body.imageData;
+    const mimeType = body.mimeType || body.mediaType;
     if (!image) return NextResponse.json({ error: "No image" }, { status: 400 });
 
     const resp = await client.messages.create({
