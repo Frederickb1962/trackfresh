@@ -1733,10 +1733,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
 
       {/* Condiment interactive strip */}
       <div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
-        <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#fff",fontSize:"1.1rem"}}>{isEs
-          ? "Finalmente: sabe cuándo esa botella de ketchup, frasco de mayonesa o frasco de pepinillos en tu refrigerador realmente vencen DESPUÉS DE ABRIR."
-          : "Finally-know when that bottle of ketchup, jar of mayo or jar of pickles in your fridge actually expire AFTER OPENING."}
-        </p>
         <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
           {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; return (
             <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
