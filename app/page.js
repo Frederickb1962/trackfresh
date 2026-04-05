@@ -1783,10 +1783,10 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
         <p style={{textAlign:"center",fontWeight:700,fontSize:"1rem",margin:"0 0 0.6rem"}}>{isEs ? "TrackFresh puede:" : "TrackFresh can:"}</p>
         <ol style={{padding:"0 0 0 1.25rem",margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear recibos de supermercado" : "Scan grocery receipts"}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear etiquetas y códigos de barras e identificar cada uno" : "Scan food labels and barcodes and identify each"}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad" : "Voice recognition of expiration dates"}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Aviso de una semana para artículos por vencer" : "One week notice on expiring items"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>🧾 {isEs ? "Escanear recibos de supermercado" : "Scan grocery receipts"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>📷 {isEs ? "Escanear etiquetas y códigos de barras e identificar cada uno" : "Scan food labels and barcodes and identify each"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>🎤 {isEs ? "Reconocimiento de voz para fechas de caducidad" : "Voice recognition of expiration dates"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>⏰ {isEs ? "Aviso de una semana para artículos por vencer" : "One week notice on expiring items"}</strong></li>
         </ol>
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
       </div>
