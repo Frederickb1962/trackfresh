@@ -1729,10 +1729,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
   </p>
 
-        <div className="mkt-hero-btns mkt-animate" style={{animationDelay:"0.82s"}}>
-          <button onClick={onLaunchApp} className="mkt-cta">{isEs ? "Empieza a Rastrear" : "Start Tracking Your Food"}</button>
-          <button onClick={handleSeeHow} className="mkt-cta-ghost">{isEs ? "Cómo Funciona" : "See How It Works"}</button>
-        </div>
       </div>
 
       {/* Condiment interactive strip */}
