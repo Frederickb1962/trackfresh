@@ -29,7 +29,7 @@ const GLOBAL_STYLES = `
     background-image: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.06) 100%);
     box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.25);
     transition: all 0.15s ease;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
   }
   .pill-3d:hover {
     box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3);
@@ -277,7 +277,7 @@ const GLOBAL_STYLES = `
   .mkt-hero { text-align: center; padding: 1.5rem 1.5rem 0.5rem; max-width: 680px; margin: 0 auto; }
   .mkt-hero-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #86efac; margin-bottom: 0.6rem; display: block; }
   .mkt-hero h1 { font-size: 2.9rem; font-weight: 900; line-height: 1.03; margin-bottom: 0.75rem; letter-spacing: -0.025em; }
-  .mkt-hero h1 span { color: #B7D63A; }
+  .mkt-hero h1 span { color: #f59e0b; }
   .mkt-hero-sub { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.4; margin-bottom: 0.65rem; }
   .mkt-hero-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
   .mkt-section { padding: 0.5rem 1.5rem; max-width: 800px; margin: 0 auto; }
@@ -321,6 +321,10 @@ const GLOBAL_STYLES = `
   @media (max-width: 560px) { .mkt-3steps { grid-template-columns: repeat(3, 1fr); gap: 0.3rem; } .mkt-stats { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; } .mkt-hero h1 { font-size: 2.1rem; } .mkt-dashboard { margin: 0.75rem 0.75rem; } }
   @keyframes mktFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .mkt-animate { animation: mktFadeIn 0.45s ease-out both; }
+  @keyframes iconBounce { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-14px)} 65%{transform:translateY(-6px)} }
+  .icon-bounce-1 { }
+  .icon-bounce-2 { }
+  .icon-bounce-3 { }
   @keyframes heroSlideFromLeft { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: translateX(0); } }
   @keyframes heroSlideFromRight { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
   .hero-slide-left { display: inline-block; animation: heroSlideFromLeft 0.52s cubic-bezier(0.22,1,0.36,1) both; }
@@ -384,14 +388,15 @@ const GLOBAL_STYLES = `
   @keyframes letterPop { 0%,100% { transform:scale(1); color:#f97316; text-shadow:none; } 4% { transform:scale(1.28); color:#fde68a; text-shadow:0 0 10px rgba(251,191,36,0.9),0 0 4px rgba(249,115,22,0.7); } 10% { transform:scale(1); color:#f97316; text-shadow:none; } }
   .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #B7D63A; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
-  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #B7D63A !important; backdrop-filter: blur(4px); }
+  .tracker-items-card { background: linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%) !important; border: 2px solid rgba(255,255,255,0.15) !important; box-shadow: 0 8px 32px rgba(0,0,0,0.28); }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
   .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
   .app-header-btn { background: none; border: none; border-radius: 0; padding: 0.4rem 0.5rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
   .app-header-btn:hover { opacity: 0.75; }
-  .back-btn { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; font-size: 1rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; padding: 0; line-height: 1; }
-  .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.35); }
+  .back-btn { display: inline-flex; align-items: center; justify-content: center; background: #16a34a; border: 2px solid #F59E0B; border-radius: 8px; color: #F59E0B; font-size: 1.4rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; padding: 0.25rem 0.5rem; line-height: 1; }
+  .back-btn:hover { background: #15803d; opacity: 0.9; }
+  .back-btn span { display: inline-block; transform: scaleY(-1); }
   @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
   @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
   .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
@@ -502,7 +507,6 @@ const T = {
   back: { en: "Back", es: "Atr\u00e1s" },
   home: { en: "Home", es: "Inicio" },
   itemWord: { en: "Item", es: "Producto" },
-  quantity: { en: "Quantity", es: "Cantidad" },
   category: { en: "Category", es: "Categor\u00eda" },
   locationWord: { en: "Location", es: "Ubicaci\u00f3n" },
   useByWord: { en: "Use By", es: "Consumir Antes De" },
@@ -1082,7 +1086,6 @@ function loadItems(key = STORAGE_KEY) {
       openDate:         it.openDate         ?? "",
       openUseBy:        it.openUseBy        ?? null,
       category:         it.category         ?? "Other",
-      quantity:         it.quantity         ?? "",
       location:         it.location         ?? "Fridge",
       storageTip:       it.storageTip       ?? "",
       openedTip:        it.openedTip        ?? "",
@@ -1161,7 +1164,7 @@ const LOCATION_ICONS = {
 function AiBadge({ style = {} }) {
   return (
     <span style={{whiteSpace:"nowrap",...style}}>
-      <span style={{color:"#f97316",fontWeight:900,fontSize:"1.2em",lineHeight:1,letterSpacing:"-0.02em"}}>A</span><span style={{color:"#4ade80",fontWeight:900,lineHeight:1,marginLeft:"0.02em"}}>i</span>
+      <span style={{color:"#f59e0b",fontWeight:900,fontSize:"1.2em",lineHeight:1,letterSpacing:"-0.02em"}}>A</span><span style={{color:"#4ade80",fontWeight:900,lineHeight:1,marginLeft:"0.02em"}}>i</span>
     </span>
   );
 }
@@ -1325,6 +1328,297 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
+function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const voiceRef = useRef(null);
+  const streamRef = useRef(null);
+  const statusRef = useRef("starting");
+  const itemRef = useRef({ name: "", date: "", location: "Fridge", category: "Other" });
+  const sessionCountRef = useRef(0);
+  const mountedRef = useRef(true);
+  const handleLocationRef = useRef(null);
+  const handleSaveDateRef = useRef(null);
+  const handleSkipDateRef = useRef(null);
+  const isEs = lang === "es";
+  const [scannerStatus, setScannerStatus] = useState("starting"); // ready | scanning | success | error | date | location
+  const [detectedName, setDetectedName] = useState("");
+  const [detectedDate, setDetectedDate] = useState("");
+  const [pickedDate, setPickedDate] = useState("");
+  const [sessionCount, setSessionCount] = useState(0);
+  const [camError, setCamError] = useState("");
+  const [voiceHint, setVoiceHint] = useState("");
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const isEs = lang === "es";
+
+    // === AUDIO (Web Audio API) ===
+    const playBeep = (freq, dur, vol = 0.28) => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq; osc.type = "sine";
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+      } catch(e) {}
+    };
+    const playReady   = () => playBeep(600, 0.15);
+    const playShutter = () => playBeep(1000, 0.05);
+    const playSuccess = () => playBeep(880, 0.35);
+    const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(400, 0.12), 220); setTimeout(() => playBeep(400, 0.12), 440); };
+    const playSaved   = () => playBeep(1200, 0.2);
+
+    // === SPEECH ===
+    const speak = (text, cb) => {
+      if (!("speechSynthesis" in window)) { if (cb) setTimeout(cb, 200); return; }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.rate = 1.05; u.pitch = 1;
+      if (cb) { const ms = Math.max(1200, text.trim().split(/\s+/).length * 350 + 600); let done = false; const fire = () => { if (!done) { done = true; cb(); } }; u.onend = fire; setTimeout(fire, ms); }
+      window.speechSynthesis.speak(u);
+    };
+    const stopVoice = () => { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} voiceRef.current = null; } };
+
+    const startListening = (onResult) => {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return;
+      stopVoice();
+      const recog = new SR();
+      recog.lang = isEs ? "es-MX" : "en-US"; recog.interimResults = false; recog.maxAlternatives = 3;
+      voiceRef.current = recog;
+      let gotResult = false;
+      recog.onresult = (ev) => { if (!mountedRef.current) return; gotResult = true; voiceRef.current = null; onResult(ev.results[0][0].transcript.toLowerCase().trim()); };
+      recog.onerror = (e) => { if (!mountedRef.current || e.error === "aborted") return; setTimeout(() => { if (!gotResult && mountedRef.current) startListening(onResult); }, 400); };
+      recog.onend = () => { setTimeout(() => { if (!gotResult && voiceRef.current === recog && mountedRef.current) startListening(onResult); }, 400); };
+      try { recog.start(); } catch(e) {}
+    };
+
+    const handleDone = () => { if (!mountedRef.current) return; stopVoice(); if ("speechSynthesis" in window) window.speechSynthesis.cancel(); onClose(); };
+
+    const goToReady = () => {
+      if (!mountedRef.current) return;
+      statusRef.current = "ready"; setScannerStatus("ready");
+      setDetectedName(""); setDetectedDate("");
+      setVoiceHint(isEs ? '🎙️ Di "Listo" para capturar · "Terminar" para salir' : '🎙️ Say "Ready" to capture · "Done" to exit');
+      playReady();
+      listenForReady();
+    };
+
+    const listenForReady = () => {
+      if (!mountedRef.current || statusRef.current !== "ready") return;
+      startListening((transcript) => {
+        if (!mountedRef.current || statusRef.current !== "ready") return;
+        if (transcript.includes("done") || transcript.includes("terminar") || transcript.includes("finish")) { handleDone(); }
+        else if (transcript.includes("ready") || transcript.includes("listo") || transcript.includes("ahora") || transcript.includes("captur") || transcript.includes("foto")) { captureAndAnalyze(); }
+        else { listenForReady(); }
+      });
+    };
+
+    const captureAndAnalyze = async () => {
+      if (!mountedRef.current) return;
+      statusRef.current = "scanning"; setScannerStatus("scanning");
+      setVoiceHint(""); stopVoice();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      playShutter();
+      const video = videoRef.current; const canvas = canvasRef.current;
+      if (!video || !canvas) { goToReady(); return; }
+      canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+      try {
+        const res = await fetch("/api/scan-smart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" }) });
+        if (!mountedRef.current) return;
+        const data = await res.json();
+        const items = data.items || [];
+        if (items.length === 0) {
+          playError(); statusRef.current = "error"; setScannerStatus("error");
+          setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
+          return;
+        }
+        const item = items[0];
+        itemRef.current = { name: item.name || "Unknown Item", date: item.date && item.dateFound ? item.date : "", location: item.location || "Fridge", category: item.category || "Other" };
+        playSuccess(); statusRef.current = "success"; setScannerStatus("success");
+        setDetectedName(itemRef.current.name); setDetectedDate(itemRef.current.date);
+        setPickedDate("");
+        setTimeout(() => { if (mountedRef.current) { statusRef.current = "date"; setScannerStatus("date"); listenForDateStep(); } }, 1000);
+      } catch (e) {
+        if (!mountedRef.current) return;
+        playError(); statusRef.current = "error"; setScannerStatus("error");
+        setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
+      }
+    };
+
+    const handleLocationTap = (loc) => {
+      if (!mountedRef.current) return;
+      playSaved();
+      onAddItem({ id: Date.now().toString(), name: itemRef.current.name || "Unknown Item", useByDate: itemRef.current.date || "", openDate: "", category: itemRef.current.category || "Other", location: loc });
+      sessionCountRef.current += 1;
+      setSessionCount(sessionCountRef.current);
+      itemRef.current = { name: "", date: "", location: "Fridge", category: "Other" };
+      setTimeout(() => { if (mountedRef.current) goToReady(); }, 300);
+    };
+    const listenForDateStep = () => {
+      if (!mountedRef.current || statusRef.current !== "date") return;
+      startListening((transcript) => {
+        if (!mountedRef.current || statusRef.current !== "date") return;
+        if (transcript.includes("skip") || transcript.includes("omitir")) {
+          handleSkipDateRef.current && handleSkipDateRef.current();
+        } else if (transcript.includes("done") || transcript.includes("terminar")) {
+          handleDone();
+        } else {
+          listenForDateStep();
+        }
+      });
+    };
+
+    handleLocationRef.current = handleLocationTap;
+
+    const handleSaveDate = (dateVal) => {
+      if (!mountedRef.current) return;
+      itemRef.current = { ...itemRef.current, date: dateVal || "" };
+      statusRef.current = "location"; setScannerStatus("location");
+    };
+    const handleSkipDate = () => {
+      if (!mountedRef.current) return;
+      itemRef.current = { ...itemRef.current, date: "" };
+      statusRef.current = "location"; setScannerStatus("location");
+    };
+    handleSaveDateRef.current = handleSaveDate;
+    handleSkipDateRef.current = handleSkipDate;
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+        if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.setAttribute("playsinline", "true"); await videoRef.current.play(); }
+        if (!mountedRef.current) return;
+        goToReady();
+      } catch (e) {
+        if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied. Please allow camera access.");
+      }
+    }
+    startCamera();
+
+    return () => {
+      mountedRef.current = false;
+      stopVoice();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+    };
+  }, []);
+
+  const overlayText = {
+    ready:    { en: "READY",       es: "LISTA" },
+    scanning: { en: "SCANNING...", es: "ESCANEANDO..." },
+    success:  { en: "✓ GOT IT",    es: "✓ DETECTADO" },
+    error:    { en: "TRY AGAIN",   es: "INTENTA DE NUEVO" },
+    date:     { en: "ADD EXPIRATION DATE", es: "AGREGAR FECHA DE VENCIMIENTO" },
+    location: { en: "WHERE ARE YOU STORING IT?", es: "¿DÓNDE LO GUARDAS?" },
+  };
+  const locLabels = {
+    freezer:     isEs ? "CONGELADOR"           : "FREEZER",
+    fridge:      isEs ? "REFRIGERADOR"         : "FRIDGE",
+    pantry:      isEs ? "DESPENSA"             : "PANTRY",
+    saveWithDate: isEs ? "Guardar con Fecha"   : "Save with Date",
+    skipDate:    isEs ? "Omitir Fecha"         : "Skip Date",
+  };
+  const isFullOverlay = scannerStatus === "date" || scannerStatus === "location";
+  const vfBorderColor = scannerStatus === "scanning" ? "#facc15" : scannerStatus === "error" ? "#f87171" : "#4ade80";
+  const vfGlow = scannerStatus === "scanning" ? "#facc1555" : scannerStatus === "error" ? "#f8717155" : "#4ade8044";
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.7)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
+          {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
+        </div>
+        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>
+          {isEs ? "Terminar ✓" : "Done ✓"}
+        </button>
+      </div>
+
+      {/* Camera + ScannerOverlay */}
+      <div style={{ position: "relative", flex: 1, overflow: "hidden", background: "#000" }}>
+        {camError ? (
+          <div style={{ color: "#fff", textAlign: "center", padding: "3rem 1.5rem", fontSize: "0.95rem" }}>{camError}</div>
+        ) : (
+          <>
+            <video ref={videoRef} playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+
+            {/* ScannerOverlay — pointerEvents none except interactive panels */}
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+
+              {/* Viewfinder + big status text (ready / scanning / success / error) */}
+              {!isFullOverlay && (
+                <div style={{ width: "82%", height: "52%", border: `3px solid ${vfBorderColor}`, borderRadius: "20px", boxShadow: `0 0 0 9999px rgba(0,0,0,0.48), 0 0 28px ${vfGlow}`, transition: "border-color 0.3s, box-shadow 0.3s", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "0.4rem" }}>
+                  {scannerStatus === "starting" && <span style={{ color: "#86efac", fontSize: "1.1rem", fontWeight: 700 }}>{isEs ? "Iniciando cámara..." : "Starting camera..."}</span>}
+                  {scannerStatus === "ready" && <span style={{ color: "#4ade80", fontSize: "3rem", fontWeight: 900, letterSpacing: "0.1em", textShadow: "0 0 24px #4ade80cc" }}>{overlayText.ready[isEs?"es":"en"]}</span>}
+                  {scannerStatus === "scanning" && <span style={{ color: "#facc15", fontSize: "2.2rem", fontWeight: 900, letterSpacing: "0.06em", textShadow: "0 0 20px #facc15bb" }}>{overlayText.scanning[isEs?"es":"en"]}</span>}
+                  {scannerStatus === "success" && (<>
+                    <span style={{ color: "#4ade80", fontSize: "2.8rem", fontWeight: 900, textShadow: "0 0 24px #4ade80cc" }}>{overlayText.success[isEs?"es":"en"]}</span>
+                    {detectedName && <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700, opacity: 0.9, textAlign: "center", padding: "0 0.5rem" }}>{detectedName}</span>}
+                    {detectedDate && <span style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 600 }}>📅 {detectedDate}</span>}
+                  </>)}
+                  {scannerStatus === "error" && <span style={{ color: "#f87171", fontSize: "2.4rem", fontWeight: 900, letterSpacing: "0.05em", textShadow: "0 0 20px #f87171aa" }}>{overlayText.error[isEs?"es":"en"]}</span>}
+                </div>
+              )}
+
+              {/* Date entry overlay */}
+              {scannerStatus === "date" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.82)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "1rem", pointerEvents: "auto" }}>
+                  <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", textAlign: "center", margin: 0, letterSpacing: "0.03em" }}>📅 {overlayText.date[isEs?"es":"en"]}</p>
+                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 700, textAlign: "center", margin: 0 }}>✅ {detectedName}</p>}
+                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.68rem", fontWeight: 600, textAlign: "center", margin: "-0.25rem 0 0" }}>{isEs ? '🎙️ Di "Omitir Fecha" para saltar' : '🎙️ Say "Skip" or "Skip Date" to skip'}</p>
+                  <input
+                    type="date"
+                    value={pickedDate}
+                    onChange={e => setPickedDate(e.target.value)}
+                    style={{ width: "100%", padding: "1rem", fontSize: "1.15rem", fontWeight: 700, borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", color: "#fff", textAlign: "center", boxSizing: "border-box", cursor: "pointer" }}
+                  />
+                  <button
+                    onClick={() => handleSaveDateRef.current && handleSaveDateRef.current(pickedDate)}
+                    style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>
+                    ✅ {locLabels.saveWithDate}
+                  </button>
+                  <button
+                    onClick={() => handleSkipDateRef.current && handleSkipDateRef.current()}
+                    style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "1rem", border: "2px solid rgba(255,255,255,0.25)", borderRadius: "16px", cursor: "pointer" }}>
+                    {locLabels.skipDate}
+                  </button>
+                </div>
+              )}
+
+              {/* Location buttons — full screen, interactive */}
+              {scannerStatus === "location" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "0.85rem", pointerEvents: "auto" }}>
+                  <p style={{ color: "#fff", fontWeight: 900, fontSize: "1.05rem", textAlign: "center", margin: "0 0 0.25rem", letterSpacing: "0.02em" }}>{overlayText.location[isEs?"es":"en"]}</p>
+                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.82rem", fontWeight: 600, textAlign: "center", margin: "0 0 0.25rem" }}>✅ {detectedName}{itemRef.current.date ? ` · 📅 ${itemRef.current.date}` : ""}</p>}
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Freezer")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#2563eb,#1d4ed8)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #1e3a8a,0 8px 20px rgba(0,0,0,0.3)" }}>❄️ {locLabels.freezer}</button>
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Fridge")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>🥬 {locLabels.fridge}</button>
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Pantry")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#ea580c,#c2410c)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #7c2d12,0 8px 20px rgba(0,0,0,0.3)" }}>🫙 {locLabels.pantry}</button>
+                </div>
+              )}
+            </div>
+
+            {/* Voice hint bar */}
+            {!isFullOverlay && voiceHint && (
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.65rem 1.25rem 1rem", background: "linear-gradient(to top, rgba(0,0,0,0.88) 50%, transparent)", pointerEvents: "none", textAlign: "center" }}>
+                <span style={{ color: "#86efac", fontSize: "0.72rem", fontWeight: 600, opacity: 0.88 }}>{voiceHint}</span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -1401,8 +1695,8 @@ function SmartScanner({ onResult, onError, captureRef, mode, onMultiResult }) {
           <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "280px", objectFit: "cover" }} />
           <canvas ref={canvasRef} style={{ display: "none" }} />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {status === "scanning" && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"220px",height:"140px",opacity:0.7}} />}
-            {status === "reading_label" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"220px",height:"140px",opacity:0.8}} />}
+            {status === "scanning" && <div style={{border:"3px solid #4ade80",borderRadius:"12px",width:"92%",height:"88%",opacity:0.8}} />}
+            {status === "reading_label" && <div style={{border:"3px solid #fb923c",borderRadius:"12px",width:"92%",height:"88%",opacity:0.9}} />}
           </div>
           <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
             {status === "starting" && "Starting camera..."}
@@ -1440,23 +1734,35 @@ function FoodAutocomplete({ value, onChange, onSelect, lang }) {
   const fn = (name) => (lang === "es" && FOOD_ES[name]) ? FOOD_ES[name] : name;
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
+  const [dropPos, setDropPos] = useState(null);
+  const inputRef = useRef(null);
   const ref = useRef(null);
 
+  // Show top 8 on focus with no input; filter as user types
   const matches = useMemo(() => {
-    if (!value || value.length < 1) return [];
-    const q = value.toLowerCase();
+    const q = (value || "").toLowerCase();
+    if (!q) return FOOD_DB.slice(0, 8);
     return FOOD_DB.filter((f) => f.name.toLowerCase().includes(q) || (FOOD_ES[f.name] && FOOD_ES[f.name].toLowerCase().includes(q))).slice(0, 8);
   }, [value]);
 
   useEffect(() => { setHighlighted(0); }, [matches]);
 
+  // Close on outside tap/click (mousedown + touchstart for mobile)
   useEffect(() => {
-    function handleClick(e) {
+    function handleOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => { document.removeEventListener("mousedown", handleOutside); document.removeEventListener("touchstart", handleOutside); };
   }, []);
+
+  // Calculate fixed position from input's bounding rect to escape modal clipping
+  const updatePos = () => {
+    if (!inputRef.current) return;
+    const r = inputRef.current.getBoundingClientRect();
+    setDropPos({ top: r.bottom + 2, left: r.left, width: r.width });
+  };
 
   const handleKeyDown = (e) => {
     if (!open || matches.length === 0) return;
@@ -1467,26 +1773,29 @@ function FoodAutocomplete({ value, onChange, onSelect, lang }) {
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div ref={ref}>
       <input
+        ref={inputRef}
         value={value}
-        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
-        onFocus={() => setOpen(true)}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); updatePos(); }}
+        onFocus={() => { updatePos(); setOpen(true); }}
         onKeyDown={handleKeyDown}
         placeholder={lang === "es" ? "ej. Pechuga de Pollo" : "e.g. Chicken Breast"}
         className="w-full rounded border px-3 py-2 text-sm text-gray-900"
+        autoComplete="off"
       />
-      {open && matches.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg">
+      {open && matches.length > 0 && dropPos && (
+        <div style={{position:"fixed",top:dropPos.top,left:dropPos.left,width:dropPos.width,zIndex:99999,background:"white",borderRadius:"8px",border:"1px solid #e5e7eb",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",maxHeight:"220px",overflowY:"auto"}}>
           {matches.map((f, i) => (
             <button
               key={f.name}
-              onMouseDown={() => { onSelect(f); setOpen(false); }}
+              onMouseDown={(e) => { e.preventDefault(); onSelect(f); setOpen(false); }}
+              onTouchEnd={(e) => { e.preventDefault(); onSelect(f); setOpen(false); }}
               onMouseEnter={() => setHighlighted(i)}
-              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
+              style={{display:"flex",width:"100%",alignItems:"center",justifyContent:"space-between",padding:"0.5rem 0.75rem",textAlign:"left",fontSize:"0.875rem",background:highlighted===i?"#f0fdf4":"white",border:"none",cursor:"pointer"}}
             >
               <span>{fn(f.name)}</span>
-              <div className="flex items-center gap-1">
+              <div style={{display:"flex",alignItems:"center",gap:"0.25rem"}}>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[f.location]}`}>{LOCATION_ICONS[f.location]} {f.location}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[f.category]}`}>{f.category}</span>
               </div>
@@ -1546,6 +1855,18 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const scrollFrameRef = React.useRef(null);
   const bottomBtnRef = React.useRef(null);
   const howItWorksRef = React.useRef(null);
+  const [activeIcon, setActiveIcon] = React.useState(null);
+  const iconDismissRef = React.useRef(null);
+  const handleIconTap = (key) => {
+    if (iconDismissRef.current) clearTimeout(iconDismissRef.current);
+    setActiveIcon(prev => prev === key ? null : key);
+    iconDismissRef.current = setTimeout(() => setActiveIcon(null), 3000);
+  };
+  const ICON_INFO = {
+    ketchup: { emoji:"🍅", label: isEs ? "Ketchup" : "Ketchup", info: isEs ? "Después de abrir: 6 meses en el refrigerador" : "After opening: 6 months in fridge" },
+    mayo:    { emoji:"🫙", label: isEs ? "Mayonesa" : "Mayo",    info: isEs ? "Después de abrir: 2 meses en el refrigerador" : "After opening: 2 months in fridge" },
+    pickles: { emoji:"🥒", label: isEs ? "Pepinillos" : "Pickles", info: isEs ? "Después de abrir: 1–3 meses en el refrigerador" : "After opening: 1–3 months in fridge" },
+  };
 
   React.useEffect(() => {
     return () => { if (scrollFrameRef.current) cancelAnimationFrame(scrollFrameRef.current); };
@@ -1624,115 +1945,83 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   <span className="hero-slide-right" style={{animationDelay:"0.45s"}}>{isEs ? "Rastreado." : "Tracked."}</span>
 </h1>
 
-<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s"}}>{isEs
-      ? "Finalmente: sabe cuándo esa botella de ketchup, frasco de mayonesa o frasco de pepinillos en tu refrigerador realmente vencen."
-      : "Finally—know when that bottle of ketchup, jar of mayo, or jar of pickles in your fridge actually expire."}
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#fff",fontSize:"1.1rem"}}>{isEs
+      ? "Finalmente: sabe cuándo esa botella de ketchup, frasco de mayonesa o frasco de pepinillos en tu refrigerador realmente vencen DESPUÉS DE ABRIR."
+      : "Finally-know when that bottle of ketchup, jar of mayo or jar of pickles in your fridge actually expire AFTER OPENING."}
   </p>
 
-  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s"}}>
-    {isEs
-      ? "Escanea alimentos, rastrea fechas de vencimiento y siempre sabe lo que hay en tu refrigerador, congelador y despensa."
-      : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
-  </p>
-
-        <div className="mkt-hero-btns mkt-animate" style={{animationDelay:"0.82s"}}>
-          <button onClick={onLaunchApp} className="mkt-cta">{isEs ? "Empieza a Rastrear" : "Start Tracking Your Food"}</button>
-          <button onClick={handleSeeHow} className="mkt-cta-ghost">{isEs ? "Cómo Funciona" : "See How It Works"}</button>
-        </div>
+<div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
+  <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
+    {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; return (
+      <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
+        <div style={{fontWeight:700,fontSize:"0.85rem",color:"#fff",marginBottom:"0.25rem"}}>{item.info}</div>
+        <div style={{fontSize:"0.72rem",color:"#86efac",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea esto por ti" : "TrackFresh tracks this for you!"}</div>
+        <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
       </div>
-
-      {/* Dashboard mockup */}
-      <div className="mkt-dashboard mkt-animate mkt-animate-d2">
-        <div className="mkt-dash-header">
-          <span className="mkt-dash-title">🥦 {isEs ? "Mi Cocina" : "My Kitchen"}</span>
-          <span className="mkt-dash-date">{isEs ? "Hoy" : "Today"}</span>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
-          <div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">🧊 {isEs ? "Refrigerador" : "Fridge"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥛 {isEs ? "Leche" : "Milk"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "3 días" : "3 days"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥬 {isEs ? "Espinacas" : "Spinach"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "2 días" : "2 days"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍓 {isEs ? "Fresas" : "Strawberries"}</span><span className="mkt-dash-badge mkt-dash-badge-red">{isEs ? "1 día" : "1 day"}</span></div>
+    ); })()}
+    {["ketchup","mayo","pickles"].map(key => {
+      const item = ICON_INFO[key];
+      const isActive = activeIcon === key;
+      return (
+        <div key={key} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+          <button
+            onClick={e => { e.stopPropagation(); handleIconTap(key); }}
+            style={{background:"none",border:"none",cursor:"pointer",padding:"4px",lineHeight:1,transition:"transform 0.15s ease",transform:isActive?"scale(1.15)":"scale(1)",display:"inline-flex",alignItems:"flex-end",justifyContent:"center"}}
+            aria-label={item.label}
+          >
+            <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mayo" ? 2 : 3}`}>
+              <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block"}} />
             </div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">❄️ {isEs ? "Congelador" : "Freezer"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍗 {isEs ? "Pollo" : "Chicken"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "2 meses" : "2 mo."}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🦐 {isEs ? "Camarón" : "Shrimp"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "3 meses" : "3 mo."}</span></div>
-            </div>
-          </div>
-          <div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">🏺 {isEs ? "Despensa" : "Pantry"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍝 Pasta</span><span className="mkt-dash-badge mkt-dash-badge-blue">{isEs ? "1 año" : "1 yr"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍅 {isEs ? "Salsa" : "Tom. Sauce"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "8 meses" : "8 mo."}</span></div>
-            </div>
-            <div className="mkt-dash-use-soon">
-              <div className="mkt-dash-use-soon-label">⚡ {isEs ? "Usar Pronto" : "Use Soon"}</div>
-              <div className="mkt-dash-use-soon-items">
-                <span className="mkt-dash-use-soon-chip">🍓 {isEs ? "Fresas" : "Strawberries"}</span>
-                <span className="mkt-dash-use-soon-chip">🥬 {isEs ? "Espinacas" : "Spinach"}</span>
-              </div>
-            </div>
-          </div>
+          </button>
         </div>
+      );
+    })}
+  </div>
+  <p style={{textAlign:"center",fontSize:"0.72rem",color:"#E8A63C",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "Toca para ver lo que sabe TrackFresh" : "Tap to see what TrackFresh knows"}</p>
+</div>
+
       </div>
 
-      {/* Stats */}
-      <div className="mkt-section mkt-section-dark mkt-animate mkt-animate-d1">
-        <div className="mkt-stats">
-          <div><div className="mkt-stat-num">40%</div><div className="mkt-stat-label">{isEs ? "de la comida se desperdicia" : "of food produced is wasted"}</div></div>
-          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al año" : "thrown away per family yearly"}</div></div>
-          <div><div className="mkt-stat-num">43%</div><div className="mkt-stat-label">{isEs ? "del desperdicio ocurre en casa" : "of waste happens at home"}</div></div>
+
+      {/* The Real Expiry Problem */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "EL PROBLEMA" : "The Issue"}</div>
         </div>
+        <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Etiquetas de caducidad? Confusas a propósito, si es que las encuentras." : "Expiration dates? Confusing by design if you can find them."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Nadie te dice cómo almacenar." : "After opening? Nobody tells you how to store."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🥫</span><span><strong>{isEs ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente después de abrirlos." : "That ketchup, mayo, jar of pickles — finally know when they actually expire after opening."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Miles de millones desperdiciados cada año. Ya no más." : "Billions wasted every year. Not anymore."}</strong></span></li>
+        </ul>
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "TrackFresh supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : "TrackFresh outsmarts the labels so you can track freshness in the palm of your hand."}</p>
       </div>
 
-      {/* Why TrackFresh Works */}
-      <div className="mkt-section">
-        <div style={{maxWidth:"720px",margin:"0 auto"}}>
-          <div className="mkt-section-title" style={{marginBottom:"0.5rem"}}><h2>{isEs ? "Por Qué Funciona TrackFresh" : "Why TrackFresh Works"}</h2></div>
-          <div className="mkt-benefits" style={{marginTop:"0.15rem",gap:"0.2rem"}}>
-            {[
-              {icon:"👁️", title:isEs?"Sabe lo que tienes":"Know what you have",          desc:isEs?"Deja de olvidar lo que ya tienes en tu cocina.":"Stop forgetting what's already in your kitchen."},
-              {icon:"⏱️", title:isEs?"Usa antes de que venza":"Use food before it expires", desc:isEs?"Obtén visibilidad clara de lo que necesita atención primero.":"Get clear visibility into what needs attention first."},
-              {icon:"🛒", title:isEs?"Compra más inteligente":"Shop smarter",              desc:isEs?"Evita comprar duplicados y desperdiciar dinero.":"Avoid buying duplicates and wasting money."},
-              {icon:"🍳", title:isEs?"Planifica comidas fácilmente":"Plan meals more easily", desc:isEs?"Convierte lo que ya tienes en ideas de comidas simples.":"Turn what you already own into simple meal ideas."},
-            ].map((b,i) => (
-              <div key={i} className="mkt-benefit-card mkt-animate" style={{animationDelay:0.1*i+"s",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                <div className="mkt-benefit-icon">{b.icon}</div>
-                <h3>{b.title}</h3>
-              </div>
-            ))}
-          </div>
+      {/* The Solution */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</div>
         </div>
+        <p style={{textAlign:"center",fontWeight:700,fontSize:"1rem",margin:"0 0 0.6rem"}}>{isEs ? "TrackFresh puede:" : "TrackFresh can:"}</p>
+        <ol style={{padding:"0 0 0 1.25rem",margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear recibos de supermercado" : "Scan grocery receipts"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear etiquetas y códigos de barras e identificar cada uno" : "Scan food labels and barcodes and identify each"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad" : "Voice recognition of expiration dates"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Aviso de una semana para artículos por vencer" : "One week notice on expiring items"}</strong></li>
+        </ol>
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
       </div>
 
-      {/* How It Works */}
-      <div ref={howItWorksRef} className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><h2>{isEs ? "Cómo Funciona" : "How It Works"}</h2></div>
-        <div className="mkt-3steps">
-          {[
-            {n:"1", title:isEs?"Escanea":"Scan",  desc:isEs?"Agrega alimentos por código de barras o etiqueta.":"Add groceries by barcode or label."},
-            {n:"2", title:isEs?"Rastrea":"Track", desc:isEs?"Organiza la comida en tu refrigerador, congelador y despensa.":"Organize food in your fridge, freezer, and pantry."},
-            {n:"3", title:isEs?"Usa":"Use",       desc:isEs?"Ve qué usar primero antes de que se eche a perder.":"See what to use first before it goes bad."},
-          ].map((s,i) => (
-            <div key={i} className="mkt-3step mkt-animate" style={{animationDelay:0.12*i+"s"}}>
-              <div className="mkt-3step-num">{s.n}</div>
-              <h3>{s.title}</h3>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Statement */}
-      <div className="mkt-animate mkt-animate-d3" style={{background:"rgba(0,0,0,0.22)",padding:"0.75rem 1.5rem",textAlign:"center"}}>
-        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"0",letterSpacing:"-0.01em"}}>{isEs ? "Más Que un Rastreador. Una Cocina Más Inteligente." : "More Than a Tracker. A Smarter Kitchen."}</h2>
-      </div>
+      <p className="mkt-animate" style={{textAlign:"center",color:"#fff",fontSize:"1.1rem",padding:"0 1rem",margin:"0.5rem 0 1rem"}}>
+        {isEs
+          ? "Escanea recibos de supermercado, etiquetas y códigos de barras para rastrear fechas de vencimiento. Siempre sabe lo que hay en tu refrigerador, congelador y despensa."
+          : "Scan grocery receipts, food labels and barcodes and track expiration dates. Always know what's in your fridge, freezer and pantry."}
+      </p>
 
       {/* Stores */}
       <div className="mkt-section mkt-animate mkt-animate-d2">
         <div className="mkt-section-title"><h2>{isEs ? "Enlaza y Compra en Línea" : "Link And Shop Online"}</h2></div>
-        <p style={{textAlign:"center",opacity:0.75,marginBottom:"0.6rem",fontSize:"0.85rem"}}>{isEs ? "Conecta directamente con tus tiendas favoritas." : "Shop directly from your favorite stores."}</p>
+        <p style={{textAlign:"center",color:"#E8A63C",marginBottom:"0.6rem",fontSize:"0.85rem",fontWeight:600}}>{isEs ? "Conecta directamente con tus tiendas favoritas." : "Shop directly from your favorite stores."}</p>
         <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:"0.5rem"}}>
           {[
             {logo:"https://www.google.com/s2/favicons?domain=amazon.com&sz=128",         name:"Amazon Fresh",  href:"https://www.amazon.com/frs/cart"},
@@ -1770,16 +2059,18 @@ const TUTORIALS = {
     { emoji: "🥦", title: "Welcome to TrackFresh.AI!", body: "Your intelligent kitchen assistant — tracks food, surfaces expiry urgency, suggests recipes, plans meals, and manages your shopping list. All your data saves automatically." },
     { emoji: "⚡", title: "Your Kitchen Today", body: "The dashboard reads your tracked items and tells you exactly what needs attention — Use Today, Use Soon, Use This Week, or Everything Looks Fresh. It updates automatically as items change." },
     { emoji: "⚡", title: "Use Soon Tile", body: "The full-width Use Soon tile at the top of the dashboard shows how many items are expiring in 1–3 days. Tap it to see everything sorted by urgency across Fridge, Freezer, and Pantry." },
-    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on the dashboard or in Tracker to mark any item as opened. TrackFresh calculates a use-by date based on shelf life after opening and starts a new countdown." },
+    { emoji: "📂", title: "Have You Opened Anything Lately?", body: "Tap the 'Have you opened anything lately?' button in Tracker to see a dropdown of all your tracked items. Select one to mark it as opened — TrackFresh instantly calculates a new use-by date and shows storage tips." },
     { emoji: "🥗", title: "Set Up Dietary Needs", body: "Go to the Dietary tab and add household restrictions plus individual profiles for each family member. Recipes, shopping alerts, and your meal plan all adapt automatically." },
   ],
   tracker: [
-    { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
-    { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
-    { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
-    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
-    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
+    { emoji: "🧾", title: "Scan Grocery Receipts — Start Here", body: "The #1 recommended way to add food. Look for the gold '⭐ Start here for best results' pill inside the button. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category automatically." },
+    { emoji: "📸", title: "Smart Scan — Single or Multiple", body: "The Smart Scan button handles everything — single items, multiple items, barcodes, and labels all in one shot. Look for the gold 'Single or Mult. Items/Barcodes and Labels' pill inside the button. No mode switching needed." },
+    { emoji: "📂", title: "Have You Opened Anything Lately?", body: "Tap the button to reveal a dropdown of all your tracked items — select one to mark it opened instantly. After marking, TrackFresh shows storage tips, opened-shelf-life advice, and a freeze-by reminder if applicable. Tap 'See all →' for the full search modal." },
+    { emoji: "🏷️", title: "Storage Tips on Every Item", body: "Each tracked item in Organize Tracked Items shows color-coded tip pills: 💡 gray for storage tips, ⚠️ orange for opened advice, 📅 blue for days after opening, and 🧊 cyan for freeze-by date. These same tips appear after you mark an item as opened." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no expiration date show a flashing 'Add Exp Date' badge — tap it to fill in the date." },
     { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
+    { emoji: "✏️", title: "Edit Any Item", body: "Tap the ✏️ pencil on any tracked item to edit the name, location, category, or Use By Date. For the date, tap '📅 Use By Date' to open the date picker, or tap '🎤 Tell Me the Date' to speak it — TrackFresh fills it in automatically." },
+    { emoji: "🔍", title: "Filter by Location", body: "Use the All, Fridge, Freezer, and Pantry buttons to filter your tracked items by where they're stored. Your full list is always one tap away." },
   ],
   recipes: [
     { emoji: "🍳", title: "Recipes From Your Fridge", body: "Tap 'Get AI Recipe Ideas' and TrackFresh builds recipes around what you already have, prioritizing whatever expires soonest. No more forgotten produce!" },
@@ -1843,8 +2134,7 @@ export default function TrackFreshDashboard() {
 
   
   const [showMarketing, setShowMarketing] = useState(true);
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
-  const handleLaunchApp = () => { setShowMarketing(false); try { if (window.sessionStorage) sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
+  const handleLaunchApp = () => { setShowMarketing(false); };
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
@@ -1853,7 +2143,7 @@ export default function TrackFreshDashboard() {
   };
   const [isAdmin, setIsAdmin] = useState(false);
   React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
-  const [activeTab, setActiveTab] = useState("home");
+  const [activeTab, setActiveTab] = useState("navigate");
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
   const trackerTopRef = React.useRef(null);
@@ -1892,11 +2182,13 @@ export default function TrackFreshDashboard() {
   const [useByDate, setUseByDate] = useState("");
   const [openDate, setOpenDate] = useState("");
   const [category, setCategory] = useState("Other");
-  const [quantity, setQuantity] = useState("");
   const [location, setLocation] = useState("Fridge");
   const [showAlert, setShowAlert] = useState(false);
   const [alertItem, setAlertItem] = useState({ name: "", daysLeft: 0 });
   const [editingItem, setEditingItem] = useState(null);
+  const [editDateVoiceListening, setEditDateVoiceListening] = useState(false);
+  const [editDateVoiceMsg, setEditDateVoiceMsg] = useState("");
+  const editDateInputRef = useRef(null);
   const [showHelp, setShowHelp] = useState(false);
   const [recipeSuggestions, setRecipeSuggestions] = useState([]);
   const [recipesGenerated, setRecipesGenerated] = useState(false);
@@ -1952,7 +2244,6 @@ export default function TrackFreshDashboard() {
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAddName, setQuickAddName] = useState("");
   const [quickAddDate, setQuickAddDate] = useState("");
-  const [quickAddQty, setQuickAddQty] = useState("");
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
   const [quickAddLocation, setQuickAddLocation] = useState("Fridge");
   const [meals, setMeals] = useState({});
@@ -2000,6 +2291,7 @@ export default function TrackFreshDashboard() {
   const [barcodeUseBy, setBarcodeUseBy] = useState("");
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
   const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const [showGroceryScan, setShowGroceryScan] = useState(false);
   const smartCaptureRef = useRef(null);
   const [smartResult, setSmartResult] = useState(null);
   const [smartError, setSmartError] = useState("");
@@ -2018,56 +2310,15 @@ export default function TrackFreshDashboard() {
   };
 
   const startVoiceDatePrompt = (productName) => {
-    setVoicePromptDone(false);
-    window.speechSynthesis.cancel();
-    const speak = () => {
-      const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
-    const voices = window.speechSynthesis.getVoices();
-    const natural = voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en")) 
-      || voices.find(v => v.name.includes("Nicky") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Ava") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Allison") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Premium") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
-      || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
-    if (natural) msg.voice = natural;
-    msg.pitch = 1.05;
-      msg.rate = 1.15;
-      msg.onend = () => { startVoiceListening(); };
-      window.speechSynthesis.speak(msg);
-    };
-    if (window.speechSynthesis.getVoices().length > 0) { speak(); }
-    else { window.speechSynthesis.onvoiceschanged = () => { speak(); }; }
+    // Voice prompts disabled — user enters date via calendar
+    setVoiceListening(false);
+    setVoicePromptDone(true);
   };
 
   const startVoiceListening = () => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setVoicePromptDone(true); return; }
-    const recognition = new SR();
-    recognition.lang = lang === "es" ? "es-MX" : "en-US";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    setVoiceListening(true);
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      const parsed = parseSpokenDate(transcript);
-      if (parsed) {
-        setSmartUseBy(parsed);
-        setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
-        const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
-        confirm.rate = 1.15;
-        window.speechSynthesis.speak(confirm);
-      } else {
-        const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
-        retry.rate = 1.0;
-        window.speechSynthesis.speak(retry);
-      }
-      setVoiceListening(false);
-      setVoicePromptDone(true);
-    };
-    recognition.onerror = () => { setVoiceListening(false); setVoicePromptDone(true); };
-    recognition.onend = () => { setVoiceListening(false); setVoicePromptDone(true); };
-    recognition.start();
+    // Voice prompts disabled — kept for compatibility
+    setVoiceListening(false);
+    setVoicePromptDone(true);
   };
   const [uniScanCount, setUniScanCount] = useState(0);
   const [uniScanLastItem, setUniScanLastItem] = useState("");
@@ -2093,6 +2344,7 @@ export default function TrackFreshDashboard() {
   const [openedSearch, setOpenedSearch] = useState("");
   const [openedConfirm, setOpenedConfirm] = useState(null);
   const [showOpenedDateEdit, setShowOpenedDateEdit] = useState(false);
+  const [showOpenedDropdown, setShowOpenedDropdown] = useState(false);
   const [openedEditDate, setOpenedEditDate] = useState("");
   const [openedModalOffset, setOpenedModalOffset] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -2227,9 +2479,7 @@ export default function TrackFreshDashboard() {
     setShowVoiceEditForm(false);
     resetUniScanTimer();
     setSmartLocation(item.location || "Fridge");
-    const itemName = item.name || "item";
-    setVoiceFlowStep("say_date");
-
+    if (item.date && item.dateFound) setSmartUseBy(item.date);
   };
   const handleVoiceNextDone = (cmd) => {
     const t = cmd.toLowerCase();
@@ -2246,7 +2496,7 @@ export default function TrackFreshDashboard() {
     if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
-    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     setUniScanCount(prev => prev + 1);
     setUniScanLastItem(itemName);
@@ -2310,14 +2560,14 @@ export default function TrackFreshDashboard() {
   };
 
   const handleAddSmartMultiItems = () => {
-    const toAdd = smartMultiItems.filter((_, i) => selectedSmartItems.includes(i)).map(item => ({ id: crypto.randomUUID(), name: item.name || "Unknown Item", useByDate: item.date || "", openDate: new Date().toISOString().split("T")[0], category: item.category || "Other", quantity: "1", location: item.location || "Fridge", daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || "" }));
+    const toAdd = smartMultiItems.filter((_, i) => selectedSmartItems.includes(i)).map(item => ({ id: crypto.randomUUID(), name: item.name || "Unknown Item", useByDate: item.date || "", openDate: "", category: item.category || "Other", location: item.location || "Fridge", daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || "" }));
     if (toAdd.length > 0) setTrackedItems(prev => [...toAdd, ...prev]);
     setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
   };
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); setSmartMultiItems([]); setSelectedSmartItems([]); setSmartScanning(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
-    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
+    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     if (scanMode === "single") {
       setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
@@ -2440,6 +2690,11 @@ export default function TrackFreshDashboard() {
       const catOk = filterCategory === "All" || (it.category ?? "Other") === filterCategory;
       const locOk = filterLocation === "All" || (it.location ?? "Fridge") === filterLocation;
       return catOk && locOk;
+    }).sort((a, b) => {
+      if (a.daysLeft === null && b.daysLeft === null) return 0;
+      if (a.daysLeft === null) return -1;
+      if (b.daysLeft === null) return 1;
+      return a.daysLeft - b.daysLeft;
     });
   }, [itemsWithCountdown, filterCategory, filterLocation]);
 
@@ -2454,15 +2709,15 @@ export default function TrackFreshDashboard() {
       const spokenItem = name.replace(/alexa:/i, "").trim();
       const today = new Date();
       const useBy = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
-      setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: spokenItem, useByDate: useBy.toISOString().split("T")[0], openDate: today.toISOString().split("T")[0], category: "Other", quantity: labelItem.weight || "", location: "Fridge" }]);
+      setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: spokenItem, useByDate: useBy.toISOString().split("T")[0], openDate: "", category: "Other", location: "Fridge" }]);
       window.alert("Alexa: Tracking " + spokenItem + " opened today, expires in 30 days.");
       setItemName(""); return;
     }
     if (!useByDate) { window.alert("Please enter a Use By date."); return; }
     const daysLeft = daysUntil(useByDate);
     if (daysLeft !== null && daysLeft <= 3) { setAlertItem({ name, daysLeft }); setShowAlert(true); }
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name, useByDate, openDate, category, quantity, location }]);
-    setItemName(""); setUseByDate(""); setOpenDate(""); setCategory("Other"); setQuantity(""); setLocation("Fridge");
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name, useByDate, openDate, category, location }]);
+    setItemName(""); setUseByDate(""); setOpenDate(""); setCategory("Other"); setLocation("Fridge");
   };
 
   const addToShoppingIfMissing = (item, source) => {
@@ -2480,7 +2735,60 @@ export default function TrackFreshDashboard() {
   };
 
   const handleEditItem = (id) => { const item = trackedItems.find(it => it.id === id); if (item) setEditingItem({ ...item }); };
-  const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
+  const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); setEditDateVoiceMsg(""); setEditDateVoiceListening(false); };
+
+  const parseSpokenDateEdit = (transcript) => {
+    const months = { january:1, february:2, march:3, april:4, may:5, june:6, july:7, august:8, september:9, october:10, november:11, december:12, jan:1, feb:2, mar:3, apr:4, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
+    let tx = transcript.toLowerCase().trim()
+      .replace(/\btwenty[\s-]?twenty[\s-]?six\b/g, "2026").replace(/\btwenty[\s-]?twenty[\s-]?seven\b/g, "2027")
+      .replace(/\btwenty[\s-]?twenty[\s-]?eight\b/g, "2028").replace(/\btwenty[\s-]?twenty[\s-]?nine\b/g, "2029")
+      .replace(/\btwenty[\s-]?twenty[\s-]?five\b/g, "2025").replace(/\btwenty[\s-]?twenty\b/g, "2020")
+      .replace(/\btwenty[\s-]six\b/g, "2026").replace(/\btwenty[\s-]seven\b/g, "2027")
+      .replace(/\btwenty[\s-]eight\b/g, "2028").replace(/\btwenty[\s-]nine\b/g, "2029")
+      .replace(/\btwenty[\s-]five\b/g, "2025").replace(/\btwenty[\s-]four\b/g, "2024");
+    const m = tx.match(/([a-z]+)\s+(\d{1,2})\s*,?\s*(\d{4})?/);
+    if (m) { const month = months[m[1]]; if (month) { const day = parseInt(m[2]); const year = m[3] ? parseInt(m[3]) : 2026; return new Date(year, month-1, day).toISOString().split("T")[0]; } }
+    const m2 = tx.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if (m2) { const yr = m2[3].length === 2 ? "20" + m2[3] : m2[3]; return new Date(parseInt(yr), parseInt(m2[1])-1, parseInt(m2[2])).toISOString().split("T")[0]; }
+    return null;
+  };
+
+  const handleEditVoiceDate = (attempt = 0) => {
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      setEditDateVoiceMsg("Voice not supported. Please enter date manually.");
+      setTimeout(() => { try { editDateInputRef.current?.showPicker(); } catch(e) {} }, 300);
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SR();
+    recognition.lang = "en-US"; recognition.interimResults = false; recognition.maxAlternatives = 1;
+    setEditDateVoiceListening(true);
+    setEditDateVoiceMsg(attempt > 0 ? "Please repeat the date." : "");
+    const onFail = () => {
+      setEditDateVoiceListening(false);
+      const next = attempt + 1;
+      if (next >= 2) {
+        setEditDateVoiceMsg("Please enter date manually.");
+        setTimeout(() => { try { editDateInputRef.current?.showPicker(); } catch(e) {} }, 300);
+      } else {
+        setEditDateVoiceMsg("Please repeat the date.");
+        setTimeout(() => handleEditVoiceDate(next), 1200);
+      }
+    };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      const parsed = parseSpokenDateEdit(transcript);
+      setEditDateVoiceListening(false);
+      if (parsed) {
+        setEditingItem(prev => ({ ...prev, useByDate: parsed }));
+        setEditDateVoiceMsg("✓ Date set: " + parsed);
+        setTimeout(() => setEditDateVoiceMsg(""), 3000);
+      } else { onFail(); }
+    };
+    recognition.onerror = () => onFail();
+    recognition.onend = () => setEditDateVoiceListening(false);
+    recognition.start();
+  };
 
   const handleMarkOpened = (item, dateStr) => {
     const shelfDays = getShelfLifeDays(item.name);
@@ -2780,14 +3088,41 @@ export default function TrackFreshDashboard() {
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const base64 = e.target.result.split(",")[1];
-        const mediaType = file.type;
-        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
-        const data = await res.json();
-        if (data.error) { setReceiptError(data.error); setReceiptScanning(false); return; }
-        setReceiptItems(data.items);
-        setSelectedReceiptItems(data.items.map((_, i) => i));
-        setReceiptScanning(false);
+        try {
+          const base64 = e.target.result.split(",")[1];
+          const mediaType = file.type;
+          const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
+          const raw = await res.text();
+          let data;
+          try {
+            data = raw ? JSON.parse(raw) : null;
+          } catch (parseErr) {
+            console.error("Receipt scan parse error:", parseErr, "raw:", raw);
+            setReceiptError("Scanner returned an invalid response. Please try again.");
+            setReceiptScanning(false);
+            return;
+          }
+          if (!data) {
+            setReceiptError("Scanner returned an empty response. Please try again.");
+            setReceiptScanning(false);
+            return;
+          }
+          if (data.error && (!data.items || data.items.length === 0)) {
+            const detail = data.rawResponse ? `${data.error}\n\nRaw response: ${data.rawResponse}` : data.error;
+            console.error("Receipt scan server error:", data);
+            setReceiptError(detail);
+            setReceiptScanning(false);
+            return;
+          }
+          const items = Array.isArray(data.items) ? data.items : [];
+          setReceiptItems(items);
+          setSelectedReceiptItems(items.map((_, i) => i));
+          setReceiptScanning(false);
+        } catch (innerErr) {
+          console.error("Receipt scan error:", innerErr);
+          setReceiptError(innerErr?.message || "Receipt scan failed");
+          setReceiptScanning(false);
+        }
       };
       reader.readAsDataURL(file);
     } catch (err) { setReceiptError(err.message); setReceiptScanning(false); }
@@ -2814,7 +3149,7 @@ export default function TrackFreshDashboard() {
     const loc = barcodeLocation || barcodeItem.location;
     const today = new Date().toISOString().split("T")[0];
     const itemName = barcodeItem.name;
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: today, freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, useByDate: barcodeUseBy, openDate: "", freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
     setMultiScanCount(prev => prev + 1);
     setMultiScanLastItem(itemName);
     setBarcodeItem(null);
@@ -2931,18 +3266,13 @@ export default function TrackFreshDashboard() {
     setQuickVoiceError("");
     recognition.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
-      if (field === "qty") {
-        setQuickAddQty(transcript);
+      const parsed = parseSpokenDate(transcript);
+      if (parsed) {
+        setQuickAddDate(parsed);
         setQuickVoiceListening("");
       } else {
-        const parsed = parseSpokenDate(transcript);
-        if (parsed) {
-          setQuickAddDate(parsed);
-          setQuickVoiceListening("");
-        } else {
-          setQuickVoiceError("Could not understand date. Try: February 20 2026");
-          setQuickVoiceListening("");
-        }
+        setQuickVoiceError("Could not understand date. Try: February 20 2026");
+        setQuickVoiceListening("");
       }
     };
     recognition.onerror = () => { setQuickVoiceError("Could not hear you. Please try again."); setQuickVoiceListening(""); };
@@ -3096,16 +3426,16 @@ export default function TrackFreshDashboard() {
       const useBy = f.date || (foodInfo.daysSealed ? new Date(today.getTime() + foodInfo.daysSealed * 86400000).toISOString().split("T")[0] : "");
       const cat = f.category !== "Other" ? f.category : (foodInfo.category || f.category);
       const loc = f.location !== "Fridge" ? f.location : (foodInfo.location || f.location);
-      setTrackedItems(prev => [...prev, { id: crypto.randomUUID(), name: f.name, category: cat, location: loc, quantity: "", useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
+      setTrackedItems(prev => [...prev, { id: crypto.randomUUID(), name: f.name, category: cat, location: loc, useByDate: useBy, openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
       setShowQuickAdd(false);
-      setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
+      setQuickAddName(""); setQuickAddDate(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
       speak("Item added! Say Next to add another, or Done to finish.", () =>
         listen(
           (t) => {
             if (/\b(next|another|more|again)\b/i.test(t)) {
               f.name = ""; f.category = "Other"; f.location = "Fridge"; f.date = ""; f.cancelled = false;
               setShowQuickAdd(true);
-              setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
+              setQuickAddName(""); setQuickAddDate(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
               speak("Ready when you are.", () => stepItem());
             } else {
               window.speechSynthesis.cancel();
@@ -3118,7 +3448,7 @@ export default function TrackFreshDashboard() {
 
     // Kick off the flow
     setShowQuickAdd(true);
-    setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
+    setQuickAddName(""); setQuickAddDate(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
     speak("Ready when you are.", () => stepItem());
   };
 
@@ -3133,9 +3463,9 @@ export default function TrackFreshDashboard() {
     const useBy = quickAddDate || (foodInfo.daysSealed ? new Date(today.getTime() + foodInfo.daysSealed * 86400000).toISOString().split("T")[0] : "");
     const cat = quickAddCategory !== "Other" ? quickAddCategory : (foodInfo.category || quickAddCategory);
     const loc = quickAddLocation !== "Fridge" ? quickAddLocation : (foodInfo.location || quickAddLocation);
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: quickAddQty, useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, useByDate: useBy, openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
     setShowQuickAdd(false);
-    setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
+    setQuickAddName(""); setQuickAddDate(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
   };
 
   const handleScanLabel = async (file) => {
@@ -3166,16 +3496,14 @@ export default function TrackFreshDashboard() {
 
   const handleAddLabelItem = () => {
     if (!labelItem) return;
-    const quantity = labelItem.weight || "";
     const itemName = labelItem.name;
-    setTrackedItems((prev) => [...prev, { 
-      id: crypto.randomUUID(), 
-      name: labelItem.name, 
-      category: labelItem.category, 
-      location: labelItem.location, 
-      quantity: quantity,
-      useByDate: labelItem.date || "", 
-      openDate: new Date().toISOString().split("T")[0], 
+    setTrackedItems((prev) => [...prev, {
+      id: crypto.randomUUID(),
+      name: labelItem.name,
+      category: labelItem.category,
+      location: labelItem.location,
+      useByDate: labelItem.date || "",
+      openDate: "",
       daysAfterOpening: labelItem.daysAfterOpening || null,
       storageTip: labelItem.storageTip || "",
       openedTip: labelItem.openedTip || ""
@@ -3196,11 +3524,8 @@ export default function TrackFreshDashboard() {
 
   const handleAddReceiptItems = () => {
     const toAdd = receiptItems.filter((_, i) => selectedReceiptItems.includes(i));
-    const today = new Date();
     setTrackedItems((prev) => [...prev, ...toAdd.map((it) => {
-      const days = it.daysSealed || 7;
-      const useBy = new Date(today.getTime() + days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-      return { id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" };
+      return { id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, useByDate: "", openDate: "", daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" };
     })]);
     setShowReceiptScanner(false);
     setReceiptItems([]);
@@ -3272,8 +3597,8 @@ export default function TrackFreshDashboard() {
           <div className="flex items-center gap-2">
             <button onClick={() => { setTutorialStep(0); setShowTutorial(true); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
-            {activeTab !== "home" && (
-              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"}>←</button>
+            {activeTab !== "navigate" && (
+              <button onClick={() => setActiveTab("navigate")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"}><span>↩</span></button>
             )}
             {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
             <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
@@ -3332,7 +3657,7 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="glass-scan-btn w-full py-2.5 text-sm">✅ Add Selected Items</button>
+                  <button onClick={handleAddReceiptItems} className="btn-green-3d w-full py-2.5 text-sm">✅ Add Selected Items</button>
                 </div>
               )}
               <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
@@ -3379,7 +3704,7 @@ export default function TrackFreshDashboard() {
               <ul className="space-y-3 text-sm text-gray-700">
                 <li className="flex gap-2"><span>\ud83e\udd66</span><span><strong>Tracker:</strong> {lang === "es" ? "La IA escanea un n\u00famero infinito de productos. Categor\u00eda y ubicaci\u00f3n se llenan autom\u00e1ticamente." : "AI scans an infinite number of items. Category and location auto-fill intelligently."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udcf8</span><span><strong>{lang === "es" ? "Esc\u00e1ner" : "Scanners"}:</strong> {lang === "es" ? "Usa Recibo, Etiqueta, C\u00f3digo de Barras o Agregar R\u00e1pido para a\u00f1adir productos." : "Use Receipt, Label, Barcode, or Quick Add to add items."}</span></li>
-                <li className="flex gap-2"><span>\ud83d\udd0d</span><span><strong>Filter:</strong> {lang === "es" ? "Filtra por ubicaci\u00f3n (Refrigerador, Congelador, Despensa) o categor\u00eda (L\u00e1cteos, Carne, etc.)." : "Filter by location (Fridge, Freezer, Pantry) or category (Dairy, Meat, Produce, etc.)."}</span></li>
+                <li className="flex gap-2"><span>\ud83d\udd0d</span><span><strong>Filter:</strong> {lang === "es" ? "Filtra por ubicaci\u00f3n: Todo, Refrigerador, Congelador o Despensa." : "Filter by location: All, Fridge, Freezer, or Pantry."}</span></li>
                 <li className="flex gap-2"><span>\ud83c\udf73</span><span><strong>{lang === "es" ? "Recetas" : "Recipes"}:</strong> {lang === "es" ? "La IA sugiere recetas basadas en lo que tienes en tu cocina." : "AI suggests recipes based on what\u2019s in your kitchen."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\uded2</span><span><strong>Shopping:</strong> {lang === "es" ? "Crea tu lista de compras y marca lo que compres." : "Build your shopping list and check off items as you shop."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udcc5</span><span><strong>{lang === "es" ? "Comidas" : "Meals"}:</strong> {lang === "es" ? "La IA planifica tus comidas de la semana." : "AI plans your weekly meals based on your tracked items."}</span></li>
@@ -3397,11 +3722,22 @@ export default function TrackFreshDashboard() {
               <h2 className="mb-4 text-lg font-bold">✏️ Edit Item</h2>
               <div className="space-y-3">
                 <div><label className="mb-1 block text-sm font-medium">{t("nameWord")}</label><input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
-                <div><label className="mb-1 block text-sm font-medium">{t("useByDate")}</label><input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
-                <div><label className="mb-1 block text-sm font-medium">Quantity</label><input type="text" value={editingItem.quantity || ""} onChange={(e) => setEditingItem({...editingItem, quantity: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{t("useByDate")}{editingItem.useByDate && <span className="ml-2 text-green-600 font-semibold">{editingItem.useByDate}</span>}</label>
+                  <div className="flex gap-2">
+                    <label className="flex-1 flex items-center justify-center gap-1 rounded border px-2 py-2 text-sm font-semibold cursor-pointer bg-gray-50 hover:bg-gray-100 text-gray-700 text-center">
+                      📅 Use By Date
+                      <input ref={editDateInputRef} type="date" value={editingItem.useByDate} onChange={(e) => { setEditingItem({...editingItem, useByDate: e.target.value}); setEditDateVoiceMsg(""); }} style={{position:"absolute",opacity:0,width:1,height:1,pointerEvents:"none"}} />
+                    </label>
+                    <button onClick={() => { setEditDateVoiceMsg(""); handleEditVoiceDate(0); }} disabled={editDateVoiceListening} className={`flex-1 rounded border px-2 py-2 text-sm font-semibold text-center ${editDateVoiceListening ? "bg-red-100 text-red-600 border-red-300 animate-pulse" : "bg-gray-50 hover:bg-gray-100 text-gray-700"}`}>
+                      {editDateVoiceListening ? "🎤 Listening…" : "🎤 Tell Me the Date"}
+                    </button>
+                  </div>
+                  {editDateVoiceMsg && <p className={`mt-1 text-xs font-semibold px-2 py-1 rounded ${editDateVoiceMsg.startsWith("✓") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>{editDateVoiceMsg}</p>}
+                </div>
                 <div><label className="mb-1 block text-sm font-medium">Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium">Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
-                <div className="flex gap-2 pt-2"><button onClick={handleSaveEdit} className="flex-1 rounded bg-green-500 py-2 text-sm font-semibold text-white">{t("save")}</button><button onClick={() => setEditingItem(null)} className="flex-1 rounded border py-2 text-sm font-semibold text-gray-600">{t("cancel")}</button></div>
+                <div className="flex gap-2 pt-2"><button onClick={handleSaveEdit} className="flex-1 rounded bg-green-500 py-2 text-sm font-semibold text-white">{t("save")}</button><button onClick={() => { setEditingItem(null); setEditDateVoiceMsg(""); setEditDateVoiceListening(false); }} className="flex-1 rounded border py-2 text-sm font-semibold text-gray-600">{t("cancel")}</button></div>
               </div>
             </div>
           </div>
@@ -3431,14 +3767,14 @@ export default function TrackFreshDashboard() {
 
         {showSmartScanner && (
           <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
-            <div style={{background:"white",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
+            <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.75rem"}}>
                 <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
-                  <h2 className="text-lg font-bold">{t("smartScanTitle")}</h2>
+                  <h2 className="text-lg font-bold text-white">{t("smartScanTitle")}</h2>
                   {scanMode === "multi" && <span className="rounded-full bg-blue-600 text-white px-2 py-1 text-xs font-bold">Mult. Scans</span>}
                   {scanMode === "multi" && uniScanCount > 0 && <span className="rounded-full bg-green-600 text-white px-2 py-1 text-xs font-bold">{uniScanCount} added</span>}
                 </div>
-                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); setScanMode(null); }} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&times;</button>
+                <button onClick={() => { setShowSmartScanner(false); resetSmartScanner(); setScanMode(null); }} style={{background:"rgba(255,255,255,0.2)",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"white"}}>&times;</button>
               </div>
               {scanMode === null && (
                 <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"14px",padding:"1rem"}}>
@@ -3450,7 +3786,7 @@ export default function TrackFreshDashboard() {
                 </div>
               )}
               {scanMode !== null && <>
-              <p className="text-sm text-gray-500 mb-3">{t("smartScanDesc")}</p>
+              <p className="text-sm text-green-200 mb-3">{t("smartScanDesc")}</p>
               {!smartResult && !smartError && smartMultiItems.length === 0 && (<div>
                 {(voiceFlowStep || voiceFlowPaused) && (
                   <div style={{background: voiceFlowPaused ? "#7c3aed" : "#1e3a5f", borderRadius:"10px", padding:"0.5rem 0.75rem", marginBottom:"0.5rem", display:"flex", alignItems:"center", gap:"0.5rem"}}>
@@ -3484,15 +3820,15 @@ export default function TrackFreshDashboard() {
                   {smartResult.storageTip && <p className="text-xs text-green-600 mt-1">{smartResult.storageTip}</p>}
                 </div>
                 <div className="mb-3">
-                  <p className="text-xs font-bold text-gray-700 mb-2">{t("smartScanWhere")}</p>
+                  <p className="text-xs font-bold text-green-200 mb-2">{t("smartScanWhere")}</p>
                   <div className="grid grid-cols-3 gap-2">
-                    <button onClick={() => { setSmartLocation("Fridge"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Fridge" ? "border-green-500 bg-green-50 text-green-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Fridge</button>
-                    <button onClick={() => { setSmartLocation("Freezer"); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Freezer</button>
-                    <button onClick={() => { setSmartLocation("Pantry"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-semibold ${smartLocation === "Pantry" ? "border-amber-500 bg-amber-50 text-amber-700 pill-3d-active" : "border-gray-200 text-gray-600 pill-3d"}`}>Pantry</button>
+                    <button onClick={() => { setSmartLocation("Fridge"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-bold ${smartLocation === "Fridge" ? "border-green-500 bg-green-50 text-green-700 pill-3d-active" : "border-gray-200 text-white pill-3d"}`}>Fridge</button>
+                    <button onClick={() => { setSmartLocation("Freezer"); }} className={`rounded-lg border-2 py-3 text-sm font-bold ${smartLocation === "Freezer" ? "border-cyan-500 bg-cyan-50 text-cyan-700 pill-3d-active" : "border-gray-200 text-white pill-3d"}`}>Freezer</button>
+                    <button onClick={() => { setSmartLocation("Pantry"); setSmartFreezeBy(""); }} className={`rounded-lg border-2 py-3 text-sm font-bold ${smartLocation === "Pantry" ? "border-amber-500 bg-amber-50 text-amber-700 pill-3d-active" : "border-gray-200 text-white pill-3d"}`}>Pantry</button>
                   </div>
                 </div>
                 <div className="mb-3">
-                  <p className="text-xs font-bold text-gray-700 mb-1">Use By Date</p>
+                  <p className="text-xs font-bold text-green-200 mb-1">Use By Date</p>
                   {voiceListening && (<div style={{background:"#fff7ed",borderRadius:"12px",padding:"1rem",border:"2px solid #fb923c",textAlign:"center",marginBottom:"0.75rem"}}>
                     <p className="text-2xl mb-2">🎙️</p>
                     <p className="text-sm font-bold text-orange-700">{t("listeningDate")}</p>
@@ -3526,24 +3862,23 @@ export default function TrackFreshDashboard() {
                     {scanningDate ? (
                       <p className="text-sm text-center text-orange-600 font-bold py-2">{t("smartScanDateReading")}</p>
                     ) : (<>
-                      <p className="text-sm font-bold text-gray-700 mb-2">📅 {t("expDateLabel")} {smartUseBy && <span className="text-green-600 text-xs font-normal">✓ {smartUseBy}</span>}</p>
-                      <div className="grid grid-cols-2 gap-2 mb-2">
-                        <button onClick={() => startVoiceDatePrompt(smartResult.name)} className={`rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 border-2 border-blue-300 pill-3d`}>🎤 Speak Date</button>
+                      <p className="text-sm font-bold text-green-200 mb-2">📅 {t("expDateLabel")} {smartUseBy && <span className="text-green-300 text-xs font-normal">✓ {smartUseBy}</span>}</p>
+                      <div className="mb-2">
                         <label className="rounded-xl py-3 text-sm font-bold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-700 border-2 border-gray-300 pill-3d" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={smartUseBy} onChange={e => setSmartUseBy(e.target.value)} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
                       </div>
                       <button onClick={() => document.getElementById("smartDateInput").click()} className="w-full rounded-xl py-2 text-sm font-bold bg-gradient-to-b from-orange-400 to-orange-500 text-white" style={{border:"none",cursor:"pointer"}}>{t("smartScanDate")}</button>
                     </>)}
                   </div>)}
                 </div>
-                {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">{t("freezeByLabel")}</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
+                {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-green-200 mb-1">{t("freezeByLabel")}</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
                 <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
-                <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
+                <button onClick={resetSmartScanner} className="w-full rounded-xl border border-white/30 py-2 text-sm font-semibold text-white/70 mt-2">{t("smartScanRetry")}</button>
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-2 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{t("addAndNext")}</button>
               <button onClick={handleDoneUniScan} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? (lang === "es" ? "✅ Listo (" + uniScanCount + " artículos)" : "✅ Done (" + uniScanCount + " items)") : t("cancel")}</button>
               </div>)}
               {smartMultiItems.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Found {smartMultiItems.length} item{smartMultiItems.length > 1 ? "s" : ""} — select which to add:</p>
+                  <p className="text-sm font-semibold text-green-200 mb-2">Found {smartMultiItems.length} item{smartMultiItems.length > 1 ? "s" : ""} — select which to add:</p>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.5rem",marginBottom:"0.75rem"}}>
                     {smartMultiItems.map((item, i) => (
                       <div key={i} onClick={() => setSelectedSmartItems(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])} style={{border: selectedSmartItems.includes(i) ? "2px solid #16a34a" : "2px solid #e5e7eb", borderRadius:"10px", padding:"0.6rem 0.65rem", cursor:"pointer", background: selectedSmartItems.includes(i) ? "#f0fdf4" : "white", transition:"all 0.12s"}}>
@@ -3559,7 +3894,7 @@ export default function TrackFreshDashboard() {
                     ))}
                   </div>
                   <button onClick={handleAddSmartMultiItems} disabled={selectedSmartItems.length === 0} className={`w-full rounded-xl py-3 text-sm font-bold mb-2 ${selectedSmartItems.length === 0 ? "bg-gray-200 text-gray-400" : "btn-green-3d"}`}>✅ Add {selectedSmartItems.length} Selected Item{selectedSmartItems.length !== 1 ? "s" : ""}</button>
-                  <button onClick={() => { setSmartMultiItems([]); setSelectedSmartItems([]); setSmartError(""); setSmartScanKey(prev => prev + 1); }} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 pill-3d">{t("smartScanRetry")}</button>
+                  <button onClick={() => { setSmartMultiItems([]); setSelectedSmartItems([]); setSmartError(""); setSmartScanKey(prev => prev + 1); }} className="w-full rounded-xl border border-white/30 py-2 text-sm font-semibold text-white/70">{t("smartScanRetry")}</button>
                 </div>
               )}
               </>}
@@ -3719,6 +4054,15 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
+        {showGroceryScan && (
+          <GroceryScanModal
+            lang={lang}
+            parseSpokenDate={parseSpokenDate}
+            onAddItem={(item) => setTrackedItems(prev => [item, ...prev])}
+            onClose={() => setShowGroceryScan(false)}
+          />
+        )}
+
         {showQuickAdd && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl p-6 shadow-lg" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
@@ -3733,39 +4077,18 @@ export default function TrackFreshDashboard() {
                     onSelect={(f) => { setQuickAddName(f.name); setQuickAddCategory(f.category); setQuickAddLocation(f.location); }}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-green-200">{t("category")}</label>
-                    <select value={quickAddCategory} onChange={(e) => setQuickAddCategory(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-green-200">{t("locationWord")}</label>
-                    <select value={quickAddLocation} onChange={(e) => setQuickAddLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
-                      {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
-                    </select>
-                  </div>
-                </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-green-200">{t("quantity")}</label>
-                  <div className="flex gap-2">
-                    <input value={quickAddQty} onChange={(e) => setQuickAddQty(e.target.value)} placeholder="e.g. 2 lbs" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
-                  </div>
-                  {quickVoiceListening === "qty" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la cantidad ej. dos libras" : "Say quantity e.g. two pounds"}</p>}
+                  <label className="mb-1 block text-sm font-medium text-green-200">{t("locationWord")}</label>
+                  <select value={quickAddLocation} onChange={(e) => setQuickAddLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
+                    {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-green-200">Use By Date</label>
-                  <div className="flex gap-2">
-                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
-                  </div>
-                  {quickVoiceListening === "date" && <p className="text-xs text-green-300 mt-1">{t("sayDateExample")}</p>}
-                  {quickVoiceError && <p className="text-xs text-red-400 mt-1">{quickVoiceError}</p>}
+                  <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900" />
                 </div>
                 <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">Add to Tracker</button>
-                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border border-white/30 py-2 text-sm font-semibold text-white/70">{t("cancel")}</button>
+                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border border-white/30 py-2 text-sm font-semibold text-white/70">{t("cancel")}</button>
               </div>
             </div>
           </div>
@@ -3843,6 +4166,64 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
+        {activeTab === "navigate" && (
+          <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+            <div>
+              <span className="app-section-label">🧭 {lang==="es"?"Navegación":"Navigation"}</span>
+              <h2 className="app-section-h2">{lang==="es"?"Navegar TrackFresh":"Navigate TrackFresh"}</h2>
+            </div>
+
+            {/* Compact kitchen status card → links to home */}
+            <button onClick={() => setActiveTab("home")} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(255,255,255,0.08)",border:"1.5px solid rgba(255,255,255,0.15)",borderRadius:"16px",padding:"0.875rem 1rem",cursor:"pointer",textAlign:"left",width:"100%"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.75rem"}}>
+                <span style={{fontSize:"1.6rem"}}>🍽️</span>
+                <div>
+                  <div style={{fontWeight:800,color:"#fff",fontSize:"0.9rem"}}>{lang==="es"?"Tu Cocina Hoy":"Your Kitchen Today"}</div>
+                  <div style={{fontSize:"0.7rem",color:"#86efac",marginTop:"0.15rem"}}>
+                    {(() => {
+                      const urgent = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft <= 3).length;
+                      const noDate = itemsWithCountdown.filter(it => it.daysLeft === null).length;
+                      if (trackedItems.length === 0) return lang==="es"?"Empieza agregando artículos":"Start by adding items";
+                      if (urgent > 0) return `${urgent} item${urgent>1?"s":""} ${lang==="es"?"necesitan atención":"need attention"}`;
+                      if (noDate > 0) return `${noDate} item${noDate>1?"s":""} ${lang==="es"?"sin fecha de vencimiento":"need exp dates"}`;
+                      return lang==="es"?"Todo fresco — ¡buen trabajo!":"Everything looks fresh — great job!";
+                    })()}
+                  </div>
+                </div>
+              </div>
+              <span style={{color:"rgba(255,255,255,0.45)",fontSize:"1.2rem"}}>›</span>
+            </button>
+
+            {/* 12 navigation tiles */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",      sub: lang === "es" ? "Rastrea tu Comida" : "Track Your Food",       action: () => setActiveTab("tracker") },
+                { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",         sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",     action: () => setActiveTab("recipes") },
+                { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Compras" : "Shopping",        sub: lang === "es" ? "Tu Lista" : "Build Your List",                action: () => setActiveTab("shopping") },
+                { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",           sub: lang === "es" ? "Tu Semana" : "Plan Your Week",                action: () => setActiveTab("meals") },
+                { icon: "🌱",                           label: lang === "es" ? "Compost" : "Compost",         sub: lang === "es" ? "Salva El Mundo" : "Save The World",           action: () => setActiveTab("composting") },
+                { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",          sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",            action: () => setActiveTab("stores-page") },
+                { icon: "👥",                           label: lang === "es" ? "Comunidad" : "Community",     sub: lang === "es" ? "Comparte" : "Share",                          action: () => setActiveTab("community") },
+                { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",               action: () => setShowRecallsPanel(true) },
+                { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",    sub: lang === "es" ? "Orientación" : "Guidance",                    action: () => setShowHelp(true) },
+                { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",         sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
+                { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",           sub: lang === "es" ? "Necesidades" : "Dietary Needs",               action: () => setActiveTab("dietary") },
+                { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",               action: () => setActiveTab("more") },
+              ].map(({ icon, label, sub, action }) => {
+                const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
+                const isShoppingTile = label === (lang === "es" ? "Compras" : "Shopping");
+                return (
+                  <button key={label} onClick={action} className={`dash-tile${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
+                    <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
+                    <span style={{fontSize:"0.7rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",textAlign:"center",lineHeight:1.2}}>{label}</span>
+                    {sub && <span style={{fontSize:"0.6rem",fontWeight:600,color:"#86efac",textAlign:"center",lineHeight:1.2}}>{sub}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {activeTab === "home" && (
           <div ref={homeTopRef}>
             {/* ── Your Kitchen Today panel ── always visible ── */}
@@ -3888,7 +4269,7 @@ export default function TrackFreshDashboard() {
                     <div style={{textAlign:"center",padding:"2.25rem 1.5rem 2rem",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.13)",borderRadius:"20px",backdropFilter:"blur(8px)",marginBottom:"1.25rem"}}>
                       <div style={{fontSize:"2.5rem",marginBottom:"0.85rem",lineHeight:1}}>🥦</div>
                       <p style={{color:"rgba(255,255,255,0.92)",fontWeight:700,fontSize:"1.05rem",marginBottom:"0.55rem",lineHeight:1.4}}>
-                        {isEs ? "Tu Cocina Hoy cobrará vida a medida que construyas tu inventario." : "Your Kitchen Today will come to life as you build your inventory."}
+                        {isEs ? "Tu Cocina Hoy cobrará vida a medida que construyas tu inventario." : "Your Kitchen Today will come to life as you build and track your inventory."}
                       </p>
                       <p style={{color:"rgba(255,255,255,0.92)",fontWeight:500,fontSize:"0.88rem",lineHeight:1.55,margin:"0 0 1.5rem"}}>
                         {isEs ? "Empieza agregando artículos en Rastreador." : "Start by adding items in Tracker."}
@@ -3945,13 +4326,12 @@ export default function TrackFreshDashboard() {
               );
             })()}
 
-            <div className="grid grid-cols-3 gap-3">
-              {trackedItems.length > 0 && (() => {
+            {trackedItems.length > 0 && (() => {
                 const urgentCount = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft <= 3).length;
                 const weekCount   = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft > 3 && it.daysLeft <= 7).length;
                 const totalAlert  = urgentCount + weekCount;
                 return (
-                  <button key="use-soon" onClick={() => setShowUseSoonPanel(true)} style={{gridColumn:"1/-1",background: urgentCount > 0 ? "linear-gradient(135deg,rgba(220,38,38,0.25),rgba(234,88,12,0.2))" : "rgba(255,255,255,0.1)",border: urgentCount > 0 ? "1.5px solid rgba(220,38,38,0.55)" : "1.5px solid rgba(183,214,58,0.45)",borderRadius:"16px",padding:"0.875rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",cursor:"pointer",transition:"all 0.15s",backdropFilter:"blur(6px)",textAlign:"left"}}>
+                  <button key="use-soon" onClick={() => setShowUseSoonPanel(true)} style={{width:"100%",background: urgentCount > 0 ? "linear-gradient(135deg,rgba(220,38,38,0.25),rgba(234,88,12,0.2))" : "rgba(255,255,255,0.1)",border: urgentCount > 0 ? "1.5px solid rgba(220,38,38,0.55)" : "1.5px solid rgba(183,214,58,0.45)",borderRadius:"16px",padding:"0.875rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",cursor:"pointer",transition:"all 0.15s",backdropFilter:"blur(6px)",textAlign:"left"}}>
                     <span style={{fontSize:"2.2rem",flexShrink:0}}>⚡</span>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:800,color:"#fff",fontSize:"0.95rem",lineHeight:1.2}}>{lang==="es"?"Usar Pronto":"Use Soon"}</div>
@@ -3968,31 +4348,6 @@ export default function TrackFreshDashboard() {
                   </button>
                 );
               })()}
-              {[
-                { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: lang === "es" ? "Rastrea tu Comida" : "Track Your Food",    action: () => setActiveTab("tracker") },
-                { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",       sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",  action: () => setActiveTab("recipes") },
-                { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Compras" : "Shopping",      sub: lang === "es" ? "Tu Lista" : "Build Your List",              action: () => setActiveTab("shopping") },
-                { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
-                { icon: "🌱",                           label: lang === "es" ? "Compost" : "Compost",       sub: lang === "es" ? "Salva El Mundo" : "Save The World",         action: () => setActiveTab("composting") },
-                { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
-                { icon: "👥",                           label: lang === "es" ? "Comunidad" : "Community",   sub: lang === "es" ? "Comparte" : "Share",                        action: () => setActiveTab("community") },
-                { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
-                { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",  sub: lang === "es" ? "Orientación" : "Guidance",                  action: () => setShowHelp(true) },
-                { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
-                { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",         sub: lang === "es" ? "Necesidades" : "Dietary Needs",             action: () => setActiveTab("dietary") },
-                { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("more") },
-              ].map(({ icon, label, sub, action }) => {
-                const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
-                const isShoppingTile = label === (lang === "es" ? "Compras" : "Shopping");
-                return (
-                  <button key={label} onClick={action} className={`dash-tile${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
-                    <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
-                    <span style={{fontSize:"0.7rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",textAlign:"center",lineHeight:1.2}}>{label}</span>
-                    {sub && <span style={{fontSize:"0.6rem",fontWeight:600,color:"#86efac",textAlign:"center",lineHeight:1.2}}>{sub}</span>}
-                  </button>
-                );
-              })}
-            </div>
           </div>
         )}
 
@@ -4039,8 +4394,7 @@ export default function TrackFreshDashboard() {
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
                     {[
-                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan a single item's barcode or label", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
-                      { icon:"📦", primary: lang==="es"?"Escanea varios códigos de barras o etiquetas a la vez":"Scan several barcodes or labels at once", secondary:"Scan Multiple", onClick: ()=>{ setShowMultiScanner(true);setMultiScanStatus("camera");setMultiItems([]);setMultiScanError(""); }},
+                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan single or multiple barcodes and labels at the same time", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
                     ].map(({icon,primary,secondary,onClick})=>(
                       <button key={secondary} onClick={onClick} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
                         onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
@@ -4053,23 +4407,17 @@ export default function TrackFreshDashboard() {
                         </div>
                       </button>
                     ))}
-                    {/* Quick Add + Voice row */}
-                    <div style={{display:"flex",gap:"0.5rem"}}>
-                      <button onClick={() => setShowQuickAdd(true)} style={{flex:1,display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
-                        onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
-                        onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
-                      >
-                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
-                        <div style={{textAlign:"left"}}>
-                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
-                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
-                        </div>
-                      </button>
-                      <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.09)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"rgba(255,255,255,0.18)"}`,borderRadius:"14px",padding:"0.75rem 1rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
-                        <span style={{fontSize:"1.3rem",lineHeight:1}}>🎤</span>
-                        <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
-                      </button>
-                    </div>
+                    {/* Quick Add */}
+                    <button onClick={() => setShowQuickAdd(true)} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
+                      onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
+                      onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
+                    >
+                      <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
+                      <div style={{textAlign:"left"}}>
+                        <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
+                        <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </>
@@ -4106,33 +4454,53 @@ export default function TrackFreshDashboard() {
                   <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
                 </div>
                 <div>
-                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</button>
-                  <div style={{textAlign:"center",marginBottom:"0.75rem"}}>
+                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",marginBottom:"0.75rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</button>
-                    <button onClick={() => { setShowMultiScanner(true); setMultiScanStatus("camera"); setMultiItems([]); setMultiScanError(""); }} className="glass-scan-btn" style={{padding:"0.85rem 0.35rem",fontSize:"0.7rem"}}><span style={{fontSize:"1.3rem"}}>📦</span>Scan Multiple</button>
-                  </div>
-                  <div style={{display:"flex",gap:"0.5rem",marginTop:"0.5rem"}}>
-                    <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.5rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
-                    <button onClick={handleSpeakToAdd} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.5rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>🎤</span>{lang==="es"?"Hablar":"Speak to Add"}</button>
-                    <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.12)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"#B7D63A"}`,borderRadius:"12px",padding:"0.65rem 0.9rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
-                      <span style={{fontSize:"1.1rem",lineHeight:1}}>🎤</span>
-                      <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
-                    </button>
-                  </div>
+                  </button>
+                  <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>Single or Mult. Items/Barcodes and Labels</span>
+                  </button>
+                  <button onClick={() => setShowGroceryScan(true)} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>🛒</span>{lang==="es"?"Escaneo de Compras":"Grocery Scan"}</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Di Listo para capturar • Guiado por voz":"Say Ready to capture · Voice-guided"}</span>
+                  </button>
+                  <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
                 </div>
 
                 {/* Mark What You've Opened */}
                 <div>
-                  <p style={{color:"rgba(255,255,255,0.72)",fontSize:"0.88rem",fontWeight:500,marginBottom:"0.6rem",textAlign:"center",lineHeight:1.45}}>
-                    {lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}
-                  </p>
-                  <button onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
-                    <span style={{fontSize:"1.4rem"}}>📂</span>
-                    <span style={{fontWeight:800}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
+                  <button onClick={() => setShowOpenedDropdown(v => !v)} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}>
+                      <span style={{fontSize:"1.4rem"}}>📂</span>
+                      <span style={{fontWeight:800}}>{lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}</span>
+                      <span style={{marginLeft:"auto",fontSize:"0.75rem",opacity:0.8}}>{showOpenedDropdown ? "▲" : "▼"}</span>
+                    </div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
                   </button>
+                  {showOpenedDropdown && (() => {
+                    const today = new Date().toISOString().split("T")[0];
+                    const ddItems = itemsWithCountdown;
+                    return (
+                      <div style={{marginTop:"0.4rem",background:"rgba(6,78,59,0.97)",border:"1.5px solid #B7D63A",borderRadius:"12px",overflow:"hidden",maxHeight:"220px",overflowY:"auto"}}>
+                        {ddItems.length === 0 ? (
+                          <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.8rem",textAlign:"center",padding:"0.85rem"}}>{lang==="es"?"Sin artículos rastreados todavía.":"No tracked items yet."}</p>
+                        ) : ddItems.map(it => (
+                          <button key={it.id} onClick={() => { handleMarkOpened(it, today); setShowOpenedDropdown(false); setShowOpenedModal(true); }} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"0.6rem 0.85rem",cursor:"pointer",textAlign:"left"}}>
+                            <div>
+                              <div style={{fontWeight:700,color:"#fff",fontSize:"0.85rem"}}>{it.name}</div>
+                              <div style={{fontSize:"0.62rem",color:"rgba(255,255,255,0.6)",marginTop:"0.08rem"}}>{it.location ?? "Fridge"}{it.useByDate ? " · Exp " + it.useByDate : ""}</div>
+                            </div>
+                            {it.openDate && <span style={{fontSize:"0.6rem",background:"rgba(183,214,58,0.25)",color:"#B7D63A",border:"1px solid rgba(183,214,58,0.4)",borderRadius:"999px",padding:"0.1rem 0.4rem",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>📂 {lang==="es"?"Abierto":"Opened"}</span>}
+                          </button>
+                        ))}
+                        <button onClick={() => { setShowOpenedDropdown(false); setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} style={{display:"block",width:"100%",background:"rgba(183,214,58,0.1)",border:"none",borderTop:"1px solid rgba(183,214,58,0.3)",padding:"0.6rem",color:"#B7D63A",fontWeight:800,fontSize:"0.75rem",cursor:"pointer",textAlign:"center"}}>
+                          {lang==="es"?"Ver todos →":"See all →"}
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Items card */}
@@ -4145,6 +4513,7 @@ export default function TrackFreshDashboard() {
                       </div>
                       <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
                     </div>
+                    <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>Tap to view by storage location</p>
                     <div className="mb-2 flex flex-wrap gap-1">
                       {["All", ...LOCATIONS].map((l) => {
                         const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
@@ -4153,15 +4522,6 @@ export default function TrackFreshDashboard() {
                           <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
                             {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
                           </button>
-                        );
-                      })}
-                    </div>
-                    <div className="mb-3 flex flex-wrap gap-1">
-                      {["All", ...CATEGORIES].map((c) => {
-                        const CAT_ES = {All:"Todo",Produce:"Verduras",Dairy:"Lácteos",Meat:"Carne",Pantry:"Despensa",Leftovers:"Sobras",Other:"Otro"};
-                        const label = lang === "es" ? CAT_ES[c] : c;
-                        return (
-                          <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>{label}</button>
                         );
                       })}
                     </div>
@@ -4178,7 +4538,6 @@ export default function TrackFreshDashboard() {
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="font-semibold">{it.name}</span>
-                                    {it.quantity && <span className="text-xs text-gray-500">{it.quantity}</span>}
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
                                   </div>
@@ -4204,7 +4563,7 @@ export default function TrackFreshDashboard() {
                                 <div className="flex items-center gap-2 ml-2">
                                   <div className="text-right" style={{minWidth:"3.2rem"}}>
                                     {it.daysLeft === null ? (
-                                      <div className="flash-red" onClick={() => handleEditItem(it.id)} style={{display:"inline-block",border:"1.5px solid rgba(220,38,38,0.7)",borderRadius:"999px",padding:"0.18rem 0.45rem",fontSize:"0.65rem",fontWeight:800,color:"#dc2626",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.3}}>Add<br/>Date</div>
+                                      <div className="flash-red" onClick={() => handleEditItem(it.id)} style={{display:"inline-block",border:"1.5px solid rgba(220,38,38,0.7)",borderRadius:"999px",padding:"0.18rem 0.45rem",fontSize:"0.65rem",fontWeight:800,color:"#dc2626",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.3}}>Add Exp<br/>Date</div>
                                     ) : (() => {
                                       const d = it.daysLeft;
                                       const [bg, color, border] = d <= 2 ? ["rgba(220,38,38,0.15)","#dc2626","rgba(220,38,38,0.5)"] : d <= 4 ? ["rgba(234,88,12,0.15)","#ea580c","rgba(234,88,12,0.5)"] : d <= 7 ? ["rgba(202,138,4,0.15)","#ca8a04","rgba(202,138,4,0.5)"] : ["rgba(22,163,74,0.15)","#16a34a","rgba(22,163,74,0.5)"];
@@ -4497,7 +4856,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}>← Back</button>
+            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",paddingRight:"0.75rem",color:"#F59E0B",background:"#16a34a",border:"2px solid #F59E0B"}}>↩ Back</button>
             
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
@@ -4727,7 +5086,7 @@ export default function TrackFreshDashboard() {
 
             {/* Header */}
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{color:"#F59E0B",background:"#16a34a",border:"2px solid #F59E0B",borderRadius:"8px"}}>↩ Back</button>
               <div>
                 <span className="app-section-label">Business</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🤝 Partners</h2>
@@ -4860,7 +5219,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "stores-page" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{color:"#F59E0B",background:"#16a34a",border:"2px solid #F59E0B",borderRadius:"8px"}}>↩ Back</button>
               <div>
                 <span className="app-section-label">Online</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🏪 {t("shopOnline")}</h2>
@@ -5229,14 +5588,13 @@ export default function TrackFreshDashboard() {
                     <p style={{color:"rgba(255,255,255,0.92)",fontSize:"0.875rem",marginBottom:"0.25rem"}}>
                       {lang==="es"?"Marcado como abierto":"Marked as opened"} — {openedConfirm.openDate}
                     </p>
-                    {openedConfirm.openUseBy && (
-                      <p style={{color:"#86efac",fontWeight:700,fontSize:"0.875rem",marginBottom:"0.25rem"}}>
-                        {lang==="es"?"Usar antes de":"Suggested use by"}: {openedConfirm.openUseBy}
-                        {openedConfirm.shelfDays && <span style={{color:"rgba(255,255,255,0.75)",fontWeight:400}}> ({openedConfirm.shelfDays} {lang==="es"?"días tras abrir":"days after opening"})</span>}
-                      </p>
-                    )}
-                    {!openedConfirm.openUseBy && (
-                      <p style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",marginBottom:"0.25rem"}}>{lang==="es"?"Sin referencia de duración conocida. Puedes editar la fecha de uso.":"No shelf-life reference found — you can set a use-by date manually."}</p>
+                    {(openedConfirm.item.storageTip || openedConfirm.item.openedTip || openedConfirm.item.daysAfterOpening || (openedConfirm.item.freezeBy && openedConfirm.item.location === "Fridge")) && (
+                      <div style={{display:"flex",flexWrap:"wrap",gap:"0.35rem",justifyContent:"center",marginTop:"0.5rem",marginBottom:"0.25rem"}}>
+                        {openedConfirm.item.storageTip && <TipPill type="gray">💡 {openedConfirm.item.storageTip}</TipPill>}
+                        {openedConfirm.item.openedTip && <TipPill type="orange">⚠️ {openedConfirm.item.openedTip}</TipPill>}
+                        {openedConfirm.item.daysAfterOpening && <TipPill type="blue">📅 Use within {openedConfirm.item.daysAfterOpening} days of opening</TipPill>}
+                        {openedConfirm.item.freezeBy && openedConfirm.item.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {openedConfirm.item.freezeBy}</TipPill>}
+                      </div>
                     )}
 
                     {showOpenedDateEdit ? (
@@ -5255,7 +5613,7 @@ export default function TrackFreshDashboard() {
                       {lang==="es"?"Listo":"Done"}
                     </button>
                     <button onClick={() => setOpenedConfirm(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem",marginTop:"0.5rem"}}>
-                      ← {lang==="es"?"Marcar otro":"Mark another"}
+                      <span style={{color:"#F59E0B"}}>↩</span> {lang==="es"?"Marcar otro":"Mark another"}
                     </button>
                   </div>
                 ) : (
@@ -5266,21 +5624,10 @@ export default function TrackFreshDashboard() {
                       <input
                         value={openedSearch}
                         onChange={e => setOpenedSearch(e.target.value)}
-                        placeholder={lang==="es"?"Busca o escribe un producto…":"Search or say an item name…"}
+                        placeholder={lang==="es"?"Busca o escribe un producto…":"Search or type an item name…"}
                         autoFocus
-                        style={{width:"100%",padding:"0.75rem 3rem 0.75rem 0.875rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.25)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.9rem",outline:"none",boxSizing:"border-box"}}
+                        style={{width:"100%",padding:"0.75rem 0.875rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.25)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.9rem",outline:"none",boxSizing:"border-box"}}
                       />
-                      <button
-                        onClick={() => {
-                          if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) { alert(lang==="es"?"Voz no disponible en este navegador.":"Voice input not available in this browser."); return; }
-                          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                          const sr = new SR(); sr.lang = lang === "es" ? "es-US" : "en-US"; sr.interimResults = false; sr.maxAlternatives = 1;
-                          sr.onresult = e => setOpenedSearch(e.results[0][0].transcript);
-                          sr.start();
-                        }}
-                        title={lang==="es"?"Hablar":"Speak item name"}
-                        style={{position:"absolute",right:"0.5rem",top:"50%",transform:"translateY(-50%)",background:"rgba(255,255,255,0.15)",border:"none",borderRadius:"50%",width:34,height:34,cursor:"pointer",fontSize:"1.1rem",display:"flex",alignItems:"center",justifyContent:"center"}}
-                      >🎤</button>
                     </div>
 
                     {/* List */}
@@ -5332,7 +5679,7 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="flex gap-3">
                 {tutorialStep > 0 && (
-                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn">←</button>
+                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn"><span>↩</span></button>
                 )}
                 {!isLast ? (
                   <button onClick={() => setTutorialStep(s => s + 1)} className="flex-1 rounded-2xl py-3 text-sm font-bold glass-scan-btn" style={{border:"2px solid #B7D63A"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
