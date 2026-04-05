@@ -329,6 +329,9 @@ const GLOBAL_STYLES = `
   .mkt-animate-d2 { animation-delay: 0.2s; }
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
+  .icon-bounce-1 { }
+  .icon-bounce-2 { }
+  .icon-bounce-3 { }
   /* === TOP NAV === */
   @keyframes navWobble { 0%,100% { transform: rotate(0deg); } 4% { transform: rotate(-11deg); } 8% { transform: rotate(10deg); } 12% { transform: rotate(-5deg); } 16% { transform: rotate(0deg); } }
   .top-nav { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, #7c2d12, #c2410c); border-bottom: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.55); overflow-x: auto; }
@@ -1625,6 +1628,18 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const scrollFrameRef = React.useRef(null);
   const bottomBtnRef = React.useRef(null);
   const howItWorksRef = React.useRef(null);
+  const [activeIcon, setActiveIcon] = React.useState(null);
+  const iconDismissRef = React.useRef(null);
+  const handleIconTap = (key) => {
+    if (iconDismissRef.current) clearTimeout(iconDismissRef.current);
+    setActiveIcon(prev => prev === key ? null : key);
+    iconDismissRef.current = setTimeout(() => setActiveIcon(null), 3000);
+  };
+  const ICON_INFO = {
+    ketchup: { emoji:"🍅", label: isEs ? "Ketchup" : "Ketchup", info: isEs ? "Después de abrir: 6 meses en el refrigerador" : "After opening: 6 months in fridge" },
+    mayo:    { emoji:"🫙", label: isEs ? "Mayonesa" : "Mayo",    info: isEs ? "Después de abrir: 2 meses en el refrigerador" : "After opening: 2 months in fridge" },
+    pickles: { emoji:"🥒", label: isEs ? "Pepinillos" : "Pickles", info: isEs ? "Después de abrir: 1–3 meses en el refrigerador" : "After opening: 1–3 months in fridge" },
+  };
 
   React.useEffect(() => {
     return () => { if (scrollFrameRef.current) cancelAnimationFrame(scrollFrameRef.current); };
@@ -1757,6 +1772,70 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
       </div>
 
+      {/* Condiment interactive strip */}
+      <div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
+        <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#fff",fontSize:"1.1rem"}}>{isEs
+          ? "Finalmente: sabe cuándo esa botella de ketchup, frasco de mayonesa o frasco de pepinillos en tu refrigerador realmente vencen DESPUÉS DE ABRIR."
+          : "Finally-know when that bottle of ketchup, jar of mayo or jar of pickles in your fridge actually expire AFTER OPENING."}
+        </p>
+        <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
+          {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; return (
+            <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
+              <div style={{fontWeight:700,fontSize:"0.85rem",color:"#fff",marginBottom:"0.25rem"}}>{item.info}</div>
+              <div style={{fontSize:"0.72rem",color:"#86efac",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea esto por ti" : "TrackFresh tracks this for you!"}</div>
+              <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
+            </div>
+          ); })()}
+          {["ketchup","mayo","pickles"].map(key => {
+            const item = ICON_INFO[key];
+            const isActive = activeIcon === key;
+            return (
+              <div key={key} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+                <button
+                  onClick={e => { e.stopPropagation(); handleIconTap(key); }}
+                  style={{background:"none",border:"none",cursor:"pointer",padding:"4px",lineHeight:1,transition:"transform 0.15s ease",transform:isActive?"scale(1.15)":"scale(1)",display:"inline-flex",alignItems:"flex-end",justifyContent:"center"}}
+                  aria-label={item.label}
+                >
+                  <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mayo" ? 2 : 3}`}>
+                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block"}} />
+                  </div>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        <p style={{textAlign:"center",fontSize:"0.72rem",color:"#E8A63C",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "Toca para ver lo que sabe TrackFresh" : "Tap to see what TrackFresh knows"}</p>
+      </div>
+
+      {/* The Issue */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "EL PROBLEMA" : "The Issue"}</div>
+        </div>
+        <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Etiquetas de caducidad? Confusas a propósito, si es que las encuentras." : "Expiration dates? Confusing by design if you can find them."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Nadie te dice cómo almacenar." : "After opening? Nobody tells you how to store."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🥫</span><span><strong>{isEs ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente después de abrirlos." : "That ketchup, mayo, jar of pickles — finally know when they actually expire after opening."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Miles de millones desperdiciados cada año. Ya no más." : "Billions wasted every year. Not anymore."}</strong></span></li>
+        </ul>
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "TrackFresh supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : "TrackFresh outsmarts the labels so you can track freshness in the palm of your hand."}</p>
+      </div>
+
+      {/* The Solution */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</div>
+        </div>
+        <p style={{textAlign:"center",fontWeight:700,fontSize:"1rem",margin:"0 0 0.6rem"}}>{isEs ? "TrackFresh puede:" : "TrackFresh can:"}</p>
+        <ol style={{padding:"0 0 0 1.25rem",margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear recibos de supermercado" : "Scan grocery receipts"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Escanear etiquetas y códigos de barras e identificar cada uno" : "Scan food labels and barcodes and identify each"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad" : "Voice recognition of expiration dates"}</strong></li>
+          <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Aviso de una semana para artículos por vencer" : "One week notice on expiring items"}</strong></li>
+        </ol>
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
+      </div>
+
       {/* Stats */}
       <div className="mkt-section mkt-section-dark mkt-animate mkt-animate-d1">
         <div className="mkt-stats">
@@ -1807,6 +1886,13 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       <div className="mkt-animate mkt-animate-d3" style={{background:"rgba(0,0,0,0.22)",padding:"0.75rem 1.5rem",textAlign:"center"}}>
         <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"0",letterSpacing:"-0.01em"}}>{isEs ? "Más Que un Rastreador. Una Cocina Más Inteligente." : "More Than a Tracker. A Smarter Kitchen."}</h2>
       </div>
+
+      {/* Statement paragraph */}
+      <p className="mkt-animate" style={{textAlign:"center",color:"#fff",fontSize:"1.1rem",padding:"0 1rem",margin:"0.5rem 0 1rem"}}>
+        {isEs
+          ? "Escanea recibos de supermercado, etiquetas y códigos de barras para rastrear fechas de vencimiento. Siempre sabe lo que hay en tu refrigerador, congelador y despensa."
+          : "Scan grocery receipts, food labels and barcodes and track expiration dates. Always know what's in your fridge, freezer and pantry."}
+      </p>
 
       {/* Stores */}
       <div className="mkt-section mkt-animate mkt-animate-d2">
