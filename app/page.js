@@ -1791,13 +1791,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
       </div>
 
-      {/* Statement paragraph */}
-      <p className="mkt-animate" style={{textAlign:"center",color:"#fff",fontSize:"1.1rem",padding:"0 1rem",margin:"0.5rem 0 1rem"}}>
-        {isEs
-          ? "Escanea recibos de supermercado, etiquetas y códigos de barras para rastrear fechas de vencimiento. Siempre sabe lo que hay en tu refrigerador, congelador y despensa."
-          : "Scan grocery receipts, food labels and barcodes and track expiration dates. Always know what's in your fridge, freezer and pantry."}
-      </p>
-
       {/* Stores */}
       <div className="mkt-section mkt-animate mkt-animate-d2">
         <div className="mkt-section-title"><h2>{isEs ? "Enlaza y Compra en Línea" : "Link And Shop Online"}</h2></div>
