@@ -1735,43 +1735,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
       </div>
 
-      {/* Dashboard mockup */}
-      <div className="mkt-dashboard mkt-animate mkt-animate-d2">
-        <div className="mkt-dash-header">
-          <span className="mkt-dash-title">🥦 {isEs ? "Mi Cocina" : "My Kitchen"}</span>
-          <span className="mkt-dash-date">{isEs ? "Hoy" : "Today"}</span>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem"}}>
-          <div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">🧊 {isEs ? "Refrigerador" : "Fridge"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥛 {isEs ? "Leche" : "Milk"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "3 días" : "3 days"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🥬 {isEs ? "Espinacas" : "Spinach"}</span><span className="mkt-dash-badge mkt-dash-badge-yellow">{isEs ? "2 días" : "2 days"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍓 {isEs ? "Fresas" : "Strawberries"}</span><span className="mkt-dash-badge mkt-dash-badge-red">{isEs ? "1 día" : "1 day"}</span></div>
-            </div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">❄️ {isEs ? "Congelador" : "Freezer"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍗 {isEs ? "Pollo" : "Chicken"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "2 meses" : "2 mo."}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🦐 {isEs ? "Camarón" : "Shrimp"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "3 meses" : "3 mo."}</span></div>
-            </div>
-          </div>
-          <div>
-            <div className="mkt-dash-section">
-              <div className="mkt-dash-section-label">🏺 {isEs ? "Despensa" : "Pantry"}</div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍝 Pasta</span><span className="mkt-dash-badge mkt-dash-badge-blue">{isEs ? "1 año" : "1 yr"}</span></div>
-              <div className="mkt-dash-item"><span className="mkt-dash-item-name">🍅 {isEs ? "Salsa" : "Tom. Sauce"}</span><span className="mkt-dash-badge mkt-dash-badge-green">{isEs ? "8 meses" : "8 mo."}</span></div>
-            </div>
-            <div className="mkt-dash-use-soon">
-              <div className="mkt-dash-use-soon-label">⚡ {isEs ? "Usar Pronto" : "Use Soon"}</div>
-              <div className="mkt-dash-use-soon-items">
-                <span className="mkt-dash-use-soon-chip">🍓 {isEs ? "Fresas" : "Strawberries"}</span>
-                <span className="mkt-dash-use-soon-chip">🥬 {isEs ? "Espinacas" : "Spinach"}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Condiment interactive strip */}
       <div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
         <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#fff",fontSize:"1.1rem"}}>{isEs
@@ -1834,57 +1797,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <li style={{fontSize:"0.97rem"}}><strong>{isEs ? "Aviso de una semana para artículos por vencer" : "One week notice on expiring items"}</strong></li>
         </ol>
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
-      </div>
-
-      {/* Stats */}
-      <div className="mkt-section mkt-section-dark mkt-animate mkt-animate-d1">
-        <div className="mkt-stats">
-          <div><div className="mkt-stat-num">40%</div><div className="mkt-stat-label">{isEs ? "de la comida se desperdicia" : "of food produced is wasted"}</div></div>
-          <div><div className="mkt-stat-num">$1,500</div><div className="mkt-stat-label">{isEs ? "tirado por familia al año" : "thrown away per family yearly"}</div></div>
-          <div><div className="mkt-stat-num">43%</div><div className="mkt-stat-label">{isEs ? "del desperdicio ocurre en casa" : "of waste happens at home"}</div></div>
-        </div>
-      </div>
-
-      {/* Why TrackFresh Works */}
-      <div className="mkt-section">
-        <div style={{maxWidth:"720px",margin:"0 auto"}}>
-          <div className="mkt-section-title" style={{marginBottom:"0.5rem"}}><h2>{isEs ? "Por Qué Funciona TrackFresh" : "Why TrackFresh Works"}</h2></div>
-          <div className="mkt-benefits" style={{marginTop:"0.15rem",gap:"0.2rem"}}>
-            {[
-              {icon:"👁️", title:isEs?"Sabe lo que tienes":"Know what you have",          desc:isEs?"Deja de olvidar lo que ya tienes en tu cocina.":"Stop forgetting what's already in your kitchen."},
-              {icon:"⏱️", title:isEs?"Usa antes de que venza":"Use food before it expires", desc:isEs?"Obtén visibilidad clara de lo que necesita atención primero.":"Get clear visibility into what needs attention first."},
-              {icon:"🛒", title:isEs?"Compra más inteligente":"Shop smarter",              desc:isEs?"Evita comprar duplicados y desperdiciar dinero.":"Avoid buying duplicates and wasting money."},
-              {icon:"🍳", title:isEs?"Planifica comidas fácilmente":"Plan meals more easily", desc:isEs?"Convierte lo que ya tienes en ideas de comidas simples.":"Turn what you already own into simple meal ideas."},
-            ].map((b,i) => (
-              <div key={i} className="mkt-benefit-card mkt-animate" style={{animationDelay:0.1*i+"s",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                <div className="mkt-benefit-icon">{b.icon}</div>
-                <h3>{b.title}</h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works */}
-      <div ref={howItWorksRef} className="mkt-section mkt-section-dark">
-        <div className="mkt-section-title"><h2>{isEs ? "Cómo Funciona" : "How It Works"}</h2></div>
-        <div className="mkt-3steps">
-          {[
-            {n:"1", title:isEs?"Escanea":"Scan",  desc:isEs?"Agrega alimentos por código de barras o etiqueta.":"Add groceries by barcode or label."},
-            {n:"2", title:isEs?"Rastrea":"Track", desc:isEs?"Organiza la comida en tu refrigerador, congelador y despensa.":"Organize food in your fridge, freezer, and pantry."},
-            {n:"3", title:isEs?"Usa":"Use",       desc:isEs?"Ve qué usar primero antes de que se eche a perder.":"See what to use first before it goes bad."},
-          ].map((s,i) => (
-            <div key={i} className="mkt-3step mkt-animate" style={{animationDelay:0.12*i+"s"}}>
-              <div className="mkt-3step-num">{s.n}</div>
-              <h3>{s.title}</h3>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Statement */}
-      <div className="mkt-animate mkt-animate-d3" style={{background:"rgba(0,0,0,0.22)",padding:"0.75rem 1.5rem",textAlign:"center"}}>
-        <h2 style={{fontSize:"1.6rem",fontWeight:900,marginBottom:"0",letterSpacing:"-0.01em"}}>{isEs ? "Más Que un Rastreador. Una Cocina Más Inteligente." : "More Than a Tracker. A Smarter Kitchen."}</h2>
       </div>
 
       {/* Statement paragraph */}
