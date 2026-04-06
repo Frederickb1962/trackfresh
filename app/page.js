@@ -48,23 +48,19 @@ const GLOBAL_STYLES = `
   input[type="text"], input[type="date"], input[type="number"], select, textarea,
   input.rounded.border, input.flex-1.rounded.border {
     border-radius: 0.75rem !important;
-    border: 1px solid #333 !important;
-    background: #1a1a1a !important;
-    background-color: #1a1a1a !important;
-    color: #fff !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
     transition: all 0.15s ease !important;
     padding: 0.5rem 0.75rem !important;
   }
   input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
-    border-color: #22c55e !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 3px rgba(34,197,94,0.2) !important;
+    border-color: #059669 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 3px rgba(5,150,105,0.15) !important;
     outline: none !important;
   }
-  input::placeholder, textarea::placeholder { color: #6b7280 !important; }
   select {
     border-radius: 0.75rem !important;
-    background-color: #1a1a1a !important;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(0,0,0,0.02) 100%) !important;
   }
   .btn-green-3d {
     background: linear-gradient(to bottom, #16a34a, #14532d) !important;
@@ -261,15 +257,15 @@ const GLOBAL_STYLES = `
     box-shadow: 0 1px 0px #0f3d20, 0 2px 4px rgba(0,0,0,0.2) !important;
   }
   .card-3d {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
     transition: all 0.2s ease;
   }
   .card-3d:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
   }
 
   /* === MARKETING PAGE === */
-  .mkt-page { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
+  .mkt-page { min-height: 100vh; background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
   .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto; }
   .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
   .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #F0C070, #E8A63C); color: #000; font-weight: 800; font-size: 1.05rem; padding: 1rem 2.35rem; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.15); transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; -webkit-tap-highlight-color:transparent; }
@@ -292,7 +288,7 @@ const GLOBAL_STYLES = `
   .mkt-stat-num { font-size: 1.65rem; font-weight: 900; color: #B7D63A; }
   .mkt-stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 0.1rem; }
   /* Dashboard mockup */
-  .mkt-dashboard { max-width: 540px; margin: 0.75rem auto; background: #1a1a1a; border-radius: 20px; padding: 1.25rem; box-shadow: 0 24px 64px rgba(0,0,0,0.6); color: #fff; border: 2px solid #22c55e; }
+  .mkt-dashboard { max-width: 540px; margin: 0.75rem auto; background: linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%); border-radius: 20px; padding: 1.25rem; box-shadow: 0 24px 64px rgba(0,0,0,0.4); color: #fff; border: 2px solid rgba(183,214,58,0.55); }
   .mkt-dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; padding-bottom: 0.625rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
   .mkt-dash-title { font-size: 0.875rem; font-weight: 800; color: #fff; }
   .mkt-dash-date { font-size: 0.7rem; color: rgba(255,255,255,0.55); font-weight: 600; }
@@ -338,7 +334,7 @@ const GLOBAL_STYLES = `
   .icon-bounce-3 { }
   /* === TOP NAV === */
   @keyframes navWobble { 0%,100% { transform: rotate(0deg); } 4% { transform: rotate(-11deg); } 8% { transform: rotate(10deg); } 12% { transform: rotate(-5deg); } 16% { transform: rotate(0deg); } }
-  .top-nav { position: sticky; top: 0; z-index: 50; background: #111111; border-bottom: 2px solid #22c55e; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.8); overflow-x: auto; }
+  .top-nav { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, #7c2d12, #c2410c); border-bottom: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.55); overflow-x: auto; }
   .top-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 0.45rem 0.5rem; min-width: 56px; flex-shrink: 0; border-radius: 8px; }
   .top-nav button span.nav-icon { font-size: 1.6rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
   .top-nav button span.nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em; }
@@ -356,7 +352,7 @@ const GLOBAL_STYLES = `
   .top-nav button:nth-child(6) { animation: navWobble 4.2s 3.5s infinite; }
   .main-content { padding-bottom: 5.5rem !important; }
   /* === FOOTER NAV === */
-  .footer-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: #111111; border-top: 2px solid #22c55e; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 24px rgba(0,0,0,0.8); padding: 0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom)); overflow-x: auto; }
+  .footer-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to top, #7c2d12, #c2410c); border-top: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 24px rgba(0,0,0,0.55); padding: 0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom)); overflow-x: auto; }
   .footer-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.35rem 0.5rem; min-width: 52px; flex-shrink: 0; border-radius: 8px; }
   .footer-nav button span.footer-icon { font-size: 1.45rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
   .footer-nav button span.footer-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.02em; text-align: center; line-height: 1.2; }
@@ -384,16 +380,16 @@ const GLOBAL_STYLES = `
   .mkt-store-card:active { transform: translateY(1px); transition-duration: 0.08s; }
 
   /* === APP INTERIOR THEME (matches landing page) === */
-  .app-bg { background: #0a0a0a; background-attachment: fixed; }
+  .app-bg { background: linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%); background-attachment: fixed; }
   .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
   .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: #1a1a1a; border: 2px solid #22c55e; border-bottom: 3px solid #15803d; color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; width: 100%; box-shadow: 0 4px 0 rgba(21,128,61,0.5), 0 6px 14px rgba(0,0,0,0.4); -webkit-tap-highlight-color:transparent; }
+  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); border: 2px solid #B7D63A; border-bottom: 3px solid rgba(80,105,15,0.7); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); width: 100%; box-shadow: 0 4px 0 rgba(80,105,15,0.5), 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.22); -webkit-tap-highlight-color:transparent; }
   @keyframes letterPop { 0%,100% { transform:scale(1); color:#f97316; text-shadow:none; } 4% { transform:scale(1.28); color:#fde68a; text-shadow:0 0 10px rgba(251,191,36,0.9),0 0 4px rgba(249,115,22,0.7); } 10% { transform:scale(1); color:#f97316; text-shadow:none; } }
-  .glass-scan-btn:hover { background: #222; border-color: #4ade80; transform: translateY(-3px); box-shadow: 0 7px 0 rgba(21,128,61,0.5), 0 10px 20px rgba(0,0,0,0.4), 0 0 14px rgba(34,197,94,0.2); }
-  .glass-scan-btn:active { transform: translateY(3px); background: #111; box-shadow: 0 1px 0 rgba(21,128,61,0.5), 0 2px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(0,0,0,0.2); transition-duration: 0.08s; }
-  .tracker-items-card { background: #1a1a1a !important; border: 3px solid #22c55e !important; }
-  .glass-tile { background: #1a1a1a; border: 1px solid #22c55e; border-radius: 16px; padding: 1.25rem 1rem; text-align: center; transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
-  .glass-tile:hover { transform: translateY(-3px); background: #222; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #B7D63A; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
+  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #B7D63A !important; backdrop-filter: blur(4px); }
+  .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
+  .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
   .glass-tile:active { transform: translateY(1px); }
   .app-header-btn { background: none; border: none; border-radius: 0; padding: 0.4rem 0.5rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
   .app-header-btn:hover { opacity: 0.75; }
@@ -420,9 +416,9 @@ const GLOBAL_STYLES = `
 
   /* ── Premium polish ── */
   /* 1. Dashboard tile — lift on hover (desktop) + visible tap feedback (mobile) */
-  .dash-tile { background:#1a1a1a; border:1.5px solid #22c55e; border-bottom:3.5px solid #15803d; border-radius:20px; padding:1rem 0.5rem; display:flex; flex-direction:column; align-items:center; gap:0.4rem; cursor:pointer; transition:transform 0.18s ease, box-shadow 0.18s ease; width:100%; -webkit-tap-highlight-color:transparent; box-shadow:0 6px 0 rgba(21,128,61,0.4), 0 10px 18px rgba(0,0,0,0.5); }
-  .dash-tile:hover { transform:translateY(-3px); box-shadow:0 9px 0 rgba(21,128,61,0.4), 0 14px 24px rgba(0,0,0,0.6); }
-  .dash-tile:active { transform:translateY(5px) scale(0.96); box-shadow:0 1px 0 rgba(21,128,61,0.4), 0 0 0 2.5px rgba(34,197,94,0.5), 0 0 18px rgba(34,197,94,0.2); outline:none; transition-duration:0.08s; }
+  .dash-tile { background:linear-gradient(175deg,rgba(255,255,255,0.26) 0%,rgba(255,255,255,0.08) 55%,rgba(0,0,0,0.08) 100%); border:1.5px solid rgba(255,255,255,0.28); border-bottom:3.5px solid rgba(0,0,0,0.35); border-radius:20px; padding:1rem 0.5rem; display:flex; flex-direction:column; align-items:center; gap:0.4rem; cursor:pointer; transition:transform 0.18s ease, box-shadow 0.18s ease; backdrop-filter:blur(8px); width:100%; -webkit-tap-highlight-color:transparent; box-shadow:0 6px 0 rgba(0,0,0,0.35), 0 10px 18px rgba(0,0,0,0.25), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:hover { transform:translateY(-3px); box-shadow:0 9px 0 rgba(0,0,0,0.35), 0 14px 24px rgba(0,0,0,0.28), inset 0 1.5px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:active { transform:translateY(5px) scale(0.96); box-shadow:0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 2px 6px rgba(0,0,0,0.1), 0 0 0 2.5px rgba(183,214,58,0.5), 0 0 18px rgba(183,214,58,0.22); outline:none; transition-duration:0.08s; }
   /* 2. I Opened Something — visible on tap */
   .opened-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(to bottom, rgba(183,214,58,0.22), rgba(183,214,58,0.1)); border:1.5px solid rgba(183,214,58,0.55); border-bottom:2.5px solid rgba(70,90,10,0.4); border-radius:12px; padding:0.6rem; cursor:pointer; color:#B7D63A; font-weight:800; font-size:0.82rem; transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 0 rgba(70,90,10,0.35), 0 6px 14px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
   .opened-btn:hover { transform:translateY(-2px); background:linear-gradient(to bottom, rgba(183,214,58,0.32), rgba(183,214,58,0.16)); box-shadow:0 6px 0 rgba(70,90,10,0.35), 0 10px 20px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.2); border-color:rgba(183,214,58,0.8); }
@@ -453,62 +449,6 @@ const GLOBAL_STYLES = `
   .voice-mic-btn { display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.65);cursor:pointer;font-size:1rem;transition:all 0.2s;flex-shrink:0; }
   .voice-mic-btn:hover { background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4); }
   .voice-mic-btn.listening { background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.55);color:#ef4444;animation:mic-pulse 1.1s infinite; }
-
-  /* ===== GLOBAL DARK THEME OVERRIDES ===== */
-  body, html { background: #0a0a0a !important; }
-  .bg-white { background-color: #1a1a1a !important; color: #fff !important; }
-  .bg-white\/95 { background-color: rgba(26,26,26,0.97) !important; }
-  .bg-gray-50 { background-color: #161616 !important; }
-  .bg-gray-100 { background-color: #1e1e1e !important; }
-  .bg-gray-200 { background-color: #242424 !important; }
-  .text-gray-900 { color: #f3f4f6 !important; }
-  .text-gray-800 { color: #e5e7eb !important; }
-  .text-gray-700 { color: #d1d5db !important; }
-  .text-gray-600 { color: #9ca3af !important; }
-  .text-gray-500 { color: #6b7280 !important; }
-  .text-gray-400 { color: #4b5563 !important; }
-  .text-green-800 { color: #4ade80 !important; }
-  .text-green-700 { color: #86efac !important; }
-  .text-green-600 { color: #4ade80 !important; }
-  .text-blue-700 { color: #93c5fd !important; }
-  .border { border-color: #2a2a2a !important; }
-  .border-gray-200 { border-color: #2a2a2a !important; }
-  .border-gray-300 { border-color: #333 !important; }
-  .border-green-900\/20 { border-color: rgba(34,197,94,0.3) !important; }
-  .shadow-lg { box-shadow: 0 10px 40px rgba(0,0,0,0.7) !important; }
-  .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
-  /* Modal inner cards */
-  .rounded-xl.bg-white { background: #1a1a1a !important; color: #fff !important; }
-  .rounded-xl.bg-white p, .rounded-xl.bg-white h2, .rounded-xl.bg-white label, .rounded-xl.bg-white span { color: inherit; }
-  .rounded-2xl.bg-white { background: #1a1a1a !important; color: #fff !important; }
-  /* Autocomplete dropdowns */
-  .rounded-lg.bg-white { background: #1a1a1a !important; color: #fff !important; }
-  .rounded-lg.bg-white li:hover { background: #222 !important; }
-  /* Tracker item cards */
-  .rounded-lg.border.px-3.py-2 { background: #1e1e1e !important; }
-  /* Urgency / freshness card variants */
-  .border-red-300 { border-color: #991b1b !important; }
-  .border-yellow-300 { border-color: #92400e !important; }
-  /* Pill cancel / secondary buttons */
-  .pill-3d { background: #1e1e1e !important; color: #9ca3af !important; border-color: #333 !important; }
-  .pill-3d:hover { background: #262626 !important; }
-  /* Location filter pills */
-  .bg-white.text-gray-600 { background: #1e1e1e !important; color: #9ca3af !important; }
-  .bg-green-700 { background-color: #15803d !important; }
-  /* Checkboxes accent */
-  input[type="checkbox"] { accent-color: #22c55e; }
-  /* Blue accent tags */
-  .bg-blue-100 { background-color: #1e3a5f !important; }
-  .bg-gray-100.text-gray-600 { background: #1e1e1e !important; color: #9ca3af !important; }
-  /* mkt-section-dark */
-  .mkt-section-dark { background: rgba(0,0,0,0.4) !important; }
-  /* App section labels */
-  .app-section-h2 { color: #fff !important; }
-  /* Semibold text in modals */
-  .font-semibold.text-gray-700 { color: #d1d5db !important; }
-  .font-bold.text-gray-600 { color: #9ca3af !important; }
-  /* Input focus ring */
-  .focus\:outline-none:focus { outline: none !important; }
 `;
 
 
@@ -1328,14 +1268,14 @@ function ShoppingAutocomplete({ value, onChange, onSelect, onAddItem, lang }) {
 }
 
 function Card({ children, className = "", style = {} }) {
-  return <div className={`rounded-2xl border card-3d card-premium ${className}`} style={{background:"#1a1a1a",border:"1.5px solid #22c55e",color:"#fff",...style}}>{children}</div>;
+  return <div className={`rounded-2xl border border-green-900/20 bg-white/95 backdrop-blur-md p-5 card-3d card-premium ${className}`} style={style}>{children}</div>;
 }
 
 function TabBar({ active, onChange }) {
   return (
     <div className="flex gap-1 rounded-2xl bg-gradient-to-r from-green-900 to-emerald-800 p-1.5 shadow-lg">
       {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
-        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "pill-3d-active scale-[1.02]" : "pill-3d"}`} style={{background: active === id ? "#f97316" : "#1e1e1e", color: active === id ? "#fff" : "#9ca3af", border: active === id ? "none" : "1px solid #333"}}>{label}</button>
+        <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 pill-3d-active scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10 pill-3d"}`}>{label}</button>
       ))}
     </div>
   );
@@ -3578,14 +3518,14 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleAddReceiptItems} style={{width:"100%",padding:"0.75rem 1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:800,fontSize:"0.95rem",border:"none",borderRadius:"14px",cursor:"pointer",boxShadow:"0 4px 0 #14532d"}}>{lang === "es" ? `Agregar ${selectedReceiptItems.length} productos al Rastreador` : `Add ${selectedReceiptItems.length} Items to Tracker`}</button>
                 </div>
               )}
-              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border py-2 text-sm font-bold pill-3d" style={{background:"#1e1e1e",color:"#9ca3af",borderColor:"#333"}}>{t("cancel")}</button>
+              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
             </div>
           </div>
         )}
 
         {showRecallsPanel && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
-          <div style={{background:"#1a1a1a",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem",border:"1px solid #22c55e",color:"#fff"}} onClick={e => e.stopPropagation()}>
+          <div style={{background:"white",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
               <h2 style={{fontWeight:800,fontSize:"1.1rem",color:"#991b1b",margin:0}}>&#9888;&#65039; {t("fdaRecallsBanner")}</h2>
               <button onClick={() => setShowRecallsPanel(false)} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&#10005;</button>
@@ -3594,7 +3534,7 @@ export default function TrackFreshDashboard() {
             {fdaRecalls.length === 0 && !fdaLoading && <p style={{textAlign:"center",color:"#6b7280",padding:"2rem 0"}}>{t("fdaError")}</p>}
             <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
               {fdaRecalls.map(recall => (
-                <div key={recall.id} style={{background:"#1e1e1e",borderRadius:"12px",padding:"1rem",border:recall.severity === "high" ? "2px solid #991b1b" : recall.severity === "medium" ? "2px solid #92400e" : "1px solid #333",boxShadow:"0 1px 4px rgba(0,0,0,0.3)",color:"#fff"}}>
+                <div key={recall.id} style={{background:"white",borderRadius:"12px",padding:"1rem",border:recall.severity === "high" ? "2px solid #fecaca" : recall.severity === "medium" ? "2px solid #fed7aa" : "1px solid #e5e7eb",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem"}}>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:700,fontSize:"0.85rem",color:"#111",lineHeight:1.3}}>{recall.product}</div>
@@ -3674,7 +3614,7 @@ export default function TrackFreshDashboard() {
 
         {showSmartScanner && (
           <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"1rem",paddingTop:"2rem",overflowY:"auto"}}>
-            <div style={{background:"#1a1a1a",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem",border:"1px solid #22c55e",color:"#fff"}}>
+            <div style={{background:"white",borderRadius:"20px",width:"100%",maxWidth:"440px",maxHeight:"90vh",overflow:"auto",padding:"1.25rem"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.75rem"}}>
                 <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
                   <h2 className="text-lg font-bold">{t("smartScanTitle")}</h2>
@@ -3860,7 +3800,7 @@ export default function TrackFreshDashboard() {
                 </div>
                 {smartLocation === "Freezer" && (<div className="mb-3"><p className="text-xs font-bold text-gray-700 mb-1">{t("freezeByLabel")}</p><input type="date" value={smartFreezeBy} onChange={e => setSmartFreezeBy(e.target.value)} className="w-full rounded border px-3 py-2 text-sm" /></div>)}
                 <button onClick={handleAddSmartItem} disabled={!smartLocation} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
-                <button onClick={resetSmartScanner} className="w-full rounded-xl border py-2 text-sm font-bold mt-2 pill-3d" style={{background:"#1e1e1e",color:"#9ca3af",borderColor:"#333"}}>{t("smartScanRetry")}</button>
+                <button onClick={resetSmartScanner} className="w-full rounded-xl border bg-white py-2 text-sm font-bold text-gray-600 mt-2 pill-3d">{t("smartScanRetry")}</button>
                 <button onClick={() => { handleAddSmartItemMulti(); }} disabled={!smartResult} className={`w-full rounded-xl py-3 text-sm font-bold mt-2 ${!smartResult ? "bg-gray-200 text-gray-400" : "bg-blue-500 text-white shadow-md"}`} style={smartResult ? {boxShadow:"0 3px 0 #1d4ed8"} : {}}>{lang === "es" ? "✅ Agregar y Escanear Otro" : "✅ Add & Scan Another"}</button>
               <button onClick={() => { if (smartResult) handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 100); }} className="w-full rounded-xl py-2.5 text-sm font-bold mt-2" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{uniScanCount > 0 ? (lang === "es" ? `✅ Listo (${uniScanCount + (smartResult ? 1 : 0)} artículos)` : `✅ Done (${uniScanCount + (smartResult ? 1 : 0)} items)`) : (smartResult ? (lang === "es" ? "✅ Agregar y Cerrar" : "✅ Add & Close") : t("cancel"))}</button>
               </div>)}
@@ -3871,7 +3811,7 @@ export default function TrackFreshDashboard() {
 
         {showVoiceEditForm && smartResult && (
           <div style={{position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.5)"}} onClick={() => setShowVoiceEditForm(false)}>
-            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#1a1a1a",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto",border:"1px solid #22c55e",color:"#fff"}} onClick={e => e.stopPropagation()}>
+            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto"}} onClick={e => e.stopPropagation()}>
               <div style={{width:"40px",height:"4px",background:"#e5e7eb",borderRadius:"2px",margin:"0 auto 1rem"}} />
               <h3 style={{fontWeight:"bold",marginBottom:"0.75rem"}}>✏️ {lang === "es" ? "Editar Item" : "Edit Item"}</h3>
               <div style={{marginBottom:"0.75rem"}}>
@@ -3886,7 +3826,7 @@ export default function TrackFreshDashboard() {
                 <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.5rem"}}>{lang === "es" ? "Ubicación" : "Location"}</p>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0.5rem"}}>
                   {["Fridge","Freezer","Pantry"].map(loc => (
-                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #22c55e" : "2px solid #333",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#052e16" : "#1e1e1e",color: smartLocation === loc ? "#4ade80" : "#9ca3af",cursor:"pointer"}}>{loc}</button>
+                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #16a34a" : "2px solid #e5e7eb",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#f0fdf4" : "white",color: smartLocation === loc ? "#15803d" : "#4b5563",cursor:"pointer"}}>{loc}</button>
                   ))}
                 </div>
               </div>
@@ -3902,7 +3842,7 @@ export default function TrackFreshDashboard() {
 
         {showVoiceEditForm && smartResult && (
           <div style={{position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.5)"}} onClick={() => setShowVoiceEditForm(false)}>
-            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#1a1a1a",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto",border:"1px solid #22c55e",color:"#fff"}} onClick={e => e.stopPropagation()}>
+            <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderRadius:"20px 20px 0 0",padding:"1.25rem",zIndex:10001,maxHeight:"75vh",overflow:"auto"}} onClick={e => e.stopPropagation()}>
               <div style={{width:"40px",height:"4px",background:"#e5e7eb",borderRadius:"2px",margin:"0 auto 1rem"}} />
               <h3 style={{fontWeight:"bold",marginBottom:"0.75rem"}}>✏️ {lang === "es" ? "Editar Item" : "Edit Item"}</h3>
               <div style={{marginBottom:"0.75rem"}}>
@@ -3917,7 +3857,7 @@ export default function TrackFreshDashboard() {
                 <p style={{fontSize:"0.75rem",color:"#6b7280",marginBottom:"0.5rem"}}>{lang === "es" ? "Ubicación" : "Location"}</p>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0.5rem"}}>
                   {["Fridge","Freezer","Pantry"].map(loc => (
-                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #22c55e" : "2px solid #333",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#052e16" : "#1e1e1e",color: smartLocation === loc ? "#4ade80" : "#9ca3af",cursor:"pointer"}}>{loc}</button>
+                    <button key={loc} onClick={() => setSmartLocation(loc)} style={{border: smartLocation === loc ? "2px solid #16a34a" : "2px solid #e5e7eb",borderRadius:"8px",padding:"0.5rem",fontSize:"0.75rem",fontWeight:"600",background: smartLocation === loc ? "#f0fdf4" : "white",color: smartLocation === loc ? "#15803d" : "#4b5563",cursor:"pointer"}}>{loc}</button>
                   ))}
                 </div>
               </div>
@@ -4012,7 +3952,7 @@ export default function TrackFreshDashboard() {
                     </div>
                   )}
                   <button onClick={handleAddBarcodeItem} disabled={!barcodeLocation} className={`w-full rounded-xl py-2.5 text-sm font-bold ${!barcodeLocation ? "bg-gray-300 text-white" : "btn-green-3d"}`}>{t("addToTracker")}</button>
-                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); setBarcodeScanKey(prev => prev + 1); resetMultiScanTimer(); }} className="w-full rounded-xl border py-2 text-sm font-bold pill-3d" style={{background:"#1e1e1e",color:"#9ca3af",borderColor:"#333"}}>{t("scanAnother")}</button>
+                  <button onClick={() => { setBarcodeItem(null); setBarcodeDetected(""); setBarcodeLocation(""); setBarcodeUseBy(""); setBarcodeFreezeBy(""); setVoiceError(""); setBarcodeScanKey(prev => prev + 1); resetMultiScanTimer(); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
                 </div>
               )}
               </>}
@@ -4136,7 +4076,7 @@ export default function TrackFreshDashboard() {
                     {labelItem.daysAfterOpening && <p className="text-xs text-blue-600 mt-1">📅 Use within {labelItem.daysAfterOpening} days of opening</p>}
                   </div>
                   <button onClick={handleAddLabelItem} className="w-full rounded-xl py-2.5 text-sm btn-green-3d">{labelScanMode === "multi" ? t("addAndNext") : t("addToTracker")}</button>
-                  <button onClick={() => { setLabelItem(null); setLabelError(""); }} className="w-full rounded-xl border py-2 text-sm font-bold pill-3d" style={{background:"#1e1e1e",color:"#9ca3af",borderColor:"#333"}}>{t("scanAnother")}</button>
+                  <button onClick={() => { setLabelItem(null); setLabelError(""); }} className="w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("scanAnother")}</button>
                 </div>
               )}
               <button onClick={() => { setShowLabelScanner(false); setLabelItem(null); setLabelError(""); setLabelScanCount(0); setLabelLastItem(""); setLabelScanMode(null); }} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"linear-gradient(to bottom, #059669, #047857)", color:"white", boxShadow:"0 3px 0 #065f46"}}>{labelScanCount > 0 ? (lang === "es" ? "✅ Listo (" + labelScanCount + " artículos)" : "✅ Done (" + labelScanCount + " items added)") : t("cancel")}</button>
@@ -4523,7 +4463,7 @@ export default function TrackFreshDashboard() {
                         const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
                         const label = lang === "es" ? LOC_ES[l] : l;
                         return (
-                          <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors`} style={{background: filterLocation === l ? "#15803d" : "#1e1e1e", color: filterLocation === l ? "#fff" : "#9ca3af", border: filterLocation === l ? "none" : "1px solid #333"}}>
+                          <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
                             {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
                           </button>
                         );
@@ -4537,7 +4477,7 @@ export default function TrackFreshDashboard() {
                           const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
-                            <div key={it.id} className={`rounded-lg border px-3 py-2`} style={{background: urgent ? "#2a0000" : soon ? "#2a1800" : "#1e1e1e", border: urgent ? "1px solid #991b1b" : soon ? "1px solid #92400e" : "1px solid #333"}}>
+                            <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-gradient-to-r from-red-50 to-red-100/50 shadow-sm" : soon ? "border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50/50 shadow-sm" : "bg-white shadow-sm hover:shadow-md transition-shadow"}`}>
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
@@ -4794,7 +4734,7 @@ export default function TrackFreshDashboard() {
                   );
                 })}
               </div>
-              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded-xl border py-2 text-sm font-bold pill-3d" style={{background:"#1e1e1e",color:"#9ca3af",borderColor:"#333"}}>{t("cancel")}</button>
+              <button onClick={() => { setShowMealPicker(false); setMealPickerSearch(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
             </div>
           </div>
         )}
