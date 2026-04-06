@@ -4323,50 +4323,15 @@ export default function TrackFreshDashboard() {
                 </div>
 
                 <div>
-                  <div style={{textAlign:"center",marginBottom:"0.5rem"}}>
-                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.6rem",borderRadius:"999px",padding:"0.15rem 0.65rem",boxShadow:"0 2px 6px rgba(232,166,60,0.35)"}}>⭐ {lang === "es" ? "Empieza aquí" : "Start here for best results"}</span>
-                  </div>
-                  <button
-                    onClick={() => { setShowReceiptScanner(true); }}
-                    style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.6rem",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.95rem",padding:"1rem 1.25rem",borderRadius:"14px",border:"none",cursor:"pointer",boxShadow:"0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)",transition:"all 0.18s ease",marginBottom:"1rem",WebkitTapHighlightColor:"transparent"}}
-                    onMouseOver={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 7px 0 #8C5A10,0 12px 26px rgba(0,0,0,0.32),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
-                    onMouseOut={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
-                  >
-                    <span style={{fontSize:"1.4rem",lineHeight:1}}>📷</span>
-                    <span>{lang === "es" ? "Escanear Recibos al Rastreador" : "Scan Grocery Receipts to Tracker"}</span>
+                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",marginBottom:"0.75rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
                   </button>
-                  <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"0.75rem"}}>
-                    <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
-                    <span style={{color:"rgba(255,255,255,0.3)",fontSize:"0.68rem",fontWeight:600,letterSpacing:"0.06em",whiteSpace:"nowrap"}}>{lang==="es"?"O AGREGA DE OTRA MANERA":"OR ADD ANOTHER WAY"}</span>
-                    <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
-                  </div>
-                  <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-                    {[
-                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan single or multiple barcodes and labels at the same time", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
-                    ].map(({icon,primary,secondary,onClick})=>(
-                      <button key={secondary} onClick={onClick} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
-                        onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
-                        onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
-                      >
-                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>{icon}</span>
-                        <div style={{textAlign:"left"}}>
-                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{primary}</div>
-                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{secondary}</div>
-                        </div>
-                      </button>
-                    ))}
-                    {/* Quick Add */}
-                    <button onClick={() => setShowQuickAdd(true)} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
-                      onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
-                      onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
-                    >
-                      <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
-                      <div style={{textAlign:"left"}}>
-                        <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
-                        <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
-                      </div>
-                    </button>
-                  </div>
+                  <button onClick={() => setShowGroceryScan(true)} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>🛒</span>{lang==="es"?"Escaneo de Compras":"Grocery Scan"}</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Di Listo para capturar • Guiado por voz":"Say Ready to capture · Voice-guided"}</span>
+                  </button>
+                  <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
                 </div>
               </>
             ) : (
