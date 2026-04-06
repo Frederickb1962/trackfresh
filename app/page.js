@@ -1594,6 +1594,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
             <div style={{ position: "absolute", inset: 0, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <div style={{ width: "85%", height: "65%", border: "2.5px solid #4ade80", borderRadius: "20px", boxShadow: "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px #4ade8044" }} />
             </div>
+            <button onClick={onClose} style={{ position: "absolute", top: "0.75rem", left: "0.75rem", width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", fontWeight: 900, color: "#111", boxShadow: "0 2px 8px rgba(0,0,0,0.4)", pointerEvents: "auto" }}>✕</button>
           </>
         )}
       </div>
