@@ -3467,7 +3467,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showReceiptScanner && (
-          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"calc(env(safe-area-inset-top, 0px) + 3rem)"}}>
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-2 text-lg font-bold">{t("scanReceiptTitle")}</h2>
               <p className="mb-4 text-sm text-gray-600">{t("scanReceiptDesc")}</p>
