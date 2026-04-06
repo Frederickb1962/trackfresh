@@ -1328,6 +1328,245 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
   );
 }
 
+function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const voiceRef = useRef(null);
+  const streamRef = useRef(null);
+  const statusRef = useRef("starting");
+  const itemRef = useRef({ name: "", date: "", location: "Fridge", category: "Other" });
+  const sessionCountRef = useRef(0);
+  const mountedRef = useRef(true);
+  const handleLocationRef = useRef(null);
+  const handleSaveDateRef = useRef(null);
+  const handleSkipDateRef = useRef(null);
+  const isEs = lang === "es";
+  const [scannerStatus, setScannerStatus] = useState("starting");
+  const [detectedName, setDetectedName] = useState("");
+  const [detectedDate, setDetectedDate] = useState("");
+  const [pickedDate, setPickedDate] = useState("");
+  const [sessionCount, setSessionCount] = useState(0);
+  const [camError, setCamError] = useState("");
+  const [voiceHint, setVoiceHint] = useState("");
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const isEs = lang === "es";
+    const playBeep = (freq, dur, vol = 0.28) => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq; osc.type = "sine";
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+      } catch(e) {}
+    };
+    const playReady   = () => playBeep(600, 0.15);
+    const playShutter = () => playBeep(1000, 0.05);
+    const playSuccess = () => playBeep(880, 0.35);
+    const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(400, 0.12), 220); setTimeout(() => playBeep(400, 0.12), 440); };
+    const playSaved   = () => playBeep(1200, 0.2);
+    const speak = (text, cb) => {
+      if (!("speechSynthesis" in window)) { if (cb) setTimeout(cb, 200); return; }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.rate = 1.05; u.pitch = 1;
+      if (cb) { const ms = Math.max(1200, text.trim().split(/\s+/).length * 350 + 600); let done = false; const fire = () => { if (!done) { done = true; cb(); } }; u.onend = fire; setTimeout(fire, ms); }
+      window.speechSynthesis.speak(u);
+    };
+    const stopVoice = () => { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} voiceRef.current = null; } };
+    const startListening = (onResult) => {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return;
+      stopVoice();
+      const recog = new SR();
+      recog.lang = isEs ? "es-MX" : "en-US"; recog.interimResults = false; recog.maxAlternatives = 3;
+      voiceRef.current = recog;
+      let gotResult = false;
+      recog.onresult = (ev) => { if (!mountedRef.current) return; gotResult = true; voiceRef.current = null; onResult(ev.results[0][0].transcript.toLowerCase().trim()); };
+      recog.onerror = (e) => { if (!mountedRef.current || e.error === "aborted") return; setTimeout(() => { if (!gotResult && mountedRef.current) startListening(onResult); }, 400); };
+      recog.onend = () => { setTimeout(() => { if (!gotResult && voiceRef.current === recog && mountedRef.current) startListening(onResult); }, 400); };
+      try { recog.start(); } catch(e) {}
+    };
+    const handleDone = () => { if (!mountedRef.current) return; stopVoice(); if ("speechSynthesis" in window) window.speechSynthesis.cancel(); onClose(); };
+    const goToReady = () => {
+      if (!mountedRef.current) return;
+      statusRef.current = "ready"; setScannerStatus("ready");
+      setDetectedName(""); setDetectedDate("");
+      setVoiceHint(isEs ? '🎙️ Di "Listo" para capturar · "Terminar" para salir' : '🎙️ Say "Ready" to capture · "Done" to exit');
+      playReady();
+      listenForReady();
+    };
+    const listenForReady = () => {
+      if (!mountedRef.current || statusRef.current !== "ready") return;
+      startListening((transcript) => {
+        if (!mountedRef.current || statusRef.current !== "ready") return;
+        if (transcript.includes("done") || transcript.includes("terminar") || transcript.includes("finish")) { handleDone(); }
+        else if (transcript.includes("ready") || transcript.includes("listo") || transcript.includes("ahora") || transcript.includes("captur") || transcript.includes("foto")) { captureAndAnalyze(); }
+        else { listenForReady(); }
+      });
+    };
+    const captureAndAnalyze = async () => {
+      if (!mountedRef.current) return;
+      statusRef.current = "scanning"; setScannerStatus("scanning");
+      setVoiceHint(""); stopVoice();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      playShutter();
+      const video = videoRef.current; const canvas = canvasRef.current;
+      if (!video || !canvas) { goToReady(); return; }
+      canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+      try {
+        const res = await fetch("/api/scan-smart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" }) });
+        if (!mountedRef.current) return;
+        const data = await res.json();
+        const items = data.items || [];
+        if (items.length === 0) {
+          playError(); statusRef.current = "error"; setScannerStatus("error");
+          setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
+          return;
+        }
+        const item = items[0];
+        itemRef.current = { name: item.name || "Unknown Item", date: item.date && item.dateFound ? item.date : "", location: item.location || "Fridge", category: item.category || "Other" };
+        playSuccess(); statusRef.current = "success"; setScannerStatus("success");
+        setDetectedName(itemRef.current.name); setDetectedDate(itemRef.current.date);
+        setPickedDate("");
+        setTimeout(() => { if (mountedRef.current) { statusRef.current = "date"; setScannerStatus("date"); listenForDateStep(); } }, 1000);
+      } catch (e) {
+        if (!mountedRef.current) return;
+        playError(); statusRef.current = "error"; setScannerStatus("error");
+        setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
+      }
+    };
+    const handleLocationTap = (loc) => {
+      if (!mountedRef.current) return;
+      playSaved();
+      onAddItem({ id: Date.now().toString(), name: itemRef.current.name || "Unknown Item", useByDate: itemRef.current.date || "", openDate: "", category: itemRef.current.category || "Other", location: loc });
+      sessionCountRef.current += 1;
+      setSessionCount(sessionCountRef.current);
+      itemRef.current = { name: "", date: "", location: "Fridge", category: "Other" };
+      setTimeout(() => { if (mountedRef.current) goToReady(); }, 300);
+    };
+    const listenForDateStep = () => {
+      if (!mountedRef.current || statusRef.current !== "date") return;
+      startListening((transcript) => {
+        if (!mountedRef.current || statusRef.current !== "date") return;
+        if (transcript.includes("skip") || transcript.includes("omitir")) { handleSkipDateRef.current && handleSkipDateRef.current(); }
+        else if (transcript.includes("done") || transcript.includes("terminar")) { handleDone(); }
+        else { listenForDateStep(); }
+      });
+    };
+    handleLocationRef.current = handleLocationTap;
+    const handleSaveDate = (dateVal) => { if (!mountedRef.current) return; itemRef.current = { ...itemRef.current, date: dateVal || "" }; statusRef.current = "location"; setScannerStatus("location"); };
+    const handleSkipDate = () => { if (!mountedRef.current) return; itemRef.current = { ...itemRef.current, date: "" }; statusRef.current = "location"; setScannerStatus("location"); };
+    handleSaveDateRef.current = handleSaveDate;
+    handleSkipDateRef.current = handleSkipDate;
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+        if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.setAttribute("playsinline", "true"); await videoRef.current.play(); }
+        if (!mountedRef.current) return;
+        goToReady();
+      } catch (e) {
+        if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied. Please allow camera access.");
+      }
+    }
+    startCamera();
+    return () => {
+      mountedRef.current = false;
+      stopVoice();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+    };
+  }, []);
+
+  const overlayText = {
+    ready:    { en: "READY",       es: "LISTA" },
+    scanning: { en: "SCANNING...", es: "ESCANEANDO..." },
+    success:  { en: "✓ GOT IT",    es: "✓ DETECTADO" },
+    error:    { en: "TRY AGAIN",   es: "INTENTA DE NUEVO" },
+    date:     { en: "ADD EXPIRATION DATE", es: "AGREGAR FECHA DE VENCIMIENTO" },
+    location: { en: "WHERE ARE YOU STORING IT?", es: "¿DÓNDE LO GUARDAS?" },
+  };
+  const locLabels = {
+    freezer:      isEs ? "CONGELADOR"         : "FREEZER",
+    fridge:       isEs ? "REFRIGERADOR"       : "FRIDGE",
+    pantry:       isEs ? "DESPENSA"           : "PANTRY",
+    saveWithDate: isEs ? "Guardar con Fecha"  : "Save with Date",
+    skipDate:     isEs ? "Omitir Fecha"       : "Skip Date",
+  };
+  const isFullOverlay = scannerStatus === "date" || scannerStatus === "location";
+  const vfBorderColor = scannerStatus === "scanning" ? "#facc15" : scannerStatus === "error" ? "#f87171" : "#4ade80";
+  const vfGlow = scannerStatus === "scanning" ? "#facc1555" : scannerStatus === "error" ? "#f8717155" : "#4ade8044";
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.7)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
+          {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
+        </div>
+        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>
+          {isEs ? "Terminar ✓" : "Done ✓"}
+        </button>
+      </div>
+      <div style={{ position: "relative", flex: 1, overflow: "hidden", background: "#000" }}>
+        {camError ? (
+          <div style={{ color: "#fff", textAlign: "center", padding: "3rem 1.5rem", fontSize: "0.95rem" }}>{camError}</div>
+        ) : (
+          <>
+            <video ref={videoRef} playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+              {!isFullOverlay && (
+                <div style={{ width: "82%", height: "52%", border: `3px solid ${vfBorderColor}`, borderRadius: "20px", boxShadow: `0 0 0 9999px rgba(0,0,0,0.48), 0 0 28px ${vfGlow}`, transition: "border-color 0.3s, box-shadow 0.3s", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "0.4rem" }}>
+                  {scannerStatus === "starting" && <span style={{ color: "#86efac", fontSize: "1.1rem", fontWeight: 700 }}>{isEs ? "Iniciando cámara..." : "Starting camera..."}</span>}
+                  {scannerStatus === "ready" && <span style={{ color: "#4ade80", fontSize: "3rem", fontWeight: 900, letterSpacing: "0.1em", textShadow: "0 0 24px #4ade80cc" }}>{overlayText.ready[isEs?"es":"en"]}</span>}
+                  {scannerStatus === "scanning" && <span style={{ color: "#facc15", fontSize: "2.2rem", fontWeight: 900, letterSpacing: "0.06em", textShadow: "0 0 20px #facc15bb" }}>{overlayText.scanning[isEs?"es":"en"]}</span>}
+                  {scannerStatus === "success" && (<>
+                    <span style={{ color: "#4ade80", fontSize: "2.8rem", fontWeight: 900, textShadow: "0 0 24px #4ade80cc" }}>{overlayText.success[isEs?"es":"en"]}</span>
+                    {detectedName && <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700, opacity: 0.9, textAlign: "center", padding: "0 0.5rem" }}>{detectedName}</span>}
+                    {detectedDate && <span style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 600 }}>📅 {detectedDate}</span>}
+                  </>)}
+                  {scannerStatus === "error" && <span style={{ color: "#f87171", fontSize: "2.4rem", fontWeight: 900, letterSpacing: "0.05em", textShadow: "0 0 20px #f87171aa" }}>{overlayText.error[isEs?"es":"en"]}</span>}
+                </div>
+              )}
+              {scannerStatus === "date" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.82)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "1rem", pointerEvents: "auto" }}>
+                  <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", textAlign: "center", margin: 0, letterSpacing: "0.03em" }}>📅 {overlayText.date[isEs?"es":"en"]}</p>
+                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 700, textAlign: "center", margin: 0 }}>✅ {detectedName}</p>}
+                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.68rem", fontWeight: 600, textAlign: "center", margin: "-0.25rem 0 0" }}>{isEs ? '🎙️ Di "Omitir Fecha" para saltar' : '🎙️ Say "Skip" or "Skip Date" to skip'}</p>
+                  <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "1.15rem", fontWeight: 700, borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", color: "#fff", textAlign: "center", boxSizing: "border-box", cursor: "pointer" }} />
+                  <button onClick={() => handleSaveDateRef.current && handleSaveDateRef.current(pickedDate)} style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>✅ {locLabels.saveWithDate}</button>
+                  <button onClick={() => handleSkipDateRef.current && handleSkipDateRef.current()} style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "1rem", border: "2px solid rgba(255,255,255,0.25)", borderRadius: "16px", cursor: "pointer" }}>{locLabels.skipDate}</button>
+                </div>
+              )}
+              {scannerStatus === "location" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "0.85rem", pointerEvents: "auto" }}>
+                  <p style={{ color: "#fff", fontWeight: 900, fontSize: "1.05rem", textAlign: "center", margin: "0 0 0.25rem", letterSpacing: "0.02em" }}>{overlayText.location[isEs?"es":"en"]}</p>
+                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.82rem", fontWeight: 600, textAlign: "center", margin: "0 0 0.25rem" }}>✅ {detectedName}{itemRef.current.date ? ` · 📅 ${itemRef.current.date}` : ""}</p>}
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Freezer")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#2563eb,#1d4ed8)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #1e3a8a,0 8px 20px rgba(0,0,0,0.3)" }}>❄️ {locLabels.freezer}</button>
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Fridge")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>🥬 {locLabels.fridge}</button>
+                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Pantry")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#ea580c,#c2410c)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #7c2d12,0 8px 20px rgba(0,0,0,0.3)" }}>🫙 {locLabels.pantry}</button>
+                </div>
+              )}
+            </div>
+            {!isFullOverlay && voiceHint && (
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.65rem 1.25rem 1rem", background: "linear-gradient(to top, rgba(0,0,0,0.88) 50%, transparent)", pointerEvents: "none", textAlign: "center" }}>
+                <span style={{ color: "#86efac", fontSize: "0.72rem", fontWeight: 600, opacity: 0.88 }}>{voiceHint}</span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SmartScanner({ onResult, onError, captureRef, lang }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -2061,6 +2300,8 @@ export default function TrackFreshDashboard() {
   const [barcodeUseBy, setBarcodeUseBy] = useState("");
   const [barcodeFreezeBy, setBarcodeFreezeBy] = useState("");
   const [showSmartScanner, setShowSmartScanner] = useState(false);
+  const [showGroceryScan, setShowGroceryScan] = useState(false);
+  const [showOpenedDropdown, setShowOpenedDropdown] = useState(false);
   const [showMultiScanner, setShowMultiScanner] = useState(false);
   const [multiScanStatus, setMultiScanStatus] = useState("camera");
   const [multiItems, setMultiItems] = useState([]);
@@ -3173,6 +3414,15 @@ export default function TrackFreshDashboard() {
 
 
 
+        {showGroceryScan && (
+          <GroceryScanModal
+            lang={lang}
+            parseSpokenDate={parseSpokenDate}
+            onAddItem={(item) => setTrackedItems(prev => [item, ...prev])}
+            onClose={() => setShowGroceryScan(false)}
+          />
+        )}
+
         {showReceiptScanner && (
           <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"2rem"}}>
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
@@ -4033,13 +4283,13 @@ export default function TrackFreshDashboard() {
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.6rem",borderRadius:"999px",padding:"0.15rem 0.65rem",boxShadow:"0 2px 6px rgba(232,166,60,0.35)"}}>⭐ {lang === "es" ? "Empieza aquí" : "Start here for best results"}</span>
                   </div>
                   <button
-                    onClick={() => { window.scrollTo(0,0);setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("multi");sessionItemsRef.current=[]; }}
+                    onClick={() => { setShowReceiptScanner(true); }}
                     style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.6rem",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.95rem",padding:"1rem 1.25rem",borderRadius:"14px",border:"none",cursor:"pointer",boxShadow:"0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)",transition:"all 0.18s ease",marginBottom:"1rem",WebkitTapHighlightColor:"transparent"}}
                     onMouseOver={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 7px 0 #8C5A10,0 12px 26px rgba(0,0,0,0.32),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
                     onMouseOut={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 5px 0 #8C5A10,0 8px 22px rgba(0,0,0,0.28),inset 0 1.5px 0 rgba(255,255,255,0.4)";}}
                   >
-                    <span style={{fontSize:"1.4rem",lineHeight:1}}>📸</span>
-                    <span>{lang === "es" ? "Escanear — Recibos, Etiquetas o Códigos" : "Scan — Receipts, Labels or Barcodes"}</span>
+                    <span style={{fontSize:"1.4rem",lineHeight:1}}>📷</span>
+                    <span>{lang === "es" ? "Escanear Recibos al Rastreador" : "Scan Grocery Receipts to Tracker"}</span>
                   </button>
                   <div style={{display:"flex",alignItems:"center",gap:"0.6rem",marginBottom:"0.75rem"}}>
                     <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
@@ -4047,23 +4297,31 @@ export default function TrackFreshDashboard() {
                     <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.1)"}}></div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-                    {/* Quick Add + Voice row */}
-                    <div style={{display:"flex",gap:"0.5rem"}}>
-                      <button onClick={() => setShowQuickAdd(true)} style={{flex:1,display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
+                    {[
+                      { icon:"📸", primary: lang==="es"?"Escanea el código de barras o etiqueta de un artículo":"Scan single or multiple barcodes and labels at the same time", secondary:"Smart Scan", onClick: ()=>{ setShowSmartScanner(true);setUniScanCount(0);setUniScanLastItem("");setVoiceFlowStep(null);setScanMode("single");sessionItemsRef.current=[]; }},
+                    ].map(({icon,primary,secondary,onClick})=>(
+                      <button key={secondary} onClick={onClick} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
                         onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
                         onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
                       >
-                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
+                        <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>{icon}</span>
                         <div style={{textAlign:"left"}}>
-                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
-                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
+                          <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{primary}</div>
+                          <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{secondary}</div>
                         </div>
                       </button>
-                      <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.09)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"rgba(255,255,255,0.18)"}`,borderRadius:"14px",padding:"0.75rem 1rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
-                        <span style={{fontSize:"1.3rem",lineHeight:1}}>🎤</span>
-                        <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
-                      </button>
-                    </div>
+                    ))}
+                    {/* Quick Add */}
+                    <button onClick={() => setShowQuickAdd(true)} style={{width:"100%",display:"flex",alignItems:"center",gap:"0.65rem",background:"rgba(255,255,255,0.09)",border:"1.5px solid rgba(255,255,255,0.18)",borderRadius:"14px",padding:"0.85rem 1.1rem",cursor:"pointer",transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}}
+                      onMouseOver={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.3)";}}
+                      onMouseOut={e=>{e.currentTarget.style.background="rgba(255,255,255,0.09)";e.currentTarget.style.borderColor="rgba(255,255,255,0.18)";}}
+                    >
+                      <span style={{fontSize:"1.3rem",lineHeight:1,flexShrink:0}}>✏️</span>
+                      <div style={{textAlign:"left"}}>
+                        <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem",lineHeight:1.3}}>{lang==="es"?"Agrega un artículo manualmente":"Add an item manually"}</div>
+                        <div style={{color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:"0.68rem",marginTop:"0.2rem",letterSpacing:"0.02em"}}>{t("quickAdd")}</div>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </>
@@ -4100,28 +4358,53 @@ export default function TrackFreshDashboard() {
                   <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
                 </div>
                 <div>
-                  <button onClick={() => { window.scrollTo(0,0); setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("multi"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.8rem",flexDirection:"row",justifyContent:"center",gap:"0.5rem",marginBottom:"0.3rem"}}><span style={{fontSize:"1.4rem"}}>📸</span>{lang === "es" ? "Escanear — Recibos, Etiquetas o Códigos" : "Scan — Receipts, Labels or Barcodes"}</button>
-                  <div style={{textAlign:"center",marginBottom:"0.75rem"}}>
-                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Escanea todo con una sola cámara" : "One scanner for everything"}</span>
-                  </div>
-                  <div style={{display:"flex",gap:"0.5rem",marginTop:"0.5rem"}}>
-                    <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn" style={{flex:1,padding:"0.75rem 0.75rem",fontSize:"0.75rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar manualmente":"Add manually"}</button>
-                    <button onClick={triggerVoiceCommand} style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"0.2rem",background:voiceCmdActive?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.12)",border:`1.5px solid ${voiceCmdActive?"rgba(239,68,68,0.5)":"#B7D63A"}`,borderRadius:"12px",padding:"0.65rem 0.9rem",cursor:"pointer",flexShrink:0,transition:"all 0.18s ease",WebkitTapHighlightColor:"transparent"}} title={lang==="es"?"Comando de voz":"Voice command"}>
-                      <span style={{fontSize:"1.1rem",lineHeight:1}}>🎤</span>
-                      <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.6rem",fontWeight:600,whiteSpace:"nowrap"}}>{lang==="es"?"o dilo":"or say it"}</span>
-                    </button>
-                  </div>
+                  <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",marginBottom:"0.75rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
+                  </button>
+                  <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>Single or Mult. Items/Barcodes and Labels</span>
+                  </button>
+                  <button onClick={() => setShowGroceryScan(true)} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>🛒</span>{lang==="es"?"Escaneo de Compras":"Grocery Scan"}</div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Di Listo para capturar • Guiado por voz":"Say Ready to capture · Voice-guided"}</span>
+                  </button>
+                  <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
                 </div>
 
                 {/* Mark What You've Opened */}
                 <div>
-                  <p style={{color:"rgba(255,255,255,0.72)",fontSize:"0.88rem",fontWeight:500,marginBottom:"0.6rem",textAlign:"center",lineHeight:1.45}}>
-                    {lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}
-                  </p>
-                  <button onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
-                    <span style={{fontSize:"1.4rem"}}>📂</span>
-                    <span style={{fontWeight:800}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
+                  <button onClick={() => setShowOpenedDropdown(v => !v)} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}>
+                      <span style={{fontSize:"1.4rem"}}>📂</span>
+                      <span style={{fontWeight:800}}>{lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}</span>
+                      <span style={{marginLeft:"auto",fontSize:"0.75rem",opacity:0.8}}>{showOpenedDropdown ? "▲" : "▼"}</span>
+                    </div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
                   </button>
+                  {showOpenedDropdown && (() => {
+                    const today = new Date().toISOString().split("T")[0];
+                    const ddItems = itemsWithCountdown;
+                    return (
+                      <div style={{marginTop:"0.4rem",background:"rgba(6,78,59,0.97)",border:"1.5px solid #B7D63A",borderRadius:"12px",overflow:"hidden",maxHeight:"220px",overflowY:"auto"}}>
+                        {ddItems.length === 0 ? (
+                          <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.8rem",textAlign:"center",padding:"0.85rem"}}>{lang==="es"?"Sin artículos rastreados todavía.":"No tracked items yet."}</p>
+                        ) : ddItems.map(it => (
+                          <button key={it.id} onClick={() => { handleMarkOpened(it, today); setShowOpenedDropdown(false); setShowOpenedModal(true); }} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"0.6rem 0.85rem",cursor:"pointer",textAlign:"left"}}>
+                            <div>
+                              <div style={{fontWeight:700,color:"#fff",fontSize:"0.85rem"}}>{it.name}</div>
+                              <div style={{fontSize:"0.62rem",color:"rgba(255,255,255,0.6)",marginTop:"0.08rem"}}>{it.location ?? "Fridge"}{it.useByDate ? " · Exp " + it.useByDate : ""}</div>
+                            </div>
+                            {it.openDate && <span style={{fontSize:"0.6rem",background:"rgba(183,214,58,0.25)",color:"#B7D63A",border:"1px solid rgba(183,214,58,0.4)",borderRadius:"999px",padding:"0.1rem 0.4rem",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>📂 {lang==="es"?"Abierto":"Opened"}</span>}
+                          </button>
+                        ))}
+                        <button onClick={() => { setShowOpenedDropdown(false); setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} style={{display:"block",width:"100%",background:"rgba(183,214,58,0.1)",border:"none",borderTop:"1px solid rgba(183,214,58,0.3)",padding:"0.6rem",color:"#B7D63A",fontWeight:800,fontSize:"0.75rem",cursor:"pointer",textAlign:"center"}}>
+                          {lang==="es"?"Ver todos →":"See all →"}
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Items card */}
@@ -4134,6 +4417,7 @@ export default function TrackFreshDashboard() {
                       </div>
                       <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
                     </div>
+                    <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>Tap to view by storage location</p>
                     <div className="mb-2 flex flex-wrap gap-1">
                       {["All", ...LOCATIONS].map((l) => {
                         const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
@@ -4142,15 +4426,6 @@ export default function TrackFreshDashboard() {
                           <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
                             {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
                           </button>
-                        );
-                      })}
-                    </div>
-                    <div className="mb-3 flex flex-wrap gap-1">
-                      {["All", ...CATEGORIES].map((c) => {
-                        const CAT_ES = {All:"Todo",Produce:"Verduras",Dairy:"Lácteos",Meat:"Carne",Pantry:"Despensa",Leftovers:"Sobras",Other:"Otro"};
-                        const label = lang === "es" ? CAT_ES[c] : c;
-                        return (
-                          <button key={c} onClick={() => setFilterCategory(c)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterCategory === c ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>{label}</button>
                         );
                       })}
                     </div>
