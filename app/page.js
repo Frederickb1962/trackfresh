@@ -3514,7 +3514,7 @@ export default function TrackFreshDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleAddReceiptItems} className="glass-scan-btn w-full py-2.5 text-sm">{lang === "es" ? `Agregar ${selectedReceiptItems.length} productos al Rastreador` : `Add ${selectedReceiptItems.length} Items to Tracker`}</button>
+                  <button onClick={handleAddReceiptItems} style={{width:"100%",padding:"0.75rem 1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:800,fontSize:"0.95rem",border:"none",borderRadius:"14px",cursor:"pointer",boxShadow:"0 4px 0 #14532d"}}>{lang === "es" ? `Agregar ${selectedReceiptItems.length} productos al Rastreador` : `Add ${selectedReceiptItems.length} Items to Tracker`}</button>
                 </div>
               )}
               <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
