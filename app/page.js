@@ -4405,10 +4405,6 @@ export default function TrackFreshDashboard() {
                     <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.4rem"}}>📷</span>{t("scanReceipts")}</div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>⭐ {lang === "es" ? "Empieza aquí para mejores resultados" : "Start here for best results"}</span>
                   </button>
-                  <button onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("single"); sessionItemsRef.current = []; }} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>📸</span>Smart Scan</div>
-                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>Single or Mult. Items/Barcodes and Labels</span>
-                  </button>
                   <button onClick={() => setShowGroceryScan(true)} className="glass-scan-btn w-full" style={{padding:"0.85rem 0.35rem",fontSize:"0.875rem",flexDirection:"column",gap:"0.35rem",marginBottom:"0.5rem"}}>
                     <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}><span style={{fontSize:"1.3rem"}}>🛒</span>{lang==="es"?"Escaneo de Compras":"Grocery Scan"}</div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Di Listo para capturar • Guiado por voz":"Say Ready to capture · Voice-guided"}</span>
