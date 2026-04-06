@@ -1331,237 +1331,280 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
 function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const voiceRef = useRef(null);
   const streamRef = useRef(null);
-  const statusRef = useRef("starting");
-  const itemRef = useRef({ name: "", date: "", location: "Fridge", category: "Other" });
-  const sessionCountRef = useRef(0);
   const mountedRef = useRef(true);
-  const handleLocationRef = useRef(null);
-  const handleSaveDateRef = useRef(null);
-  const handleSkipDateRef = useRef(null);
   const isEs = lang === "es";
-  const [scannerStatus, setScannerStatus] = useState("starting");
-  const [detectedName, setDetectedName] = useState("");
-  const [detectedDate, setDetectedDate] = useState("");
+
+  // screen: "camera" | "scanning" | "review" | "dates" | "error"
+  const [screen, setScreen] = useState("camera");
+  const [camError, setCamError] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // review state
+  const [detectedItems, setDetectedItems] = useState([]);
+  const [checked, setChecked] = useState({});
+  const [names, setNames] = useState({});
+  const [locations, setLocations] = useState({});
+
+  // dates state
+  const [dateItems, setDateItems] = useState([]);
+  const [dateIndex, setDateIndex] = useState(0);
   const [pickedDate, setPickedDate] = useState("");
   const [sessionCount, setSessionCount] = useState(0);
-  const [camError, setCamError] = useState("");
-  const [voiceHint, setVoiceHint] = useState("");
+
+  const playBeep = (freq, dur, vol = 0.28) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = "sine";
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+    } catch(e) {}
+  };
+  const playShutter = () => playBeep(1000, 0.05);
+  const playSuccess = () => { playBeep(880, 0.2); setTimeout(() => playBeep(1100, 0.25), 220); };
+  const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(300, 0.18), 200); };
 
   useEffect(() => {
     mountedRef.current = true;
-    const isEs = lang === "es";
-    const playBeep = (freq, dur, vol = 0.28) => {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = freq; osc.type = "sine";
-        gain.gain.setValueAtTime(vol, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
-      } catch(e) {}
-    };
-    const playReady   = () => playBeep(600, 0.15);
-    const playShutter = () => playBeep(1000, 0.05);
-    const playSuccess = () => playBeep(880, 0.35);
-    const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(400, 0.12), 220); setTimeout(() => playBeep(400, 0.12), 440); };
-    const playSaved   = () => playBeep(1200, 0.2);
-    const speak = (text, cb) => {
-      if (!("speechSynthesis" in window)) { if (cb) setTimeout(cb, 200); return; }
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text); u.rate = 1.05; u.pitch = 1;
-      if (cb) { const ms = Math.max(1200, text.trim().split(/\s+/).length * 350 + 600); let done = false; const fire = () => { if (!done) { done = true; cb(); } }; u.onend = fire; setTimeout(fire, ms); }
-      window.speechSynthesis.speak(u);
-    };
-    const stopVoice = () => { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} voiceRef.current = null; } };
-    const startListening = (onResult) => {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) return;
-      stopVoice();
-      const recog = new SR();
-      recog.lang = isEs ? "es-MX" : "en-US"; recog.interimResults = false; recog.maxAlternatives = 3;
-      voiceRef.current = recog;
-      let gotResult = false;
-      recog.onresult = (ev) => { if (!mountedRef.current) return; gotResult = true; voiceRef.current = null; onResult(ev.results[0][0].transcript.toLowerCase().trim()); };
-      recog.onerror = (e) => { if (!mountedRef.current || e.error === "aborted") return; setTimeout(() => { if (!gotResult && mountedRef.current) startListening(onResult); }, 400); };
-      recog.onend = () => { setTimeout(() => { if (!gotResult && voiceRef.current === recog && mountedRef.current) startListening(onResult); }, 400); };
-      try { recog.start(); } catch(e) {}
-    };
-    const handleDone = () => { if (!mountedRef.current) return; stopVoice(); if ("speechSynthesis" in window) window.speechSynthesis.cancel(); onClose(); };
-    const goToReady = () => {
-      if (!mountedRef.current) return;
-      statusRef.current = "ready"; setScannerStatus("ready");
-      setDetectedName(""); setDetectedDate("");
-      setVoiceHint(isEs ? '🎙️ Di "Listo" para capturar · "Terminar" para salir' : '🎙️ Say "Ready" to capture · "Done" to exit');
-      playReady();
-      listenForReady();
-    };
-    const listenForReady = () => {
-      if (!mountedRef.current || statusRef.current !== "ready") return;
-      startListening((transcript) => {
-        if (!mountedRef.current || statusRef.current !== "ready") return;
-        if (transcript.includes("done") || transcript.includes("terminar") || transcript.includes("finish")) { handleDone(); }
-        else if (transcript.includes("ready") || transcript.includes("listo") || transcript.includes("ahora") || transcript.includes("captur") || transcript.includes("foto")) { captureAndAnalyze(); }
-        else { listenForReady(); }
-      });
-    };
-    const captureAndAnalyze = async () => {
-      if (!mountedRef.current) return;
-      statusRef.current = "scanning"; setScannerStatus("scanning");
-      setVoiceHint(""); stopVoice();
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      playShutter();
-      const video = videoRef.current; const canvas = canvasRef.current;
-      if (!video || !canvas) { goToReady(); return; }
-      canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
-      canvas.getContext("2d").drawImage(video, 0, 0);
-      const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-      try {
-        const res = await fetch("/api/scan-smart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" }) });
-        if (!mountedRef.current) return;
-        const data = await res.json();
-        const items = data.items || [];
-        if (items.length === 0) {
-          playError(); statusRef.current = "error"; setScannerStatus("error");
-          setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
-          return;
-        }
-        const item = items[0];
-        itemRef.current = { name: item.name || "Unknown Item", date: item.date && item.dateFound ? item.date : "", location: item.location || "Fridge", category: item.category || "Other" };
-        playSuccess(); statusRef.current = "success"; setScannerStatus("success");
-        setDetectedName(itemRef.current.name); setDetectedDate(itemRef.current.date);
-        setPickedDate("");
-        setTimeout(() => { if (mountedRef.current) { statusRef.current = "date"; setScannerStatus("date"); listenForDateStep(); } }, 1000);
-      } catch (e) {
-        if (!mountedRef.current) return;
-        playError(); statusRef.current = "error"; setScannerStatus("error");
-        setTimeout(() => { if (mountedRef.current) goToReady(); }, 2000);
-      }
-    };
-    const handleLocationTap = (loc) => {
-      if (!mountedRef.current) return;
-      playSaved();
-      onAddItem({ id: Date.now().toString(), name: itemRef.current.name || "Unknown Item", useByDate: itemRef.current.date || "", openDate: "", category: itemRef.current.category || "Other", location: loc });
-      sessionCountRef.current += 1;
-      setSessionCount(sessionCountRef.current);
-      itemRef.current = { name: "", date: "", location: "Fridge", category: "Other" };
-      setTimeout(() => { if (mountedRef.current) goToReady(); }, 300);
-    };
-    const listenForDateStep = () => {
-      if (!mountedRef.current || statusRef.current !== "date") return;
-      startListening((transcript) => {
-        if (!mountedRef.current || statusRef.current !== "date") return;
-        if (transcript.includes("skip") || transcript.includes("omitir")) { handleSkipDateRef.current && handleSkipDateRef.current(); }
-        else if (transcript.includes("done") || transcript.includes("terminar")) { handleDone(); }
-        else { listenForDateStep(); }
-      });
-    };
-    handleLocationRef.current = handleLocationTap;
-    const handleSaveDate = (dateVal) => { if (!mountedRef.current) return; itemRef.current = { ...itemRef.current, date: dateVal || "" }; statusRef.current = "location"; setScannerStatus("location"); };
-    const handleSkipDate = () => { if (!mountedRef.current) return; itemRef.current = { ...itemRef.current, date: "" }; statusRef.current = "location"; setScannerStatus("location"); };
-    handleSaveDateRef.current = handleSaveDate;
-    handleSkipDateRef.current = handleSkipDate;
     async function startCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
         if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
         streamRef.current = stream;
-        if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.setAttribute("playsinline", "true"); await videoRef.current.play(); }
-        if (!mountedRef.current) return;
-        goToReady();
-      } catch (e) {
-        if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied. Please allow camera access.");
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "true");
+          await videoRef.current.play();
+        }
+      } catch(e) {
+        if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied.");
       }
     }
     startCamera();
     return () => {
       mountedRef.current = false;
-      stopVoice();
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
     };
   }, []);
 
-  const overlayText = {
-    ready:    { en: "READY",       es: "LISTA" },
-    scanning: { en: "SCANNING...", es: "ESCANEANDO..." },
-    success:  { en: "✓ GOT IT",    es: "✓ DETECTADO" },
-    error:    { en: "TRY AGAIN",   es: "INTENTA DE NUEVO" },
-    date:     { en: "ADD EXPIRATION DATE", es: "AGREGAR FECHA DE VENCIMIENTO" },
-    location: { en: "WHERE ARE YOU STORING IT?", es: "¿DÓNDE LO GUARDAS?" },
+  const capture = async () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    playShutter();
+    setScreen("scanning");
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+    try {
+      const res = await fetch("/api/scan-smart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+      });
+      if (!mountedRef.current) return;
+      const data = await res.json();
+      const items = data.items || (data.item ? [data.item] : []);
+      if (items.length === 0) {
+        playError();
+        setErrorMsg(isEs ? "No se detectaron artículos. Intenta de nuevo." : "No items detected. Try again.");
+        setScreen("error");
+        return;
+      }
+      playSuccess();
+      setDetectedItems(items);
+      const initChecked = {};
+      const initNames = {};
+      const initLocs = {};
+      items.forEach((it, i) => {
+        initChecked[i] = true;
+        initNames[i] = it.name || "Unknown Item";
+        initLocs[i] = it.location || "Fridge";
+      });
+      setChecked(initChecked);
+      setNames(initNames);
+      setLocations(initLocs);
+      setScreen("review");
+    } catch(e) {
+      if (!mountedRef.current) return;
+      playError();
+      setErrorMsg(e.message || "Scan failed");
+      setScreen("error");
+    }
   };
-  const locLabels = {
-    freezer:      isEs ? "CONGELADOR"         : "FREEZER",
-    fridge:       isEs ? "REFRIGERADOR"       : "FRIDGE",
-    pantry:       isEs ? "DESPENSA"           : "PANTRY",
-    saveWithDate: isEs ? "Guardar con Fecha"  : "Save with Date",
-    skipDate:     isEs ? "Omitir Fecha"       : "Skip Date",
-  };
-  const isFullOverlay = scannerStatus === "date" || scannerStatus === "location";
-  const vfBorderColor = scannerStatus === "scanning" ? "#facc15" : scannerStatus === "error" ? "#f87171" : "#4ade80";
-  const vfGlow = scannerStatus === "scanning" ? "#facc1555" : scannerStatus === "error" ? "#f8717155" : "#4ade8044";
 
+  const handleAddSelected = () => {
+    const selected = detectedItems
+      .map((it, i) => ({ ...it, _index: i }))
+      .filter((_, i) => checked[i]);
+    if (selected.length === 0) { onClose(); return; }
+    setDateItems(selected.map(it => ({
+      ...it,
+      name: names[it._index] || it.name,
+      location: locations[it._index] || it.location || "Fridge",
+      date: it.date && it.dateFound ? it.date : "",
+    })));
+    setDateIndex(0);
+    setPickedDate("");
+    setScreen("dates");
+  };
+
+  const handleSaveDate = () => {
+    const item = dateItems[dateIndex];
+    onAddItem({
+      id: Date.now().toString() + dateIndex,
+      name: item.name,
+      useByDate: pickedDate || item.date || "",
+      openDate: "",
+      category: item.category || "Other",
+      location: item.location,
+    });
+    setSessionCount(c => c + 1);
+    const next = dateIndex + 1;
+    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
+  };
+
+  const handleSkipDate = () => {
+    const item = dateItems[dateIndex];
+    onAddItem({
+      id: Date.now().toString() + dateIndex,
+      name: item.name,
+      useByDate: item.date || "",
+      openDate: "",
+      category: item.category || "Other",
+      location: item.location,
+    });
+    setSessionCount(c => c + 1);
+    const next = dateIndex + 1;
+    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
+  };
+
+  if (screen === "scanning") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
+        <div style={{ width: 56, height: 56, border: "5px solid #4ade80", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
+        <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+      </div>
+    );
+  }
+
+  if (screen === "error") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem", padding: "2rem" }}>
+        <span style={{ fontSize: "3rem" }}>❌</span>
+        <p style={{ color: "#f87171", fontWeight: 700, fontSize: "1.1rem", textAlign: "center", margin: 0 }}>{errorMsg || (isEs ? "Error al escanear" : "Scan error")}</p>
+        <button onClick={() => setScreen("camera")} style={{ padding: "0.9rem 2rem", background: "#16a34a", color: "#fff", fontWeight: 800, fontSize: "1rem", border: "none", borderRadius: "14px", cursor: "pointer" }}>{isEs ? "Intentar de nuevo" : "Try Again"}</button>
+        <button onClick={onClose} style={{ padding: "0.7rem 1.5rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "0.9rem", border: "2px solid rgba(255,255,255,0.2)", borderRadius: "12px", cursor: "pointer" }}>{isEs ? "Cerrar" : "Close"}</button>
+      </div>
+    );
+  }
+
+  if (screen === "review") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#111", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "#000", flexShrink: 0 }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Artículos Detectados" : "Detected Items"}</span>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "1.5px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.3rem 0.9rem", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem" }}>✕</button>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {detectedItems.map((it, i) => (
+            <div key={i} style={{ background: "#1e1e1e", borderRadius: "14px", padding: "0.85rem 1rem", display: "flex", flexDirection: "column", gap: "0.6rem", border: checked[i] ? "1.5px solid #4ade80" : "1.5px solid #333" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
+                <input type="checkbox" checked={!!checked[i]} onChange={e => setChecked(c => ({ ...c, [i]: e.target.checked }))} style={{ width: 22, height: 22, accentColor: "#4ade80", flexShrink: 0, cursor: "pointer" }} />
+                <input type="text" value={names[i] || ""} onChange={e => setNames(n => ({ ...n, [i]: e.target.value }))}
+                  style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1.5px solid #444", color: "#fff", fontWeight: 700, fontSize: "0.95rem", padding: "0.1rem 0", outline: "none" }} />
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", paddingLeft: "2rem" }}>
+                {["Fridge", "Freezer", "Pantry"].map(loc => (
+                  <button key={loc} onClick={() => setLocations(l => ({ ...l, [i]: loc }))}
+                    style={{ flex: 1, padding: "0.45rem 0.25rem", fontSize: "0.72rem", fontWeight: 700, borderRadius: "8px", border: "none", cursor: "pointer",
+                      background: locations[i] === loc ? (loc === "Freezer" ? "#2563eb" : loc === "Fridge" ? "#16a34a" : "#ea580c") : "#2a2a2a",
+                      color: locations[i] === loc ? "#fff" : "#888" }}>
+                    {loc === "Fridge" ? "🥬" : loc === "Freezer" ? "❄️" : "🫙"} {isEs ? (loc === "Fridge" ? "Refri" : loc === "Freezer" ? "Conge" : "Despe") : loc}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <button onClick={handleAddSelected}
+            style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.15rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 4px 0 #14532d" }}>
+            ✅ {isEs ? "Agregar Seleccionados" : "Add All Selected"} ({Object.values(checked).filter(Boolean).length})
+          </button>
+          <button onClick={() => setScreen("camera")}
+            style={{ width: "100%", padding: "0.75rem", background: "transparent", color: "rgba(255,255,255,0.55)", fontWeight: 600, fontSize: "0.9rem", border: "1.5px solid rgba(255,255,255,0.15)", borderRadius: "12px", cursor: "pointer" }}>
+            📷 {isEs ? "Escanear de nuevo" : "Scan Again"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "dates") {
+    const item = dateItems[dateIndex];
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "2rem 1.25rem", gap: "1.25rem" }}>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", fontWeight: 600, margin: "0 0 0.35rem" }}>{dateIndex + 1} / {dateItems.length}</p>
+          <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", margin: 0 }}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
+          <p style={{ color: "#86efac", fontSize: "0.95rem", fontWeight: 700, margin: "0.5rem 0 0" }}>{item?.name}</p>
+        </div>
+        {item?.date && <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", textAlign: "center", margin: "-0.5rem 0 0" }}>{isEs ? "Detectado:" : "Detected:"} {item.date}</p>}
+        <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
+          style={{ width: "100%", padding: "1rem", fontSize: "1.15rem", fontWeight: 700, borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", color: "#fff", textAlign: "center", boxSizing: "border-box" }} />
+        <button onClick={handleSaveDate}
+          style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
+          ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
+        </button>
+        <button onClick={handleSkipDate}
+          style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontWeight: 700, fontSize: "1rem", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: "16px", cursor: "pointer" }}>
+          {isEs ? "Omitir Fecha" : "Skip Date"} →
+        </button>
+      </div>
+    );
+  }
+
+  // screen === "camera"
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.7)", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.8)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
           {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
         </div>
         <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>
-          {isEs ? "Terminar ✓" : "Done ✓"}
+          {isEs ? "Listo ✓" : "Done ✓"}
         </button>
       </div>
-      <div style={{ position: "relative", flex: 1, overflow: "hidden", background: "#000" }}>
+      <div style={{ flex: 1, position: "relative", overflow: "hidden", background: "#000", minHeight: "80dvh" }}>
         {camError ? (
-          <div style={{ color: "#fff", textAlign: "center", padding: "3rem 1.5rem", fontSize: "0.95rem" }}>{camError}</div>
+          <div style={{ color: "#f87171", textAlign: "center", padding: "3rem 1.5rem", fontSize: "0.95rem" }}>{camError}</div>
         ) : (
           <>
             <video ref={videoRef} playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             <canvas ref={canvasRef} style={{ display: "none" }} />
-            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-              {!isFullOverlay && (
-                <div style={{ width: "82%", height: "52%", border: `3px solid ${vfBorderColor}`, borderRadius: "20px", boxShadow: `0 0 0 9999px rgba(0,0,0,0.48), 0 0 28px ${vfGlow}`, transition: "border-color 0.3s, box-shadow 0.3s", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "0.4rem" }}>
-                  {scannerStatus === "starting" && <span style={{ color: "#86efac", fontSize: "1.1rem", fontWeight: 700 }}>{isEs ? "Iniciando cámara..." : "Starting camera..."}</span>}
-                  {scannerStatus === "ready" && <span style={{ color: "#4ade80", fontSize: "3rem", fontWeight: 900, letterSpacing: "0.1em", textShadow: "0 0 24px #4ade80cc" }}>{overlayText.ready[isEs?"es":"en"]}</span>}
-                  {scannerStatus === "scanning" && <span style={{ color: "#facc15", fontSize: "2.2rem", fontWeight: 900, letterSpacing: "0.06em", textShadow: "0 0 20px #facc15bb" }}>{overlayText.scanning[isEs?"es":"en"]}</span>}
-                  {scannerStatus === "success" && (<>
-                    <span style={{ color: "#4ade80", fontSize: "2.8rem", fontWeight: 900, textShadow: "0 0 24px #4ade80cc" }}>{overlayText.success[isEs?"es":"en"]}</span>
-                    {detectedName && <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700, opacity: 0.9, textAlign: "center", padding: "0 0.5rem" }}>{detectedName}</span>}
-                    {detectedDate && <span style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 600 }}>📅 {detectedDate}</span>}
-                  </>)}
-                  {scannerStatus === "error" && <span style={{ color: "#f87171", fontSize: "2.4rem", fontWeight: 900, letterSpacing: "0.05em", textShadow: "0 0 20px #f87171aa" }}>{overlayText.error[isEs?"es":"en"]}</span>}
-                </div>
-              )}
-              {scannerStatus === "date" && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.82)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "1rem", pointerEvents: "auto" }}>
-                  <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", textAlign: "center", margin: 0, letterSpacing: "0.03em" }}>📅 {overlayText.date[isEs?"es":"en"]}</p>
-                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.9rem", fontWeight: 700, textAlign: "center", margin: 0 }}>✅ {detectedName}</p>}
-                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.68rem", fontWeight: 600, textAlign: "center", margin: "-0.25rem 0 0" }}>{isEs ? '🎙️ Di "Omitir Fecha" para saltar' : '🎙️ Say "Skip" or "Skip Date" to skip'}</p>
-                  <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "1.15rem", fontWeight: 700, borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", color: "#fff", textAlign: "center", boxSizing: "border-box", cursor: "pointer" }} />
-                  <button onClick={() => handleSaveDateRef.current && handleSaveDateRef.current(pickedDate)} style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>✅ {locLabels.saveWithDate}</button>
-                  <button onClick={() => handleSkipDateRef.current && handleSkipDateRef.current()} style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "1rem", border: "2px solid rgba(255,255,255,0.25)", borderRadius: "16px", cursor: "pointer" }}>{locLabels.skipDate}</button>
-                </div>
-              )}
-              {scannerStatus === "location" && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "1.5rem 1.25rem", gap: "0.85rem", pointerEvents: "auto" }}>
-                  <p style={{ color: "#fff", fontWeight: 900, fontSize: "1.05rem", textAlign: "center", margin: "0 0 0.25rem", letterSpacing: "0.02em" }}>{overlayText.location[isEs?"es":"en"]}</p>
-                  {detectedName && <p style={{ color: "#86efac", fontSize: "0.82rem", fontWeight: 600, textAlign: "center", margin: "0 0 0.25rem" }}>✅ {detectedName}{itemRef.current.date ? ` · 📅 ${itemRef.current.date}` : ""}</p>}
-                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Freezer")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#2563eb,#1d4ed8)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #1e3a8a,0 8px 20px rgba(0,0,0,0.3)" }}>❄️ {locLabels.freezer}</button>
-                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Fridge")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)" }}>🥬 {locLabels.fridge}</button>
-                  <button onClick={() => handleLocationRef.current && handleLocationRef.current("Pantry")} style={{ width: "100%", padding: "1.15rem", background: "linear-gradient(to bottom,#ea580c,#c2410c)", color: "#fff", fontWeight: 900, fontSize: "1.4rem", border: "none", borderRadius: "18px", cursor: "pointer", letterSpacing: "0.05em", boxShadow: "0 5px 0 #7c2d12,0 8px 20px rgba(0,0,0,0.3)" }}>🫙 {locLabels.pantry}</button>
-                </div>
-              )}
+            <div style={{ position: "absolute", inset: 0, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "85%", height: "65%", border: "2.5px solid #4ade80", borderRadius: "20px", boxShadow: "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px #4ade8044" }} />
             </div>
-            {!isFullOverlay && voiceHint && (
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.65rem 1.25rem 1rem", background: "linear-gradient(to top, rgba(0,0,0,0.88) 50%, transparent)", pointerEvents: "none", textAlign: "center" }}>
-                <span style={{ color: "#86efac", fontSize: "0.72rem", fontWeight: 600, opacity: 0.88 }}>{voiceHint}</span>
-              </div>
-            )}
           </>
         )}
+      </div>
+      <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0 }}>
+        <button onClick={capture} disabled={!!camError}
+          style={{ width: "100%", padding: "1.2rem", background: camError ? "#333" : "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "18px", cursor: camError ? "not-allowed" : "pointer", boxShadow: camError ? "none" : "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)", opacity: camError ? 0.5 : 1 }}>
+          📷 {isEs ? "Capturar y Escanear Todo" : "Capture & Scan All"}
+        </button>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem", textAlign: "center", margin: "0.5rem 0 0", fontWeight: 600 }}>
+          {isEs ? "Apunta a múltiples productos — todos serán detectados" : "Point at multiple items — all will be detected"}
+        </p>
       </div>
     </div>
   );
