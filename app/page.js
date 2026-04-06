@@ -1511,7 +1511,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#111", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "#000", flexShrink: 0 }}>
           <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Artículos Detectados" : "Detected Items"}</span>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "1.5px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.3rem 0.9rem", fontWeight: 700, cursor: "pointer", fontSize: "0.8rem" }}>✕</button>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.45)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>✕ {isEs ? "Cerrar" : "Close"}</button>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {detectedItems.map((it, i) => (
