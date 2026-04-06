@@ -2846,7 +2846,7 @@ export default function TrackFreshDashboard() {
   const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
 
   const handleMarkOpened = (item, dateStr) => {
-    const shelfDays = getShelfLifeDays(item.name);
+    const shelfDays = item.daysAfterOpening || getShelfLifeDays(item.name);
     const openUseBy = shelfDays ? addDaysToDate(dateStr, shelfDays) : null;
     setTrackedItems(prev => prev.map(it => it.id === item.id ? { ...it, openDate: dateStr, openUseBy } : it));
     setOpenedConfirm({ item: { ...item, openDate: dateStr, openUseBy }, openDate: dateStr, openUseBy, shelfDays });
