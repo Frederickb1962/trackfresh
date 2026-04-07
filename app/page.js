@@ -268,9 +268,9 @@ const GLOBAL_STYLES = `
   .mkt-page { min-height: 100vh; background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
   .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto; }
   .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
-  .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #F0C070, #E8A63C); color: #000; font-weight: 800; font-size: 1.05rem; padding: 1rem 2.35rem; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.15); transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; -webkit-tap-highlight-color:transparent; }
-  .mkt-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 0px #8C5A10, 0 14px 32px rgba(0,0,0,0.36), 0 0 22px rgba(232,166,60,0.28), inset 0 1.5px 0 rgba(255,255,255,0.45); }
-  .mkt-cta:active { transform: translateY(4px); box-shadow: 0 1px 0px #8C5A10, 0 2px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
+  .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 1.05rem; padding: 1rem 2.35rem; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 0px #92400e, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.15); transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; -webkit-tap-highlight-color:transparent; }
+  .mkt-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 0px #92400e, 0 14px 32px rgba(0,0,0,0.36), 0 0 22px rgba(245,158,11,0.35), inset 0 1.5px 0 rgba(255,255,255,0.45); }
+  .mkt-cta:active { transform: translateY(4px); box-shadow: 0 1px 0px #92400e, 0 2px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
   .mkt-cta-ghost { display: inline-block; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); color: #fff; font-weight: 700; font-size: 1.05rem; padding: 0.97rem 2.1rem; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.52); cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3); -webkit-tap-highlight-color:transparent; }
   .mkt-cta-ghost:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.27), rgba(255,255,255,0.11)); border-color: rgba(255,255,255,0.88); box-shadow: 0 6px 0 rgba(0,0,0,0.22), 0 10px 22px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-2px); }
   .mkt-cta-ghost:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
@@ -397,6 +397,8 @@ const GLOBAL_STYLES = `
   .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.35); }
   @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
   @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  @keyframes textShimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+  .shimmer-text { background: linear-gradient(90deg, #E8A63C 25%, #fffbe8 50%, #E8A63C 75%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: textShimmer 3s linear infinite; }
   .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
   .arrow-up   { color:#B7D63A; display:inline-block; animation:arrowBounceUp   1.1s ease-in-out infinite; }
   /* === TUTORIAL === */
@@ -409,6 +411,8 @@ const GLOBAL_STYLES = `
   .tut-step { animation: tutStepIn 0.28s ease both; }
   @keyframes flashRed { 0%,100% { opacity:1; background:rgba(220,38,38,0.25); } 50% { opacity:0.45; background:rgba(220,38,38,0.05); } }
   .flash-red { animation: flashRed 1.1s ease-in-out infinite; }
+  @keyframes pulseRed { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.75; transform:scale(0.95); } }
+  .pulse-red { animation: pulseRed 1.2s ease-in-out infinite; }
   @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
   @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
   .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
@@ -1064,6 +1068,21 @@ function suggestRecipes(trackedItems) {
   return scored.slice(0, 5);
 }
 
+// Returns a human-readable after-opening label for an item card.
+function afterOpeningLabel(it) {
+  if (it.openedTip) return it.openedTip;
+  const d = it.daysAfterOpening;
+  if (!d) return null;
+  const duration = d <= 14 ? `${d} days` : d <= 60 ? `${Math.round(d / 7)} weeks` : `${Math.round(d / 30)} months`;
+  const loc = it.location ?? "Fridge";
+  const cat = it.category ?? "Other";
+  if (loc === "Pantry" && cat === "Condiments") return `Refrigerate, use within ${duration}`;
+  if (loc === "Pantry" && cat === "Beverages") return `Refrigerate after opening, use within ${duration}`;
+  if (loc === "Pantry" && ["Dairy", "Meat"].includes(cat)) return `Move to fridge, use within ${duration}`;
+  if (cat === "Bread" && loc === "Pantry") return `Use within ${duration}, or freeze`;
+  return `Use within ${duration}`;
+}
+
 // Returns the earliest relevant date for an item — used for sorting, daysLeft, and urgency.
 function effectiveDate(it) {
   const pkg  = it.useByDate ? new Date(it.useByDate  + "T00:00:00").getTime() : null;
@@ -1333,6 +1352,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const mountedRef = useRef(true);
+  const dateInputRef = useRef(null);
   const isEs = lang === "es";
 
   // screen: "camera" | "scanning" | "review" | "dates" | "error"
@@ -1452,7 +1472,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
       date: it.date && it.dateFound ? it.date : "",
     })));
     setDateIndex(0);
-    setPickedDate("");
+    setPickedDate(selected[0]?.date || "");
     setScreen("dates");
   };
 
@@ -1465,6 +1485,9 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
       openDate: "",
       category: item.category || "Other",
       location: item.location,
+      daysAfterOpening: item.daysAfterOpening || null,
+      storageTip: item.storageTip || "",
+      openedTip: item.openedTip || "",
     });
     setSessionCount(c => c + 1);
     const next = dateIndex + 1;
@@ -1480,6 +1503,9 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
       openDate: "",
       category: item.category || "Other",
       location: item.location,
+      daysAfterOpening: item.daysAfterOpening || null,
+      storageTip: item.storageTip || "",
+      openedTip: item.openedTip || "",
     });
     setSessionCount(c => c + 1);
     const next = dateIndex + 1;
@@ -1557,9 +1583,15 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
           <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", margin: 0 }}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
           <p style={{ color: "#86efac", fontSize: "0.95rem", fontWeight: 700, margin: "0.5rem 0 0" }}>{item?.name}</p>
         </div>
-        {item?.date && <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", textAlign: "center", margin: "-0.5rem 0 0" }}>{isEs ? "Detectado:" : "Detected:"} {item.date}</p>}
-        <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
-          style={{ width: "100%", padding: "1rem", fontSize: "1.15rem", fontWeight: 700, borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", color: "#fff", textAlign: "center", boxSizing: "border-box" }} />
+        <div style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", overflow: "hidden" }}>
+          <div style={{ width: "100%", padding: "1rem", fontSize: pickedDate ? "1.15rem" : "0.95rem", fontWeight: 700, color: pickedDate ? "#fff" : "rgba(255,255,255,0.45)", textAlign: "center", boxSizing: "border-box", lineHeight: 1.4, pointerEvents: "none" }}>
+            {pickedDate
+              ? (() => { try { return new Date(pickedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch(e) { return pickedDate; } })()
+              : (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
+          </div>
+          <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 1 }} />
+        </div>
         <button onClick={handleSaveDate}
           style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
           ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
@@ -2001,12 +2033,12 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   <span className="hero-slide-right" style={{animationDelay:"0.45s"}}>{isEs ? "Rastreado." : "Tracked."}</span>
 </h1>
 
-<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s"}}>{isEs
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#f59e0b"}}>{isEs
       ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente en tu refrigerador."
       : "That ketchup, mayo, jar of pickles — finally know when they actually expire in your fridge."}
   </p>
 
-  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s"}}>
+  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s",color:"#f59e0b"}}>
     {isEs
       ? "Escanea alimentos, rastrea fechas de vencimiento y siempre sabe lo que hay en tu refrigerador, congelador y despensa."
       : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
@@ -2042,13 +2074,13 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             );
           })}
         </div>
-        <p style={{textAlign:"center",fontSize:"0.72rem",color:"#E8A63C",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "Toca para ver lo que sabe TrackFresh" : "Tap to see what TrackFresh knows"}</p>
+        <p className="shimmer-text" style={{textAlign:"center",fontSize:"0.72rem",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "✨ Toca para ver lo que sabe TrackFresh" : "✨ Tap to see what TrackFresh knows"}</p>
       </div>
 
       {/* The Issue */}
       <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
         <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
-          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "EL PROBLEMA" : "The Issue"}</div>
+          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "EL PROBLEMA" : "The Issue"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Etiquetas de caducidad? Confusas a propósito, si es que las encuentras." : "Expiration dates? Confusing by design if you can find them."}</strong></span></li>
@@ -2056,21 +2088,22 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🥫</span><span><strong>{isEs ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente después de abrirlos." : "That ketchup, mayo, jar of pickles — finally know when they actually expire after opening."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Miles de millones desperdiciados cada año. Ya no más." : "Billions wasted every year. Not anymore."}</strong></span></li>
         </ul>
-        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "TrackFresh supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : "TrackFresh outsmarts the labels so you can track freshness in the palm of your hand."}</p>
+        <div style={{height:"2rem"}} />
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}><span style={{color:"#f59e0b"}}>TrackFresh</span>{isEs ? " supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : " outsmarts the labels so you can track freshness in the palm of your hand."}</p>
       </div>
 
       {/* The Solution */}
       <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
         <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
-          <div style={{display:"inline-block",background:"#E8A63C",color:"#000",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",borderRadius:"999px",padding:"0.45rem 1.2rem"}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</div>
+          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
-        <p style={{textAlign:"center",fontWeight:700,fontSize:"1rem",margin:"0 0 0.6rem"}}>{isEs ? "TrackFresh puede:" : "TrackFresh can:"}</p>
-        <ol style={{padding:"0 0 0 1.25rem",margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-          <li style={{fontSize:"0.97rem"}}><strong>🧾 {isEs ? "Escanear recibos de supermercado." : "Scan grocery receipts."}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>📷 {isEs ? "Escanear etiquetas y códigos de barras e identificar cada uno." : "Scan food labels and barcodes and identify each."}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>🎤 {isEs ? "Reconocimiento de voz para fechas de caducidad." : "Voice recognition of expiration dates."}</strong></li>
-          <li style={{fontSize:"0.97rem"}}><strong>⏰ {isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></li>
-        </ol>
+        <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto o sube una imagen; nuestra IA identificará al instante cada alimento, categoría y vida útil, y rellenará todo por ti." : "Snap a photo or upload; our AI will instantly identify every food item, category, and shelf life then autofill for you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "Escanea uno o seis artículos a la vez y TrackFresh los identificará por código de barras y etiquetas en la misma foto y, por supuesto, rellenará todo automáticamente." : "Scan one or scan six items at the same time and TrackFresh will identify by barcode and labels all in the same shot and of course autofill."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad." : "Voice recognition of expiration dates."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></span></li>
+        </ul>
+        <div style={{height:"2rem"}} />
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
       </div>
 
@@ -3469,48 +3502,46 @@ export default function TrackFreshDashboard() {
 
         {showReceiptScanner && (
           <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/50 p-4 overflow-y-auto" style={{paddingTop:"calc(env(safe-area-inset-top, 0px) + 3rem)"}}>
-            <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-              <h2 className="mb-2 text-lg font-bold">{t("scanReceiptTitle")}</h2>
-              <p className="mb-4 text-sm text-gray-600">{t("scanReceiptDesc")}</p>
+            <div className="w-full max-w-lg rounded-xl p-6 shadow-lg" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
+              <h2 className="mb-2 text-lg font-bold" style={{color:"#fff"}}>{t("scanReceiptTitle")}</h2>
+              <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.75)"}}>{t("scanReceiptDesc")}</p>
               {!receiptScanning && receiptItems.length === 0 && (
-                <div style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",borderRadius:"14px",padding:"1rem"}}>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="glass-scan-btn" style={{cursor:"pointer"}}>
-                      <span style={{fontSize:"1.75rem"}}>📸</span>
-                      <span style={{fontSize:"0.875rem"}}>{t("takePhoto")}</span>
-                      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
-                    </label>
-                    <label className="glass-scan-btn" style={{cursor:"pointer"}}>
-                      <span style={{fontSize:"1.75rem"}}>🖼️</span>
-                      <span style={{fontSize:"0.875rem"}}>{t("uploadPhoto")}</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
-                    </label>
-                  </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="glass-scan-btn" style={{cursor:"pointer"}}>
+                    <span style={{fontSize:"1.75rem"}}>📸</span>
+                    <span style={{fontSize:"0.875rem"}}>{t("takePhoto")}</span>
+                    <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
+                  </label>
+                  <label className="glass-scan-btn" style={{cursor:"pointer"}}>
+                    <span style={{fontSize:"1.75rem"}}>🖼️</span>
+                    <span style={{fontSize:"0.875rem"}}>{t("uploadPhoto")}</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleScanReceipt(e.target.files[0])} />
+                  </label>
                 </div>
               )}
               {receiptScanning && (
                 <div className="flex flex-col items-center py-8">
                   <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm text-gray-600">{t("readingReceipt")}</p>
+                  <p className="text-sm" style={{color:"rgba(255,255,255,0.75)"}}>{t("readingReceipt")}</p>
                 </div>
               )}
-              {receiptError && <p className="mt-2 text-sm text-red-600">Error: {receiptError}</p>}
+              {receiptError && <p className="mt-2 text-sm" style={{color:"#fca5a5"}}>Error: {receiptError}</p>}
               {receiptItems.length > 0 && (
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-gray-700">{lang === "es" ? `Se encontraron ${receiptItems.length} productos — selecciona cuáles agregar:` : `Found ${receiptItems.length} items — select which to add:`}</p>
+                  <p className="mb-2 text-sm font-semibold" style={{color:"rgba(255,255,255,0.85)"}}>{lang === "es" ? `Se encontraron ${receiptItems.length} productos — selecciona cuáles agregar:` : `Found ${receiptItems.length} items — select which to add:`}</p>
                   <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
                     {receiptItems.map((it, i) => (
-                      <div key={i} className="rounded-lg border px-3 py-2">
+                      <div key={i} className="rounded-lg px-3 py-2" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.15)"}}>
                         <div className="flex items-center gap-3">
-                          <input type="checkbox" checked={selectedReceiptItems.includes(i)} onChange={() => setSelectedReceiptItems((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i])} className="h-4 w-4 accent-green-600" />
-                          <span className="flex-1 text-sm font-bold">{it.name}</span>
-                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">{it.location}</span>
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{it.category}</span>
+                          <input type="checkbox" checked={selectedReceiptItems.includes(i)} onChange={() => setSelectedReceiptItems((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i])} className="h-4 w-4 accent-green-400" />
+                          <span className="flex-1 text-sm font-bold" style={{color:"#fff"}}>{it.name}</span>
+                          <span className="rounded px-2 py-0.5 text-xs" style={{background:"rgba(96,165,250,0.2)",color:"#93c5fd"}}>{it.location}</span>
+                          <span className="rounded px-2 py-0.5 text-xs" style={{background:"rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.65)"}}>{it.category}</span>
                         </div>
                         <div className="ml-7 mt-1 space-y-0.5">
-                          <p className="text-xs text-green-700">📦 Sealed: ~{it.daysSealed || 7} days{it.daysAfterOpening ? " · 📂 After opening: ~" + it.daysAfterOpening + " days" : ""}</p>
-                          {it.storageTip && <p className="text-xs text-gray-500">💡 {it.storageTip}</p>}
-                          {it.openedTip && <p className="text-xs text-orange-600">⚠️ {it.openedTip}</p>}
+                          <p className="text-xs" style={{color:"#86efac"}}>📦 Sealed: ~{it.daysSealed || 7} days{it.daysAfterOpening ? " · 📂 After opening: ~" + it.daysAfterOpening + " days" : ""}</p>
+                          {it.storageTip && <p className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>💡 {it.storageTip}</p>}
+                          {it.openedTip && <p className="text-xs" style={{color:"#fcd34d"}}>⚠️ {it.openedTip}</p>}
                         </div>
                       </div>
                     ))}
@@ -3518,7 +3549,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleAddReceiptItems} style={{width:"100%",padding:"0.75rem 1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:800,fontSize:"0.95rem",border:"none",borderRadius:"14px",cursor:"pointer",boxShadow:"0 4px 0 #14532d"}}>{lang === "es" ? `Agregar ${selectedReceiptItems.length} productos al Rastreador` : `Add ${selectedReceiptItems.length} Items to Tracker`}</button>
                 </div>
               )}
-              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl border bg-gradient-to-b from-white to-gray-50 py-2 text-sm font-bold text-gray-600 pill-3d">{t("cancel")}</button>
+              <button onClick={() => { setShowReceiptScanner(false); setReceiptItems([]); setReceiptError(""); }} className="mt-3 w-full rounded-xl py-2 text-sm font-bold" style={{background:"rgba(0,0,0,0.2)",border:"1.5px solid rgba(250,204,21,0.5)",color:"#fff"}}>{t("cancel")}</button>
             </div>
           </div>
         )}
@@ -4464,16 +4495,15 @@ export default function TrackFreshDashboard() {
                                     ) : null}
                                   </div>
                                   <div className="flex flex-wrap gap-1 mt-1">
-                                    {it.storageTip && <TipPill type="gray">💡 {it.storageTip}</TipPill>}
-                                    {it.openedTip && <TipPill type="orange">⚠️ {it.openedTip}</TipPill>}
-                                    {it.daysAfterOpening && <TipPill type="blue">📅 Use within {it.daysAfterOpening} days of opening</TipPill>}
+                                    <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
+                                    {(it.daysAfterOpening || it.openedTip) && (() => { const label = afterOpeningLabel(it); return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null; })()}
                                     {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2 ml-2">
                                   <div className="text-right" style={{minWidth:"3.2rem"}}>
                                     {it.daysLeft === null ? (
-                                      <div className="flash-red" onClick={() => handleEditItem(it.id)} style={{display:"inline-block",border:"1.5px solid rgba(220,38,38,0.7)",borderRadius:"999px",padding:"0.18rem 0.45rem",fontSize:"0.65rem",fontWeight:800,color:"#dc2626",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.3}}>Add<br/>Date</div>
+                                      <button className="pulse-red" onClick={() => handleEditItem(it.id)} style={{display:"inline-block",background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.45rem",fontSize:"0.6rem",fontWeight:800,color:"#fff",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.35,boxShadow:"0 2px 6px rgba(239,68,68,0.45)",border:"none"}}>Need EXP<br/>Date</button>
                                     ) : (() => {
                                       const d = it.daysLeft;
                                       const [bg, color, border] = d <= 2 ? ["rgba(220,38,38,0.15)","#dc2626","rgba(220,38,38,0.5)"] : d <= 4 ? ["rgba(234,88,12,0.15)","#ea580c","rgba(234,88,12,0.5)"] : d <= 7 ? ["rgba(202,138,4,0.15)","#ca8a04","rgba(202,138,4,0.5)"] : ["rgba(22,163,74,0.15)","#16a34a","rgba(22,163,74,0.5)"];
