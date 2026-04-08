@@ -1070,7 +1070,13 @@ function suggestRecipes(trackedItems) {
 
 // Returns a human-readable after-opening label for an item card.
 function afterOpeningLabel(it) {
-  if (it.openedTip) return it.openedTip;
+  if (it.openedTip) {
+    const hasTimeframe = /\b(day|days|week|weeks|month|months|year|years)\b/i.test(it.openedTip);
+    if (hasTimeframe || !it.daysAfterOpening) return it.openedTip;
+    const d = it.daysAfterOpening;
+    const duration = d <= 14 ? `${d} days` : d <= 60 ? `${Math.round(d / 7)} weeks` : `${Math.round(d / 30)} months`;
+    return `${it.openedTip} · Use within ${duration}`;
+  }
   const d = it.daysAfterOpening;
   if (!d) return null;
   const duration = d <= 14 ? `${d} days` : d <= 60 ? `${Math.round(d / 7)} weeks` : `${Math.round(d / 30)} months`;
@@ -2330,6 +2336,9 @@ export default function TrackFreshDashboard() {
   const [quickAddName, setQuickAddName] = useState("");
   const [quickAddDate, setQuickAddDate] = useState("");
   const [quickAddQty, setQuickAddQty] = useState("");
+  const [pendingDateItems, setPendingDateItems] = useState([]);
+  const [pendingDateIndex, setPendingDateIndex] = useState(0);
+  const [pendingPickedDate, setPendingPickedDate] = useState("");
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
   const [quickAddLocation, setQuickAddLocation] = useState("Fridge");
   const [meals, setMeals] = useState({});
@@ -2641,7 +2650,7 @@ export default function TrackFreshDashboard() {
     if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(e) {} voiceFlowRef.current = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const itemName = smartResult.name || "Unknown Item";
-    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "" };
+    const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     setUniScanCount(prev => prev + 1);
     setUniScanLastItem(itemName);
@@ -2671,7 +2680,7 @@ export default function TrackFreshDashboard() {
   const handleAddSmartMultiItems = () => {
     const today = new Date().toISOString().split("T")[0];
     const newItems = selectedSmartMulti.map(i => smartMultiItems[i]).filter(Boolean).map(item => ({
-      id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: today,
+      id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: "",
       category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
       daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
     }));
@@ -2703,7 +2712,7 @@ export default function TrackFreshDashboard() {
   const handleAddMultiItems = () => {
     const today = new Date().toISOString().split("T")[0];
     const newItems = selectedMultiItems.map(i => multiItems[i]).filter(Boolean).map(item => ({
-      id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: today,
+      id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: "",
       category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
       daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
     }));
@@ -3210,7 +3219,7 @@ export default function TrackFreshDashboard() {
     const loc = barcodeLocation || barcodeItem.location;
     const today = new Date().toISOString().split("T")[0];
     const itemName = barcodeItem.name;
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: today, freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
+    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: "", freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
     setMultiScanCount(prev => prev + 1);
     setMultiScanLastItem(itemName);
     setBarcodeItem(null);
@@ -3336,13 +3345,14 @@ export default function TrackFreshDashboard() {
       const res = await fetch("/api/food-info", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: quickAddName }) });
       if (res.ok) foodInfo = await res.json();
     } catch (e) { console.log("Food info fetch failed, using defaults"); }
-    const today = new Date();
-    const useBy = quickAddDate || (foodInfo.daysSealed ? new Date(today.getTime() + foodInfo.daysSealed * 86400000).toISOString().split("T")[0] : "");
     const cat = quickAddCategory !== "Other" ? quickAddCategory : (foodInfo.category || quickAddCategory);
     const loc = quickAddLocation !== "Fridge" ? quickAddLocation : (foodInfo.location || quickAddLocation);
-    setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: quickAddQty, useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" }]);
+    const item = { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: quickAddQty, useByDate: "", openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" };
     setShowQuickAdd(false);
     setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
+    setPendingDateItems([item]);
+    setPendingDateIndex(0);
+    setPendingPickedDate("");
   };
 
   const handleScanLabel = async (file) => {
@@ -3403,15 +3413,29 @@ export default function TrackFreshDashboard() {
 
   const handleAddReceiptItems = () => {
     const toAdd = receiptItems.filter((_, i) => selectedReceiptItems.includes(i));
-    const today = new Date();
-    setTrackedItems((prev) => [...prev, ...toAdd.map((it) => {
-      const days = it.daysSealed || 7;
-      const useBy = new Date(today.getTime() + days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-      return { id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: useBy, openDate: today.toISOString().split("T")[0], daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" };
-    })]);
+    const items = toAdd.map(it => ({ id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: "", openDate: "", daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" }));
     setShowReceiptScanner(false);
     setReceiptItems([]);
     setSelectedReceiptItems([]);
+    setPendingDateItems(items);
+    setPendingDateIndex(0);
+    setPendingPickedDate("");
+  };
+
+  const handlePendingSaveDate = () => {
+    const item = pendingDateItems[pendingDateIndex];
+    setTrackedItems(prev => [{ ...item, useByDate: pendingPickedDate || "" }, ...prev]);
+    const next = pendingDateIndex + 1;
+    if (next >= pendingDateItems.length) { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }
+    else { setPendingDateIndex(next); setPendingPickedDate(""); }
+  };
+
+  const handlePendingSkipDate = () => {
+    const item = pendingDateItems[pendingDateIndex];
+    setTrackedItems(prev => [{ ...item, useByDate: "" }, ...prev]);
+    const next = pendingDateIndex + 1;
+    if (next >= pendingDateItems.length) { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }
+    else { setPendingDateIndex(next); setPendingPickedDate(""); }
   };
 
   const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
@@ -3553,6 +3577,38 @@ export default function TrackFreshDashboard() {
             </div>
           </div>
         )}
+
+        {pendingDateItems.length > 0 && pendingDateIndex < pendingDateItems.length && (() => {
+          const item = pendingDateItems[pendingDateIndex];
+          const isEs = lang === "es";
+          return (
+            <div style={{position:"fixed",inset:0,zIndex:9999,background:"#000",display:"flex",flexDirection:"column",alignItems:"stretch",justifyContent:"center",padding:"2rem 1.25rem",gap:"1.25rem"}}>
+              <div style={{textAlign:"center"}}>
+                <p style={{color:"rgba(255,255,255,0.45)",fontSize:"0.75rem",fontWeight:600,margin:"0 0 0.35rem"}}>{pendingDateIndex + 1} / {pendingDateItems.length}</p>
+                <p style={{color:"#facc15",fontWeight:900,fontSize:"1.1rem",margin:0}}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
+                <p style={{color:"#86efac",fontSize:"0.95rem",fontWeight:700,margin:"0.5rem 0 0"}}>{item.name}</p>
+              </div>
+              {(item.storageTip || item.openedTip || item.daysAfterOpening) && (
+                <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+                  {item.storageTip && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>💡</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Cómo almacenar:" : "How to store:"}</strong> {item.storageTip}</span></div>}
+                  {(item.openedTip || item.daysAfterOpening) && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>📂</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Después de abrir:" : "After opening:"}</strong> {item.openedTip || (item.daysAfterOpening ? `Use within ${item.daysAfterOpening} days` : "")}</span></div>}
+                </div>
+              )}
+              <div style={{position:"relative",borderRadius:"14px",border:"2px solid #facc15",background:"#1a1a1a",overflow:"hidden"}}>
+                <div style={{width:"100%",padding:"1rem",fontSize:pendingPickedDate?"1.15rem":"0.95rem",fontWeight:700,color:pendingPickedDate?"#fff":"rgba(255,255,255,0.45)",textAlign:"center",boxSizing:"border-box",lineHeight:1.4,pointerEvents:"none"}}>
+                  {pendingPickedDate ? (() => { try { return new Date(pendingPickedDate + "T00:00:00").toLocaleDateString("en-US", {month:"short",day:"numeric",year:"numeric"}); } catch(e) { return pendingPickedDate; } })() : (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
+                </div>
+                <input type="date" value={pendingPickedDate} onChange={e => setPendingPickedDate(e.target.value)} style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}} />
+              </div>
+              <button onClick={handlePendingSaveDate} style={{width:"100%",padding:"1.1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:900,fontSize:"1.2rem",border:"none",borderRadius:"16px",cursor:"pointer",boxShadow:"0 5px 0 #14532d"}}>
+                ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
+              </button>
+              <button onClick={handlePendingSkipDate} style={{width:"100%",padding:"1rem",background:"rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.65)",fontWeight:700,fontSize:"1rem",border:"1.5px solid rgba(255,255,255,0.2)",borderRadius:"16px",cursor:"pointer"}}>
+                {isEs ? "Omitir Fecha" : "Skip Date"} →
+              </button>
+            </div>
+          );
+        })()}
 
         {showRecallsPanel && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
@@ -4028,16 +4084,7 @@ export default function TrackFreshDashboard() {
                   </div>
                   {quickVoiceListening === "qty" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la cantidad ej. dos libras" : "Say quantity e.g. two pounds"}</p>}
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-green-200">Use By Date</label>
-                  <div className="flex gap-2">
-                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
-                  </div>
-                  {quickVoiceListening === "date" && <p className="text-xs text-green-300 mt-1">{t("sayDateExample")}</p>}
-                  {quickVoiceError && <p className="text-xs text-red-400 mt-1">{quickVoiceError}</p>}
-                </div>
-                <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">Add to Tracker</button>
+                <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">Next: Set Expiry Date →</button>
                 <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border border-white/30 py-2 text-sm font-semibold text-white/70">{t("cancel")}</button>
               </div>
             </div>
@@ -4242,7 +4289,7 @@ export default function TrackFreshDashboard() {
                       <h2 className="app-section-h2" style={{margin:0}}>🍽️ {isEs?"Tu Cocina Hoy":"Your Kitchen Today"}</h2>
                       <div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.75)",marginTop:"0.2rem",fontWeight:500}}>{subtitle}</div>
                     </div>
-                    <button onClick={() => setActiveTab("use-soon")} style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",background:"rgba(134,239,172,0.12)",border:"1px solid rgba(134,239,172,0.3)",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
+                    <button onClick={() => setActiveTab("tracker")} style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",background:"rgba(134,239,172,0.12)",border:"1px solid rgba(134,239,172,0.3)",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
                       {isEs?"Ver Todo":"See All"} ›
                     </button>
                   </div>
@@ -4285,7 +4332,7 @@ export default function TrackFreshDashboard() {
                 const weekCount   = itemsWithCountdown.filter(it => it.daysLeft !== null && it.daysLeft > 3 && it.daysLeft <= 7).length;
                 const totalAlert  = urgentCount + weekCount;
                 return (
-                  <button key="use-soon" onClick={() => setActiveTab("use-soon")} style={{gridColumn:"1/-1",background: urgentCount > 0 ? "linear-gradient(135deg,rgba(220,38,38,0.25),rgba(234,88,12,0.2))" : "rgba(255,255,255,0.1)",border: urgentCount > 0 ? "1.5px solid rgba(220,38,38,0.55)" : "1.5px solid rgba(183,214,58,0.45)",borderRadius:"16px",padding:"0.875rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",cursor:"pointer",transition:"all 0.15s",backdropFilter:"blur(6px)",textAlign:"left"}}>
+                  <button key="use-soon" onClick={() => setActiveTab("tracker")} style={{gridColumn:"1/-1",background: urgentCount > 0 ? "linear-gradient(135deg,rgba(220,38,38,0.25),rgba(234,88,12,0.2))" : "rgba(255,255,255,0.1)",border: urgentCount > 0 ? "1.5px solid rgba(220,38,38,0.55)" : "1.5px solid rgba(183,214,58,0.45)",borderRadius:"16px",padding:"0.875rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",cursor:"pointer",transition:"all 0.15s",backdropFilter:"blur(6px)",textAlign:"left"}}>
                     <span style={{fontSize:"2.2rem",flexShrink:0}}>⚡</span>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:800,color:"#fff",fontSize:"0.95rem",lineHeight:1.2}}>{lang==="es"?"Usar Pronto":"Use Soon"}</div>
@@ -4496,7 +4543,7 @@ export default function TrackFreshDashboard() {
                                   </div>
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
-                                    {(it.daysAfterOpening || it.openedTip) && (() => { const label = afterOpeningLabel(it); return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null; })()}
+                                    {(() => { const label = afterOpeningLabel(it) || (it.location === "Freezer" ? null : it.category === "Dairy" ? "Keep refrigerated, use within 7 days" : it.category === "Meat" ? "Cook or freeze within 2–3 days" : it.category === "Produce" ? "Use within 3–5 days" : it.category === "Beverages" ? "Refrigerate after opening" : it.category === "Bread" ? "Use within 5 days or freeze" : "Check package for timing after opening"); return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null; })()}
                                     {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
                                   </div>
                                 </div>
