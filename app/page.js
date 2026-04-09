@@ -3504,7 +3504,12 @@ export default function TrackFreshDashboard() {
             <button onClick={() => { setTutorialStep(0); setShowTutorial(true); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             {activeTab !== "home" && (
-              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"}>←</button>
+              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 9 L10 9 Q12.5 9 12.5 6.5 L12.5 3" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
+                  <path d="M5 7 L3 9 L5 11" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             )}
             {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
             <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
@@ -5228,43 +5233,43 @@ export default function TrackFreshDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/amazon.com" alt="Amazon Fresh" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=128" alt="Amazon Fresh" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Amazon Fresh</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.kroger.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/kroger.com" alt="Kroger" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=kroger.com&sz=128" alt="Kroger" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Kroger</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.walmart.com/cp/food/976759" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/walmart.com" alt="Walmart" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=walmart.com&sz=128" alt="Walmart" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Walmart</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.wholefoodsmarket.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/wholefoodsmarket.com" alt="Whole Foods" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=wholefoodsmarket.com&sz=128" alt="Whole Foods" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Whole Foods</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.target.com/c/grocery/-/N-5xt1a" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/target.com" alt="Target" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=target.com&sz=128" alt="Target" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Target</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.costco.com/grocery-household.html" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/costco.com" alt="Costco" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=costco.com&sz=128" alt="Costco" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Costco</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
                 <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
-                  <img src="https://logo.clearbit.com/traderjoes.com" alt="Trader Joe's" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <img src="https://www.google.com/s2/favicons?domain=traderjoes.com&sz=128" alt="Trader Joe's" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Trader Joe&apos;s</span>
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
