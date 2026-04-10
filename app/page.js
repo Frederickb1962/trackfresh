@@ -4367,7 +4367,6 @@ export default function TrackFreshDashboard() {
                 { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
                 { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
                 { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
-                { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",  sub: lang === "es" ? "Orientación" : "Guidance",                  action: () => setShowHelp(true) },
                 { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
                 { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",         sub: lang === "es" ? "Necesidades" : "Dietary Needs",             action: () => setActiveTab("dietary") },
                 { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("suggestions") },
