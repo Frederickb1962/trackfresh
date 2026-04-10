@@ -2295,6 +2295,12 @@ export default function TrackFreshDashboard() {
   const [showRecallsPanel, setShowRecallsPanel] = useState(false);
   const [recipeMode, setRecipeMode] = useState("suggest");
   const [editDateListening, setEditDateListening] = useState(false);
+  const [suggCategory, setSuggCategory] = useState("feature");
+  const [suggMessage, setSuggMessage] = useState("");
+  const [suggName, setSuggName] = useState("");
+  const [suggSubmitting, setSuggSubmitting] = useState(false);
+  const [suggSubmitted, setSuggSubmitted] = useState(false);
+  const [voteCounts, setVoteCounts] = useState({});
 
   useEffect(() => {
     if (!showRecallsPanel) return;
@@ -4366,7 +4372,7 @@ export default function TrackFreshDashboard() {
                 { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",  sub: lang === "es" ? "Orientación" : "Guidance",                  action: () => setShowHelp(true) },
                 { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
                 { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",         sub: lang === "es" ? "Necesidades" : "Dietary Needs",             action: () => setActiveTab("dietary") },
-                { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("more") },
+                { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("suggestions") },
               ].map(({ icon, label, sub, action }) => {
                 const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
                 const isShoppingTile = label === (lang === "es" ? "Compras" : "Shopping");
@@ -5437,6 +5443,120 @@ export default function TrackFreshDashboard() {
               </div>
             </Card>
           </>
+        )}
+
+        {activeTab === "suggestions" && (
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="text-center px-2 pt-2">
+              <div className="text-4xl mb-2">💬</div>
+              <h2 className="text-2xl font-bold text-white">{lang === "es" ? "Tus Ideas Importan" : "Your Ideas Matter"}</h2>
+              <p className="text-sm mt-2" style={{color:"rgba(255,255,255,0.7)"}}>{lang === "es" ? "Somos un pequeño equipo con una gran misión. Tu opinión construye lo que creamos." : "We're a small team with a big mission. Your feedback directly shapes what we build next."}</p>
+            </div>
+
+            {/* Suggestion Form */}
+            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
+              <h3 className="font-bold text-white text-lg">{lang === "es" ? "Deja una Sugerencia" : "Leave a Suggestion"}</h3>
+              <select
+                value={suggCategory}
+                onChange={e => setSuggCategory(e.target.value)}
+                className="w-full rounded-xl px-3 py-2 text-sm font-medium"
+                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)"}}
+              >
+                <option value="feature">{lang === "es" ? "Nueva Función" : "New Feature"}</option>
+                <option value="improvement">{lang === "es" ? "Mejora" : "Improvement"}</option>
+                <option value="bug">{lang === "es" ? "Reporte de Error" : "Bug Report"}</option>
+                <option value="other">{lang === "es" ? "Otro" : "Other"}</option>
+              </select>
+              <textarea
+                value={suggMessage}
+                onChange={e => setSuggMessage(e.target.value)}
+                placeholder={lang === "es" ? "Escribe tu sugerencia aquí..." : "Write your suggestion here..."}
+                rows={4}
+                className="w-full rounded-xl px-3 py-2 text-sm"
+                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)",resize:"none"}}
+              />
+              <input
+                value={suggName}
+                onChange={e => setSuggName(e.target.value)}
+                placeholder={lang === "es" ? "Tu nombre (opcional)" : "Your name (optional)"}
+                className="w-full rounded-xl px-3 py-2 text-sm"
+                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)"}}
+              />
+              <button
+                onClick={async () => {
+                  if (!suggMessage.trim()) return;
+                  setSuggSubmitting(true);
+                  try {
+                    await fetch("https://formspree.io/f/xbdpvpvn", {
+                      method: "POST",
+                      headers: {"Content-Type": "application/json"},
+                      body: JSON.stringify({category: suggCategory, message: suggMessage, from_name: suggName || "Anonymous"})
+                    });
+                    setSuggSubmitted(true);
+                    setSuggMessage("");
+                    setSuggName("");
+                  } catch(e) {}
+                  setSuggSubmitting(false);
+                }}
+                disabled={suggSubmitting}
+                className="w-full py-3 rounded-xl font-bold text-white"
+                style={{background:"#B7D63A",color:"#1a3a2a"}}
+              >
+                {suggSubmitting ? "..." : suggSubmitted ? (lang === "es" ? "✅ ¡Enviado!" : "✅ Sent! Thank you!") : (lang === "es" ? "Enviar Sugerencia" : "Send Suggestion")}
+              </button>
+              {suggSubmitted && <p className="text-center text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{lang === "es" ? "Leemos cada sugerencia. Las mejores ideas se construyen." : "We read every suggestion. Top ideas get built."}</p>}
+            </div>
+
+            {/* Community Votes */}
+            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
+              <h3 className="font-bold text-white text-lg">🗳️ {lang === "es" ? "Vota por lo Siguiente" : "Vote What We Build Next"}</h3>
+              <p className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{lang === "es" ? "Toca para votar por tu función favorita" : "Tap to vote for your favorite feature"}</p>
+              {[
+                {id:"push", en:"Push notifications before items expire", es:"Notificaciones antes de que los alimentos venzan"},
+                {id:"feedback", en:"In-app feedback on every section", es:"Comentarios dentro de cada sección"},
+                {id:"household", en:"Shared household accounts", es:"Cuentas compartidas para el hogar"}
+              ].map(item => {
+                const voteKey = "sugg_vote_" + item.id;
+                const count = parseInt(localStorage.getItem(voteKey) || "0");
+                const voted = localStorage.getItem(voteKey + "_voted") === "1";
+                return (
+                  <div key={item.id} className="flex items-center justify-between rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.06)"}}>
+                    <span className="text-sm text-white flex-1 pr-3">{lang === "es" ? item.es : item.en}</span>
+                    <button
+                      onClick={() => {
+                        if (voted) return;
+                        localStorage.setItem(voteKey, String(count + 1));
+                        localStorage.setItem(voteKey + "_voted", "1");
+                        setVoteCounts(v => ({...v, [item.id]: count + 1}));
+                      }}
+                      className="flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold"
+                      style={{background: voted ? "rgba(183,214,58,0.3)" : "rgba(183,214,58,0.15)", color:"#B7D63A", border:"1px solid rgba(183,214,58,0.4)"}}
+                    >
+                      👍 {voteCounts[item.id] ?? count}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Recently Added */}
+            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
+              <h3 className="font-bold text-white text-lg">✅ {lang === "es" ? "Agregado por Usuarios" : "Added From Your Feedback"}</h3>
+              {[
+                {en:"Receipt scanning — scan your grocery receipt to add items instantly", es:"Escaneo de recibos — agrega artículos escaneando tu ticket"},
+                {en:"Bilingual support — full English & Spanish throughout the app", es:"Soporte bilingüe — inglés y español en toda la app"},
+                {en:"FDA Recalls panel — real-time food safety alerts", es:"Panel de retiros FDA — alertas de seguridad alimentaria en tiempo real"}
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">✓</span>
+                  <span className="text-sm" style={{color:"rgba(255,255,255,0.8)"}}>{lang === "es" ? item.es : item.en}</span>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}>← {lang === "es" ? "Inicio" : "Home"}</button>
+          </div>
         )}
 
       </div>
