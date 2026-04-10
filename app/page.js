@@ -5513,6 +5513,7 @@ export default function TrackFreshDashboard() {
               <h3 className="font-bold text-white text-lg">🗳️ {lang === "es" ? "Vota por lo Siguiente" : "Vote What We Build Next"}</h3>
               <p className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{lang === "es" ? "Toca para votar por tu función favorita" : "Tap to vote for your favorite feature"}</p>
               {[
+                {id:"family", en:"Family Mode — share your fridge, vote on dinner, send meal polls to the whole household", es:"Modo Familiar — comparte tu refrigerador, vota la cena, envía encuestas a toda la familia"},
                 {id:"push", en:"Push notifications before items expire", es:"Notificaciones antes de que los alimentos venzan"},
                 {id:"feedback", en:"In-app feedback on every section", es:"Comentarios dentro de cada sección"},
                 {id:"household", en:"Shared household accounts", es:"Cuentas compartidas para el hogar"}
