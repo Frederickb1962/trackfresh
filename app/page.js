@@ -1299,7 +1299,7 @@ function Card({ children, className = "", style = {} }) {
 function TabBar({ active, onChange }) {
   return (
     <div className="flex gap-1 rounded-2xl bg-gradient-to-r from-green-900 to-emerald-800 p-1.5 shadow-lg">
-      {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
+      {[["tracker","🥦 Tracker"],["recipes","🍳 Recipes"],["shopping","🛒 Shopping List"],["meals","📅 Meals"],["community","👥 Community"]].map(([id, label]) => (
         <button key={id} onClick={() => onChange(id)} className={`flex-1 rounded-xl py-2 text-xs font-bold transition-all duration-300 ${active === id ? "bg-white text-green-800 pill-3d-active scale-[1.02]" : "text-green-100/70 hover:text-white hover:bg-white/10 pill-3d"}`}>{label}</button>
       ))}
     </div>
@@ -3512,8 +3512,8 @@ export default function TrackFreshDashboard() {
             {activeTab !== "home" && (
               <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 9 L10 9 Q12.5 9 12.5 6.5 L12.5 3" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
-                  <path d="M5 7 L3 9 L5 11" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
+                  <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             )}
@@ -4363,11 +4363,9 @@ export default function TrackFreshDashboard() {
               {[
                 { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: lang === "es" ? "Rastrea tu Comida" : "Track Your Food",    action: () => setActiveTab("tracker") },
                 { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",       sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",  action: () => setActiveTab("recipes") },
-                { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Compras" : "Shopping",      sub: lang === "es" ? "Tu Lista" : "Build Your List",              action: () => setActiveTab("shopping") },
+                { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Lista de Compras" : "Shopping List", sub: lang === "es" ? "Tu Lista" : "Build Your List",         action: () => setActiveTab("shopping") },
                 { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
-                { icon: "🌱",                           label: lang === "es" ? "Compost" : "Compost",       sub: lang === "es" ? "Salva El Mundo" : "Save The World",         action: () => setActiveTab("composting") },
                 { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
-                { icon: "👥",                           label: lang === "es" ? "Comunidad" : "Community",   sub: lang === "es" ? "Comparte" : "Share",                        action: () => setActiveTab("community") },
                 { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
                 { icon: "❓",                           label: lang === "es" ? "Cómo Usar" : "How to Use",  sub: lang === "es" ? "Orientación" : "Guidance",                  action: () => setShowHelp(true) },
                 { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
@@ -4375,7 +4373,7 @@ export default function TrackFreshDashboard() {
                 { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("suggestions") },
               ].map(({ icon, label, sub, action }) => {
                 const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
-                const isShoppingTile = label === (lang === "es" ? "Compras" : "Shopping");
+                const isShoppingTile = label === (lang === "es" ? "Lista de Compras" : "Shopping List");
                 return (
                   <button key={label} onClick={action} className={`dash-tile${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
                     <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
@@ -4854,7 +4852,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}>← Back</button>
+            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
             
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
@@ -5084,7 +5082,7 @@ export default function TrackFreshDashboard() {
 
             {/* Header */}
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
               <div>
                 <span className="app-section-label">Business</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🤝 Partners</h2>
@@ -5217,7 +5215,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "stores-page" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn">← Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
               <div>
                 <span className="app-section-label">Online</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🏪 {t("shopOnline")}</h2>
@@ -5788,7 +5786,7 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="flex gap-3">
                 {tutorialStep > 0 && (
-                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn">←</button>
+                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn" style={{border:"1.5px solid #ff6600"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
                 )}
                 {!isLast ? (
                   <button onClick={() => setTutorialStep(s => s + 1)} className="flex-1 rounded-2xl py-3 text-sm font-bold glass-scan-btn" style={{border:"2px solid #B7D63A"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
