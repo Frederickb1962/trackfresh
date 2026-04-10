@@ -2219,6 +2219,15 @@ const TUTORIALS = {
   ],
 };
 
+const TOUR_CONTENT = {
+  tracker:  { icon: "🥦", label: "Tracker",       intro: "Track food and beat expiry dates",        slides: TUTORIALS.tracker },
+  recipes:  { icon: "🍳", label: "Recipes",        intro: "Cook what you have, waste nothing",       slides: TUTORIALS.recipes },
+  shopping: { icon: "🛒", label: "Shopping List",  intro: "Smart list that knows what you need",     slides: TUTORIALS.shopping },
+  meals:    { icon: "📅", label: "Meals",          intro: "Plan a full week in seconds with AI",     slides: TUTORIALS.meals },
+  dietary:  { icon: "🥗", label: "Dietary",        intro: "Set your household's food needs once",    slides: TUTORIALS.dietary },
+  more:     { icon: "💬", label: "More",           intro: "Suggestions, language, and your data",    slides: TUTORIALS.more },
+};
+
 export default function TrackFreshDashboard() {
   const [lang, setLang] = useState("en");
   const changeLang = (l) => { setLang(l); try { localStorage.setItem(LANG_KEY, l); } catch(e) {} };
@@ -2496,6 +2505,10 @@ export default function TrackFreshDashboard() {
   const [openedModalOffset, setOpenedModalOffset] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [tourMode, setTourMode] = useState(false);
+  const [tourSection, setTourSection] = useState(null);
+  const [tourSlide, setTourSlide] = useState(0);
+  const [tourCompleted, setTourCompleted] = useState({});
 
   const resetUniScanTimer = () => {
     if (uniScanTimer.current) clearTimeout(uniScanTimer.current);
@@ -3507,7 +3520,7 @@ export default function TrackFreshDashboard() {
         <div className="mx-auto max-w-2xl px-4 pt-3 pb-2 flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setTutorialStep(0); setShowTutorial(true); }} className="app-header-btn tut-pulse">✨ Tour</button>
+            <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             {activeTab !== "home" && (
               <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
@@ -5798,6 +5811,79 @@ export default function TrackFreshDashboard() {
           </div>
         );
       })()}
+
+      {tourMode && (
+        <div style={{position:"fixed",inset:0,zIndex:60,background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",display:"flex",flexDirection:"column",overflowY:"auto"}}>
+          {/* Tour header */}
+          <div style={{padding:"1rem 1rem 0.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"rgba(6,78,59,0.97)",backdropFilter:"blur(8px)",zIndex:1,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+              {tourSection !== null && (
+                <button onClick={() => { setTourSection(null); setTourSlide(0); }} className="back-btn" style={{border:"1.5px solid #ff6600"}}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
+                    <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
+              <span style={{color:"#fff",fontWeight:800,fontSize:"1rem"}}>✨ {lang === "es" ? "Recorrido" : "App Tour"}</span>
+            </div>
+            <button onClick={() => setTourMode(false)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.55)",fontSize:"1.6rem",cursor:"pointer",lineHeight:1,padding:"0 0.25rem"}}>×</button>
+          </div>
+
+          {tourSection === null ? (
+            /* Section picker */
+            <div style={{padding:"1rem 1rem 2rem",flex:1}}>
+              <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem",textAlign:"center",marginBottom:"1.25rem"}}>{lang === "es" ? "Elige una sección para explorar" : "Choose a section to explore"}</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem",maxWidth:"480px",margin:"0 auto"}}>
+                {Object.entries(TOUR_CONTENT).map(([key, sec]) => (
+                  <button key={key} onClick={() => { setTourSection(key); setTourSlide(0); }}
+                    style={{background:"rgba(255,255,255,0.1)",border:tourCompleted[key] ? "1.5px solid #4ade80" : "1.5px solid rgba(255,255,255,0.18)",borderRadius:"1rem",padding:"1rem 0.75rem",textAlign:"center",cursor:"pointer",position:"relative",transition:"background 0.15s"}}>
+                    <div style={{fontSize:"1.75rem",marginBottom:"0.35rem"}}>{sec.icon}</div>
+                    <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem"}}>{sec.label}</div>
+                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{sec.intro}</div>
+                    {tourCompleted[key] && <div style={{position:"absolute",top:"0.4rem",right:"0.5rem",color:"#4ade80",fontSize:"0.8rem",fontWeight:700}}>✓</div>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (() => {
+            const sec = TOUR_CONTENT[tourSection];
+            const slides = sec.slides;
+            const slide = slides[tourSlide];
+            const isLast = tourSlide === slides.length - 1;
+            return (
+              <div style={{flex:1,display:"flex",flexDirection:"column",padding:"1rem 1rem 2rem",maxWidth:"480px",margin:"0 auto",width:"100%"}}>
+                {/* Progress dots */}
+                <div style={{display:"flex",gap:"6px",justifyContent:"center",marginBottom:"1.25rem"}}>
+                  {slides.map((_,i) => (
+                    <div key={i} style={{width:i===tourSlide?"22px":"8px",height:"8px",borderRadius:"4px",background:i<=tourSlide?"#4ade80":"rgba(255,255,255,0.2)",transition:"all 0.3s"}} />
+                  ))}
+                </div>
+                {/* Slide card */}
+                <div style={{background:"rgba(255,255,255,0.1)",borderRadius:"1.5rem",padding:"2.25rem 1.5rem",textAlign:"center",flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",border:"1.5px solid rgba(255,255,255,0.15)"}}>
+                  <div style={{fontSize:"3.25rem",marginBottom:"1rem"}}>{slide.emoji}</div>
+                  <div style={{color:"#fff",fontWeight:800,fontSize:"1.15rem",marginBottom:"0.75rem",lineHeight:1.3}}>{slide.title}</div>
+                  <div style={{color:"rgba(255,255,255,0.75)",fontSize:"0.9rem",lineHeight:1.65}}>{slide.body}</div>
+                </div>
+                {/* Nav buttons */}
+                <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
+                  {tourSlide > 0 && (
+                    <button onClick={() => setTourSlide(s => s - 1)} style={{flex:1,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.1)",border:"1.5px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>← {lang === "es" ? "Atrás" : "Back"}</button>
+                  )}
+                  {!isLast ? (
+                    <button onClick={() => setTourSlide(s => s + 1)} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.12)",border:"1.5px solid #4ade80",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
+                  ) : (
+                    <button onClick={() => { setTourCompleted(c => ({...c,[tourSection]:true})); setTourSection(null); setTourSlide(0); }} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"#4ade80",border:"none",color:"#064e3b",fontWeight:800,fontSize:"0.9rem",cursor:"pointer"}}>🎉 {lang === "es" ? "¡Listo!" : "Done!"}</button>
+                  )}
+                </div>
+                {!isLast && (
+                  <button onClick={() => { setTourCompleted(c => ({...c,[tourSection]:true})); setTourSection(null); setTourSlide(0); }} style={{marginTop:"0.75rem",background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:"0.8rem",cursor:"pointer"}}>{lang === "es" ? "saltar sección" : "skip section"}</button>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
     </>
   );
