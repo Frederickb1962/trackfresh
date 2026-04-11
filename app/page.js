@@ -4627,9 +4627,8 @@ export default function TrackFreshDashboard() {
             <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
           </div>
           <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-            <div className="mb-3 flex gap-2">
-              <button onClick={() => setRecipeSubTab("ai")} className="flex-1 rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "ai" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>🍳 {lang === "es" ? "Recetas IA" : "AI Recipes"}</button>
-              <button onClick={() => setRecipeSubTab("favorites")} className="flex-1 rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "favorites" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>❤️ {lang === "es" ? "Favoritos" : "Favorites"}</button>
+            <div className="mb-3 flex justify-end">
+              <button onClick={() => setRecipeSubTab(recipeSubTab === "favorites" ? "ai" : "favorites")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "favorites" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>❤️ {lang === "es" ? "Favoritos" : "Favorites"}</button>
             </div>
             {recipeSubTab === "favorites" && (
               <div>
