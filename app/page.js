@@ -4657,7 +4657,7 @@ export default function TrackFreshDashboard() {
                       <div className="mt-2 flex flex-wrap gap-1">
                         {r.difficulty && <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(168,85,247,0.25)",color:"#d8b4fe"}}>{r.difficulty}</span>}
                         {(r.usesExpiring || []).map((name, j) => (
-                          <span key={j} className="rounded-full px-2 py-0.5 text-xs font-medium" style={{background:"rgba(220,38,38,0.25)",color:"#fca5a5"}}>⚡ {name}</span>
+                          <span key={j} className="text-xs font-medium text-white">⚡ {name}</span>
                         ))}
                       </div>
                     </button>
