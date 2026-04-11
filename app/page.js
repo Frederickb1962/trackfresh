@@ -4781,18 +4781,17 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleAddShoppingItem} className="glass-scan-btn flex-1 py-2 text-sm" style={{background:"rgba(255,102,0,0.22)",boxShadow:"0 2px 10px rgba(255,102,0,0.3)"}}>{t("addBtn")}</button>
                 </div>
               </div>
-              {shoppingItems.filter(it => it.source !== "used").length === 0 ? (
-                <p className="text-sm text-green-100 mt-3">{t("emptyList")}</p>
-              ) : (
-                <div className="mt-3 space-y-2">
-                  {shoppingItems.filter(it => it.source !== "used").sort((a, b) => (a.checked ? 1 : 0) - (b.checked ? 1 : 0)).map((it) => {
-                    const nameLower = it.name.toLowerCase();
-                    const flaggedAllergens = activeDietaryProfile.combinedTags.filter(tag => (ALLERGEN_KEYWORDS[tag] || []).some(kw => nameLower.includes(kw)));
-                    return (
-                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.14)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.28)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.85 : 1}}>
+              {(() => {
+                const activeItems = shoppingItems.filter(it => it.source !== "used" && !it.checked);
+                const checkedItems = shoppingItems.filter(it => it.source !== "used" && it.checked);
+                const renderItem = (it) => {
+                  const nameLower = it.name.toLowerCase();
+                  const flaggedAllergens = activeDietaryProfile.combinedTags.filter(tag => (ALLERGEN_KEYWORDS[tag] || []).some(kw => nameLower.includes(kw)));
+                  return (
+                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
                       <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
                       <div className="flex-1">
-                        <span className={`text-sm ${it.checked ? "line-through text-white/65" : "text-white font-semibold"}`}>{it.name}{it.qty ? " — " + it.qty : ""}</span>
+                        <span className="text-sm" style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : "#fff", fontWeight: it.checked ? 400 : 600}}>{it.name}{it.qty ? " — " + it.qty : ""}</span>
                         <div className="flex flex-wrap gap-1 mt-0.5">
                           {it.forMeal && <span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(183,214,58,0.3)"}}>📅 {it.forMeal}</span>}
                           {flaggedAllergens.map(tag => <span key={tag} className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(239,68,68,0.3)",color:"#fca5a5"}}>⚠️ {tag}</span>)}
@@ -4800,10 +4799,24 @@ export default function TrackFreshDashboard() {
                       </div>
                       <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
                     </div>
-                    );
-                  })}
-                </div>
-              )}
+                  );
+                };
+                return (
+                  <>
+                    <div className="mt-3">
+                      <p className="text-xs font-bold text-white mb-1">{lang === "es" ? "Tu Lista" : "Your List"}</p>
+                      <p className="text-xs mb-2" style={{color:"rgba(134,239,172,0.75)"}}>{lang === "es" ? "Toca la casilla para marcar los artículos comprados." : "Tap the box to check off purchased items."}</p>
+                      {activeItems.length === 0 ? <p className="text-sm text-green-100">{t("emptyList")}</p> : <div className="space-y-2">{activeItems.map(renderItem)}</div>}
+                    </div>
+                    {checkedItems.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-xs font-bold mb-2" style={{color:"rgba(255,255,255,0.45)"}}>{lang === "es" ? "✓ Recogido" : "✓ Picked Up"}</p>
+                        <div className="space-y-2">{checkedItems.map(renderItem)}</div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </Card>
             {shoppingItems.some(it => it.source === "used") && (
               <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
