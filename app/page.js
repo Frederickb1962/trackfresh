@@ -2294,6 +2294,7 @@ export default function TrackFreshDashboard() {
   const [recipeSuggestions, setRecipeSuggestions] = useState([]);
   const [recipesGenerated, setRecipesGenerated] = useState(false);
   const [expandedRecipe, setExpandedRecipe] = useState(null);
+  const [addedIngredients, setAddedIngredients] = useState({});
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [username, setUsername] = useState("");
   const [usernameInput, setUsernameInput] = useState("");
@@ -4652,7 +4653,34 @@ export default function TrackFreshDashboard() {
                     </button>
                     {expandedRecipe === i && (
                       <div className="px-4 py-3" style={{background:"rgba(0,0,0,0.3)",borderTop:"1px solid rgba(255,255,255,0.1)"}}>
-                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm flex items-center gap-1" style={{color: ing.includes("(need)") ? "#F97316" : "rgba(255,255,255,0.8)"}}><span style={{color:"#4ade80"}}>•</span> {ing}</li>)}</ul></>)}
+                        {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => {
+                              const isNeed = ing.includes("(need)");
+                              const ingKey = `${i}-${j}`;
+                              const wasAdded = addedIngredients[ingKey];
+                              return (
+                                <li key={j} className="text-sm flex items-center gap-1" style={{color: isNeed ? "#F97316" : "rgba(255,255,255,0.8)"}}>
+                                  <span style={{color:"#4ade80"}}>•</span>
+                                  {ing}
+                                  {isNeed && (
+                                    <button
+                                      onClick={() => {
+                                        const name = ing.replace(" (need)", "").trim();
+                                        setShoppingItems((prev) => {
+                                          const exists = prev.some((s) => s.name.toLowerCase() === name.toLowerCase());
+                                          if (exists) return prev;
+                                          return [...prev, { id: crypto.randomUUID(), name, checked: false }];
+                                        });
+                                        setAddedIngredients((prev) => ({ ...prev, [ingKey]: true }));
+                                        setTimeout(() => setAddedIngredients((prev) => { const next = { ...prev }; delete next[ingKey]; return next; }), 2000);
+                                      }}
+                                      style={{marginLeft:"4px",width:"18px",height:"18px",borderRadius:"50%",background:"#F97316",color:"#fff",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"bold",lineHeight:"18px",textAlign:"center",flexShrink:0,padding:0}}
+                                    >
+                                      {wasAdded ? <span style={{fontSize:"10px"}}>✓</span> : "+"}
+                                    </button>
+                                  )}
+                                </li>
+                              );
+                            })}</ul></>)}
                         <h4 className="mb-2 text-sm font-bold text-white">{t("instructionsWord")}</h4>
                         <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
