@@ -4797,6 +4797,7 @@ export default function TrackFreshDashboard() {
                           {flaggedAllergens.map(tag => <span key={tag} className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(239,68,68,0.3)",color:"#fca5a5"}}>⚠️ {tag}</span>)}
                         </div>
                       </div>
+                      {it.checked && <button onClick={() => handleToggleShoppingItem(it.id)} style={{fontSize:"0.75rem",fontWeight:600,color:"rgba(134,239,172,0.8)",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(134,239,172,0.3)",borderRadius:"6px",cursor:"pointer",padding:"4px 6px",lineHeight:1,display:"inline-flex",alignItems:"center"}}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 C5 3 3 5 3 8 C3 11 5 13 8 13 C11 13 13 11 13 8 C13 6 12 4.5 10.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M8 1 L6 3.5 L8.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></button>}
                       <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
                     </div>
                   );
@@ -5658,7 +5659,7 @@ export default function TrackFreshDashboard() {
               ))}
             </div>
 
-            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}>← {lang === "es" ? "Inicio" : "Home"}</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 C5 3 3 5 3 8 C3 11 5 13 8 13 C11 13 13 11 13 8 C13 6 12 4.5 10.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M8 1 L6 3.5 L8.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg> {lang === "es" ? "Inicio" : "Home"}</button>
           </div>
         )}
 
@@ -5813,7 +5814,7 @@ export default function TrackFreshDashboard() {
                       {lang==="es"?"Listo":"Done"}
                     </button>
                     <button onClick={() => setOpenedConfirm(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem",marginTop:"0.5rem"}}>
-                      ← {lang==="es"?"Marcar otro":"Mark another"}
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 C5 3 3 5 3 8 C3 11 5 13 8 13 C11 13 13 11 13 8 C13 6 12 4.5 10.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M8 1 L6 3.5 L8.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg> {lang==="es"?"Marcar otro":"Mark another"}
                     </button>
                   </div>
                 ) : (
@@ -5960,7 +5961,7 @@ export default function TrackFreshDashboard() {
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
                   {tourSlide > 0 && (
-                    <button onClick={() => setTourSlide(s => s - 1)} style={{flex:1,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.1)",border:"1.5px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>← {lang === "es" ? "Atrás" : "Back"}</button>
+                    <button onClick={() => setTourSlide(s => s - 1)} style={{flex:1,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.1)",border:"1.5px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 C5 3 3 5 3 8 C3 11 5 13 8 13 C11 13 13 11 13 8 C13 6 12 4.5 10.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M8 1 L6 3.5 L8.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg> {lang === "es" ? "Atrás" : "Back"}</button>
                   )}
                   {!isLast ? (
                     <button onClick={() => setTourSlide(s => s + 1)} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.12)",border:"1.5px solid #4ade80",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
