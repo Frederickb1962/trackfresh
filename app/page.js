@@ -2296,6 +2296,9 @@ export default function TrackFreshDashboard() {
   const [expandedRecipe, setExpandedRecipe] = useState(null);
   const [addedIngredients, setAddedIngredients] = useState({});
   const [savedRecipes, setSavedRecipes] = useState([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState(() => { try { return JSON.parse(localStorage.getItem("tf_favorite_recipes") || "[]"); } catch(e) { return []; } });
+  const [recipeSubTab, setRecipeSubTab] = useState("ai");
+  const [favoriteSavedMsg, setFavoriteSavedMsg] = useState({});
   const [username, setUsername] = useState("");
   const [usernameInput, setUsernameInput] = useState("");
   const [community, setCommunity] = useState({ recipes: [], tips: [], chat: [] });
@@ -2792,6 +2795,7 @@ export default function TrackFreshDashboard() {
   useEffect(() => { saveShopping(shoppingItems); }, [shoppingItems]);
   useEffect(() => { saveMeals(meals); }, [meals]);
   useEffect(() => { try { localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(savedRecipes)); } catch(e) {} }, [savedRecipes]);
+  useEffect(() => { try { localStorage.setItem("tf_favorite_recipes", JSON.stringify(favoriteRecipes)); } catch(e) {} }, [favoriteRecipes]);
   useEffect(() => { try { localStorage.setItem(RECIPE_MODE_KEY, recipeMode); } catch(e) {} }, [recipeMode]);
   useEffect(() => { try { window.scrollTo(0, 0); } catch(e) {} }, [activeTab]);
 
@@ -4623,9 +4627,41 @@ export default function TrackFreshDashboard() {
             <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
           </div>
           <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-            <div className="mb-3 flex items-center gap-2">
-              <ChefHat className="h-5 w-5" style={{color:"#B7D63A"}} /><h2 className="text-lg font-bold text-white">{t("recipeSugg")}</h2>
+            <div className="mb-3 flex gap-2">
+              <button onClick={() => setRecipeSubTab("ai")} className="flex-1 rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "ai" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>🍳 {lang === "es" ? "Recetas IA" : "AI Recipes"}</button>
+              <button onClick={() => setRecipeSubTab("favorites")} className="flex-1 rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "favorites" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>❤️ {lang === "es" ? "Favoritos" : "Favorites"}</button>
             </div>
+            {recipeSubTab === "favorites" && (
+              <div>
+                {favoriteRecipes.length === 0 ? (
+                  <p className="text-sm py-4 text-center" style={{color:"rgba(255,255,255,0.55)"}}>{lang === "es" ? "Sin favoritos aún — ¡genera recetas y guarda las que te gusten!" : "No favorites yet — generate recipes and save ones you love!"}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {favoriteRecipes.map((r, i) => (
+                      <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
+                        <div className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-bold text-white">{r.name}</h3>
+                              <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{lang === "es" ? "Guardado en favoritos" : "Saved to favorites"}</p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-2 shrink-0">
+                              <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
+                              <button onClick={() => setFavoriteRecipes((prev) => prev.filter((_, fi) => fi !== i))} className="text-xs" style={{color:"rgba(255,100,100,0.7)"}}>✕</button>
+                            </div>
+                          </div>
+                          <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
+                          {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mt-3 mb-1 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-2 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm flex items-center gap-1" style={{color: ing.includes("(need)") ? "#F97316" : "rgba(255,255,255,0.8)"}}><span style={{color:"#4ade80"}}>•</span> {ing}</li>)}</ul></>)}
+                          <h4 className="mb-1 text-sm font-bold text-white">{t("instructionsWord")}</h4>
+                          <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {recipeSubTab === "ai" && <>
             <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.8)",lineHeight:1.55}}>
               {lang === "es" ? "Combinado con lo que tienes en tu refrigerador, despensa y congelador. Prioriza lo que vence primero — puede sugerir 1-2 ingredientes extra para completar un platillo." : "Matched to what's in your fridge, pantry & freezer. Prioritizes what expires soonest — may suggest 1-2 extra ingredients to complete a dish."}
             </p>
@@ -4688,8 +4724,18 @@ export default function TrackFreshDashboard() {
                         <h4 className="mb-2 text-sm font-bold text-white">{t("instructionsWord")}</h4>
                         <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
-                          <button onClick={() => handleSaveRecipeToCommunity(r)} disabled={savedRecipes.includes(r.name)} className="glass-scan-btn px-3 py-1.5 text-xs disabled:opacity-40">
-                            {savedRecipes.includes(r.name) ? "Saved to Community" : "Save to Community"}
+                          <button onClick={() => {
+                            const alreadySaved = favoriteRecipes.some((f) => f.name === r.name);
+                            if (alreadySaved) {
+                              setFavoriteSavedMsg((prev) => ({ ...prev, [i]: "already" }));
+                              setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
+                            } else {
+                              setFavoriteRecipes((prev) => [...prev, r]);
+                              setFavoriteSavedMsg((prev) => ({ ...prev, [i]: "saved" }));
+                              setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
+                            }
+                          }} className="glass-scan-btn px-3 py-1.5 text-xs">
+                            {favoriteSavedMsg[i] === "saved" ? "❤️ Saved to Favorites!" : favoriteSavedMsg[i] === "already" ? "Already in Favorites!" : (lang === "es" ? "Guardar en Favoritos" : "Save to Favorites")}
                           </button>
                         </div>
                       </div>
@@ -4699,6 +4745,7 @@ export default function TrackFreshDashboard() {
               </div>
             )}
             {!recipesGenerated && <div className="mt-4 rounded-xl p-4 text-sm" style={{background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.6)"}}>You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}</div>}
+            </>}
           </Card>
           </>
         )}
