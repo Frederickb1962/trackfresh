@@ -2822,9 +2822,19 @@ export default function TrackFreshDashboard() {
   };
 
   const handleAddMealIngredientsToShopping = (mealName) => {
-    const onList = shoppingItems.some((s) => s.name.toLowerCase() === mealName.toLowerCase());
-    if (onList) { window.alert(mealName + " is already on your shopping list!"); return; }
-    setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: "Ingredients for: " + mealName, qty: "", checked: false, forMeal: mealName }]);
+    const recipe = RECIPE_DB.find((r) => r.name.toLowerCase() === mealName.toLowerCase());
+    const trackedNames = trackedItems.map((it) => it.name.toLowerCase());
+    if (recipe && recipe.ingredients && recipe.ingredients.length > 0) {
+      const missing = recipe.ingredients.filter((ing) => !trackedNames.some((t) => t.includes(ing.toLowerCase()) || ing.toLowerCase().includes(t)));
+      const newItems = missing.filter((ing) => !shoppingItems.some((s) => s.name.toLowerCase() === ing.toLowerCase()));
+      if (newItems.length === 0) { window.alert("All ingredients for " + mealName + " are already tracked or on your list!"); return; }
+      setShoppingItems((prev) => [...prev, ...newItems.map((ing) => ({ id: crypto.randomUUID(), name: ing, qty: "", checked: false, forMeal: mealName }))]);
+      window.alert("Added " + newItems.length + " missing ingredient" + (newItems.length !== 1 ? "s" : "") + " to your list!");
+    } else {
+      const onList = shoppingItems.some((s) => s.name.toLowerCase() === mealName.toLowerCase());
+      if (onList) { window.alert(mealName + " is already on your shopping list!"); return; }
+      setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: "Ingredients for: " + mealName, qty: "", checked: false, forMeal: mealName }]);
+    }
     setActiveTab("shopping");
   };
 
@@ -4713,6 +4723,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleClearChecked} className="ml-auto rounded px-3 py-1 text-xs font-semibold text-red-200" style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,100,100,0.5)"}}>{t("clearChecked")}</button>
                 )}
               </div>
+              <p className="text-xs mb-3 -mt-1" style={{color:"rgba(134,239,172,0.75)"}}>{lang === "es" ? "Marca los artículos que hayas comprado." : "Check off items as you purchase them."}</p>
               <div className="flex flex-col gap-2 mb-2 w-full">
                 <ShoppingAutocomplete
                   value={newShoppingItem}
