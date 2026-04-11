@@ -27,7 +27,7 @@ ${itemList}
 For each recipe provide:
 1. "name" - creative recipe name
 2. "description" - 1-2 sentence appetizing description
-3. "ingredients" - list of ingredients needed (mark which ones the user already has)
+3. "ingredients" - list of ingredients. For items the user already has, append " (have)" after the name. For any extra ingredients not in their inventory, append " (need)" after the name. Only include 1-2 "(need)" items maximum.
 4. "instructions" - step-by-step cooking instructions (numbered, clear, concise)
 5. "time" - estimated cook time (e.g. "25 min")
 6. "difficulty" - Easy, Medium, or Hard
