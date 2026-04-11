@@ -4627,15 +4627,9 @@ export default function TrackFreshDashboard() {
               <ChefHat className="h-5 w-5" style={{color:"#B7D63A"}} /><h2 className="text-lg font-bold text-white">{t("recipeSugg")}</h2>
             </div>
             <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.8)",lineHeight:1.55}}>
-              {lang === "es" ? "Basado en lo que tienes. " : "Matched to what's in your fridge, pantry & freezer. "}
-              <span style={{color:"#fbbf24",fontWeight:800,textShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>{lang === "es" ? "Prioriza lo que vence pronto" : "Prioritizes what expires soonest"}</span>
-              {lang === "es" ? " — puede sugerir 1-2 ingredientes extra." : " — may suggest 1-2 extra ingredients to complete a dish."}
+              {lang === "es" ? "Combinado con lo que tienes en tu refrigerador, despensa y congelador. Prioriza lo que vence primero — puede sugerir 1-2 ingredientes extra para completar un platillo." : "Matched to what's in your fridge, pantry & freezer. Prioritizes what expires soonest — may suggest 1-2 extra ingredients to complete a dish."}
             </p>
-            <div className="flex gap-2 mb-3">
-              <button onClick={() => setRecipeMode("strict")} className="flex-1 rounded-xl py-2 px-3 text-xs font-bold border-2 transition-all" style={recipeMode === "strict" ? {background:"rgba(21,128,61,0.7)",borderColor:"#4ade80",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(74,222,128,0.4)",color:"#86efac"}}>🥦 {lang === "es" ? "Usar Lo Que Tengo" : "Use What I Have"}</button>
-              <button onClick={() => setRecipeMode("suggest")} className="flex-1 rounded-xl py-2 px-3 text-xs font-bold border-2 transition-all" style={recipeMode === "suggest" ? {background:"rgba(29,78,216,0.7)",borderColor:"#93c5fd",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(147,197,253,0.4)",color:"#93c5fd"}}>✨ {lang === "es" ? "Sugerir Faltantes" : "Suggest Additional Ingredients"}</button>
-            </div>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> Get <AiBadge style={{fontSize:"1.5em"}} /> Recipe Ideas</>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> {lang === "es" ? "Ideas de Recetas" : "AI Recipe Ideas"} <AiBadge style={{fontSize:"1.5em"}} /></>}</button>
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("noMatches")}</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
