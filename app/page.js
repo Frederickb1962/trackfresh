@@ -1524,6 +1524,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   if (screen === "scanning") {
     return (
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "1rem", left: "1rem", background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", color: "#fff", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>← {isEs ? "Atrás" : "Back"}</button>
         <div style={{ width: 56, height: 56, border: "5px solid #4ade80", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
         <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
       </div>
@@ -1618,6 +1619,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.8)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.35rem 0.85rem", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", flexShrink: 0 }}>← {isEs ? "Atrás" : "Back"}</button>
           <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
           {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
         </div>
