@@ -4842,7 +4842,7 @@ export default function TrackFreshDashboard() {
                         setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: it.name, qty: "", checked: false }]);
                         setRestockAdded((prev) => ({ ...prev, [it.id]: true }));
                         setTimeout(() => setRestockAdded((prev) => { const n = {...prev}; delete n[it.id]; return n; }), 2000);
-                      }} disabled={alreadyOnList} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",minWidth:"unset",fontSize:"0.7rem"}}>
+                      }} disabled={alreadyOnList} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",width:"60px",fontSize:"0.7rem"}}>
                         {restockAdded[it.id] || alreadyOnList ? t("addedWord") : t("addWord")}
                       </button>
                       <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
@@ -4866,7 +4866,7 @@ export default function TrackFreshDashboard() {
                           <span className="text-sm font-semibold text-white">{it.name}</span>
                           <span className={`ml-2 text-xs font-bold ${urgent ? "text-red-200" : "text-yellow-200"}`}>{it.daysLeft}d left</span>
                         </div>
-                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",minWidth:"unset",fontSize:"0.7rem"}}>
+                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",width:"60px",fontSize:"0.7rem"}}>
                           {alreadyAdded ? t("addedWord") : t("addWord")}
                         </button>
                       </div>
