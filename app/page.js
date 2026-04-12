@@ -1381,13 +1381,16 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   const playBeep = (freq, dur, vol = 0.28) => {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = freq; osc.type = "sine";
-      gain.gain.setValueAtTime(vol, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+      const play = () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq; osc.type = "sine";
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+      };
+      if (ctx.state === "suspended") { ctx.resume().then(play); } else { play(); }
     } catch(e) {}
   };
   const playShutter = () => playBeep(1000, 0.05);
@@ -3731,7 +3734,7 @@ export default function TrackFreshDashboard() {
                   <label className="mb-1 block text-sm font-medium">📅 {lang === "es" ? "Agregar Fecha Manualmente" : "Add Date Manually"}</label>
                   <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" />
                   <p className="my-2 text-center text-xs text-gray-400">— {lang === "es" ? "O" : "OR"} —</p>
-                  <button onClick={() => { playBeep(880, 0.15); setTimeout(() => playBeep(1100, 0.12), 200); }} className="w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: "rgba(255,102,0,0.12)", border: "1.5px solid rgba(255,102,0,0.4)", color: "#ff6600", width:"100%", height:"auto", borderRadius:"8px", cursor:"pointer"}}>
+                  <button onClick={() => { playBeep(880, 0.15); setTimeout(() => playBeep(1100, 0.12), 200); document.getElementById("editDateInput")?.click(); }} className="w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: "rgba(255,102,0,0.12)", border: "1.5px solid rgba(255,102,0,0.4)", color: "#ff6600", width:"100%", height:"auto", borderRadius:"8px", cursor:"pointer"}}>
                     {lang === "es" ? "📅 Bip y Agregar Fecha" : "📅 Beep & Add Date"}
                   </button>
                 </div>
