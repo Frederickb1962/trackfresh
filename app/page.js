@@ -1223,7 +1223,7 @@ function BloomText({ text, duration = 8 }) {
   );
 }
 
-const PILL = {base:{display:"inline-flex",alignItems:"center",gap:"0.25rem",borderRadius:"999px",padding:"0.18rem 0.6rem",fontSize:"0.63rem",fontWeight:700,lineHeight:1.4},gray:{background:"#f3f4f6",color:"#374151"},orange:{background:"#f5fad0",color:"#5a6e0a"},blue:{background:"#eff6ff",color:"#1d4ed8"},cyan:{background:"#ecfeff",color:"#0e7490"}};
+const PILL = {base:{display:"inline-flex",alignItems:"center",gap:"0.25rem",borderRadius:"6px",padding:"0.18rem 0.6rem",fontSize:"0.63rem",fontWeight:700,lineHeight:1.4,border:"1px solid rgba(0,0,0,0.3)"},gray:{background:"#f3f4f6",color:"#374151"},orange:{background:"#f5fad0",color:"#5a6e0a"},blue:{background:"#eff6ff",color:"#1d4ed8"},cyan:{background:"#ecfeff",color:"#0e7490"}};
 function TipPill({ type, children }) { return <span style={{...PILL.base,...PILL[type]}}>{children}</span>; }
 
 function ShoppingAutocomplete({ value, onChange, onSelect, onAddItem, lang }) {
@@ -3652,8 +3652,8 @@ export default function TrackFreshDashboard() {
               </div>
               {(item.storageTip || item.openedTip || item.daysAfterOpening) && (
                 <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-                  {item.storageTip && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>💡</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Cómo almacenar:" : "How to store:"}</strong> {item.storageTip}</span></div>}
-                  {(item.openedTip || item.daysAfterOpening) && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"10px",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>📂</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Después de abrir:" : "After opening:"}</strong> {item.openedTip || (item.daysAfterOpening ? `Use within ${item.daysAfterOpening} days` : "")}</span></div>}
+                  {item.storageTip && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"6px",border:"1px solid rgba(0,0,0,0.3)",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>💡</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Cómo almacenar:" : "How to store:"}</strong> {item.storageTip}</span></div>}
+                  {(item.openedTip || item.daysAfterOpening) && <div style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",background:"rgba(255,255,255,0.07)",borderRadius:"6px",border:"1px solid rgba(0,0,0,0.3)",padding:"0.6rem 0.75rem"}}><span style={{fontSize:"0.85rem",flexShrink:0}}>📂</span><span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.8rem",fontWeight:500,lineHeight:1.4}}><strong style={{color:"rgba(255,255,255,0.9)"}}>{isEs ? "Después de abrir:" : "After opening:"}</strong> {item.openedTip || (item.daysAfterOpening ? `Use within ${item.daysAfterOpening} days` : "")}</span></div>}
                 </div>
               )}
               <div style={{position:"relative",borderRadius:"14px",border:"2px solid #facc15",background:"#1a1a1a",overflow:"hidden"}}>
