@@ -3533,7 +3533,10 @@ export default function TrackFreshDashboard() {
       {/* Sticky header: logo + top nav */}
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(to bottom,#064e3b,#022c22)",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
         <div className="mx-auto max-w-2xl px-4 pt-3 pb-2 flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
+          <div className="flex items-center gap-2">
+            {activeTab !== "home" && <button onClick={() => setActiveTab("home")} style={{background:"none",border:"none",cursor:"pointer",color:"#fff",fontSize:"1.2rem",fontWeight:"bold",padding:"0",lineHeight:1}}>←</button>}
+            <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
+          </div>
           <div className="flex items-center gap-2">
             <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
