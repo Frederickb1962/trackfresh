@@ -3657,6 +3657,7 @@ export default function TrackFreshDashboard() {
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
           <div style={{background:"white",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
+              <button onClick={() => setShowRecallsPanel(false)} style={{background:"none",border:"none",cursor:"pointer",color:"#111",fontSize:"1.1rem",fontWeight:"bold",display:"flex",alignItems:"center",gap:"4px",padding:0}}><span style={{color:"#111",fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Atrás" : "Back"}</button>
               <h2 style={{fontWeight:800,fontSize:"1.1rem",color:"#991b1b",margin:0}}>&#9888;&#65039; {t("fdaRecallsBanner")}</h2>
               <button onClick={() => setShowRecallsPanel(false)} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&#10005;</button>
             </div>
