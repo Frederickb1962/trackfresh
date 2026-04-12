@@ -3703,7 +3703,7 @@ export default function TrackFreshDashboard() {
       )}
 
       {showHelp && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-3 text-lg font-bold text-green-700">{lang === "es" ? "Cómo Usar " : "How to Use "}<TrackFreshLogo showBroc={false} style={{fontSize:"0.95em"}} /></h2>
               <ul className="space-y-3 text-sm text-gray-700">
@@ -3722,7 +3722,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {editingItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-4 text-lg font-bold">✏️ Edit Item</h2>
               <div className="space-y-3">
@@ -3743,7 +3743,7 @@ export default function TrackFreshDashboard() {
           </div>
         )}
         {showAlert && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
               <div className="mb-3 flex items-center gap-2"><Bell className="h-5 w-5 text-red-500 animate-bounce" /><h2 className="text-lg font-bold text-red-600">{t("expiringSoon")}</h2></div>
               {(() => { const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2); return urgent.length > 0 ? (
@@ -4115,7 +4115,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showQuickAdd && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl p-6 shadow-lg" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
               <h2 className="mb-2 text-lg font-bold text-white">✏️ Quick Add</h2>
               <p className="mb-4 text-sm text-green-200">{t("quickAddTitleDesc")}</p>
@@ -4901,7 +4901,7 @@ export default function TrackFreshDashboard() {
           </>
         )}
         {showMealPicker && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
               <h2 className="mb-1 text-lg font-bold">{t("pickAMeal")}</h2>
               <p className="mb-3 text-xs text-gray-500">{mealPickerDay} — {mealPickerSlot}</p>
