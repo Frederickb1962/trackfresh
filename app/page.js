@@ -3733,10 +3733,6 @@ export default function TrackFreshDashboard() {
                 <div>
                   <label className="mb-1 block text-sm font-medium">📅 {lang === "es" ? "Agregar Fecha Manualmente" : "Add Date Manually"}</label>
                   <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" />
-                  <p className="my-2 text-center text-xs text-gray-400">— {lang === "es" ? "O" : "OR"} —</p>
-                  <button onClick={() => { playBeep(880, 0.15); setTimeout(() => playBeep(1100, 0.12), 200); document.getElementById("editDateInput")?.click(); }} className="w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: "rgba(255,102,0,0.12)", border: "1.5px solid rgba(255,102,0,0.4)", color: "#ff6600", width:"100%", height:"auto", borderRadius:"8px", cursor:"pointer"}}>
-                    {lang === "es" ? "📅 Bip y Agregar Fecha" : "📅 Beep & Add Date"}
-                  </button>
                 </div>
                 <div><label className="mb-1 block text-sm font-medium">Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium">Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
