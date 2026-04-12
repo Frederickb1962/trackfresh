@@ -2295,6 +2295,7 @@ export default function TrackFreshDashboard() {
   const [recipesGenerated, setRecipesGenerated] = useState(false);
   const [expandedRecipe, setExpandedRecipe] = useState(null);
   const [addedIngredients, setAddedIngredients] = useState({});
+  const [restockAdded, setRestockAdded] = useState({});
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [favoriteRecipes, setFavoriteRecipes] = useState(() => { try { return JSON.parse(localStorage.getItem("tf_favorite_recipes") || "[]"); } catch(e) { return []; } });
   const [recipeSubTab, setRecipeSubTab] = useState("ai");
@@ -4827,16 +4828,27 @@ export default function TrackFreshDashboard() {
                 <h3 className="mb-1 font-bold text-white">🔄 Recently Used — Restock</h3>
                 <p className="mb-3 text-xs text-green-100">Items you've used up. Tap to check off once you've added them to your cart.</p>
                 <div className="space-y-2">
-                  {shoppingItems.filter(it => it.source === "used").map((it) => (
+                  {shoppingItems.filter(it => it.source === "used").map((it) => {
+                    const alreadyOnList = shoppingItems.some((s) => s.source !== "used" && s.name.toLowerCase() === it.name.toLowerCase());
+                    return (
                     <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.18)", border: it.checked ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(255,165,0,0.45)", opacity: it.checked ? 0.85 : 1}}>
                       <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
                       <div className="flex-1">
                         <span className={`text-sm ${it.checked ? "line-through text-white/65" : "text-white font-semibold"}`}>{it.name}</span>
                         <div className="mt-0.5"><span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(183,214,58,0.35)",color:"#D4E87A"}}>🔄 Used</span></div>
                       </div>
+                      <button onClick={() => {
+                        if (alreadyOnList || restockAdded[it.id]) return;
+                        handleAddToShoppingFromTracker(it);
+                        setRestockAdded((prev) => ({ ...prev, [it.id]: true }));
+                        setTimeout(() => setRestockAdded((prev) => { const n = {...prev}; delete n[it.id]; return n; }), 2000);
+                      }} disabled={alreadyOnList} className="glass-scan-btn px-3 py-1.5 text-xs disabled:opacity-40">
+                        {restockAdded[it.id] || alreadyOnList ? t("addedWord") : t("addWord")}
+                      </button>
                       <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </Card>
             )}
