@@ -3767,6 +3767,7 @@ export default function TrackFreshDashboard() {
                     recog.onerror = () => { clearTimeout(timeoutId); setEditDateListening(false); setEditDateError("Could not hear you. Please try again."); };
                     recog.onend = () => { clearTimeout(timeoutId); setEditDateListening(false); };
                     recog.start();
+                    playBeep(880, 0.15);
                   }} className="voice-mic-btn w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: editDateListening ? "rgba(239,68,68,0.12)" : "rgba(255,102,0,0.12)", border: editDateListening ? "1.5px solid rgba(239,68,68,0.5)" : "1.5px solid rgba(255,102,0,0.4)", color: editDateListening ? "#ef4444" : "#ff6600", width:"100%", height:"auto", borderRadius:"8px"}}>
                     {editDateListening ? (lang === "es" ? "🎤 Escuchando..." : "🎤 Listening...") : (lang === "es" ? "🎤 Decir la Fecha" : "🎤 Speak the Date")}
                   </button>
