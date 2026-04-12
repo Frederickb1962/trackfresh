@@ -4737,7 +4737,7 @@ export default function TrackFreshDashboard() {
                               setFavoriteSavedMsg((prev) => ({ ...prev, [i]: "saved" }));
                               setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
                             }
-                          }} className="glass-scan-btn px-3 py-1.5 text-xs">
+                          }} className="glass-scan-btn px-2 py-0.5 text-xs">
                             {favoriteSavedMsg[i] === "saved" ? "❤️ Saved to Favorites!" : favoriteSavedMsg[i] === "already" ? "Already in Favorites!" : (lang === "es" ? "Guardar en Favoritos" : "Save to Favorites")}
                           </button>
                         </div>
