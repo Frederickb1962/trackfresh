@@ -50,6 +50,6 @@ export async function POST(request) {
     return Response.json({ item: parsed });
 
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: "AI busy" }, { status: 500 });
   }
 }

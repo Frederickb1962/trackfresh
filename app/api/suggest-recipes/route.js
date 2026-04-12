@@ -69,6 +69,6 @@ Reply ONLY with valid JSON, no markdown, no backticks:
     return NextResponse.json(data);
   } catch (e) {
     console.error("Recipe suggestion error:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "AI busy" }, { status: 500 });
   }
 }

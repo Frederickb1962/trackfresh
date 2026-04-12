@@ -49,6 +49,6 @@ Reply ONLY with valid JSON, no markdown, no backticks. The format must be exactl
     return NextResponse.json(data);
   } catch (e) {
     console.error("Meal plan error:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "AI busy" }, { status: 500 });
   }
 }

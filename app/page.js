@@ -2723,7 +2723,7 @@ export default function TrackFreshDashboard() {
         const mType = file.type || "image/jpeg";
         const res = await fetch("/api/scan-multi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mType }) });
         const data = await res.json();
-        if (data.error) { setMultiScanError(data.error); setMultiScanStatus("camera"); return; }
+        if (data.error) { setMultiScanError(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setMultiScanStatus("camera"); return; }
         if (!data.items || data.items.length === 0) { setMultiScanError(lang === "es" ? "No se encontraron productos." : "No food items found. Try again."); setMultiScanStatus("camera"); return; }
         setMultiItems(data.items);
         setSelectedMultiItems(data.items.map((_, i) => i));
@@ -3177,10 +3177,10 @@ export default function TrackFreshDashboard() {
     try {
       const res = await fetch("/api/suggest-recipes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: trackedItems.map(it => ({ name: it.name, daysLeft: it.daysLeft, category: it.category, location: it.location })) }) });
       const data = await res.json();
-      if (data.error) { window.alert("Recipe error: " + data.error); setRecipesLoading(false); return; }
+      if (data.error) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setRecipesLoading(false); return; }
       setRecipeSuggestions(data.recipes || []);
       setRecipesGenerated(true);
-    } catch (e) { window.alert("Failed to get recipes. Try again."); }
+    } catch (e) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); }
     setRecipesLoading(false);
   };
 
@@ -3224,7 +3224,7 @@ export default function TrackFreshDashboard() {
         const mediaType = file.type;
         const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType || "image/jpeg" }) });
         const data = await res.json();
-        if (data.error) { setReceiptError(data.error); setReceiptScanning(false); return; }
+        if (data.error) { setReceiptError(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setReceiptScanning(false); return; }
         setReceiptItems(data.items);
         setSelectedReceiptItems(data.items.map((_, i) => i));
         setReceiptScanning(false);
@@ -3401,7 +3401,7 @@ export default function TrackFreshDashboard() {
         const mediaType = file.type;
         const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
         const data = await res.json();
-        if (data.error) { setLabelError(data.error); setLabelScanning(false); return; }
+        if (data.error) { setLabelError(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setLabelScanning(false); return; }
         
         const item = data.item;
         setLabelItem(item);
