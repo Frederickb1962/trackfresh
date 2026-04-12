@@ -3405,7 +3405,6 @@ export default function TrackFreshDashboard() {
     const loc = quickAddLocation !== "Fridge" ? quickAddLocation : (foodInfo.location || quickAddLocation);
     const item = { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: "", useByDate: quickAddDate, openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" };
     setTrackedItems(prev => [item, ...prev]);
-    playSuccess();
     setShowQuickAdd(false);
     setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
   };
