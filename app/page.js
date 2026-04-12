@@ -4839,7 +4839,7 @@ export default function TrackFreshDashboard() {
                       </div>
                       <button onClick={() => {
                         if (alreadyOnList || restockAdded[it.id]) return;
-                        handleAddToShoppingFromTracker(it);
+                        setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: it.name, qty: "", checked: false }]);
                         setRestockAdded((prev) => ({ ...prev, [it.id]: true }));
                         setTimeout(() => setRestockAdded((prev) => { const n = {...prev}; delete n[it.id]; return n; }), 2000);
                       }} disabled={alreadyOnList} className="glass-scan-btn px-3 py-1.5 text-xs disabled:opacity-40">
