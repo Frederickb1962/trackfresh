@@ -3735,41 +3735,38 @@ export default function TrackFreshDashboard() {
                     if (editDateListening) return;
                     setEditDateListening(true);
                     setEditDateError("");
-                    playBeep(880, 0.15);
-                    setTimeout(() => {
-                      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                      if (!SR) { setEditDateListening(false); setEditDateError("Voice not supported on this browser."); return; }
-                      const recog = new SR();
-                      recog.lang = lang === "es" ? "es-MX" : "en-US";
-                      recog.interimResults = false;
-                      recog.maxAlternatives = 3;
-                      let gotResult = false;
-                      const timeoutId = setTimeout(() => {
-                        if (!gotResult) {
-                          try { recog.abort(); } catch(e) {}
-                          setEditDateListening(false);
-                          setEditDateError(lang === "es" ? "No pude escucharte. Intenta de nuevo." : "Could not hear you. Please try again.");
-                        }
-                      }, 7000);
-                      recog.onresult = (e) => {
-                        gotResult = true;
-                        clearTimeout(timeoutId);
-                        const transcript = Array.from(e.results[0]).map(r => r.transcript).join(" ");
-                        const parsed = parseSpokenDate(transcript);
-                        if (parsed) {
-                          setEditingItem(prev => ({...prev, useByDate: parsed}));
-                          setEditDateError("");
-                          playBeep(880, 0.1);
-                          setTimeout(() => playBeep(880, 0.1), 180);
-                        } else {
-                          setEditDateError(lang === "es" ? "No entendí la fecha. Intenta: febrero 20" : "Could not understand. Try: February 20");
-                        }
+                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SR) { setEditDateListening(false); setEditDateError("Voice not supported on this browser."); return; }
+                    const recog = new SR();
+                    recog.lang = lang === "es" ? "es-MX" : "en-US";
+                    recog.interimResults = false;
+                    recog.maxAlternatives = 3;
+                    let gotResult = false;
+                    const timeoutId = setTimeout(() => {
+                      if (!gotResult) {
+                        try { recog.abort(); } catch(e) {}
                         setEditDateListening(false);
-                      };
-                      recog.onerror = () => { clearTimeout(timeoutId); setEditDateListening(false); setEditDateError("Could not hear you. Please try again."); };
-                      recog.onend = () => { clearTimeout(timeoutId); setEditDateListening(false); };
-                      recog.start();
-                    }, 300);
+                        setEditDateError(lang === "es" ? "No pude escucharte. Intenta de nuevo." : "Could not hear you. Please try again.");
+                      }
+                    }, 7000);
+                    recog.onresult = (e) => {
+                      gotResult = true;
+                      clearTimeout(timeoutId);
+                      const transcript = Array.from(e.results[0]).map(r => r.transcript).join(" ");
+                      const parsed = parseSpokenDate(transcript);
+                      if (parsed) {
+                        setEditingItem(prev => ({...prev, useByDate: parsed}));
+                        setEditDateError("");
+                        playBeep(880, 0.1);
+                        setTimeout(() => playBeep(880, 0.1), 180);
+                      } else {
+                        setEditDateError(lang === "es" ? "No entendí la fecha. Intenta: febrero 20" : "Could not understand. Try: February 20");
+                      }
+                      setEditDateListening(false);
+                    };
+                    recog.onerror = () => { clearTimeout(timeoutId); setEditDateListening(false); setEditDateError("Could not hear you. Please try again."); };
+                    recog.onend = () => { clearTimeout(timeoutId); setEditDateListening(false); };
+                    recog.start();
                   }} className="voice-mic-btn w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: editDateListening ? "rgba(239,68,68,0.12)" : "rgba(255,102,0,0.12)", border: editDateListening ? "1.5px solid rgba(239,68,68,0.5)" : "1.5px solid rgba(255,102,0,0.4)", color: editDateListening ? "#ef4444" : "#ff6600", width:"100%", height:"auto", borderRadius:"8px"}}>
                     {editDateListening ? (lang === "es" ? "🎤 Escuchando..." : "🎤 Listening...") : (lang === "es" ? "🎤 Decir la Fecha" : "🎤 Speak the Date")}
                   </button>
