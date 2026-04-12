@@ -3731,48 +3731,9 @@ export default function TrackFreshDashboard() {
                   <label className="mb-1 block text-sm font-medium">📅 {lang === "es" ? "Agregar Fecha Manualmente" : "Add Date Manually"}</label>
                   <input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" />
                   <p className="my-2 text-center text-xs text-gray-400">— {lang === "es" ? "O" : "OR"} —</p>
-                  <button onClick={() => {
-                    playBeep(880, 0.15);
-                    if (editDateListening) return;
-                    setEditDateListening(true);
-                    setEditDateError("");
-                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SR) { setEditDateListening(false); setEditDateError("Voice not supported on this browser."); return; }
-                    const recog = new SR();
-                    recog.lang = lang === "es" ? "es-MX" : "en-US";
-                    recog.interimResults = false;
-                    recog.maxAlternatives = 3;
-                    let gotResult = false;
-                    const timeoutId = setTimeout(() => {
-                      if (!gotResult) {
-                        try { recog.abort(); } catch(e) {}
-                        setEditDateListening(false);
-                        setEditDateError(lang === "es" ? "No pude escucharte. Intenta de nuevo." : "Could not hear you. Please try again.");
-                      }
-                    }, 7000);
-                    recog.onresult = (e) => {
-                      gotResult = true;
-                      clearTimeout(timeoutId);
-                      const transcript = Array.from(e.results[0]).map(r => r.transcript).join(" ");
-                      const parsed = parseSpokenDate(transcript);
-                      if (parsed) {
-                        setEditingItem(prev => ({...prev, useByDate: parsed}));
-                        setEditDateError("");
-                        playBeep(880, 0.1);
-                        setTimeout(() => playBeep(880, 0.1), 180);
-                      } else {
-                        setEditDateError(lang === "es" ? "No entendí la fecha. Intenta: febrero 20" : "Could not understand. Try: February 20");
-                      }
-                      setEditDateListening(false);
-                    };
-                    recog.onerror = () => { clearTimeout(timeoutId); setEditDateListening(false); setEditDateError("Could not hear you. Please try again."); };
-                    recog.onend = () => { clearTimeout(timeoutId); setEditDateListening(false); };
-                    recog.start();
-                    playBeep(880, 0.15);
-                  }} className="voice-mic-btn w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: editDateListening ? "rgba(239,68,68,0.12)" : "rgba(255,102,0,0.12)", border: editDateListening ? "1.5px solid rgba(239,68,68,0.5)" : "1.5px solid rgba(255,102,0,0.4)", color: editDateListening ? "#ef4444" : "#ff6600", width:"100%", height:"auto", borderRadius:"8px"}}>
-                    {editDateListening ? (lang === "es" ? "🎤 Escuchando..." : "🎤 Listening...") : (lang === "es" ? "🎤 Decir la Fecha" : "🎤 Speak the Date")}
+                  <button onClick={() => { playBeep(880, 0.15); setTimeout(() => playBeep(880, 0.1), 200); }} className="voice-mic-btn w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: "rgba(255,102,0,0.12)", border: "1.5px solid rgba(255,102,0,0.4)", color: "#ff6600", width:"100%", height:"auto", borderRadius:"8px"}}>
+                    {lang === "es" ? "📅 Bip y Agregar Fecha" : "📅 Beep & Add Date"}
                   </button>
-                  {editDateError && <p className="mt-1 text-xs text-red-400">{editDateError}</p>}
                 </div>
                 <div><label className="mb-1 block text-sm font-medium">Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium">Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
