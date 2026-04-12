@@ -2538,13 +2538,17 @@ export default function TrackFreshDashboard() {
   const speakThen = (text, cb) => {
     if (!('speechSynthesis' in window)) { setTimeout(cb || (() => {}), 300); return; }
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.1; u.pitch = 1;
-    const ms = Math.max(2000, (text.trim().split(/\s+/).length / 120) * 60000 + 1200);
-    let done = false;
-    const fire = () => { if (!done) { done = true; if (cb) cb(); } };
-    u.onend = fire; setTimeout(fire, ms);
-    window.speechSynthesis.speak(u);
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.1; u.pitch = 1;
+      const ms = Math.max(2500, (text.trim().split(/\s+/).length / 100) * 60000 + 1500);
+      let done = false;
+      const fire = () => { if (!done) { done = true; if (cb) cb(); } };
+      u.onend = fire;
+      u.onerror = fire;
+      setTimeout(fire, ms);
+      window.speechSynthesis.speak(u);
+    }, 100);
   };
 
   const startVoiceCommand = (onResult) => {
@@ -3286,11 +3290,22 @@ export default function TrackFreshDashboard() {
   const parseSpokenDate = (transcript) => {
     const months = { january:1, february:2, march:3, april:4, may:5, june:6, july:7, august:8, september:9, october:10, november:11, december:12, jan:1, feb:2, mar:3, apr:4, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
     const t = transcript.toLowerCase().trim();
-    const match = t.match(/([a-z]+)\s+(\d{1,2})\s*,?\s*(\d{4})/);
+    const curYear = new Date().getFullYear();
+    // Month + day + year (e.g. "February 20 2026")
+    const match = t.match(/([a-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(\d{4})/);
     if (match) {
       const month = months[match[1]];
       if (month) {
         const d = new Date(parseInt(match[3]), month - 1, parseInt(match[2]));
+        return d.toISOString().split("T")[0];
+      }
+    }
+    // Month + day without year (e.g. "February 20" or "March 5th")
+    const matchNoYear = t.match(/([a-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?/);
+    if (matchNoYear) {
+      const month = months[matchNoYear[1]];
+      if (month) {
+        const d = new Date(curYear, month - 1, parseInt(matchNoYear[2]));
         return d.toISOString().split("T")[0];
       }
     }
