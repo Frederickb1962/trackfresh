@@ -2681,6 +2681,7 @@ export default function TrackFreshDashboard() {
     const itemName = smartResult.name || "Unknown Item";
     const newItem = { id: Date.now().toString(), name: itemName, useByDate: smartUseBy || "", openDate: "", category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
+    playSuccess();
     setUniScanCount(prev => prev + 1);
     setUniScanLastItem(itemName);
     resetSmartScanner();
@@ -2714,6 +2715,7 @@ export default function TrackFreshDashboard() {
       daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
     }));
     setTrackedItems(prev => [...newItems, ...prev]);
+    playSuccess();
     setShowSmartScanner(false); setSmartMultiItems([]); setSelectedSmartMulti([]); setShowSmartMultiReview(false); resetSmartScanner(); setScanMode(null);
   };
 
@@ -2746,6 +2748,7 @@ export default function TrackFreshDashboard() {
       daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
     }));
     setTrackedItems(prev => [...newItems, ...prev]);
+    playSuccess();
     setShowMultiScanner(false); setMultiItems([]); setMultiScanStatus("camera"); setSelectedMultiItems([]);
   };
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); setSmartMultiItems([]); setSelectedSmartMulti([]); setShowSmartMultiReview(false); };
@@ -2753,6 +2756,7 @@ export default function TrackFreshDashboard() {
     if (!smartResult) return;
     const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
+    playSuccess();
     if (scanMode === "single") {
       setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
     } else {
@@ -2907,6 +2911,7 @@ export default function TrackFreshDashboard() {
     const daysLeft = daysUntil(useByDate);
     if (daysLeft !== null && daysLeft <= 3) { setAlertItem({ name, daysLeft }); setShowAlert(true); }
     setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name, useByDate, openDate, category, quantity, location }]);
+    playSuccess();
     setItemName(""); setUseByDate(""); setOpenDate(""); setCategory("Other"); setQuantity(""); setLocation("Fridge");
   };
 
@@ -2922,10 +2927,11 @@ export default function TrackFreshDashboard() {
     const item = trackedItems.find((it) => it.id === id);
     if (item) addToShoppingIfMissing(item);
     setTrackedItems((prev) => prev.filter((it) => it.id !== id));
+    playError();
   };
 
   const handleEditItem = (id) => { const item = trackedItems.find(it => it.id === id); if (item) setEditingItem({ ...item }); };
-  const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
+  const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); playSuccess(); };
 
   const handleMarkOpened = (item, dateStr) => {
     const shelfDays = item.daysAfterOpening || getShelfLifeDays(item.name);
@@ -2939,6 +2945,7 @@ export default function TrackFreshDashboard() {
     const item = trackedItems.find((it) => it.id === id);
     if (item) addToShoppingIfMissing(item, "used");
     setTrackedItems((prev) => prev.filter((it) => it.id !== id));
+    playBeep(660, 0.15);
   };
 
   const triggerVoiceCommand = () => {
@@ -3185,6 +3192,7 @@ export default function TrackFreshDashboard() {
       if (data.error) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setRecipesLoading(false); return; }
       setRecipeSuggestions(data.recipes || []);
       setRecipesGenerated(true);
+      playSuccess();
     } catch (e) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); }
     setRecipesLoading(false);
   };
@@ -3206,10 +3214,11 @@ export default function TrackFreshDashboard() {
     const name = newShoppingItem.trim();
     if (!name) return;
     setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, qty: newShoppingQty.trim(), checked: false }]);
+    playBeep(880, 0.12);
     setNewShoppingItem(""); setNewShoppingQty("");
   };
 
-  const handleToggleShoppingItem = (id) => setShoppingItems((prev) => prev.map((it) => it.id === id ? { ...it, checked: !it.checked } : it));
+  const handleToggleShoppingItem = (id) => { setShoppingItems((prev) => { const item = prev.find(it => it.id === id); if (item) { item.checked ? playBeep(440, 0.1) : playBeep(660, 0.1); } return prev.map((it) => it.id === id ? { ...it, checked: !it.checked } : it); }); };
   const handleRemoveShoppingItem = (id) => setShoppingItems((prev) => prev.filter((it) => it.id !== id));
   const handleClearChecked = () => setShoppingItems((prev) => prev.filter((it) => !it.checked));
   const handleAddToShoppingFromTracker = (item) => {
@@ -3260,6 +3269,7 @@ export default function TrackFreshDashboard() {
     const today = new Date().toISOString().split("T")[0];
     const itemName = barcodeItem.name;
     setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: "", freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
+    playSuccess();
     setMultiScanCount(prev => prev + 1);
     setMultiScanLastItem(itemName);
     setBarcodeItem(null);
@@ -3448,6 +3458,7 @@ export default function TrackFreshDashboard() {
       storageTip: labelItem.storageTip || "",
       openedTip: labelItem.openedTip || ""
     }]);
+    playSuccess();
     setLabelScanCount(prev => prev + 1);
     setLabelLastItem(itemName);
     if (labelScanMode === "single") {
@@ -3476,6 +3487,7 @@ export default function TrackFreshDashboard() {
   const handlePendingSaveDate = () => {
     const item = pendingDateItems[pendingDateIndex];
     setTrackedItems(prev => [{ ...item, useByDate: pendingPickedDate || "" }, ...prev]);
+    playSuccess();
     const next = pendingDateIndex + 1;
     if (next >= pendingDateItems.length) { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }
     else { setPendingDateIndex(next); setPendingPickedDate(""); }
@@ -3555,7 +3567,7 @@ export default function TrackFreshDashboard() {
             <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
+            <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); playBeep(660, 0.08); setTimeout(() => playBeep(880, 0.08), 100); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             {activeTab !== "home" && (
               <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
@@ -4795,6 +4807,7 @@ export default function TrackFreshDashboard() {
                               setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
                             } else {
                               setFavoriteRecipes((prev) => [...prev, r]);
+                              playBeep(880, 0.1); setTimeout(() => playBeep(1100, 0.1), 150);
                               setFavoriteSavedMsg((prev) => ({ ...prev, [i]: "saved" }));
                               setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
                             }
