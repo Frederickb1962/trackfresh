@@ -4582,25 +4582,25 @@ export default function TrackFreshDashboard() {
                           const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
-                            <div key={it.id} className={`rounded-lg border px-3 py-2 ${urgent ? "border-red-300 bg-gradient-to-r from-red-50 to-red-100/50 shadow-sm" : soon ? "border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50/50 shadow-sm" : "bg-white shadow-sm hover:shadow-md transition-shadow"}`}>
+                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: urgent ? "linear-gradient(160deg,#3b0a0a,#4c1313)" : soon ? "linear-gradient(160deg,#3b2800,#4c3600)" : "linear-gradient(160deg,#064e3b,#065f46)", border: urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid rgba(234,179,8,0.4)" : "1px solid rgba(255,255,255,0.15)"}}>
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-semibold">{it.name}</span>
-                                    {it.quantity && <span className="text-xs text-gray-500">{it.quantity}</span>}
+                                    <span style={{color:"#fff",fontWeight:700}}>{it.name}</span>
+                                    {it.quantity && <span className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
                                   </div>
                                   <div className="text-xs mt-0.5">
                                     {it.openDate ? (
-                                      <span style={{color:"#15803d",fontWeight:700}}>
+                                      <span style={{color:"#4ade80",fontWeight:700}}>
                                         📂 Opened {fmtDate(it.openDate)}
                                         {it.openUseBy && it.daysLeft !== null
                                           ? ` · Use within ${it.daysLeft} day${it.daysLeft === 1 ? "" : "s"}`
                                           : ""}
                                       </span>
                                     ) : it.useByDate ? (
-                                      <span className="text-gray-500">Use by {fmtDate(it.useByDate)}</span>
+                                      <span style={{color:"rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
                                     ) : null}
                                   </div>
                                   <div className="flex flex-wrap gap-1 mt-1">
@@ -4631,7 +4631,7 @@ export default function TrackFreshDashboard() {
                                       <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
                                     )}
                                     <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
-                                    <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:border-red-300 hover:text-red-600 pill-3d">{t("remove")}</button>
+                                    <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg px-3 py-1 text-xs font-semibold" style={{background:"rgba(239,68,68,0.15)",border:"1px solid rgba(239,68,68,0.4)",color:"#fca5a5"}}>{t("remove")}</button>
                                   </div>
                                 </div>
                               </div>
