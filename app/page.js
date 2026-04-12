@@ -4114,13 +4114,13 @@ export default function TrackFreshDashboard() {
         )}
 
         {showQuickAdd && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4">
-            <div className="w-full max-w-lg rounded-xl p-6 shadow-lg" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <h2 className="mb-2 text-lg font-bold text-white">✏️ Quick Add</h2>
-              <p className="mb-4 text-sm text-green-200">{t("quickAddTitleDesc")}</p>
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-lg rounded-xl p-6 shadow-lg" style={{background:"#0a0a0a",border:"1px solid rgba(255,255,255,0.15)"}}>
+              <h2 className="mb-2 text-lg font-bold" style={{color:"#fff"}}>✏️ Quick Add</h2>
+              <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("quickAddTitleDesc")}</p>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-green-200">{t("foodItem")}</label>
+                  <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>{t("foodItem")}</label>
                   <FoodAutocomplete lang={lang}
                     value={quickAddName}
                     onChange={setQuickAddName}
@@ -4129,29 +4129,29 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-green-200">{t("category")}</label>
-                    <select value={quickAddCategory} onChange={(e) => setQuickAddCategory(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
+                    <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>{t("category")}</label>
+                    <select value={quickAddCategory} onChange={(e) => setQuickAddCategory(e.target.value)} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"1px solid rgba(255,255,255,0.2)"}}>
                       {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-green-200">{t("locationWord")}</label>
-                    <select value={quickAddLocation} onChange={(e) => setQuickAddLocation(e.target.value)} className="w-full rounded border px-3 py-2 text-sm text-gray-900">
+                    <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>{t("locationWord")}</label>
+                    <select value={quickAddLocation} onChange={(e) => setQuickAddLocation(e.target.value)} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"1px solid rgba(255,255,255,0.2)"}}>
                       {LOCATIONS.map((l) => <option key={l} value={l}>{LOCATION_ICONS[l]} {l}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-green-200">📅 {lang === "es" ? "Fecha de Vencimiento" : "Set Expiry Date"}</label>
+                  <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>📅 {lang === "es" ? "Fecha de Vencimiento" : "Set Expiry Date"}</label>
                   <div className="flex gap-2">
-                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
+                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"2px solid #f97316"}} />
                     <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
                   {quickVoiceListening === "date" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la fecha ej. veinte de febrero" : "Say date e.g. February 20"}</p>}
                   {quickVoiceError && <p className="text-xs text-red-400 mt-1">{quickVoiceError}</p>}
                 </div>
-                <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">{lang === "es" ? "Agregar Artículo" : "Add Item"}</button>
-                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border border-white/30 py-2 text-sm font-semibold text-white/70">{t("cancel")}</button>
+                <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"#22c55e",color:"#0a0a0a"}}>{lang === "es" ? "Agregar Artículo" : "Add Item"}</button>
+                <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded-xl py-2 text-sm font-semibold" style={{background:"rgba(255,255,255,0.08)",color:"#fff",border:"none"}}>{t("cancel")}</button>
               </div>
             </div>
           </div>
