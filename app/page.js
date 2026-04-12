@@ -2309,6 +2309,7 @@ export default function TrackFreshDashboard() {
   const [showRecallsPanel, setShowRecallsPanel] = useState(false);
   const [recipeMode, setRecipeMode] = useState("suggest");
   const [editDateListening, setEditDateListening] = useState(false);
+  const [editDateError, setEditDateError] = useState("");
   const [suggCategory, setSuggCategory] = useState("feature");
   const [suggMessage, setSuggMessage] = useState("");
   const [suggName, setSuggName] = useState("");
@@ -3727,25 +3728,37 @@ export default function TrackFreshDashboard() {
                         recog.lang = lang === "es" ? "es-MX" : "en-US";
                         recog.interimResults = false;
                         recog.maxAlternatives = 3;
+                        let gotResult = false;
+                        const timeoutId = setTimeout(() => {
+                          if (!gotResult) {
+                            try { recog.abort(); } catch(e) {}
+                            setEditDateListening(false);
+                            setEditDateError(lang === "es" ? "No pude escucharte. Por favor intenta de nuevo o agrega la fecha manualmente." : "Could not hear you. Please try again or add date manually.");
+                          }
+                        }, 7000);
                         recog.onresult = (e) => {
+                          gotResult = true;
+                          clearTimeout(timeoutId);
                           const transcript = Array.from(e.results[0]).map(r => r.transcript).join(" ");
                           const parsed = parseSpokenDate(transcript);
                           if (parsed) {
                             setEditingItem(prev => ({...prev, useByDate: parsed}));
+                            setEditDateError("");
                             speakThen(lang === "es" ? "Listo." : "Got it.", () => { playBeep(880, 0.1); setTimeout(() => playBeep(880, 0.1), 180); });
                           } else {
                             speak(lang === "es" ? "Lo siento, intenta de nuevo. Di algo como: veinte de febrero de 2026" : "Sorry, try again. Say something like February 20 2026");
                           }
                           setEditDateListening(false);
                         };
-                        recog.onerror = () => { speak(lang === "es" ? "Lo siento, intenta de nuevo." : "Sorry, try again. Say something like February 20 2026"); setEditDateListening(false); };
-                        recog.onend = () => setEditDateListening(false);
+                        recog.onerror = () => { clearTimeout(timeoutId); speak(lang === "es" ? "Lo siento, intenta de nuevo." : "Sorry, try again. Say something like February 20 2026"); setEditDateListening(false); };
+                        recog.onend = () => { clearTimeout(timeoutId); setEditDateListening(false); };
                         recog.start();
                       }, 150);
                     });
                   }} className="voice-mic-btn w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold" style={{background: editDateListening ? "rgba(239,68,68,0.12)" : "rgba(255,102,0,0.12)", border: editDateListening ? "1.5px solid rgba(239,68,68,0.5)" : "1.5px solid rgba(255,102,0,0.4)", color: editDateListening ? "#ef4444" : "#ff6600", width:"100%", height:"auto", borderRadius:"8px"}}>
                     {editDateListening ? (lang === "es" ? "🎤 Escuchando..." : "🎤 Listening...") : (lang === "es" ? "🎤 Decir la Fecha" : "🎤 Speak the Date")}
                   </button>
+                  {editDateError && <p className="mt-1 text-xs text-red-400">{editDateError}</p>}
                 </div>
                 <div><label className="mb-1 block text-sm font-medium">Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Fridge</option><option>Freezer</option><option>Pantry</option><option>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium">Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded border px-3 py-2 text-sm"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Bakery</option><option>Frozen</option><option>Pantry</option><option>Beverages</option><option>Condiments</option><option>Snacks</option><option>Other</option></select></div>
