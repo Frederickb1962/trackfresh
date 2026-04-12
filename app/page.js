@@ -3403,12 +3403,11 @@ export default function TrackFreshDashboard() {
     } catch (e) { console.log("Food info fetch failed, using defaults"); }
     const cat = quickAddCategory !== "Other" ? quickAddCategory : (foodInfo.category || quickAddCategory);
     const loc = quickAddLocation !== "Fridge" ? quickAddLocation : (foodInfo.location || quickAddLocation);
-    const item = { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: quickAddQty, useByDate: "", openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" };
+    const item = { id: crypto.randomUUID(), name: quickAddName, category: cat, location: loc, quantity: "", useByDate: quickAddDate, openDate: "", daysAfterOpening: foodInfo.daysAfterOpening || null, storageTip: foodInfo.storageTip || "", openedTip: foodInfo.openedTip || "" };
+    setTrackedItems(prev => [item, ...prev]);
+    playSuccess();
     setShowQuickAdd(false);
     setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge");
-    setPendingDateItems([item]);
-    setPendingDateIndex(0);
-    setPendingPickedDate("");
   };
 
   const handleScanLabel = async (file) => {
@@ -4144,14 +4143,15 @@ export default function TrackFreshDashboard() {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-green-200">{t("quantity")}</label>
+                  <label className="mb-1 block text-sm font-medium text-green-200">📅 {lang === "es" ? "Fecha de Vencimiento" : "Set Expiry Date"}</label>
                   <div className="flex gap-2">
-                    <input value={quickAddQty} onChange={(e) => setQuickAddQty(e.target.value)} placeholder="e.g. 2 lbs" className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
-                    <button onClick={() => handleQuickVoice("qty")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "qty" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "qty" ? "🎤 Listening..." : "🎤"}</button>
+                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm text-gray-900" />
+                    <button onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "bg-red-500 text-white animate-pulse" : "bg-white/20 text-white"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
                   </div>
-                  {quickVoiceListening === "qty" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la cantidad ej. dos libras" : "Say quantity e.g. two pounds"}</p>}
+                  {quickVoiceListening === "date" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la fecha ej. veinte de febrero" : "Say date e.g. February 20"}</p>}
+                  {quickVoiceError && <p className="text-xs text-red-400 mt-1">{quickVoiceError}</p>}
                 </div>
-                <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">Next: Set Expiry Date →</button>
+                <button onClick={handleQuickAdd} className="glass-scan-btn w-full py-2.5 text-sm">{lang === "es" ? "Agregar Artículo" : "Add Item"}</button>
                 <button onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded border border-white/30 py-2 text-sm font-semibold text-white/70">{t("cancel")}</button>
               </div>
             </div>
