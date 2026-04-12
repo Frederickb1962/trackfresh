@@ -3732,6 +3732,7 @@ export default function TrackFreshDashboard() {
                   <input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" />
                   <p className="my-2 text-center text-xs text-gray-400">— {lang === "es" ? "O" : "OR"} —</p>
                   <button onClick={() => {
+                    playBeep(880, 0.15);
                     if (editDateListening) return;
                     setEditDateListening(true);
                     setEditDateError("");
