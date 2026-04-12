@@ -3712,7 +3712,7 @@ export default function TrackFreshDashboard() {
               <div className="space-y-3">
                 <div><label className="mb-1 block text-sm font-medium">{t("nameWord")}</label><input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" /></div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">{lang === "es" ? "Agregar Fecha Manualmente" : "Add Date Manually"}</label>
+                  <label className="mb-1 block text-sm font-medium">📅 {lang === "es" ? "Agregar Fecha Manualmente" : "Add Date Manually"}</label>
                   <input type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded border px-3 py-2 text-sm" />
                   <p className="my-2 text-center text-xs text-gray-400">— {lang === "es" ? "O" : "OR"} —</p>
                   <button onClick={() => {
