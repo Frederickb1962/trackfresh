@@ -2511,6 +2511,7 @@ export default function TrackFreshDashboard() {
   const [showOpenedModal, setShowOpenedModal] = useState(false);
   const [openedSearch, setOpenedSearch] = useState("");
   const [openedConfirm, setOpenedConfirm] = useState(null);
+  const [openedFlashId, setOpenedFlashId] = useState(null);
   const [showOpenedDateEdit, setShowOpenedDateEdit] = useState(false);
   const [openedEditDate, setOpenedEditDate] = useState("");
   const [openedModalOffset, setOpenedModalOffset] = useState(0);
@@ -4583,6 +4584,7 @@ export default function TrackFreshDashboard() {
                                     })()}
                                   </div>
                                   <div className="flex flex-col gap-1">
+                                    <button onClick={() => { const today = new Date().toISOString().split("T")[0]; const days = it.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; setTrackedItems(prev => prev.map(x => x.id === it.id ? {...x, openDate: today, useByDate: useBy} : x)); setOpenedFlashId(it.id); setTimeout(() => setOpenedFlashId(id => id === it.id ? null : id), 2000); }} className="rounded-lg px-3 py-1 text-xs font-bold text-white shadow-md" style={{background: openedFlashId === it.id ? "#16a34a" : "linear-gradient(to right,#d97706,#b45309)",textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{openedFlashId === it.id ? "✓ Opened!" : "📂 Opened"}</button>
                                     <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
                                     {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
                                       <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
