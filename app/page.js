@@ -4588,7 +4588,6 @@ export default function TrackFreshDashboard() {
                                       <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
                                     )}
                                     <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
-                                    <button onClick={() => handleRemoveItem(it.id)} className="rounded-lg px-3 py-1 text-xs font-semibold" style={{background:"rgba(239,68,68,0.15)",border:"1px solid rgba(239,68,68,0.4)",color:"#fca5a5"}}>{t("remove")}</button>
                                   </div>
                                 </div>
                               </div>
