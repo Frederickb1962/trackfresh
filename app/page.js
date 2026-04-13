@@ -4544,7 +4544,7 @@ export default function TrackFreshDashboard() {
                           const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
-                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: urgent ? "linear-gradient(160deg,#3b0a0a,#4c1313)" : soon ? "#3d1a00" : "linear-gradient(160deg,#064e3b,#065f46)", border: urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid rgba(234,179,8,0.4)" : "1px solid rgba(255,255,255,0.15)"}}>
+                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: urgent ? "linear-gradient(160deg,#3b0a0a,#4c1313)" : soon ? "#2a2a2a" : "linear-gradient(160deg,#064e3b,#065f46)", border: urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid rgba(234,179,8,0.4)" : "1px solid rgba(255,255,255,0.15)"}}>
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
