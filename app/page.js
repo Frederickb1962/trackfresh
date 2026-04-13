@@ -2044,12 +2044,12 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   <span className="hero-slide-right" style={{animationDelay:"0.45s"}}>{isEs ? "Rastreado." : "Tracked."}</span>
 </h1>
 
-<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#f59e0b"}}>{isEs
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#ffffff"}}>{isEs
       ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente en tu refrigerador."
       : "That ketchup, mayo, jar of pickles — finally know when they actually expire in your fridge."}
   </p>
 
-  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s",color:"#f59e0b"}}>
+  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s",color:"#ffffff"}}>
     {isEs
       ? "Escanea alimentos, rastrea fechas de vencimiento y siempre sabe lo que hay en tu refrigerador, congelador y despensa."
       : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
