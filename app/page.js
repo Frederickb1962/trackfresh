@@ -2118,31 +2118,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
       </div>
 
-      {/* Stores */}
-      <div className="mkt-section mkt-animate mkt-animate-d2">
-        <div className="mkt-section-title"><h2>{isEs ? "Enlaza y Compra en Línea" : "Link And Shop Online"}</h2></div>
-        <p style={{textAlign:"center",opacity:0.75,marginBottom:"0.6rem",fontSize:"0.85rem"}}>{isEs ? "Conecta directamente con tus tiendas favoritas." : "Shop directly from your favorite stores."}</p>
-        <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:"0.5rem"}}>
-          {[
-            {logo:"https://www.google.com/s2/favicons?domain=amazon.com&sz=128",         name:"Amazon Fresh"},
-            {logo:"https://www.google.com/s2/favicons?domain=kroger.com&sz=128",          name:"Kroger"},
-            {logo:"https://www.google.com/s2/favicons?domain=walmart.com&sz=128",         name:"Walmart"},
-            {logo:"https://www.google.com/s2/favicons?domain=wholefoodsmarket.com&sz=128",name:"Whole Foods"},
-            {logo:"https://www.google.com/s2/favicons?domain=target.com&sz=128",          name:"Target"},
-            {logo:"https://www.google.com/s2/favicons?domain=costco.com&sz=128",          name:"Costco"},
-            {logo:"https://www.google.com/s2/favicons?domain=traderjoes.com&sz=128",      name:"Trader Joe's"},
-            {logo:"https://www.google.com/s2/favicons?domain=instacart.com&sz=128",       name:"Instacart"},
-          ].map(({logo,name}) => (
-            <div key={name} className="mkt-store-card" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"0.25rem",background:"rgba(255,255,255,0.1)",borderRadius:"14px",padding:"0.5rem 0.65rem",minWidth:"80px",border:"1px solid rgba(255,255,255,0.18)"}}>
-              <div style={{width:44,height:44,background:"#fff",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:3}}>
-                <img src={logo} alt={name} style={{width:38,height:38,objectFit:"contain"}} onError={e=>{e.target.parentNode.innerHTML='<span style="font-size:1.4rem">🏪</span>';}} />
-              </div>
-              <span style={{fontSize:"0.6rem",fontWeight:700,color:"rgba(255,255,255,0.92)",textAlign:"center"}}>{name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Final CTA */}
       <div className="mkt-section mkt-animate mkt-animate-d4" style={{textAlign:"center",paddingTop:"0.5rem",paddingBottom:"1.5rem"}}>
         <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.6rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
