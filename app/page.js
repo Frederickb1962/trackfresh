@@ -276,8 +276,8 @@ const GLOBAL_STYLES = `
   .mkt-cta-ghost:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
   .mkt-hero { text-align: center; padding: 1.5rem 1.5rem 0.5rem; max-width: 680px; margin: 0 auto; }
   .mkt-hero-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #86efac; margin-bottom: 0.6rem; display: block; }
-  .mkt-hero h1 { font-size: 2.9rem; font-weight: 900; line-height: 1.03; margin-bottom: 0.75rem; letter-spacing: -0.025em; }
-  .mkt-hero h1 span { color: #B7D63A; }
+  .mkt-hero h1 { font-size: 2.9rem; font-weight: 900; line-height: 1.03; margin-bottom: 0.75rem; letter-spacing: -0.025em; color: #ffffff; }
+  .mkt-hero h1 span { color: #ffffff; }
   .mkt-hero-sub { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.4; margin-bottom: 0.65rem; }
   .mkt-hero-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
   .mkt-section { padding: 0.5rem 1.5rem; max-width: 800px; margin: 0 auto; }
@@ -2096,7 +2096,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Etiquetas de caducidad? Confusas a propósito, si es que las encuentras." : "Expiration dates? Confusing by design if you can find them."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Nadie te dice cómo almacenar." : "After opening? Nobody tells you how to store."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🥫</span><span><strong>{isEs ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente después de abrirlos." : "That ketchup, mayo, jar of pickles — finally know when they actually expire after opening."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Miles de millones desperdiciados cada año. Ya no más." : "Billions wasted every year. Not anymore."}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
