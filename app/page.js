@@ -4378,6 +4378,10 @@ export default function TrackFreshDashboard() {
                       <div style={{textAlign:"center",padding:"0.75rem 0 0.875rem",color:"#86efac",fontSize:"0.82rem",fontWeight:600}}>✅ {isEs?"Todo fresco — ¡buen trabajo!":"Everything looks fresh — great job!"}</div>
                     )}
                   </div>
+                  <button onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
+                    <span style={{fontSize:"1.4rem"}}>📂</span>
+                    <span style={{fontWeight:800}}>{isEs ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
+                  </button>
                 </>
               );
             })()}
