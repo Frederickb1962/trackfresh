@@ -4376,17 +4376,6 @@ export default function TrackFreshDashboard() {
                     ) : (
                       <div style={{textAlign:"center",padding:"0.75rem 0 0.875rem",color:"#86efac",fontSize:"0.82rem",fontWeight:600}}>✅ {isEs?"Todo fresco — ¡buen trabajo!":"Everything looks fresh — great job!"}</div>
                     )}
-                    <p style={{color:"rgba(255,255,255,0.72)",fontSize:"0.88rem",fontWeight:500,marginBottom:"0.6rem",textAlign:"center",lineHeight:1.45}}>
-                      {isEs ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}
-                    </p>
-                    <button
-                      onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }}
-                      className="glass-scan-btn w-full"
-                      style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}
-                    >
-                      <span style={{fontSize:"1.4rem"}}>📂</span>
-                      <span style={{fontWeight:800}}>{isEs ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
-                    </button>
                   </div>
                 </>
               );
@@ -4519,39 +4508,6 @@ export default function TrackFreshDashboard() {
                   <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
                 </div>
 
-                {/* Mark What You've Opened */}
-                <div>
-                  <button onClick={() => setShowOpenedDropdown(v => !v)} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}>
-                      <span style={{fontSize:"1.4rem"}}>📂</span>
-                      <span style={{fontWeight:800}}>{lang === "es" ? "¿Has abierto algo últimamente?" : "Have you opened anything lately?"}</span>
-                      <span style={{marginLeft:"auto",fontSize:"0.75rem",opacity:0.8}}>{showOpenedDropdown ? "▲" : "▼"}</span>
-                    </div>
-                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang === "es" ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
-                  </button>
-                  {showOpenedDropdown && (() => {
-                    const today = new Date().toISOString().split("T")[0];
-                    const ddItems = itemsWithCountdown;
-                    return (
-                      <div style={{marginTop:"0.4rem",background:"rgba(6,78,59,0.97)",border:"1.5px solid #B7D63A",borderRadius:"12px",overflow:"hidden",maxHeight:"220px",overflowY:"auto"}}>
-                        {ddItems.length === 0 ? (
-                          <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.8rem",textAlign:"center",padding:"0.85rem"}}>{lang==="es"?"Sin artículos rastreados todavía.":"No tracked items yet."}</p>
-                        ) : ddItems.map(it => (
-                          <button key={it.id} onClick={() => { handleMarkOpened(it, today); setShowOpenedDropdown(false); setShowOpenedModal(true); }} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.08)",padding:"0.6rem 0.85rem",cursor:"pointer",textAlign:"left"}}>
-                            <div>
-                              <div style={{fontWeight:700,color:"#fff",fontSize:"0.85rem"}}>{it.name}</div>
-                              <div style={{fontSize:"0.62rem",color:"rgba(255,255,255,0.6)",marginTop:"0.08rem"}}>{it.location ?? "Fridge"}{it.useByDate ? " · Exp " + it.useByDate : ""}</div>
-                            </div>
-                            {it.openDate && <span style={{fontSize:"0.6rem",background:"rgba(183,214,58,0.25)",color:"#B7D63A",border:"1px solid rgba(183,214,58,0.4)",borderRadius:"999px",padding:"0.1rem 0.4rem",fontWeight:700,whiteSpace:"nowrap",flexShrink:0}}>📂 {lang==="es"?"Abierto":"Opened"}</span>}
-                          </button>
-                        ))}
-                        <button onClick={() => { setShowOpenedDropdown(false); setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} style={{display:"block",width:"100%",background:"rgba(183,214,58,0.1)",border:"none",borderTop:"1px solid rgba(183,214,58,0.3)",padding:"0.6rem",color:"#B7D63A",fontWeight:800,fontSize:"0.75rem",cursor:"pointer",textAlign:"center"}}>
-                          {lang==="es"?"Ver todos →":"See all →"}
-                        </button>
-                      </div>
-                    );
-                  })()}
-                </div>
 
                 {/* Items card */}
                 <div>
