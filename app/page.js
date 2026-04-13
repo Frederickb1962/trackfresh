@@ -4544,25 +4544,25 @@ export default function TrackFreshDashboard() {
                           const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
-                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: urgent ? "linear-gradient(160deg,#3b0a0a,#4c1313)" : soon ? "#2a2a2a" : "linear-gradient(160deg,#064e3b,#065f46)", border: urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid rgba(234,179,8,0.4)" : "1px solid rgba(255,255,255,0.15)"}}>
+                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: urgent ? "linear-gradient(160deg,#3b0a0a,#4c1313)" : soon ? "#B7D63A" : "linear-gradient(160deg,#064e3b,#065f46)", border: urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid #9ab82e" : "1px solid rgba(255,255,255,0.15)"}}>
                               <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span style={{color:"#fff",fontWeight:700}}>{it.name}</span>
-                                    {it.quantity && <span className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
+                                    <span style={{color: soon ? "#0d3d2e" : "#fff",fontWeight:700}}>{it.name}</span>
+                                    {it.quantity && <span className="text-xs" style={{color: soon ? "rgba(13,61,46,0.6)" : "rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
                                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
                                   </div>
                                   <div className="text-xs mt-0.5">
                                     {it.openDate ? (
-                                      <span style={{color:"#4ade80",fontWeight:700}}>
+                                      <span style={{color: soon ? "#0d3d2e" : "#4ade80",fontWeight:700}}>
                                         📂 Opened {fmtDate(it.openDate)}
                                         {it.openUseBy && it.daysLeft !== null
                                           ? ` · Use within ${it.daysLeft} day${it.daysLeft === 1 ? "" : "s"}`
                                           : ""}
                                       </span>
                                     ) : it.useByDate ? (
-                                      <span style={{color:"rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
+                                      <span style={{color: soon ? "#0d3d2e" : "rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
                                     ) : null}
                                   </div>
                                   <div className="flex flex-wrap gap-1 mt-1">
