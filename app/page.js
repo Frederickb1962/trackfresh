@@ -2046,7 +2046,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
 
 <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#ffffff"}}>{isEs
       ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente en tu refrigerador."
-      : "That ketchup, mayo, jar of pickles — finally know when they actually expire in your fridge."}
+      : "🥫 That ketchup, mayo, jar of pickles 'dilemma' — finally, you will know when they expire in your fridge after opening."}
   </p>
 
   <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s",color:"#ffffff"}}>
