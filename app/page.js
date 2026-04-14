@@ -1377,6 +1377,8 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   const [dateIndex, setDateIndex] = useState(0);
   const [pickedDate, setPickedDate] = useState("");
   const [sessionCount, setSessionCount] = useState(0);
+  const [groceryVoiceListening, setGroceryVoiceListening] = useState(false);
+  const [groceryVoiceError, setGroceryVoiceError] = useState("");
 
   const playBeep = (freq, dur, vol = 0.28) => {
     try {
@@ -1601,6 +1603,12 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
           </div>
           <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 1 }} />
+        </div>
+        <div>
+          <button onClick={() => { setGroceryVoiceError(""); playBeep(880, 0.15); const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { setGroceryVoiceError("Voice not supported on this device"); return; } const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1; setGroceryVoiceListening(true); recog.onresult = (e) => { const t = e.results[0][0].transcript; const parsed = parseSpokenDate(t); if (parsed) { setPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180); setGroceryVoiceError(""); } else { setGroceryVoiceError("Could not understand. Try: April 20"); } setGroceryVoiceListening(false); }; recog.onerror = () => { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); }; recog.onend = () => setGroceryVoiceListening(false); recog.start(); }} style={{ width: "100%", padding: "0.85rem", background: groceryVoiceListening ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)", color: groceryVoiceListening ? "#fca5a5" : "#fb923c", fontWeight: 700, fontSize: "1rem", border: `1.5px solid ${groceryVoiceListening ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`, borderRadius: "16px", cursor: "pointer" }}>
+            {groceryVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha" : "🎤 Tap to Speak Date")}
+          </button>
+          {groceryVoiceError && <p style={{ color: "#f87171", fontSize: "0.75rem", textAlign: "center", margin: "0.4rem 0 0", fontWeight: 600 }}>{groceryVoiceError}</p>}
         </div>
         <button onClick={handleSaveDate}
           style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
@@ -2339,6 +2347,8 @@ export default function TrackFreshDashboard() {
   const [pendingDateItems, setPendingDateItems] = useState([]);
   const [pendingDateIndex, setPendingDateIndex] = useState(0);
   const [pendingPickedDate, setPendingPickedDate] = useState("");
+  const [pendingVoiceListening, setPendingVoiceListening] = useState(false);
+  const [pendingVoiceError, setPendingVoiceError] = useState("");
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
   const [quickAddLocation, setQuickAddLocation] = useState("Fridge");
   const [meals, setMeals] = useState({});
@@ -3636,6 +3646,12 @@ export default function TrackFreshDashboard() {
                   {pendingPickedDate ? (() => { try { return new Date(pendingPickedDate + "T00:00:00").toLocaleDateString("en-US", {month:"short",day:"numeric",year:"numeric"}); } catch(e) { return pendingPickedDate; } })() : (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
                 </div>
                 <input type="date" value={pendingPickedDate} onChange={e => setPendingPickedDate(e.target.value)} style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}} />
+              </div>
+              <div>
+                <button onClick={() => { setPendingVoiceError(""); playBeep(880, 0.15); const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { setPendingVoiceError("Voice not supported on this device"); return; } const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1; setPendingVoiceListening(true); recog.onresult = (e) => { const t = e.results[0][0].transcript; const parsed = parseSpokenDate(t); if (parsed) { setPendingPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180); setPendingVoiceError(""); } else { setPendingVoiceError("Could not understand. Try: April 20"); } setPendingVoiceListening(false); }; recog.onerror = () => { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); }; recog.onend = () => setPendingVoiceListening(false); recog.start(); }} style={{width:"100%",padding:"0.85rem",background: pendingVoiceListening ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)",color: pendingVoiceListening ? "#fca5a5" : "#fb923c",fontWeight:700,fontSize:"1rem",border:`1.5px solid ${pendingVoiceListening ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`,borderRadius:"16px",cursor:"pointer"}}>
+                  {pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha" : "🎤 Tap to Speak Date")}
+                </button>
+                {pendingVoiceError && <p style={{color:"#f87171",fontSize:"0.75rem",textAlign:"center",margin:"0.4rem 0 0",fontWeight:600}}>{pendingVoiceError}</p>}
               </div>
               <button onClick={handlePendingSaveDate} style={{width:"100%",padding:"1.1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:900,fontSize:"1.2rem",border:"none",borderRadius:"16px",cursor:"pointer",boxShadow:"0 5px 0 #14532d"}}>
                 ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
