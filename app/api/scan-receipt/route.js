@@ -27,6 +27,8 @@ export async function POST(req) {
 
 Look at this receipt and extract ONLY food and beverage items. SKIP non-food items like shampoo, deodorant, soap, cleaning supplies, paper towels, trash bags, toiletries, pet supplies, medicine, vitamins, and any other non-edible products.
 
+Only include actual food and beverage items. Do not include non-food items such as household products, cleaning supplies, personal care items, paper products, vitamins, supplements, medications, or any other non-edible items. If an item is not something you would eat or drink, exclude it entirely.
+
 For EACH item, provide:
 1. "name" - the product name (clean up receipt abbreviations into readable names)
 2. "category" - one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other
