@@ -1525,7 +1525,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
 
   if (screen === "scanning") {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
         <button onClick={onClose} style={{ position: "absolute", top: "1rem", left: "1rem", background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", color: "#fff", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>← {isEs ? "Atrás" : "Back"}</button>
         <div style={{ width: 56, height: 56, border: "5px solid #4ade80", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
         <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
@@ -1535,7 +1535,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
 
   if (screen === "error") {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem", padding: "2rem" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem", padding: "2rem" }}>
         <span style={{ fontSize: "3rem" }}>❌</span>
         <p style={{ color: "#f87171", fontWeight: 700, fontSize: "1.1rem", textAlign: "center", margin: 0 }}>{errorMsg || (isEs ? "Error al escanear" : "Scan error")}</p>
         <button onClick={() => setScreen("camera")} style={{ padding: "0.9rem 2rem", background: "#16a34a", color: "#fff", fontWeight: 800, fontSize: "1rem", border: "none", borderRadius: "14px", cursor: "pointer" }}>{isEs ? "Intentar de nuevo" : "Try Again"}</button>
@@ -1546,7 +1546,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
 
   if (screen === "review") {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#111", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#111", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "#000", flexShrink: 0 }}>
           <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Artículos Detectados" : "Detected Items"}</span>
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.45)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>✕ {isEs ? "Cerrar" : "Close"}</button>
@@ -1589,7 +1589,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   if (screen === "dates") {
     const item = dateItems[dateIndex];
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "2rem 1.25rem", gap: "1.25rem" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "2rem 1.25rem", gap: "1.25rem" }}>
         <div style={{ textAlign: "center" }}>
           <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", fontWeight: 600, margin: "0 0 0.35rem" }}>{dateIndex + 1} / {dateItems.length}</p>
           <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", margin: 0 }}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
@@ -1624,7 +1624,7 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
 
   // screen === "camera"
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.8)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.35rem 0.85rem", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", flexShrink: 0 }}>← {isEs ? "Atrás" : "Back"}</button>
