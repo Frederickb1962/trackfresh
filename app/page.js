@@ -1379,6 +1379,8 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
   const [sessionCount, setSessionCount] = useState(0);
   const [groceryVoiceListening, setGroceryVoiceListening] = useState(false);
   const [groceryVoiceError, setGroceryVoiceError] = useState("");
+  const [groceryVoiceAwaitND, setGroceryVoiceAwaitND] = useState(false);
+  const groceryNDRef = useRef(null);
 
   const playBeep = (freq, dur, vol = 0.28) => {
     try {
@@ -1523,6 +1525,49 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
     if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
   };
 
+  const startGroceryVoice = () => {
+    setGroceryVoiceError("");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setGroceryVoiceError("Voice not supported on this device"); return; }
+    playBeep(880, 0.15);
+    const recog = new SR();
+    recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1;
+    setGroceryVoiceListening(true);
+    recog.onresult = (e) => {
+      const t = e.results[0][0].transcript;
+      const parsed = parseSpokenDate(t);
+      if (parsed) {
+        setPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180);
+        setGroceryVoiceError(""); setGroceryVoiceListening(false); setGroceryVoiceAwaitND(true);
+        const ndMsg = new SpeechSynthesisUtterance("Say Next to save and continue, or Done to finish.");
+        ndMsg.rate = 1.1;
+        ndMsg.onend = () => {
+          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR2) { setGroceryVoiceAwaitND(false); return; }
+          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} }
+          const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
+          groceryNDRef.current = ndRecog;
+          let settled = false;
+          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setGroceryVoiceAwaitND(false); groceryNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
+          ndRecog.onresult = (ev) => {
+            if (settled) return; settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null;
+            const cmd = ev.results[0][0].transcript.toLowerCase();
+            const nextIdx = dateIndex + 1;
+            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more")) { handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 700); }
+            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish")) { handleSaveDate(); setTimeout(() => onClose(), 300); }
+          };
+          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
+          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
+          ndRecog.start();
+        };
+        window.speechSynthesis.cancel(); window.speechSynthesis.speak(ndMsg);
+      } else { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); }
+    };
+    recog.onerror = () => { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); };
+    recog.onend = () => setGroceryVoiceListening(false);
+    recog.start();
+  };
+
   if (screen === "scanning") {
     return (
       <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
@@ -1605,12 +1650,12 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 1 }} />
         </div>
         <div>
-          <button onClick={() => { setGroceryVoiceError(""); playBeep(880, 0.15); const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { setGroceryVoiceError("Voice not supported on this device"); return; } const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1; setGroceryVoiceListening(true); recog.onresult = (e) => { const t = e.results[0][0].transcript; const parsed = parseSpokenDate(t); if (parsed) { setPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180); setGroceryVoiceError(""); } else { setGroceryVoiceError("Could not understand. Try: April 20"); } setGroceryVoiceListening(false); }; recog.onerror = () => { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); }; recog.onend = () => setGroceryVoiceListening(false); recog.start(); }} style={{ width: "100%", padding: "0.85rem", background: groceryVoiceListening ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)", color: groceryVoiceListening ? "#fca5a5" : "#fb923c", fontWeight: 700, fontSize: "1rem", border: `1.5px solid ${groceryVoiceListening ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`, borderRadius: "16px", cursor: "pointer" }}>
-            {groceryVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha" : "🎤 Tap to Speak Date")}
+          <button onClick={startGroceryVoice} style={{ width: "100%", padding: "0.85rem", background: groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)", color: groceryVoiceListening || groceryVoiceAwaitND ? "#fca5a5" : "#fb923c", fontWeight: 700, fontSize: "1rem", border: `1.5px solid ${groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`, borderRadius: "16px", cursor: "pointer" }}>
+            {groceryVoiceAwaitND ? "🎤 Say Next or Done..." : groceryVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
           </button>
           {groceryVoiceError && <p style={{ color: "#f87171", fontSize: "0.75rem", textAlign: "center", margin: "0.4rem 0 0", fontWeight: 600 }}>{groceryVoiceError}</p>}
         </div>
-        <button onClick={handleSaveDate}
+        <button onClick={() => { if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; } setGroceryVoiceAwaitND(false); const nextIdx = dateIndex + 1; handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 600); }}
           style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
           ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
         </button>
@@ -2349,6 +2394,8 @@ export default function TrackFreshDashboard() {
   const [pendingPickedDate, setPendingPickedDate] = useState("");
   const [pendingVoiceListening, setPendingVoiceListening] = useState(false);
   const [pendingVoiceError, setPendingVoiceError] = useState("");
+  const [pendingVoiceAwaitND, setPendingVoiceAwaitND] = useState(false);
+  const pendingNDRef = React.useRef(null);
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
   const [quickAddLocation, setQuickAddLocation] = useState("Fridge");
   const [meals, setMeals] = useState({});
@@ -2460,19 +2507,35 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setSmartUseBy(parsed);
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
-        const confirm = new SpeechSynthesisUtterance("Got it. " + transcript);
-        confirm.rate = 1.15;
-        window.speechSynthesis.speak(confirm);
+        setVoiceListening(false);
+        setVoicePromptDone(true);
+        speakThen("Got it. Do you have more items? Say Next to continue or Done to finish.", () => {
+          setVoiceFlowStep("listening_next");
+          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR2) { setVoiceFlowStep(null); return; }
+          const ndRecog = new SR2(); ndRecog.lang = lang === "es" ? "es-MX" : "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
+          let settled = false;
+          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setVoiceFlowStep(null); try { ndRecog.abort(); } catch(ex) {} } }, 10000);
+          ndRecog.onresult = (ev) => {
+            if (settled) return; settled = true; clearTimeout(ndTimeout); setVoiceFlowStep(null);
+            const cmd = ev.results[0][0].transcript.toLowerCase();
+            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more") || cmd.includes("siguiente")) { handleAddSmartItemMulti(); }
+            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish") || cmd.includes("listo")) { handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); }
+          };
+          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setVoiceFlowStep(null); } };
+          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setVoiceFlowStep(null); } };
+          ndRecog.start();
+        });
       } else {
         const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
         retry.rate = 1.0;
         window.speechSynthesis.speak(retry);
+        setVoiceListening(false);
+        setVoicePromptDone(true);
       }
-      setVoiceListening(false);
-      setVoicePromptDone(true);
     };
     recognition.onerror = () => { setVoiceListening(false); setVoicePromptDone(true); };
-    recognition.onend = () => { setVoiceListening(false); setVoicePromptDone(true); };
+    recognition.onend = () => { setVoiceListening(false); };
     recognition.start();
   };
   const [uniScanCount, setUniScanCount] = useState(0);
@@ -2485,6 +2548,7 @@ export default function TrackFreshDashboard() {
   const voiceFlowRef = React.useRef(null);
   const voiceCmdRef = React.useRef(null);
   const voiceFeedbackTimer = React.useRef(null);
+  const voiceNDTimeoutRef = React.useRef(null);
   const [showExpiryVoice, setShowExpiryVoice] = useState(false);
   const [expiryVoiceItems, setExpiryVoiceItems] = useState([]);
   const [expiryVoiceLog, setExpiryVoiceLog] = useState([]);
@@ -2656,12 +2720,14 @@ export default function TrackFreshDashboard() {
   };
   const handleVoiceNextDone = (cmd) => {
     const t = cmd.toLowerCase();
+    if (voiceNDTimeoutRef.current) { clearTimeout(voiceNDTimeoutRef.current); voiceNDTimeoutRef.current = null; }
     if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); speak(lang === "es" ? "Pausado." : "Paused. Say Continue."); return; }
     if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); speak(lang === "es" ? "Modo edición." : "Edit mode. Say Return to Scan when done."); return; }
     if (t.includes("stop") || t.includes("detener")) { handleDoneUniScan(); return; }
-    if (t.includes("next") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { handleAddSmartItemMulti(); return; }
+    if (t.includes("next") || t.includes("yes") || t.includes("more") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { handleAddSmartItemMulti(); return; }
     if (t.includes("done") || t.includes("listo") || t.includes("lista") || t.includes("finish") || t.includes("terminar")) { handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
     setVoiceFlowStep("listening_next");
+    voiceNDTimeoutRef.current = setTimeout(() => { setVoiceFlowStep(null); if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(ex) {} voiceFlowRef.current = null; } }, 10000);
     startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
   };
   const handleAddSmartItemMulti = () => {
@@ -3477,6 +3543,47 @@ export default function TrackFreshDashboard() {
     else { setPendingDateIndex(next); setPendingPickedDate(""); }
   };
 
+  const startPendingVoice = () => {
+    setPendingVoiceError("");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setPendingVoiceError("Voice not supported on this device"); return; }
+    const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1;
+    setPendingVoiceListening(true);
+    recog.onresult = (e) => {
+      const t = e.results[0][0].transcript;
+      const parsed = parseSpokenDate(t);
+      if (parsed) {
+        setPendingPickedDate(parsed);
+        setPendingVoiceError(""); setPendingVoiceListening(false); setPendingVoiceAwaitND(true);
+        const ndMsg = new SpeechSynthesisUtterance("Say Next to save and continue, or Done to finish.");
+        ndMsg.rate = 1.1;
+        ndMsg.onend = () => {
+          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR2) { setPendingVoiceAwaitND(false); return; }
+          if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} }
+          const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
+          pendingNDRef.current = ndRecog;
+          let settled = false;
+          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setPendingVoiceAwaitND(false); pendingNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
+          ndRecog.onresult = (ev) => {
+            if (settled) return; settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null;
+            const cmd = ev.results[0][0].transcript.toLowerCase();
+            const nextIdx = pendingDateIndex + 1;
+            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more")) { handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 700); }
+            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish")) { handlePendingSaveDate(); setTimeout(() => { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }, 300); }
+          };
+          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
+          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
+          ndRecog.start();
+        };
+        window.speechSynthesis.cancel(); window.speechSynthesis.speak(ndMsg);
+      } else { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); }
+    };
+    recog.onerror = () => { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); };
+    recog.onend = () => setPendingVoiceListening(false);
+    recog.start();
+  };
+
   const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
   const handlePostRecipe = () => { if (!newRecipeTitle.trim() || !newRecipeBody.trim()) return; setCommunity((prev) => ({ ...prev, recipes: [{ id: crypto.randomUUID(), author: username, title: newRecipeTitle.trim(), body: newRecipeBody.trim(), date: new Date().toLocaleDateString() }, ...prev.recipes] })); setNewRecipeTitle(""); setNewRecipeBody(""); };
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
@@ -3648,12 +3755,12 @@ export default function TrackFreshDashboard() {
                 <input type="date" value={pendingPickedDate} onChange={e => setPendingPickedDate(e.target.value)} style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}} />
               </div>
               <div>
-                <button onClick={() => { setPendingVoiceError(""); const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { setPendingVoiceError("Voice not supported on this device"); return; } const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1; setPendingVoiceListening(true); recog.onresult = (e) => { const t = e.results[0][0].transcript; const parsed = parseSpokenDate(t); if (parsed) { setPendingPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180); setPendingVoiceError(""); } else { setPendingVoiceError("Could not understand. Try: April 20"); } setPendingVoiceListening(false); }; recog.onerror = () => { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); }; recog.onend = () => setPendingVoiceListening(false); recog.start(); playBeep(880, 0.15); }} style={{width:"100%",padding:"0.85rem",background: pendingVoiceListening ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)",color: pendingVoiceListening ? "#fca5a5" : "#fb923c",fontWeight:700,fontSize:"1rem",border:`1.5px solid ${pendingVoiceListening ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`,borderRadius:"16px",cursor:"pointer"}}>
-                  {pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha" : "🎤 Tap to Speak Date")}
+                <button onClick={startPendingVoice} style={{width:"100%",padding:"0.85rem",background: pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)",color: pendingVoiceListening || pendingVoiceAwaitND ? "#fca5a5" : "#fb923c",fontWeight:700,fontSize:"1rem",border:`1.5px solid ${pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`,borderRadius:"16px",cursor:"pointer"}}>
+                  {pendingVoiceAwaitND ? "🎤 Say Next or Done..." : pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
                 </button>
                 {pendingVoiceError && <p style={{color:"#f87171",fontSize:"0.75rem",textAlign:"center",margin:"0.4rem 0 0",fontWeight:600}}>{pendingVoiceError}</p>}
               </div>
-              <button onClick={handlePendingSaveDate} style={{width:"100%",padding:"1.1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:900,fontSize:"1.2rem",border:"none",borderRadius:"16px",cursor:"pointer",boxShadow:"0 5px 0 #14532d"}}>
+              <button onClick={() => { if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} pendingNDRef.current = null; } setPendingVoiceAwaitND(false); const nextIdx = pendingDateIndex + 1; handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 600); }} style={{width:"100%",padding:"1.1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:900,fontSize:"1.2rem",border:"none",borderRadius:"16px",cursor:"pointer",boxShadow:"0 5px 0 #14532d"}}>
                 ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
               </button>
               <button onClick={handlePendingSkipDate} style={{width:"100%",padding:"1rem",background:"rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.65)",fontWeight:700,fontSize:"1rem",border:"1.5px solid rgba(255,255,255,0.2)",borderRadius:"16px",cursor:"pointer"}}>
