@@ -2697,7 +2697,7 @@ export default function TrackFreshDashboard() {
   const handleSmartError = (msg) => { if (msg === "__done__") { handleDoneUniScan(); return; } setSmartError(msg); setSmartResult(null); };
 
   const handleAddSmartMultiItems = () => {
-    const today = new Date().toISOString().split("T")[0];
+    const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
     const newItems = selectedSmartMulti.map(i => smartMultiItems[i]).filter(Boolean).map(item => ({
       id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: "",
       category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
@@ -2729,7 +2729,7 @@ export default function TrackFreshDashboard() {
   };
 
   const handleAddMultiItems = () => {
-    const today = new Date().toISOString().split("T")[0];
+    const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
     const newItems = selectedMultiItems.map(i => multiItems[i]).filter(Boolean).map(item => ({
       id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: "",
       category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
@@ -2741,7 +2741,7 @@ export default function TrackFreshDashboard() {
   const resetSmartScanner = () => { setSmartResult(null); setSmartError(""); setSmartLocation(""); setSmartUseBy(""); setSmartFreezeBy(""); setScanningDate(false); setVoiceListening(false); setVoicePromptDone(false); setShowVoiceEditForm(false); setVoiceFlowStep(null); setShowExpiryVoice(false); setSmartMultiItems([]); setSelectedSmartMulti([]); setShowSmartMultiReview(false); };
   const handleAddSmartItem = () => {
     if (!smartResult) return;
-    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: new Date().toISOString().split("T")[0], category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
+    const newItem = { id: Date.now().toString(), name: smartResult.name || "Unknown Item", useByDate: smartUseBy || "", openDate: (() => { const _d = new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })(), category: smartResult.category || "Other", quantity: "1", location: smartLocation || smartResult.location || "Fridge", freezeByDate: smartFreezeBy || "", daysAfterOpening: smartResult.daysAfterOpening || null, storageTip: smartResult.storageTip || "", openedTip: smartResult.openedTip || "" };
     setTrackedItems(prev => [newItem, ...prev]);
     if (scanMode === "single") {
       setShowSmartScanner(false); resetSmartScanner(); setScanMode(null);
@@ -2971,7 +2971,7 @@ export default function TrackFreshDashboard() {
         const query = m?.[1]?.replace(/[?.!,]+$/,"").trim();
         const found = query && trackedItems.find(it => it.name.toLowerCase().includes(query));
         if (found) {
-          const today = new Date().toISOString().split("T")[0];
+          const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
           handleMarkOpened(found, today);
           setShowOpenedModal(true);
           finish(isEs ? `${found.name} marcado como abierto.` : `Marked ${found.name} as opened.`);
@@ -3247,7 +3247,7 @@ export default function TrackFreshDashboard() {
   const handleAddBarcodeItem = () => {
     if (!barcodeItem) return;
     const loc = barcodeLocation || barcodeItem.location;
-    const today = new Date().toISOString().split("T")[0];
+    const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
     const itemName = barcodeItem.name;
     setTrackedItems((prev) => [...prev, { id: crypto.randomUUID(), name: barcodeItem.name, category: barcodeItem.category, location: loc, quantity: "", useByDate: barcodeUseBy, openDate: "", freezeBy: barcodeFreezeBy, barcode: barcodeItem.barcode || "", daysAfterOpening: barcodeItem.daysAfterOpening || null, storageTip: barcodeItem.storageTip || "", openedTip: barcodeItem.openedTip || "" }]);
     setMultiScanCount(prev => prev + 1);
@@ -3431,7 +3431,7 @@ export default function TrackFreshDashboard() {
       location: labelItem.location, 
       quantity: quantity,
       useByDate: labelItem.date || "", 
-      openDate: new Date().toISOString().split("T")[0], 
+      openDate: (() => { const _d = new Date(); return `${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`; })(), 
       daysAfterOpening: labelItem.daysAfterOpening || null,
       storageTip: labelItem.storageTip || "",
       openedTip: labelItem.openedTip || ""
@@ -4578,7 +4578,7 @@ export default function TrackFreshDashboard() {
                                         );
                                       })()}
                                     </div>
-                                    <button onClick={() => { if (!it.openDate) { const today = new Date().toISOString().split("T")[0]; const days = it.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; setTrackedItems(prev => prev.map(x => x.id === it.id ? {...x, openDate: today, useByDate: useBy} : x)); } }} className="rounded-lg px-3 py-1 text-xs font-bold shadow-md" style={{background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.6)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{it.openDate ? "Opened ✓" : "Opened"}</button>
+                                    <button onClick={() => { if (!it.openDate) { const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = it.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; setTrackedItems(prev => prev.map(x => x.id === it.id ? {...x, openDate: today, useByDate: useBy} : x)); } }} className="rounded-lg px-3 py-1 text-xs font-bold shadow-md" style={{background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.6)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{it.openDate ? "Opened ✓" : "Opened"}</button>
                                     <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
                                     {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
                                       <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
@@ -5734,7 +5734,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {showOpenedModal && (() => {
-          const today = new Date().toISOString().split("T")[0];
+          const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
           const allItems = itemsWithCountdown;
           const recentItems = [...allItems].slice(0, 5);
           const fridgeItems = allItems.filter(it => (it.location ?? "Fridge") === "Fridge");
