@@ -4565,13 +4565,13 @@ export default function TrackFreshDashboard() {
                                   <div className="flex flex-col gap-2" style={{alignItems:"center"}}>
                                     <div className="text-right" style={{minWidth:"3.2rem"}}>
                                       {it.daysLeft === null ? (
-                                        <button onClick={() => handleEditItem(it.id)} style={{display:"inline-block",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.5rem",fontSize:"0.7rem",fontWeight:800,color:"#B7D63A",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #B7D63A"}}>Need EXP<br/>Date</button>
+                                        <button onClick={() => handleEditItem(it.id)} style={{display:"inline-block",background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.5rem",fontSize:"0.7rem",fontWeight:800,color:"#fff",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>Need EXP<br/>Date</button>
                                       ) : (() => {
                                         const d = it.daysLeft;
-                                        const [bg, color, border] = d <= 2 ? ["rgba(220,38,38,0.15)","#dc2626","rgba(220,38,38,0.5)"] : d <= 4 ? ["rgba(234,88,12,0.15)","#ea580c","rgba(234,88,12,0.5)"] : d <= 7 ? ["rgba(202,138,4,0.15)","#ca8a04","rgba(202,138,4,0.5)"] : ["rgba(22,163,74,0.15)","#16a34a","rgba(22,163,74,0.5)"];
+                                        const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
                                         return (
                                           <div>
-                                            <div style={{display:"inline-block",background:bg,border:`1.5px solid ${border}`,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
+                                            <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
                                             <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{t("days")}</div>
                                             {d <= 2 && <div style={{display:"inline-block",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.2rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",whiteSpace:"nowrap",border:"2px solid #B7D63A",marginTop:"0.25rem"}}>Expiring Soon</div>}
                                           </div>
