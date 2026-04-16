@@ -5473,6 +5473,12 @@ export default function TrackFreshDashboard() {
                   <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
                 </a>
 
+                <a href="https://www.wegmans.com/sales-flyer/" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
+                  <img src="https://www.google.com/s2/favicons?domain=wegmans.com&sz=128" alt="Wegmans" className="h-8 w-8 rounded-md bg-white p-1" />
+                  <span className="text-sm font-bold text-white">Wegmans</span>
+                  <span className="text-xs text-white font-semibold">{t("shopNow")}</span>
+                </a>
+
                 <a href="https://www.traderjoes.com" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">
                   <img src="https://www.google.com/s2/favicons?domain=traderjoes.com&sz=128" alt="Trader Joe's" className="h-8 w-8 rounded-md bg-white p-1" />
                   <span className="text-sm font-bold text-white">Trader Joe&apos;s</span>
