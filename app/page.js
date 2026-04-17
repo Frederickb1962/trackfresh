@@ -2252,12 +2252,12 @@ const TUTORIALS = {
 };
 
 const TOUR_CONTENT = {
-  tracker:  { icon: "🥦", label: "Tracker",       intro: "Track food and beat expiry dates",        slides: TUTORIALS.tracker },
-  recipes:  { icon: "🍳", label: "Recipes",        intro: "Cook what you have, waste nothing",       slides: TUTORIALS.recipes },
-  shopping: { icon: "🛒", label: "Shopping List",  intro: "Smart list that knows what you need",     slides: TUTORIALS.shopping },
-  meals:    { icon: "📅", label: "Meals",          intro: "Plan a full week in seconds with AI",     slides: TUTORIALS.meals },
-  dietary:  { icon: "🥗", label: "Dietary",        intro: "Set your household's food needs once",    slides: TUTORIALS.dietary },
-  more:     { icon: "💬", label: "More",           intro: "Suggestions, language, and your data",    slides: TUTORIALS.more },
+  tracker:  { icon: "🥦", label: "Tracker",       intro: { en: "Your fridge's best friend! Scan, add, and track everything so nothing gets forgotten in the back of the shelf.", es: "¡El mejor amigo de tu refrigerador! Escanea, agrega y rastrea todo para que nada se olvide." }, slides: TUTORIALS.tracker },
+  recipes:  { icon: "🍳", label: "Recipes",        intro: { en: "What's for dinner? Let AI decide — based on exactly what's in your fridge right now.", es: "¿Qué hay para cenar? Deja que la IA decida — basado en lo que tienes en tu refrigerador ahora mismo." }, slides: TUTORIALS.recipes },
+  shopping: { icon: "🛒", label: "Shopping List",  intro: { en: "Your smart grocery sidekick! Items you're running low on magically appear here. Just tap to check them off as you shop.", es: "¡Tu asistente de compras inteligente! Los artículos que necesitas aparecen aquí automáticamente." }, slides: TUTORIALS.shopping },
+  meals:    { icon: "📅", label: "Meals",          intro: { en: "Plan the whole week in seconds. Dinner stress? Gone.", es: "Planifica toda la semana en segundos. ¿Estrés por la cena? Desaparece." }, slides: TUTORIALS.meals },
+  dietary:  { icon: "🥗", label: "Dietary",        intro: { en: "Gluten-free? Vegan? Nut allergy? Set it once and the whole app remembers.", es: "¿Sin gluten? ¿Vegano? ¿Alergia a los frutos secos? Configúralo una vez y la app lo recuerda." }, slides: TUTORIALS.dietary },
+  more:     { icon: "💬", label: "More",           intro: { en: "Got a big idea? Drop it here — our best features came from users just like you!", es: "¿Tienes una gran idea? ¡Déjala aquí — nuestras mejores funciones vinieron de usuarios como tú!" }, slides: TUTORIALS.more },
 };
 
 export default function TrackFreshDashboard() {
@@ -6027,7 +6027,7 @@ export default function TrackFreshDashboard() {
                     style={{background:"rgba(255,255,255,0.1)",border:tourCompleted[key] ? "1.5px solid #4ade80" : "1.5px solid rgba(255,255,255,0.18)",borderRadius:"1rem",padding:"1rem 0.75rem",textAlign:"center",cursor:"pointer",position:"relative",transition:"background 0.15s"}}>
                     <div style={{fontSize:"1.75rem",marginBottom:"0.35rem"}}>{sec.icon}</div>
                     <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem"}}>{sec.label}</div>
-                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{sec.intro}</div>
+                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{typeof sec.intro === "object" ? (sec.intro[lang] || sec.intro.en) : sec.intro}</div>
                     {tourCompleted[key] && <div style={{position:"absolute",top:"0.4rem",right:"0.5rem",color:"#4ade80",fontSize:"0.8rem",fontWeight:700}}>✓</div>}
                   </button>
                 ))}
