@@ -2191,6 +2191,7 @@ const TUTORIALS = {
   ],
   tracker: [
     { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
+    { emoji: "📂", title: "No More Hide & Seek!", body: "Don't want to hunt for expiry dates? Just place scanned items in their storage area, then tap Opened the day you open it — the suggested expiry date populates automatically with a countdown of days left." },
     { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
     { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
     { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
