@@ -2007,7 +2007,6 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const scrollFrameRef = React.useRef(null);
   const bottomBtnRef = React.useRef(null);
   const howItWorksRef = React.useRef(null);
-  const trackerItemsRef = React.useRef(null);
   const [activeIcon, setActiveIcon] = React.useState(null);
   const iconDismissRef = React.useRef(null);
   const handleIconTap = (key) => {
@@ -2192,11 +2191,10 @@ const TUTORIALS = {
   ],
   tracker: [
     { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
-    { emoji: "📂", title: "No More Hide & Seek!", body: "Don't want to hunt for expiry dates? Just place scanned items in their storage area, then tap Opened the day you open it — the suggested expiry date populates automatically with a countdown of days left." },
     { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
     { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
-    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on existing items — the button switches to Opened and auto-populates how many days are left based on AI suggested shelf life after opening. Browse by Fridge, Freezer, or Pantry. The countdown switches to opened shelf life automatically." },
-    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Need Exp Date' badge — tap Edit to fill it in." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
     { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
   ],
   recipes: [
@@ -2254,12 +2252,12 @@ const TUTORIALS = {
 };
 
 const TOUR_CONTENT = {
-  tracker:  { icon: "🥦", label: "Tracker",       intro: { en: "Your fridge's best friend! Scan, add, and track everything so nothing gets forgotten in the back of the shelf.", es: "¡El mejor amigo de tu refrigerador! Escanea, agrega y rastrea todo para que nada se olvide." }, slides: TUTORIALS.tracker },
-  recipes:  { icon: "🍳", label: "Recipes",        intro: { en: "What's for dinner? Let AI decide — based on exactly what's in your fridge right now.", es: "¿Qué hay para cenar? Deja que la IA decida — basado en lo que tienes en tu refrigerador ahora mismo." }, slides: TUTORIALS.recipes },
-  shopping: { icon: "🛒", label: "Shopping List",  intro: { en: "Your smart grocery sidekick! Items you're running low on magically appear here. Just tap to check them off as you shop.", es: "¡Tu asistente de compras inteligente! Los artículos que necesitas aparecen aquí automáticamente." }, slides: TUTORIALS.shopping },
-  meals:    { icon: "📅", label: "Meals",          intro: { en: "Plan the whole week in seconds. Dinner stress? Gone.", es: "Planifica toda la semana en segundos. ¿Estrés por la cena? Desaparece." }, slides: TUTORIALS.meals },
-  dietary:  { icon: "🥗", label: "Dietary",        intro: { en: "Gluten-free? Vegan? Nut allergy? Set it once and the whole app remembers.", es: "¿Sin gluten? ¿Vegano? ¿Alergia a los frutos secos? Configúralo una vez y la app lo recuerda." }, slides: TUTORIALS.dietary },
-  more:     { icon: "💬", label: "More",           intro: { en: "Got a big idea? Drop it here — our best features came from users just like you!", es: "¿Tienes una gran idea? ¡Déjala aquí — nuestras mejores funciones vinieron de usuarios como tú!" }, slides: TUTORIALS.more },
+  tracker:  { icon: "🥦", label: "Tracker",       intro: "Track food and beat expiry dates",        slides: TUTORIALS.tracker },
+  recipes:  { icon: "🍳", label: "Recipes",        intro: "Cook what you have, waste nothing",       slides: TUTORIALS.recipes },
+  shopping: { icon: "🛒", label: "Shopping List",  intro: "Smart list that knows what you need",     slides: TUTORIALS.shopping },
+  meals:    { icon: "📅", label: "Meals",          intro: "Plan a full week in seconds with AI",     slides: TUTORIALS.meals },
+  dietary:  { icon: "🥗", label: "Dietary",        intro: "Set your household's food needs once",    slides: TUTORIALS.dietary },
+  more:     { icon: "💬", label: "More",           intro: "Suggestions, language, and your data",    slides: TUTORIALS.more },
 };
 
 export default function TrackFreshDashboard() {
@@ -3654,6 +3652,14 @@ export default function TrackFreshDashboard() {
           <div className="flex items-center gap-2">
             <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
+            {activeTab !== "home" && (
+              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
+                  <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
             {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
             <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
           </div>
@@ -4469,7 +4475,7 @@ export default function TrackFreshDashboard() {
                       <div style={{textAlign:"center",padding:"0.75rem 0 0.875rem",color:"#86efac",fontSize:"0.82rem",fontWeight:600}}>✅ {isEs?"Todo fresco — ¡buen trabajo!":"Everything looks fresh — great job!"}</div>
                     )}
                   </div>
-                  <button onClick={() => { setActiveTab("tracker"); setTimeout(() => { if (trackerItemsRef.current) trackerItemsRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); }, 100); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
+                  <button onClick={() => { setShowOpenedModal(true); setOpenedSearch(""); setOpenedConfirm(null); setShowOpenedDateEdit(false); }} className="glass-scan-btn w-full" style={{padding:"0.9rem 1rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.6rem",background:"rgba(183,214,58,0.15)",borderColor:"#B7D63A"}}>
                     <span style={{fontSize:"1.4rem"}}>📂</span>
                     <span style={{fontWeight:800}}>{isEs ? "Marcar Lo Que Abrí" : "Mark What You've Opened"}</span>
                   </button>
@@ -4606,7 +4612,7 @@ export default function TrackFreshDashboard() {
 
 
                 {/* Items card */}
-                <div ref={trackerItemsRef}>
+                <div>
                   <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Organize Tracked Items</p>
                   <Card className="tracker-items-card">
                     <div className="mb-3 flex items-center justify-between">
@@ -6029,7 +6035,7 @@ export default function TrackFreshDashboard() {
                     style={{background:"rgba(255,255,255,0.1)",border:tourCompleted[key] ? "1.5px solid #4ade80" : "1.5px solid rgba(255,255,255,0.18)",borderRadius:"1rem",padding:"1rem 0.75rem",textAlign:"center",cursor:"pointer",position:"relative",transition:"background 0.15s"}}>
                     <div style={{fontSize:"1.75rem",marginBottom:"0.35rem"}}>{sec.icon}</div>
                     <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem"}}>{sec.label}</div>
-                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{typeof sec.intro === "object" ? (sec.intro[lang] || sec.intro.en) : sec.intro}</div>
+                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{sec.intro}</div>
                     {tourCompleted[key] && <div style={{position:"absolute",top:"0.4rem",right:"0.5rem",color:"#4ade80",fontSize:"0.8rem",fontWeight:700}}>✓</div>}
                   </button>
                 ))}
@@ -6053,18 +6059,6 @@ export default function TrackFreshDashboard() {
                   <div style={{fontSize:"3.25rem",marginBottom:"1rem"}}>{slide.emoji}</div>
                   <div style={{color:"#fff",fontWeight:800,fontSize:"1.15rem",marginBottom:"0.75rem",lineHeight:1.3}}>{slide.title}</div>
                   <div style={{color:"rgba(255,255,255,0.75)",fontSize:"0.9rem",lineHeight:1.65}}>{slide.body}</div>
-                  {slide.title === "Watch the Colors" && (
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.5rem",marginTop:"1.25rem",width:"100%"}}>
-                      {[
-                        {bg:"rgba(239,68,68,0.18)",color:"#f87171",label:"🔴 Expires Today"},
-                        {bg:"rgba(249,115,22,0.18)",color:"#fb923c",label:"🟠 3 days left"},
-                        {bg:"rgba(234,179,8,0.18)",color:"#fbbf24",label:"🟡 6 days left"},
-                        {bg:"rgba(74,222,128,0.18)",color:"#4ade80",label:"🟢 All good!"},
-                      ].map(({bg,color,label}) => (
-                        <div key={label} style={{background:bg,border:`1px solid ${color}`,borderRadius:"999px",padding:"0.35rem 0.6rem",fontSize:"0.75rem",fontWeight:700,color,textAlign:"center"}}>{label}</div>
-                      ))}
-                    </div>
-                  )}
                 </div>
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
