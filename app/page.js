@@ -3656,8 +3656,8 @@ export default function TrackFreshDashboard() {
             {activeTab !== "home" && (
               <button onClick={() => setActiveTab("home")} className="back-btn" style={{border:"none"}}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
-                  <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+                  <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             )}
@@ -6013,8 +6013,8 @@ export default function TrackFreshDashboard() {
               {tourSection !== null && (
                 <button onClick={() => { setTourSection(null); setTourSlide(0); }} className="back-btn" style={{border:"none"}}>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
-                    <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+                    <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
               )}
