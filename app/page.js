@@ -3653,14 +3653,6 @@ export default function TrackFreshDashboard() {
           <div className="flex items-center gap-2">
             <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
-            {activeTab !== "home" && (
-              <button onClick={() => setActiveTab("home")} className="back-btn" style={{border:"none"}}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
-                  <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            )}
             {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
             <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
           </div>
