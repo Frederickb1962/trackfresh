@@ -3654,7 +3654,7 @@ export default function TrackFreshDashboard() {
             <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             {activeTab !== "home" && (
-              <button onClick={() => setActiveTab("home")} className="back-btn" title={lang === "es" ? "Atrás" : "Back"} style={{border:"1.5px solid #ff6600"}}>
+              <button onClick={() => setActiveTab("home")} className="back-btn" style={{border:"none"}}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
                   <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -5991,7 +5991,7 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="flex gap-3">
                 {tutorialStep > 0 && (
-                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn" style={{border:"1.5px solid #ff6600"}}></button>
+                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn" style={{border:"none"}}></button>
                 )}
                 {!isLast ? (
                   <button onClick={() => setTutorialStep(s => s + 1)} className="flex-1 rounded-2xl py-3 text-sm font-bold glass-scan-btn" style={{border:"2px solid #B7D63A"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
@@ -6011,7 +6011,7 @@ export default function TrackFreshDashboard() {
           <div style={{padding:"1rem 1rem 0.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"rgba(6,78,59,0.97)",backdropFilter:"blur(8px)",zIndex:1,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
             <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
               {tourSection !== null && (
-                <button onClick={() => { setTourSection(null); setTourSlide(0); }} className="back-btn" style={{border:"1.5px solid #ff6600"}}>
+                <button onClick={() => { setTourSection(null); setTourSlide(0); }} className="back-btn" style={{border:"none"}}>
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/>
                     <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
