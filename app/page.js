@@ -3518,7 +3518,7 @@ export default function TrackFreshDashboard() {
 
   const handleAddReceiptItems = () => {
     const toAdd = receiptItems.filter((_, i) => selectedReceiptItems.includes(i));
-    const items = toAdd.map(it => ({ id: crypto.randomUUID(), name: it.name, category: it.category, location: it.location, quantity: "", useByDate: "", openDate: "", daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" }));
+    const items = toAdd.map(it => ({ id: crypto.randomUUID(), name: it.name, brand: it.brand || null, category: it.category, location: it.location, quantity: "", useByDate: "", openDate: "", daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" }));
     setShowReceiptScanner(false);
     setReceiptItems([]);
     setSelectedReceiptItems([]);
@@ -4645,7 +4645,7 @@ export default function TrackFreshDashboard() {
                               <div>
                                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
                                   <div>
-                                    <span style={{color:"#fff",fontWeight:700,fontSize:"1rem"}}>{it.name}</span>
+                                    <span style={{color:"#fff",fontWeight:700,fontSize:"1rem"}}>{it.brand ? `${it.brand} ${it.name}` : it.name}</span>
                                     {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                   </div>
                                   <div style={{marginLeft:"0.5rem",flexShrink:0,textAlign:"center"}}>

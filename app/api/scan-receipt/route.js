@@ -31,12 +31,13 @@ Only include actual food and beverage items. Do not include non-food items such 
 
 For EACH item, provide:
 1. "name" - the product name (clean up receipt abbreviations into readable names)
-2. "category" - one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other
-3. "location" - recommended storage: "Fridge", "Freezer", or "Pantry"
-4. "daysSealed" - estimated days the product lasts while SEALED/UNOPENED from purchase date
-5. "daysAfterOpening" - estimated days the product lasts AFTER OPENING (null if not applicable, e.g. fresh produce)
-6. "storageTip" - brief tip on storing sealed for max freshness
-7. "openedTip" - brief tip on storing after opening (null if not applicable)
+2. "brand" - the brand name if visible on the receipt (e.g. "Wegmans", "Del Monte", "Heinz"). If no brand is visible, use null.
+3. "category" - one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other
+4. "location" - recommended storage: "Fridge", "Freezer", or "Pantry"
+5. "daysSealed" - estimated days the product lasts while SEALED/UNOPENED from purchase date
+6. "daysAfterOpening" - estimated days the product lasts AFTER OPENING (null if not applicable, e.g. fresh produce)
+7. "storageTip" - brief tip on storing sealed for max freshness
+8. "openedTip" - brief tip on storing after opening (null if not applicable)
 
 Use your food safety knowledge. Examples:
 - Ketchup: daysSealed=365, daysAfterOpening=180, openedTip="Refrigerate after opening"
@@ -47,7 +48,7 @@ Use your food safety knowledge. Examples:
 - Bread: daysSealed=7, daysAfterOpening=5, openedTip="Store at room temp or freeze for longer life"
 
 Reply ONLY with valid JSON, no markdown, no backticks:
-{"items":[{"name":"...","category":"...","location":"...","daysSealed":7,"daysAfterOpening":null,"storageTip":"...","openedTip":null}]}
+{"items":[{"name":"...","brand":"...","category":"...","location":"...","daysSealed":7,"daysAfterOpening":null,"storageTip":"...","openedTip":null}]}
 
 If you cannot read the receipt clearly, return: {"items":[],"error":"Could not read receipt clearly"}`,
             },
