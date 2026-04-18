@@ -2195,7 +2195,7 @@ const TUTORIALS = {
     { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
     { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
     { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on existing items — the button switches to Opened and auto-populates how many days are left based on AI suggested shelf life after opening. Browse by Fridge, Freezer, or Pantry. The countdown switches to opened shelf life automatically." },
-    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Need Exp Date' badge — tap Edit to fill it in." },
     { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
   ],
   recipes: [
