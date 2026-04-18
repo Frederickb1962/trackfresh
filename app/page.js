@@ -2375,7 +2375,8 @@ export default function TrackFreshDashboard() {
   const [filterLocation, setFilterLocation] = useState("All");
   const [shoppingItems, setShoppingItems] = useState([]);
   const [newShoppingItem, setNewShoppingItem] = useState("");
-  const [newShoppingQty, setNewShoppingQty] = useState("");
+  const [newShoppingQty, setNewShoppingQty] = useState("count");
+  const [newShoppingQtyNum, setNewShoppingQtyNum] = useState("1");
   const [selectedReceiptItems, setSelectedReceiptItems] = useState([]);
   const [showLabelScanner, setShowLabelScanner] = useState(false);
   const [labelItem, setLabelItem] = useState(null);
@@ -3261,8 +3262,8 @@ export default function TrackFreshDashboard() {
   const handleAddShoppingItem = () => {
     const name = newShoppingItem.trim();
     if (!name) return;
-    setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, qty: newShoppingQty.trim(), checked: false }]);
-    setNewShoppingItem(""); setNewShoppingQty("");
+    setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, qty: `${newShoppingQtyNum} ${newShoppingQty}`, checked: false }]);
+    setNewShoppingItem(""); setNewShoppingQtyNum("1"); setNewShoppingQty("count");
   };
 
   const handleToggleShoppingItem = (id) => setShoppingItems((prev) => prev.map((it) => it.id === id ? { ...it, checked: !it.checked } : it));
@@ -4861,15 +4862,20 @@ export default function TrackFreshDashboard() {
                   onChange={setNewShoppingItem}
                   onSelect={(f) => {
                     const name = (lang === "es" && FOOD_ES[f.name]) ? FOOD_ES[f.name] : f.name;
-                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name, qty: newShoppingQty.trim(), checked: false }]);
-                    setNewShoppingItem(""); setNewShoppingQty("");
+                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name, qty: `${newShoppingQtyNum} ${newShoppingQty}`, checked: false }]);
+                    setNewShoppingItem(""); setNewShoppingQtyNum("1"); setNewShoppingQty("count");
                   }}
                   onAddItem={handleAddShoppingItem}
                   lang={lang}
                 />
                 <div className="flex gap-2">
-                  <input value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAddShoppingItem()} placeholder={t("qtyPlaceholder")} className="w-24 rounded-xl px-3 py-2 text-sm text-gray-900" />
-                  <button onClick={handleAddShoppingItem} className="glass-scan-btn flex-1 py-2 text-sm" style={{background:"rgba(255,102,0,0.22)",boxShadow:"0 2px 10px rgba(255,102,0,0.3)"}}>{t("addBtn")}</button>
+                  <select value={newShoppingQtyNum} onChange={(e) => setNewShoppingQtyNum(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"0 0 auto",width:"60px"}}>
+                    {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={String(n)}>{n}</option>)}
+                  </select>
+                  <select value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"1"}}>
+                    {["lbs","oz","kg","g","count","pack","bag","box","bottle","can","dozen"].map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
+                  <button onClick={handleAddShoppingItem} className="glass-scan-btn py-2 text-sm" style={{background:"rgba(255,102,0,0.22)",boxShadow:"0 2px 10px rgba(255,102,0,0.3)",flex:"1"}}>{t("addBtn")}</button>
                 </div>
               </div>
               {(() => {
