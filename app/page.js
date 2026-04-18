@@ -4855,7 +4855,7 @@ export default function TrackFreshDashboard() {
                 )}
               </div>
               <p className="text-xs mb-3 -mt-1" style={{color:"rgba(134,239,172,0.75)"}}>{lang === "es" ? "Marca los artículos que hayas comprado." : "Check off items as you purchase them."}</p>
-              <div className="flex flex-col gap-2 mb-2 w-full">
+              <div className="flex flex-col gap-2 mb-4 w-full">
                 <ShoppingAutocomplete
                   value={newShoppingItem}
                   onChange={setNewShoppingItem}
@@ -4873,95 +4873,71 @@ export default function TrackFreshDashboard() {
                 </div>
               </div>
               {(() => {
-                const activeItems = shoppingItems.filter(it => it.source !== "used" && !it.checked);
-                const checkedItems = shoppingItems.filter(it => it.source !== "used" && it.checked);
+                const expiringEntries = expiringSoon
+                  .filter(it => !shoppingItems.some(s => s.name.toLowerCase() === it.name.toLowerCase()))
+                  .map(it => ({ _type: "expiring", id: "exp_" + it.id, name: it.name, qty: "", checked: false, daysLeft: it.daysLeft, store: it.store || null, forMeal: null }));
+                const allEntries = [
+                  ...shoppingItems.map(it => ({ ...it, _type: "shopping", daysLeft: null })),
+                  ...expiringEntries,
+                ];
+                const unchecked = allEntries.filter(it => !it.checked).sort((a, b) => a.name.localeCompare(b.name));
+                const checked = allEntries.filter(it => it.checked).sort((a, b) => a.name.localeCompare(b.name));
+                const handleToggle = (it) => {
+                  if (it._type === "expiring") {
+                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name: it.name, qty: "", checked: true }]);
+                  } else {
+                    handleToggleShoppingItem(it.id);
+                  }
+                };
+                const handleDelete = (it) => {
+                  if (it._type === "expiring") {
+                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name: it.name, qty: "", checked: true }]);
+                  } else {
+                    handleRemoveShoppingItem(it.id);
+                  }
+                };
                 const renderItem = (it) => {
                   const nameLower = it.name.toLowerCase();
                   const flaggedAllergens = activeDietaryProfile.combinedTags.filter(tag => (ALLERGEN_KEYWORDS[tag] || []).some(kw => nameLower.includes(kw)));
+                  const daysColor = it.daysLeft !== null ? (it.daysLeft <= 2 ? "#ef4444" : it.daysLeft <= 4 ? "#f97316" : "#eab308") : null;
+                  const displayName = it.store ? `${it.name} — ${it.store}` : it.name;
                   return (
-                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
-                      <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
-                      <div className="flex-1">
-                        <span className="text-sm" style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : "#fff", fontWeight: it.checked ? 400 : 600}}>{it.name}{it.qty ? " — " + it.qty : ""}</span>
+                    <div key={it.id} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
+                      <input type="checkbox" checked={it.checked} onChange={() => handleToggle(it)} className="h-4 w-4 rounded accent-white flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm" style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : "#fff", fontWeight: it.checked ? 400 : 600}}>{displayName}{it.qty ? " — " + it.qty : ""}</span>
                         <div className="flex flex-wrap gap-1 mt-0.5">
                           {it.forMeal && <span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(183,214,58,0.3)"}}>📅 {it.forMeal}</span>}
                           {flaggedAllergens.map(tag => <span key={tag} className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(239,68,68,0.3)",color:"#fca5a5"}}>⚠️ {tag}</span>)}
                         </div>
                       </div>
-                      {it.checked && <button onClick={() => handleToggleShoppingItem(it.id)} style={{fontSize:"0.75rem",fontWeight:600,color:"rgba(134,239,172,0.8)",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(134,239,172,0.3)",borderRadius:"6px",cursor:"pointer",padding:"4px 6px",lineHeight:1,display:"inline-flex",alignItems:"center"}}><span style={{color:"#fff",fontSize:"1.1rem",fontWeight:"bold"}}>←</span></button>}
-                      <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
+                      {daysColor && (
+                        <span style={{fontSize:"0.7rem",fontWeight:800,color:daysColor,border:`1px solid ${daysColor}`,borderRadius:"999px",padding:"0.1rem 0.4rem",whiteSpace:"nowrap",flexShrink:0}}>{it.daysLeft}d</span>
+                      )}
+                      <button onClick={() => handleDelete(it)} style={{fontSize:"1.1rem",color:"rgba(255,255,255,0.7)",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px",flexShrink:0}}>🗑️</button>
                     </div>
                   );
                 };
+                const isEmpty = unchecked.length === 0 && checked.length === 0;
                 return (
-                  <>
-                    <div className="mt-3">
-                      <p className="text-xs font-bold text-white mb-1">{lang === "es" ? "Tu Lista" : "Your List"}</p>
-                      <p className="text-xs mb-2" style={{color:"rgba(134,239,172,0.75)"}}>{lang === "es" ? "Toca la casilla para marcar los artículos comprados." : "Tap the box to check off purchased items."}</p>
-                      {activeItems.length === 0 ? <p className="text-sm text-green-100">{t("emptyList")}</p> : <div className="space-y-2">{activeItems.map(renderItem)}</div>}
-                    </div>
-                    {checkedItems.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-xs font-bold mb-2" style={{color:"rgba(255,255,255,0.45)"}}>{lang === "es" ? "✓ Recogido" : "✓ Picked Up"}</p>
-                        <div className="space-y-2">{checkedItems.map(renderItem)}</div>
+                  <div>
+                    {isEmpty ? (
+                      <p className="text-sm text-green-100">{t("emptyList")}</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {unchecked.map(renderItem)}
+                        {checked.length > 0 && (
+                          <div className="mt-3">
+                            <p className="text-xs font-bold mb-2" style={{color:"rgba(255,255,255,0.45)"}}>{lang === "es" ? "✓ Recogido" : "✓ Picked Up"}</p>
+                            <div className="space-y-2">{checked.map(renderItem)}</div>
+                          </div>
+                        )}
                       </div>
                     )}
-                  </>
+                  </div>
                 );
               })()}
             </Card>
-            {shoppingItems.some(it => it.source === "used") && (
-              <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
-                <h3 className="mb-1 font-bold text-white">🔄 Recently Used — Restock</h3>
-                <p className="mb-3 text-xs text-green-100">Items you've used up. Tap to check off once you've added them to your cart.</p>
-                <div className="space-y-2">
-                  {shoppingItems.filter(it => it.source === "used").map((it) => {
-                    const alreadyOnList = shoppingItems.some((s) => s.source !== "used" && s.name.toLowerCase() === it.name.toLowerCase());
-                    return (
-                    <div key={it.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{background: it.checked ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.18)", border: it.checked ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(255,165,0,0.45)", opacity: it.checked ? 0.85 : 1}}>
-                      <input type="checkbox" checked={it.checked} onChange={() => handleToggleShoppingItem(it.id)} className="h-4 w-4 rounded accent-orange-500" />
-                      <div className="flex-1">
-                        <span className={`text-sm ${it.checked ? "line-through text-white/65" : "text-white font-semibold"}`}>{it.name}</span>
-                        <div className="mt-0.5"><span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{background:"rgba(183,214,58,0.35)",color:"#D4E87A"}}>🔄 Used</span></div>
-                      </div>
-                      <button onClick={() => {
-                        if (alreadyOnList || restockAdded[it.id]) return;
-                        setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name: it.name, qty: "", checked: false }]);
-                        setRestockAdded((prev) => ({ ...prev, [it.id]: true }));
-                        setTimeout(() => setRestockAdded((prev) => { const n = {...prev}; delete n[it.id]; return n; }), 2000);
-                      }} disabled={alreadyOnList} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",width:"60px",fontSize:"0.7rem"}}>
-                        {restockAdded[it.id] || alreadyOnList ? t("addedWord") : t("addWord")}
-                      </button>
-                      <button onClick={() => handleRemoveShoppingItem(it.id)} style={{fontSize:"1.1rem",fontWeight:700,color:"#fff",background:"none",border:"none",cursor:"pointer",lineHeight:1,padding:"0 2px"}}>✕</button>
-                    </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            )}
-            {expiringSoon.length > 0 && (
-              <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
-                <h3 className="mb-2 font-bold text-white">{t("expiringSoonTitle")}</h3>
-                <p className="mb-3 text-xs text-green-100">{t("expiringSoonDesc")}</p>
-                <div className="space-y-2">
-                  {expiringSoon.map((it) => {
-                    const alreadyAdded = shoppingItems.some((s) => s.name.toLowerCase() === it.name.toLowerCase());
-                    const urgent = it.daysLeft !== null && it.daysLeft <= 3;
-                    return (
-                      <div key={it.id} className="flex items-center justify-between rounded-lg px-3 py-2" style={{background: urgent ? "rgba(255,80,80,0.22)" : "rgba(255,200,0,0.18)", border: urgent ? "1px solid rgba(255,100,100,0.5)" : "1px solid rgba(255,200,0,0.45)"}}>
-                        <div>
-                          <span className="text-sm font-semibold text-white">{it.name}</span>
-                          <span className={`ml-2 text-xs font-bold ${urgent ? "text-red-200" : "text-yellow-200"}`}>{it.daysLeft}d left</span>
-                        </div>
-                        <button onClick={() => handleAddToShoppingFromTracker(it)} disabled={alreadyAdded} className="glass-scan-btn text-xs disabled:opacity-40" style={{padding:"2px 8px",width:"60px",fontSize:"0.7rem"}}>
-                          {alreadyAdded ? t("addedWord") : t("addWord")}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            )}
           </>
         )}
         {showMealPicker && (
