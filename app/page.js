@@ -5041,7 +5041,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
+            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
             
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
@@ -5271,7 +5271,7 @@ export default function TrackFreshDashboard() {
 
             {/* Header */}
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
               <div>
                 <span className="app-section-label">Business</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🤝 Partners</h2>
@@ -5404,7 +5404,7 @@ export default function TrackFreshDashboard() {
         {activeTab === "stores-page" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg> Back</button>
+              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
               <div>
                 <span className="app-section-label">Online</span>
                 <h2 className="app-section-h2" style={{marginBottom:0}}>🏪 {t("shopOnline")}</h2>
@@ -5991,7 +5991,7 @@ export default function TrackFreshDashboard() {
               </div>
               <div className="flex gap-3">
                 {tutorialStep > 0 && (
-                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn" style={{border:"1.5px solid #ff6600"}}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round"/><path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="#ff6600" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
+                  <button onClick={() => setTutorialStep(s => s - 1)} className="back-btn" style={{border:"1.5px solid #ff6600"}}></button>
                 )}
                 {!isLast ? (
                   <button onClick={() => setTutorialStep(s => s + 1)} className="flex-1 rounded-2xl py-3 text-sm font-bold glass-scan-btn" style={{border:"2px solid #B7D63A"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
