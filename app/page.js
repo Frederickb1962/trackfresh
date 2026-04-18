@@ -4642,15 +4642,46 @@ export default function TrackFreshDashboard() {
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
                             <div key={it.id} className="rounded-lg px-3 py-2" style={{background: "linear-gradient(160deg,#064e3b,#065f46)", border: it.daysLeft !== null && it.daysLeft < 0 ? "3px solid #ef4444" : it.daysLeft !== null && it.daysLeft <= 3 ? "3px solid #f97316" : it.daysLeft !== null && it.daysLeft <= 7 ? "3px solid #eab308" : urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid #9ab82e" : "1px solid rgba(255,255,255,0.15)"}}>
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <span style={{color:"#fff",fontWeight:700}}>{it.name}</span>
-                                    {it.quantity && <span className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
-                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
-                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
+                              <div>
+                                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
+                                  <div>
+                                    <span style={{color:"#fff",fontWeight:700,fontSize:"1rem"}}>{it.name}</span>
+                                    {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                   </div>
-                                  <div className="text-xs mt-0.5">
+                                  <div style={{marginLeft:"0.5rem",flexShrink:0,textAlign:"center"}}>
+                                    {it.daysLeft !== null && (() => {
+                                      const d = it.daysLeft;
+                                      const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
+                                      return (
+                                        <div>
+                                          <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
+                                          <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{t("days")}</div>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                </div>
+                                <div style={{display:"flex",gap:"0.4rem",marginBottom:"0.5rem"}}>
+                                  {it.daysLeft === null ? (
+                                    <button onClick={() => handleEditItem(it.id)} style={{flex:1,background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#fff",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>Need EXP<br/>Date</button>
+                                  ) : it.daysLeft <= 2 ? (
+                                    <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>Expiring Soon</div>
+                                  ) : (
+                                    <div style={{flex:1}} />
+                                  )}
+                                  <button onClick={() => { if (!it.openDate) { const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = it.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; setTrackedItems(prev => prev.map(x => x.id === it.id ? {...x, openDate: today, useByDate: useBy} : x)); } }} className="rounded-lg px-2 py-1 text-xs font-bold shadow-md" style={{flex:1,background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.6)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{it.openDate ? "Opened ✓" : "Opened"}</button>
+                                  <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-2 py-1 text-xs font-bold text-white shadow-md" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
+                                  {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
+                                    <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-2 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
+                                  )}
+                                  <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-2 py-1 text-xs font-bold text-white btn-3d" style={{flex:1}}>{t("edit")}</button>
+                                </div>
+                                <div className="flex flex-wrap gap-1 mb-1">
+                                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
+                                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
+                                </div>
+                                {(it.openDate || it.useByDate) && (
+                                  <div className="text-xs mb-1">
                                     {it.openDate ? (
                                       <span style={{color:"#4ade80",fontWeight:700}}>
                                         📂 Opened {fmtDate(it.openDate)}
@@ -4662,36 +4693,11 @@ export default function TrackFreshDashboard() {
                                       <span style={{color:"rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
                                     ) : null}
                                   </div>
-                                  <div className="flex flex-wrap gap-1 mt-1">
-                                    <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
-                                    {(() => { const label = afterOpeningLabel(it) || (it.location === "Freezer" ? null : it.category === "Dairy" ? "Keep refrigerated, use within 7 days" : it.category === "Meat" ? "Cook or freeze within 2–3 days" : it.category === "Produce" ? "Use within 3–5 days" : it.category === "Beverages" ? "Refrigerate after opening" : it.category === "Bread" ? "Use within 5 days or freeze" : "Check package for timing after opening"); return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null; })()}
-                                    {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2 ml-2">
-                                  <div className="flex flex-col gap-2" style={{alignItems:"center"}}>
-                                    <div className="text-right" style={{minWidth:"3.2rem"}}>
-                                      {it.daysLeft === null ? (
-                                        <button onClick={() => handleEditItem(it.id)} style={{display:"inline-block",background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.5rem",fontSize:"0.7rem",fontWeight:800,color:"#fff",whiteSpace:"nowrap",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>Need EXP<br/>Date</button>
-                                      ) : (() => {
-                                        const d = it.daysLeft;
-                                        const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
-                                        return (
-                                          <div>
-                                            <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:"0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d}</div>
-                                            <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{t("days")}</div>
-                                            {d <= 2 && <div style={{display:"inline-block",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.2rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",whiteSpace:"nowrap",border:"2px solid #B7D63A",marginTop:"0.25rem"}}>Expiring Soon</div>}
-                                          </div>
-                                        );
-                                      })()}
-                                    </div>
-                                    <button onClick={() => { if (!it.openDate) { const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = it.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; setTrackedItems(prev => prev.map(x => x.id === it.id ? {...x, openDate: today, useByDate: useBy} : x)); } }} className="rounded-lg px-3 py-1 text-xs font-bold shadow-md" style={{background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.6)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{it.openDate ? "Opened ✓" : "Opened"}</button>
-                                    <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-3 py-1 text-xs font-bold text-white shadow-md" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
-                                    {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                      <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
-                                    )}
-                                    <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white btn-3d">{t("edit")}</button>
-                                  </div>
+                                )}
+                                <div className="flex flex-col gap-1 mt-1">
+                                  <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
+                                  {(() => { const label = afterOpeningLabel(it) || (it.location === "Freezer" ? null : it.category === "Dairy" ? "Keep refrigerated, use within 7 days" : it.category === "Meat" ? "Cook or freeze within 2–3 days" : it.category === "Produce" ? "Use within 3–5 days" : it.category === "Beverages" ? "Refrigerate after opening" : it.category === "Bread" ? "Use within 5 days or freeze" : "Check package for timing after opening"); return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null; })()}
+                                  {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
                                 </div>
                               </div>
                             </div>
