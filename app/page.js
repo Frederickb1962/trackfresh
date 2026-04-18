@@ -5749,6 +5749,16 @@ export default function TrackFreshDashboard() {
               ))}
             </div>
 
+            {/* Data & Privacy */}
+            <div className="rounded-2xl p-4 space-y-2" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.12)"}}>
+              <h3 className="font-bold text-white text-base">🔒 {lang === "es" ? "Datos y Privacidad" : "Data & Privacy"}</h3>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.72)"}}>
+                {lang === "es"
+                  ? "📱 Tus datos permanecen en tu dispositivo. TrackFresh almacena todos tus artículos, listas de compras, planes de comidas y preferencias localmente en este dispositivo. Borrar el historial de Safari eliminará tus datos. No se requiere cuenta y nada se envía a servidores externos excepto al usar funciones de IA. La Fase 2 introducirá respaldo en la nube opcional."
+                  : "📱 Your Data stays on your device. TrackFresh stores all your food items, shopping lists, meal plans, and preferences locally on this device using browser storage. Clearing your Safari history or cache will erase your data. No account is required and nothing is sent to external servers except when using AI features (scanning, recipes, meal planning). Phase 2 will introduce optional cloud backup so your data follows you across devices."}
+              </p>
+            </div>
+
             <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}><span style={{color:"#fff",fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Inicio" : "Home"}</button>
           </div>
         )}
