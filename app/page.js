@@ -6052,6 +6052,18 @@ export default function TrackFreshDashboard() {
                   <div style={{fontSize:"3.25rem",marginBottom:"1rem"}}>{slide.emoji}</div>
                   <div style={{color:"#fff",fontWeight:800,fontSize:"1.15rem",marginBottom:"0.75rem",lineHeight:1.3}}>{slide.title}</div>
                   <div style={{color:"rgba(255,255,255,0.75)",fontSize:"0.9rem",lineHeight:1.65}}>{slide.body}</div>
+                  {slide.title === "Watch the Colors" && (
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.5rem",marginTop:"1.25rem",width:"100%"}}>
+                      {[
+                        {bg:"rgba(239,68,68,0.18)",color:"#f87171",label:"🔴 Expires Today"},
+                        {bg:"rgba(249,115,22,0.18)",color:"#fb923c",label:"🟠 3 days left"},
+                        {bg:"rgba(234,179,8,0.18)",color:"#fbbf24",label:"🟡 6 days left"},
+                        {bg:"rgba(74,222,128,0.18)",color:"#4ade80",label:"🟢 All good!"},
+                      ].map(({bg,color,label}) => (
+                        <div key={label} style={{background:bg,border:`1px solid ${color}`,borderRadius:"999px",padding:"0.35rem 0.6rem",fontSize:"0.75rem",fontWeight:700,color,textAlign:"center"}}>{label}</div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
