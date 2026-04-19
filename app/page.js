@@ -1663,6 +1663,17 @@ function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
           style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontWeight: 700, fontSize: "1rem", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: "16px", cursor: "pointer" }}>
           {isEs ? "Omitir Fecha" : "Skip Date"} →
         </button>
+        <button onClick={() => {
+          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; }
+          setGroceryVoiceAwaitND(false);
+          for (let i = dateIndex; i < dateItems.length; i++) {
+            const it = dateItems[i];
+            onAddItem({ id: Date.now().toString() + i, name: it.name, useByDate: it.date || "", openDate: "", category: it.category || "Other", location: it.location, daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" });
+          }
+          onClose();
+        }} style={{ width: "100%", padding: "0.55rem", background: "none", color: "rgba(255,255,255,0.38)", fontWeight: 500, fontSize: "0.78rem", border: "none", cursor: "pointer" }}>
+          {isEs ? "Omitir Todas las Fechas →" : "Skip All Dates for Now →"}
+        </button>
       </div>
     );
   }
@@ -3795,6 +3806,16 @@ export default function TrackFreshDashboard() {
               </button>
               <button onClick={handlePendingSkipDate} style={{width:"100%",padding:"1rem",background:"rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.65)",fontWeight:700,fontSize:"1rem",border:"1.5px solid rgba(255,255,255,0.2)",borderRadius:"16px",cursor:"pointer"}}>
                 {isEs ? "Omitir Fecha" : "Skip Date"} →
+              </button>
+              <button onClick={() => {
+                if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} pendingNDRef.current = null; }
+                setPendingVoiceAwaitND(false);
+                pendingDateItems.slice(pendingDateIndex).forEach(item => {
+                  setTrackedItems(prev => [{ ...item, useByDate: "" }, ...prev]);
+                });
+                setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate("");
+              }} style={{width:"100%",padding:"0.55rem",background:"none",color:"rgba(255,255,255,0.38)",fontWeight:500,fontSize:"0.78rem",border:"none",cursor:"pointer"}}>
+                {isEs ? "Omitir Todas las Fechas →" : "Skip All Dates for Now →"}
               </button>
             </div>
           );
