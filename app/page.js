@@ -2273,11 +2273,17 @@ export default function TrackFreshDashboard() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const handlePwSubmit = () => {
-    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") { setIsUnlocked(true); setPwError(false); try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {} if (pwInput === "fresh2026") setIsAdmin(true); } else { setPwError(true); }
+    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") {
+      setIsUnlocked(true); setPwError(false);
+      try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {}
+      if (pwInput === "fresh2026") setIsAdmin(true);
+      try { if (localStorage.getItem("tf_disclaimer_seen") !== "1") setShowDisclaimer(true); } catch(e) {}
+    } else { setPwError(true); }
   };
   const [isAdmin, setIsAdmin] = useState(false);
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
+  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") { setIsUnlocked(true); try { if (localStorage.getItem("tf_disclaimer_seen") !== "1") setShowDisclaimer(true); } catch(e) {} } if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
   const [activeTab, setActiveTab] = useState("home");
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
@@ -3614,7 +3620,38 @@ export default function TrackFreshDashboard() {
   );
 
     return (
-    <>{showWelcome && (
+    <>{showDisclaimer && (
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
+        <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
+          <div className="text-5xl mb-3">🥦</div>
+          <h2 className="text-xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
+          <div className="space-y-4 text-left mb-6">
+            <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>
+                {lang === "es"
+                  ? "💡 Tus datos se almacenan localmente en este dispositivo. Para mantener tus datos seguros, evita borrar el historial y los datos del sitio de Safari. Una opción de respaldo en la nube llegará en la Fase 2."
+                  : "💡 Your data is stored locally on this device. To keep your data safe, avoid clearing your Safari history and website data. A cloud backup option is coming in Phase 2."}
+              </p>
+            </div>
+            <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(251,191,36,0.3)"}}>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>
+                {lang === "es"
+                  ? "⚠️ Aviso sobre Fechas de Vencimiento: Las fechas de vencimiento pueden variar según cómo se almacenen los alimentos. Hemos utilizado la mejor información de IA para proporcionar fechas de caducidad precisas. Siempre verifique las etiquetas del producto y siga las sugerencias de almacenamiento. TrackFresh no puede ser responsable de cómo uses esta información. Al continuar, aceptas reconocer los riesgos de cualquier inexactitud."
+                  : "⚠️ Food Expiration Notice: Expiration dates can fluctuate based on how food is stored. We have sourced the best AI information to provide accurate expiry dates. Please always check product labels and follow storage suggestions. TrackFresh cannot be responsible for how you use this information. By continuing you agree to acknowledge the risks of any inaccuracies."}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => { try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch(e) {} setShowDisclaimer(false); }}
+            className="w-full py-3 rounded-xl font-bold text-base"
+            style={{background:"#22c55e",color:"#052e16",boxShadow:"0 4px 14px rgba(34,197,94,0.4)"}}
+          >
+            {lang === "es" ? "Entendido — ¡Vamos! 🥦" : "I Understand — Let's Go! 🥦"}
+          </button>
+        </div>
+      </div>
+    )}
+    {showWelcome && (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
         <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease] py-6" style={{background:"rgba(0,0,0,0.3)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
           <div className="text-5xl mb-3">🥦</div>
