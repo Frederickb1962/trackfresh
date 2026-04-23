@@ -2099,25 +2099,21 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   </span>
 
 <h1 className="mkt-hero-title">
-  <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina." : "Your Kitchen."}</span>
-  {" "}
-  <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Tu Comida." : "Your Food."}</span>
+  <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina. Tu Comida." : "Your Kitchen. Your Food."}</span>
   <br/>
-  <span className="hero-slide-left" style={{animationDelay:"0.45s"}}>{isEs ? "Todo" : "Fully"}</span>
-  {" "}
-  <span className="hero-slide-right" style={{animationDelay:"0.45s"}}>{isEs ? "Rastreado." : "Tracked."}</span>
+  <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Todo Rastreado para Mayor Frescura." : "Fully Tracked for Freshness."}</span>
 </h1>
 
-<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.6s",color:"#ffffff"}}>{isEs
-      ? "Ese ketchup, mayonesa, frasco de pepinillos — por fin sabrás cuándo vencen realmente en tu refrigerador."
-      : "🥫 That ketchup, mayo, jar of pickles 'dilemma' — finally, you will know when they expire in your fridge after opening."}
-  </p>
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
+  {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
+</p>
 
-  <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.7s",color:"#ffffff"}}>
-    {isEs
-      ? "Escanea alimentos, rastrea fechas de vencimiento y siempre sabe lo que hay en tu refrigerador, congelador y despensa."
-      : "Scan groceries, track expiration dates, and always know what's in your fridge, freezer, and pantry."}
-  </p>
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem"}}>
+  {isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}
+</p>
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
+  {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
+</p>
 
       </div>
 
@@ -2149,7 +2145,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             );
           })}
         </div>
-        <p className="shimmer-text" style={{textAlign:"center",fontSize:"0.72rem",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "✨ Toca para ver lo que sabe TrackFresh" : "✨ Tap to see what TrackFresh knows"}</p>
+        <p className="shimmer-text" style={{textAlign:"center",fontSize:"1.35rem",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "✨ Toca para ver lo que hará TrackFresh" : "✨ Tap to see what TrackFresh will do."}</p>
       </div>
 
       {/* The Issue */}
@@ -2158,9 +2154,9 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "EL PROBLEMA" : "The Issue"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Miles de millones desperdiciados cada año. Ya no más." : "Billions wasted every year. Not anymore."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Etiquetas de caducidad? Confusas a propósito, si es que las encuentras." : "Expiration dates? Confusing by design if you can find them."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Nadie te dice cómo almacenar." : "After opening? Nobody tells you how to store."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Casi nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Almost no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año." : "Consumers waste nearly 35 million tons of food each year."}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
         <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}><span style={{color:"#f59e0b"}}>TrackFresh</span>{isEs ? " supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : " outsmarts the labels so you can track freshness in the palm of your hand."}</p>
@@ -2172,13 +2168,13 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto o sube una imagen; nuestra IA identificará al instante cada alimento, categoría y vida útil, y rellenará todo por ti." : "Snap a photo or upload; our AI will instantly identify every food item, category, and shelf life then autofill for you."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "Escanea uno o seis artículos a la vez y TrackFresh los identificará por código de barras y etiquetas en la misma foto y, por supuesto, rellenará todo automáticamente." : "Scan one or scan six items at the same time and TrackFresh will identify by barcode and labels all in the same shot and of course autofill."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad." : "Voice recognition of expiration dates."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto o sube tu recibo de compras — nuestra IA identifica al instante cada artículo, categoría, vida útil y ventana tras apertura, luego rellena todo automáticamente y activa alarmas por ti." : "Snap or upload your grocery receipt — our AI instantly identifies every item, category, shelf life, and after-opening window, then autofills and sets alarms for you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "Escanea uno o seis artículos a la vez y TrackFresh los identificará por código de barras y etiquetas en la misma foto y, por supuesto, rellenará el resto automáticamente." : "Scan one or scan six items at the same time and TrackFresh will identify by barcode and labels all in the same shot and of course autofill the rest."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
-        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer and pantry."}</p>
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
       </div>
 
       {/* Final CTA */}
