@@ -2310,7 +2310,7 @@ const TUTORIALS = {
 const TOUR_SLIDES = [
   { titleEn:"Welcome to TrackFresh.", titleEs:"Bienvenido a TrackFresh.", bodyEn:"Your kitchen, finally organized.", bodyEs:"Tu cocina, por fin organizada.", visual:{type:"emoji",value:"🌿"} },
   { titleEn:"Snap a receipt.", titleEs:"Fotografía tu recibo.", bodyEn:"Every item, autofilled. Done in seconds.", bodyEs:"Cada producto, llenado solo. Listo en segundos.", visual:{type:"img",src:"/tour-receipt.png"} },
-  { titleEn:"Scan one or scan six.", titleEs:"Escanea uno o escanea seis.", bodyEn:"Barcodes and labels — all in the same shot.", bodyEs:"Códigos de barras y etiquetas — en una sola foto.", visual:{type:"img",src:"/tour-groceries.png"} },
+  { titleEn:"Smart Scan.", titleEs:"Escaneo Inteligente.", bodyEn:"Scan one or up to six items — barcodes or labels, all in one shot.", bodyEs:"Escanea uno o hasta seis artículos — códigos de barras o etiquetas, todo en un solo disparo.", visual:{type:"img",src:"/tour-groceries.jpeg"} },
   { titleEn:"Just say the date.", titleEs:"Solo di la fecha.", bodyEn:"Voice recognition for expiration dates. Hands-free.", bodyEs:"Reconocimiento de voz para fechas de vencimiento. Sin tocar nada.", visual:{type:"emoji",value:"🎤"} },
   { titleEn:"TrackFresh outsmarts the labels.", titleEs:"TrackFresh va más allá de las etiquetas.", bodyEn:"Auto-detects food, category, shelf life — even after opening.", bodyEs:"Detecta alimento, categoría y vida útil — incluso tras abrir.", visual:{type:"emoji",value:"🏷️"} },
   { titleEn:"Your fridge, freezer, and pantry.", titleEs:"Tu nevera, congelador y despensa.", bodyEn:"Sort what you have. Know exactly where it is.", bodyEs:"Organiza lo que tienes. Sabe exactamente dónde está.", visual:{type:"emoji",value:"📦"} },
