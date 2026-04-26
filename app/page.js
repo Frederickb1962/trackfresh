@@ -83,6 +83,27 @@ const GLOBAL_STYLES = `
     transform: translateY(4px);
     transition-duration: 0.08s;
   }
+  .btn-amber-3d {
+    background: linear-gradient(to bottom, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    box-shadow: 0 5px 0px #92400e, 0 8px 16px rgba(0,0,0,0.35), inset 0 1.5px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    border: none !important;
+    border-radius: 12px;
+    transition: all 0.12s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+  .btn-amber-3d:hover {
+    background: linear-gradient(to bottom, #fbbf24, #b45309) !important;
+    box-shadow: 0 7px 0px #92400e, 0 10px 20px rgba(0,0,0,0.4), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px);
+  }
+  .btn-amber-3d:active {
+    box-shadow: 0 1px 0px #92400e, 0 2px 6px rgba(0,0,0,0.25), inset 0 2px 4px rgba(0,0,0,0.15) !important;
+    transform: translateY(4px);
+    transition-duration: 0.08s;
+  }
   .bubble-blue {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%);
     color: #ffffff;
@@ -170,6 +191,34 @@ const GLOBAL_STYLES = `
     animation-play-state: paused;
     transform: scale(0.92);
     box-shadow: 0 2px 0px #0f3d20, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  .bubble-amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #78350f, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    animation: float 3s ease-in-out infinite;
+  }
+  .bubble-amber:nth-child(1) { animation-delay: 0s; }
+  .bubble-amber:nth-child(2) { animation-delay: 0.4s; }
+  .bubble-amber:nth-child(3) { animation-delay: 0.8s; }
+  .bubble-amber:nth-child(4) { animation-delay: 1.2s; }
+  .bubble-amber:nth-child(5) { animation-delay: 1.6s; }
+  .bubble-amber:nth-child(6) { animation-delay: 2.0s; }
+  .bubble-amber:active {
+    animation-play-state: paused;
+    transform: scale(0.92);
+    box-shadow: 0 2px 0px #78350f, 0 3px 6px rgba(0,0,0,0.2);
   }
   @keyframes dance {
     0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -383,9 +432,9 @@ const GLOBAL_STYLES = `
   .app-bg { background: linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%); background-attachment: fixed; }
   .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
   .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
-  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); border: 2px solid #B7D63A; border-bottom: 3px solid rgba(80,105,15,0.7); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); width: 100%; box-shadow: 0 4px 0 rgba(80,105,15,0.5), 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.22); -webkit-tap-highlight-color:transparent; }
+  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); border: 2px solid #f59e0b; border-bottom: 3px solid rgba(80,105,15,0.7); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); width: 100%; box-shadow: 0 4px 0 rgba(80,105,15,0.5), 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.22); -webkit-tap-highlight-color:transparent; }
   @keyframes letterPop { 0%,100% { transform:scale(1); color:#f97316; text-shadow:none; } 4% { transform:scale(1.28); color:#fde68a; text-shadow:0 0 10px rgba(251,191,36,0.9),0 0 4px rgba(249,115,22,0.7); } 10% { transform:scale(1); color:#f97316; text-shadow:none; } }
-  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #B7D63A; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
   .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
   .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #B7D63A !important; backdrop-filter: blur(4px); }
   .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
@@ -445,7 +494,7 @@ const GLOBAL_STYLES = `
   .mkt-cta:hover { transform:translateY(-2px); box-shadow:0 6px 0px #8C5A10, 0 10px 24px rgba(0,0,0,0.35), 0 0 18px rgba(232,166,60,0.3); }
   .mkt-cta:active { transform:translateY(2px); box-shadow:0 1px 0px #8C5A10, 0 2px 8px rgba(0,0,0,0.25); }
   /* glass-scan-btn tap feedback */
-  .glass-scan-btn:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.1)); border-color: #B7D63A; transform: translateY(-3px); box-shadow: 0 7px 0 rgba(80,105,15,0.5), 0 10px 20px rgba(0,0,0,0.25), 0 0 14px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.28); }
+  .glass-scan-btn:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.1)); border-color: #fbbf24; transform: translateY(-3px); box-shadow: 0 7px 0 rgba(80,105,15,0.5), 0 10px 20px rgba(0,0,0,0.25), 0 0 14px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.28); }
   .glass-scan-btn:active { transform: translateY(3px); background: rgba(255,255,255,0.1); box-shadow: 0 1px 0 rgba(150,50,0,0.5), 0 2px 6px rgba(0,0,0,0.15), inset 0 2px 4px rgba(0,0,0,0.1); transition-duration: 0.08s; }
   @keyframes mic-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
   @keyframes tf-first-item { 0%{opacity:0;transform:translateY(5px)} 12%{opacity:1;transform:translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateY(-3px)} }
@@ -2028,7 +2077,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const ICON_INFO = {
     ketchup: { emoji:"🍅", label: isEs ? "Ketchup" : "Ketchup", info: isEs ? "Después de abrir: 6 meses en el refrigerador" : "After opening: 6 months in fridge" },
     mayo:    { emoji:"🫙", label: isEs ? "Mayonesa" : "Mayo",    info: isEs ? "Después de abrir: 2 meses en el refrigerador" : "After opening: 2 months in fridge" },
-    pickles: { emoji:"🥒", label: isEs ? "Pepinillos" : "Pickles", info: isEs ? "Después de abrir: 1–3 meses en el refrigerador" : "After opening: 1–3 months in fridge" },
+    mustard: { emoji:"🌭", label: isEs ? "Mostaza" : "Mustard",  info: isEs ? "Después de abrir: 12 meses en el refrigerador" : "After opening: 12 months in fridge" },
   };
 
   React.useEffect(() => {
@@ -2120,14 +2169,14 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
       {/* Condiment interactive strip */}
       <div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
         <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
-          {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "pickles" ? "calc(50% + 28px)" : "50%"; return (
+          {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; return (
             <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
               <div style={{fontWeight:700,fontSize:"0.85rem",color:"#fff",marginBottom:"0.25rem"}}>{item.info}</div>
               <div style={{fontSize:"0.72rem",color:"#86efac",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea esto por ti" : "TrackFresh tracks this for you!"}</div>
               <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
             </div>
           ); })()}
-          {["ketchup","mayo","pickles"].map(key => {
+          {["ketchup","mustard","mayo"].map(key => {
             const item = ICON_INFO[key];
             const isActive = activeIcon === key;
             return (
@@ -2137,8 +2186,8 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                   style={{background:"none",border:"none",cursor:"pointer",padding:"4px",lineHeight:1,transition:"transform 0.15s ease",transform:isActive?"scale(1.15)":"scale(1)",display:"inline-flex",alignItems:"flex-end",justifyContent:"center"}}
                   aria-label={item.label}
                 >
-                  <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mayo" ? 2 : 3}`}>
-                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block"}} />
+                  <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mustard" ? 2 : 3}`}>
+                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block",...(key==="mustard"?{mixBlendMode:"multiply",backgroundColor:"#064e3b"}:{})}} />
                   </div>
                 </button>
               </div>
@@ -2155,7 +2204,7 @@ function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Casi nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Almost no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año." : "Consumers waste nearly 35 million tons of food each year."}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
@@ -2258,14 +2307,23 @@ const TUTORIALS = {
   ],
 };
 
-const TOUR_CONTENT = {
-  tracker:  { icon: "🥦", label: "Tracker",       intro: "Track food and beat expiry dates",        slides: TUTORIALS.tracker },
-  recipes:  { icon: "🍳", label: "Recipes",        intro: "Cook what you have, waste nothing",       slides: TUTORIALS.recipes },
-  shopping: { icon: "🛒", label: "Shopping List",  intro: "Smart list that knows what you need",     slides: TUTORIALS.shopping },
-  meals:    { icon: "📅", label: "Meals",          intro: "Plan a full week in seconds with AI",     slides: TUTORIALS.meals },
-  dietary:  { icon: "🥗", label: "Dietary",        intro: "Set your household's food needs once",    slides: TUTORIALS.dietary },
-  more:     { icon: "💬", label: "More",           intro: "Suggestions, language, and your data",    slides: TUTORIALS.more },
-};
+const TOUR_SLIDES = [
+  { titleEn:"Welcome to TrackFresh.", titleEs:"Bienvenido a TrackFresh.", bodyEn:"Your kitchen, finally organized.", bodyEs:"Tu cocina, por fin organizada.", visual:{type:"emoji",value:"🌿"} },
+  { titleEn:"Snap a receipt.", titleEs:"Fotografía tu recibo.", bodyEn:"Every item, autofilled. Done in seconds.", bodyEs:"Cada producto, llenado solo. Listo en segundos.", visual:{type:"img",src:"/tour-receipt.png"} },
+  { titleEn:"Scan one or scan six.", titleEs:"Escanea uno o escanea seis.", bodyEn:"Barcodes and labels — all in the same shot.", bodyEs:"Códigos de barras y etiquetas — en una sola foto.", visual:{type:"img",src:"/tour-groceries.png"} },
+  { titleEn:"Just say the date.", titleEs:"Solo di la fecha.", bodyEn:"Voice recognition for expiration dates. Hands-free.", bodyEs:"Reconocimiento de voz para fechas de vencimiento. Sin tocar nada.", visual:{type:"emoji",value:"🎤"} },
+  { titleEn:"TrackFresh outsmarts the labels.", titleEs:"TrackFresh va más allá de las etiquetas.", bodyEn:"Auto-detects food, category, shelf life — even after opening.", bodyEs:"Detecta alimento, categoría y vida útil — incluso tras abrir.", visual:{type:"emoji",value:"🏷️"} },
+  { titleEn:"Your fridge, freezer, and pantry.", titleEs:"Tu nevera, congelador y despensa.", bodyEn:"Sort what you have. Know exactly where it is.", bodyEs:"Organiza lo que tienes. Sabe exactamente dónde está.", visual:{type:"emoji",value:"📦"} },
+  { titleEn:"One-week heads up.", titleEs:"Aviso con una semana de anticipación.", bodyEn:"We remind you before anything expires.", bodyEs:"Te avisamos antes de que algo venza.", visual:{type:"emoji",value:"⏰"} },
+  { titleEn:"Cook what you've got.", titleEs:"Cocina lo que tienes.", bodyEn:"Get instant recipe ideas from your ingredients.", bodyEs:"Obtén ideas de recetas al instante con tus ingredientes.", visual:{type:"emoji",value:"🍳"} },
+  { titleEn:"Save what you love.", titleEs:"Guarda lo que te encanta.", bodyEn:"Tap the heart on any recipe.", bodyEs:"Toca el corazón en cualquier receta.", visual:{type:"emoji",value:"❤️"} },
+  { titleEn:"Build your list as you go.", titleEs:"Crea tu lista sobre la marcha.", bodyEn:"Add missing ingredients with one tap.", bodyEs:"Agrega ingredientes faltantes con un toque.", visual:{type:"emoji",value:"🛒"} },
+  { titleEn:"Plan your week.", titleEs:"Planifica tu semana.", bodyEn:"Map meals to days, then auto-add ingredients to your list.", bodyEs:"Asigna comidas a días y agrega ingredientes a tu lista automáticamente.", visual:{type:"emoji",value:"📅"} },
+  { titleEn:"Stay safe.", titleEs:"Mantente seguro.", bodyEn:"Real-time FDA recall alerts, right in the app.", bodyEs:"Alertas de retiros de la FDA en tiempo real, dentro de la app.", visual:{type:"emoji",value:"🚨"} },
+  { titleEn:"English. Español.", titleEs:"Inglés. Español.", bodyEn:"Tap the flag — switch anytime.", bodyEs:"Toca la bandera — cambia cuando quieras.", visual:{type:"emoji",value:"🌐"} },
+  { titleEn:"Your voice shapes TrackFresh.", titleEs:"Tu opinión forma TrackFresh.", bodyEn:"Tell us what to build next.", bodyEs:"Dinos qué construir después.", visual:{type:"img",src:"/tour-feedback.jpg"} },
+  { titleEn:"Ready?", titleEs:"¿Listo?", bodyEn:"Tap the bubbles to begin.", bodyEs:"Toca las burbujas para comenzar.", visual:{type:"emoji",value:"🚀"} },
+];
 
 export default function TrackFreshDashboard() {
   const [lang, setLang] = useState("en");
@@ -3650,8 +3708,7 @@ export default function TrackFreshDashboard() {
           </div>
           <button
             onClick={() => { try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch(e) {} setShowDisclaimer(false); }}
-            className="w-full py-3 rounded-xl font-bold text-base"
-            style={{background:"#22c55e",color:"#052e16",boxShadow:"0 4px 14px rgba(34,197,94,0.4)"}}
+            className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d"
           >
             {lang === "es" ? "Entendido — ¡Vamos! 🥦" : "I Understand — Let's Go! 🥦"}
           </button>
@@ -6055,68 +6112,44 @@ export default function TrackFreshDashboard() {
         <div style={{position:"fixed",inset:0,zIndex:60,background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",display:"flex",flexDirection:"column",overflowY:"auto"}}>
           {/* Tour header */}
           <div style={{padding:"1rem 1rem 0.5rem",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,background:"rgba(6,78,59,0.97)",backdropFilter:"blur(8px)",zIndex:1,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
-              {tourSection !== null && (
-                <button onClick={() => { setTourSection(null); setTourSlide(0); }} className="back-btn" style={{border:"none"}}>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 11 C11 6 9 2 4 3 L2 5" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
-                    <path d="M4.5 2.5 L2 5 L4.5 7.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              )}
-              <span style={{color:"#fff",fontWeight:800,fontSize:"1rem"}}>✨ {lang === "es" ? "Recorrido" : "App Tour"}</span>
-            </div>
+            <span style={{color:"#fff",fontWeight:800,fontSize:"1rem"}}>✨ {lang === "es" ? "Recorrido" : "App Tour"}</span>
             <button onClick={() => setTourMode(false)} style={{background:"none",border:"none",color:"rgba(255,255,255,0.55)",fontSize:"1.6rem",cursor:"pointer",lineHeight:1,padding:"0 0.25rem"}}>×</button>
           </div>
-
-          {tourSection === null ? (
-            /* Section picker */
-            <div style={{padding:"1rem 1rem 2rem",flex:1}}>
-              <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem",textAlign:"center",marginBottom:"1.25rem"}}>{lang === "es" ? "Elige una sección para explorar" : "Choose a section to explore"}</p>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.75rem",maxWidth:"480px",margin:"0 auto"}}>
-                {Object.entries(TOUR_CONTENT).map(([key, sec]) => (
-                  <button key={key} onClick={() => { setTourSection(key); setTourSlide(0); }}
-                    style={{background:"rgba(255,255,255,0.1)",border:tourCompleted[key] ? "1.5px solid #4ade80" : "1.5px solid rgba(255,255,255,0.18)",borderRadius:"1rem",padding:"1rem 0.75rem",textAlign:"center",cursor:"pointer",position:"relative",transition:"background 0.15s"}}>
-                    <div style={{fontSize:"1.75rem",marginBottom:"0.35rem"}}>{sec.icon}</div>
-                    <div style={{color:"#fff",fontWeight:700,fontSize:"0.85rem"}}>{sec.label}</div>
-                    <div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.72rem",marginTop:"0.2rem",lineHeight:1.3}}>{sec.intro}</div>
-                    {tourCompleted[key] && <div style={{position:"absolute",top:"0.4rem",right:"0.5rem",color:"#4ade80",fontSize:"0.8rem",fontWeight:700}}>✓</div>}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (() => {
-            const sec = TOUR_CONTENT[tourSection];
-            const slides = sec.slides;
-            const slide = slides[tourSlide];
-            const isLast = tourSlide === slides.length - 1;
+          {(() => {
+            const slide = TOUR_SLIDES[tourSlide];
+            const isLast = tourSlide === TOUR_SLIDES.length - 1;
+            const title = lang === "es" ? slide.titleEs : slide.titleEn;
+            const body = lang === "es" ? slide.bodyEs : slide.bodyEn;
             return (
-              <div style={{flex:1,display:"flex",flexDirection:"column",padding:"1rem 1rem 2rem",maxWidth:"480px",margin:"0 auto",width:"100%"}}>
+              <div style={{flex:1,display:"flex",flexDirection:"column",padding:"1.25rem 1rem 2rem",maxWidth:"480px",margin:"0 auto",width:"100%"}}>
                 {/* Progress dots */}
-                <div style={{display:"flex",gap:"6px",justifyContent:"center",marginBottom:"1.25rem"}}>
-                  {slides.map((_,i) => (
+                <div style={{display:"flex",gap:"5px",justifyContent:"center",marginBottom:"1.25rem",flexWrap:"wrap"}}>
+                  {TOUR_SLIDES.map((_,i) => (
                     <div key={i} style={{width:i===tourSlide?"22px":"8px",height:"8px",borderRadius:"4px",background:i<=tourSlide?"#4ade80":"rgba(255,255,255,0.2)",transition:"all 0.3s"}} />
                   ))}
                 </div>
                 {/* Slide card */}
                 <div style={{background:"rgba(255,255,255,0.1)",borderRadius:"1.5rem",padding:"2.25rem 1.5rem",textAlign:"center",flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",border:"1.5px solid rgba(255,255,255,0.15)"}}>
-                  <div style={{fontSize:"3.25rem",marginBottom:"1rem"}}>{slide.emoji}</div>
-                  <div style={{color:"#fff",fontWeight:800,fontSize:"1.15rem",marginBottom:"0.75rem",lineHeight:1.3}}>{slide.title}</div>
-                  <div style={{color:"rgba(255,255,255,0.75)",fontSize:"0.9rem",lineHeight:1.65}}>{slide.body}</div>
+                  {slide.visual.type === "emoji"
+                    ? <div style={{fontSize:"6rem",lineHeight:1,marginBottom:"1.5rem"}}>{slide.visual.value}</div>
+                    : <img src={slide.visual.src} alt="" style={{maxHeight:"240px",maxWidth:"100%",borderRadius:"12px",objectFit:"contain",marginBottom:"1.5rem"}} />
+                  }
+                  <div style={{color:"#E8A63C",fontWeight:800,fontSize:"1.3rem",marginBottom:"0.75rem",lineHeight:1.3}}>{title}</div>
+                  <div style={{color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",lineHeight:1.65}}>{body}</div>
                 </div>
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
                   {tourSlide > 0 && (
-                    <button onClick={() => setTourSlide(s => s - 1)} style={{flex:1,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.1)",border:"1.5px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}><span style={{color:"#fff",fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Atrás" : "Back"}</button>
+                    <button onClick={() => setTourSlide(s => s - 1)} style={{flex:1,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.1)",border:"1.5px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>← {lang === "es" ? "Atrás" : "Back"}</button>
                   )}
                   {!isLast ? (
                     <button onClick={() => setTourSlide(s => s + 1)} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"rgba(255,255,255,0.12)",border:"1.5px solid #4ade80",color:"#fff",fontWeight:700,fontSize:"0.9rem",cursor:"pointer"}}>{lang === "es" ? "Siguiente →" : "Next →"}</button>
                   ) : (
-                    <button onClick={() => { setTourCompleted(c => ({...c,[tourSection]:true})); setTourSection(null); setTourSlide(0); }} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"#4ade80",border:"none",color:"#064e3b",fontWeight:800,fontSize:"0.9rem",cursor:"pointer"}}>🎉 {lang === "es" ? "¡Listo!" : "Done!"}</button>
+                    <button onClick={() => { setTourMode(false); setTourSlide(0); }} style={{flex:2,borderRadius:"0.75rem",padding:"0.75rem",background:"#4ade80",border:"none",color:"#064e3b",fontWeight:800,fontSize:"0.9rem",cursor:"pointer"}}>🎉 {lang === "es" ? "¡A comenzar!" : "Let's go!"}</button>
                   )}
                 </div>
                 {!isLast && (
-                  <button onClick={() => { setTourCompleted(c => ({...c,[tourSection]:true})); setTourSection(null); setTourSlide(0); }} style={{marginTop:"0.75rem",background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:"0.8rem",cursor:"pointer"}}>{lang === "es" ? "saltar sección" : "skip section"}</button>
+                  <button onClick={() => { setTourMode(false); setTourSlide(0); }} style={{marginTop:"0.75rem",background:"none",border:"none",color:"rgba(255,255,255,0.35)",fontSize:"0.8rem",cursor:"pointer"}}>{lang === "es" ? "saltar recorrido" : "skip tour"}</button>
                 )}
               </div>
             );
