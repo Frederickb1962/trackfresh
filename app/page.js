@@ -5011,7 +5011,7 @@ export default function TrackFreshDashboard() {
                   const daysColor = it.daysLeft !== null ? (it.daysLeft <= 2 ? "#ef4444" : it.daysLeft <= 4 ? "#f97316" : "#eab308") : null;
                   const displayName = it.store ? `${it.name} — ${it.store}` : it.name;
                   return (
-                    <div key={it.id} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : flaggedAllergens.length > 0 ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : flaggedAllergens.length > 0 ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
+                    <div key={it.id} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
                       <input type="checkbox" checked={it.checked} onChange={() => handleToggle(it)} className="h-4 w-4 rounded accent-white flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <span className="text-sm" style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : "#fff", fontWeight: it.checked ? 400 : 600}}>{displayName}{it.qty ? " — " + it.qty : ""}</span>
