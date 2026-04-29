@@ -6139,7 +6139,7 @@ export default function TrackFreshDashboard() {
                 </div>
                 {/* Amber action buttons — per slide */}
                 {tourSlide === 0 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); }}>{lang === "es" ? "Empezar a Usar TrackFresh" : "Start Using TrackFresh"}</button>}
-                {tourSlide === 2 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowGroceryScan(true); }}>{lang === "es" ? "Probar Escaneo Inteligente" : "Try Smart Scanner"}</button>}
+                {tourSlide === 2 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); }}>{lang === "es" ? "Probar Escaneo Inteligente" : "Try Smart Scanner"}</button>}
                 {tourSlide === 5 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); }}>{lang === "es" ? "Ir al Rastreador" : "Go to Tracker"}</button>}
                 {tourSlide === 7 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("recipes"); }}>{lang === "es" ? "Explorar Recetas" : "Explore Recipes"}</button>}
                 {tourSlide === 10 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("stores-page"); }}>{lang === "es" ? "Conectar Tiendas" : "Connect Stores"}</button>}
