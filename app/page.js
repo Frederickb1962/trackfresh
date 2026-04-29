@@ -2486,7 +2486,7 @@ export default function TrackFreshDashboard() {
   const [expandedMember, setExpandedMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [editMemberName, setEditMemberName] = useState("");
-  const DIETARY_TAGS = [["vegetarian","🥦","Vegetarian"],["vegan","🌱","Vegan"],["glutenFree","🌾","Gluten-Free"],["dairyFree","🥛","Dairy-Free"],["nutFree","🥜","Nut-Free"],["lowSodium","🧂","Low Sodium"],["highProtein","💪","High Protein"],["lowSugar","🍬","Low Sugar"]];
+  const DIETARY_TAGS = [["vegetarian","🥗","Vegetarian","Vegetariano"],["vegan","🌱","Vegan","Vegano"],["glutenFree","🌾","Gluten-Free","Sin Gluten"],["dairyFree","🥛","Dairy-Free","Sin Lácteos"],["nutFree","🥜","Nut-Free","Sin Nueces"],["keto","🥑","Keto","Keto"],["paleo","🍖","Paleo","Paleo"],["halal","☪️","Halal","Halal"],["kosher","✡️","Kosher","Kosher"],["pescatarian","🐟","Pescatarian","Pescetariano"],["lowSodium","🧂","Low-Sodium","Bajo en Sodio"],["lowSugar","🩺","Diabetic/Low Sugar","Diabético/Bajo Azúcar"],["lowFat","🫀","Low-Fat","Bajo en Grasa"],["eggFree","🥚","Egg-Free","Sin Huevo"],["soyFree","🫘","Soy-Free","Sin Soya"],["shellfishFree","🦐","Shellfish-Free","Sin Mariscos"],["whole30","🔄","Whole30","Whole30"],["mediterranean","🫒","Mediterranean","Mediterráneo"],["fodmap","🦠","FODMAP","FODMAP"],["intermittentFasting","⏱️","Intermittent Fasting","Ayuno Intermitente"]];
   const saveMembersToStorage = (next) => { try { localStorage.setItem("tf_family", JSON.stringify(next)); } catch(e) {} };
   const addFamilyMember = () => { if (!familyInput.trim()) return; const next = [...familyMembers, {name: familyInput.trim(), restrictions: {}}]; setFamilyMembers(next); saveMembersToStorage(next); setFamilyInput(""); };
   const removeFamilyMember = (i) => { const next = familyMembers.filter((_,idx) => idx !== i); setFamilyMembers(next); saveMembersToStorage(next); if (expandedMember === i) setExpandedMember(null); };
@@ -5248,9 +5248,9 @@ export default function TrackFreshDashboard() {
               </div>
               <p className="text-xs text-green-200 mb-3">Tap to toggle any restriction that applies to your whole household.</p>
               <div className="flex flex-wrap gap-2">
-                {[...DIETARY_TAGS, ["halal","☪️","Halal"], ["kosher","✡️","Kosher"], ["keto","🥑","Keto"]].map(([key, icon, label]) => (
+                {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => (
                   <button key={key} onClick={() => toggleDietary(key)} style={{background: dietaryRestrictions[key] ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.08)", border: dietaryRestrictions[key] ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.3rem 0.75rem", color: dietaryRestrictions[key] ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.75rem", fontWeight: dietaryRestrictions[key] ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.3rem"}}>
-                    <span>{icon}</span>{label}{dietaryRestrictions[key] && <span style={{color:"#ff6600"}}>✓</span>}
+                    <span>{icon}</span>{lang === "es" ? labelEs : labelEn}{dietaryRestrictions[key] && <span style={{color:"#ff6600"}}>✓</span>}
                   </button>
                 ))}
               </div>
@@ -5309,7 +5309,7 @@ export default function TrackFreshDashboard() {
                             )}
                           </div>
                           {!isEditing && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                               <button onClick={() => { setEditingMember(i); setEditMemberName(member.name); }} className="text-xs text-green-300" style={{background:"none",border:"none",cursor:"pointer"}}>✏️ Edit</button>
                               <button onClick={() => setExpandedMember(isExpanded ? null : i)} className="text-xs text-white font-bold" style={{background:"none",border:"none",cursor:"pointer"}}>{isExpanded ? "▲" : "▼"}</button>
                               <button onClick={() => removeFamilyMember(i)} className="text-xs text-red-400" style={{background:"none",border:"none",cursor:"pointer"}}>✕</button>
@@ -5320,8 +5320,8 @@ export default function TrackFreshDashboard() {
                         {/* Active tag summary (collapsed) */}
                         {!isExpanded && activeTags.length > 0 && (
                           <div className="flex flex-wrap gap-1 px-3 py-2">
-                            {activeTags.map(([,icon,label]) => (
-                              <span key={label} className="text-xs rounded-full px-2 py-0.5" style={{background:"rgba(255,102,0,0.2)",border:"1px solid rgba(255,102,0,0.4)",color:"#fed7aa"}}>{icon} {label}</span>
+                            {activeTags.map(([,icon,labelEn,labelEs]) => (
+                              <span key={labelEn} className="text-xs rounded-full px-2 py-0.5" style={{background:"rgba(255,102,0,0.2)",border:"1px solid rgba(255,102,0,0.4)",color:"#fed7aa"}}>{icon} {lang === "es" ? labelEs : labelEn}</span>
                             ))}
                           </div>
                         )}
@@ -5331,11 +5331,11 @@ export default function TrackFreshDashboard() {
                           <div className="px-3 py-3" style={{background:"rgba(0,0,0,0.15)"}}>
                             <p className="text-xs text-green-300 mb-2 font-semibold">Tap to assign tags for {member.name}:</p>
                             <div className="flex flex-wrap gap-2">
-                              {DIETARY_TAGS.map(([key, icon, label]) => {
+                              {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => {
                                 const on = (member.restrictions||{})[key];
                                 return (
                                   <button key={key} onClick={() => toggleMemberTag(i, key)} style={{background: on ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.07)", border: on ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.25rem 0.65rem", color: on ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.72rem", fontWeight: on ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.25rem"}}>
-                                    {icon} {label}{on && <span style={{color:"#ff6600"}}>✓</span>}
+                                    {icon} {lang === "es" ? labelEs : labelEn}{on && <span style={{color:"#ff6600"}}>✓</span>}
                                   </button>
                                 );
                               })}
