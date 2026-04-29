@@ -2318,6 +2318,7 @@ const TOUR_SLIDES = [
   { titleEn:"Cook what you've got.", titleEs:"Cocina lo que tienes.", bodyEn:"Get instant recipe ideas from ingredients that you have on hand in your fridge, freezer, or pantry.", bodyEs:"Obtén ideas de recetas al instante con los ingredientes que tienes a mano en tu nevera, congelador o despensa.", visual:{type:"emoji",value:"🍳"} },
   { titleEn:"Save what you love.", titleEs:"Guarda lo que te encanta.", bodyEn:"Tap the heart on any AI recipe that you have truly enjoyed to save it for later.", bodyEs:"Toca el corazón en cualquier receta de IA que hayas disfrutado de verdad para guardarla.", visual:{type:"emoji",value:"❤️"} },
   { titleEn:"Your list, always ready.", titleEs:"Tu lista, siempre lista.", bodyEn:"Items auto-load as you use them. Add anything else with our AI-powered food list.", bodyEs:"Los artículos se cargan solos al usarlos. Agrega lo que falte con nuestra lista de alimentos con IA.", visual:{type:"emoji",value:"🛒"} },
+  { titleEn:"Link and Shop.", titleEs:"Conecta y Compra.", bodyEn:"Link your favorite grocery stores. Shop smarter, save more.", bodyEs:"Conecta tus tiendas favoritas. Compra más inteligente, ahorra más.", visual:{type:"emoji",value:"🏪"} },
   { titleEn:"Plan your week.", titleEs:"Planifica tu semana.", bodyEn:"A practical way to add meals for every day with the ingredients you have.", bodyEs:"Una forma práctica de agregar comidas para cada día con los ingredientes que tienes.", visual:{type:"emoji",value:"📅"} },
   { titleEn:"Stay safe.", titleEs:"Mantente seguro.", bodyEn:"Real-time FDA recall alerts, right in the app.", bodyEs:"Alertas de retiros de la FDA en tiempo real, dentro de la app.", visual:{type:"emoji",value:"🚨"} },
   { titleEn:"English. Español.", titleEs:"Inglés. Español.", bodyEn:"Tap the flag — switch anytime.", bodyEs:"Toca la bandera — cambia cuando quieras.", visual:{type:"emoji",value:"🌐"} },
@@ -6136,6 +6137,14 @@ export default function TrackFreshDashboard() {
                   <div style={{color:"#E8A63C",fontWeight:800,fontSize:"1.3rem",marginBottom:"0.75rem",lineHeight:1.3}}>{title}</div>
                   <div style={{color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",lineHeight:1.65}}>{body}</div>
                 </div>
+                {/* Amber action buttons — per slide */}
+                {tourSlide === 0 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); }}>{lang === "es" ? "Empezar a Usar TrackFresh" : "Start Using TrackFresh"}</button>}
+                {tourSlide === 2 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowGroceryScan(true); }}>{lang === "es" ? "Probar Escaneo Inteligente" : "Try Smart Scanner"}</button>}
+                {tourSlide === 5 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); }}>{lang === "es" ? "Ir al Rastreador" : "Go to Tracker"}</button>}
+                {tourSlide === 7 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("recipes"); }}>{lang === "es" ? "Explorar Recetas" : "Explore Recipes"}</button>}
+                {tourSlide === 10 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("stores-page"); }}>{lang === "es" ? "Conectar Tiendas" : "Connect Stores"}</button>}
+                {tourSlide === 11 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("meals"); }}>{lang === "es" ? "Planificar mi Semana" : "Plan Your Week"}</button>}
+                {tourSlide === 12 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowRecallsPanel(true); }}>{lang === "es" ? "Ver Alertas FDA" : "Check FDA Recalls"}</button>}
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
                   {tourSlide > 0 && (
