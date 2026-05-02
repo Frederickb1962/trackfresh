@@ -803,23 +803,20 @@ export default function TrackFreshDashboard() {
     window.speechSynthesis.cancel();
     const speak = () => {
       const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
-    const voices = window.speechSynthesis.getVoices();
-    const natural = voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en")) 
-      || voices.find(v => v.name.includes("Nicky") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Ava") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Allison") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Premium") && v.lang.startsWith("en"))
-      || voices.find(v => v.name.includes("Enhanced") && v.lang.startsWith("en"))
-      || voices.find(v => v.lang.startsWith("en-US") && !v.name.includes("Samantha"));
-    if (natural) msg.voice = natural;
-    msg.pitch = 1.05;
-      msg.rate = 1.15;
+      const voices = window.speechSynthesis.getVoices();
+      const natural = voices.find(v => v.name === "Google US English")
+        || voices.find(v => v.name === "Samantha")
+        || voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en"))
+        || voices.find(v => v.lang === "en-US");
+      if (natural) msg.voice = natural;
+      msg.pitch = 1.05;
+      msg.rate = 0.9;
       msg.onend = () => { console.log("[VOICE] date prompt speech ended, starting voice listening"); startVoiceListening(); };
       msg.onerror = (e) => { console.log("[VOICE] date prompt speech ERROR:", e.error, "— still starting voice listening"); startVoiceListening(); };
       window.speechSynthesis.speak(msg);
     };
     if (window.speechSynthesis.getVoices().length > 0) { speak(); }
-    else { window.speechSynthesis.onvoiceschanged = () => { speak(); }; }
+    else { window.speechSynthesis.addEventListener('voiceschanged', function onVoicesChanged() { window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged); speak(); }); }
   };
 
   const startVoiceListening = () => {
@@ -915,18 +912,28 @@ export default function TrackFreshDashboard() {
     console.log("[VOICE] speakThen called:", text.substring(0, 50));
     if (!('speechSynthesis' in window)) { console.log("[VOICE] speakThen: no speechSynthesis, firing cb immediately"); setTimeout(cb || (() => {}), 300); return; }
     window.speechSynthesis.cancel();
-    setTimeout(() => {
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.1; u.pitch = 1;
-      const ms = Math.max(2500, (text.trim().split(/\s+/).length / 100) * 60000 + 1500);
-      console.log("[VOICE] speakThen: speaking, fallback timeout in", ms, "ms");
-      let done = false;
-      const fire = () => { if (!done) { done = true; console.log("[VOICE] speakThen: cb firing (onend/onerror/timeout)"); if (cb) cb(); } };
-      u.onend = () => { console.log("[VOICE] speakThen: onend fired"); fire(); };
-      u.onerror = (e) => { console.log("[VOICE] speakThen: onerror fired:", e.error); fire(); };
-      setTimeout(fire, ms);
-      window.speechSynthesis.speak(u);
-    }, 100);
+    const doSpeak = () => {
+      setTimeout(() => {
+        const u = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        const natural = voices.find(v => v.name === "Google US English")
+          || voices.find(v => v.name === "Samantha")
+          || voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en"))
+          || voices.find(v => v.lang === "en-US");
+        if (natural) u.voice = natural;
+        u.rate = 0.9; u.pitch = 1;
+        const ms = Math.max(2500, (text.trim().split(/\s+/).length / 100) * 60000 + 1500);
+        console.log("[VOICE] speakThen: speaking, fallback timeout in", ms, "ms");
+        let done = false;
+        const fire = () => { if (!done) { done = true; console.log("[VOICE] speakThen: cb firing (onend/onerror/timeout)"); if (cb) cb(); } };
+        u.onend = () => { console.log("[VOICE] speakThen: onend fired"); fire(); };
+        u.onerror = (e) => { console.log("[VOICE] speakThen: onerror fired:", e.error); fire(); };
+        setTimeout(fire, ms);
+        window.speechSynthesis.speak(u);
+      }, 100);
+    };
+    if (window.speechSynthesis.getVoices().length > 0) { doSpeak(); }
+    else { window.speechSynthesis.addEventListener('voiceschanged', function onVoicesChanged() { window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged); doSpeak(); }); }
   };
 
   const startVoiceCommand = (onResult) => {
