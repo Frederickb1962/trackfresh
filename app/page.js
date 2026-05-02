@@ -821,9 +821,14 @@ export default function TrackFreshDashboard() {
 
   const startVoiceListening = () => {
     console.log("[VOICE] DATE listener started");
+    if (window.currentRecognition) {
+      window.currentRecognition.stop();
+      window.currentRecognition = null;
+    }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { console.log("[VOICE] no SR support, aborting"); setVoicePromptDone(true); return; }
     const recognition = new SR();
+    window.currentRecognition = recognition;
     recognition.lang = lang === "es" ? "es-MX" : "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -854,8 +859,10 @@ export default function TrackFreshDashboard() {
     };
     recognition.onerror = (e) => { console.log("[VOICE] DATE recognition error:", e.error); setVoiceListening(false); setVoicePromptDone(true); };
     recognition.onend = () => { console.log("[VOICE] DATE recognition ended"); setVoiceListening(false); };
-    recognition.start();
-    console.log("[VOICE] DATE recognition.start() called");
+    setTimeout(() => {
+      console.log("[VOICE] DATE recognition.start() called after 500ms delay");
+      recognition.start();
+    }, 500);
   };
   const [uniScanCount, setUniScanCount] = useState(0);
   const [uniScanLastItem, setUniScanLastItem] = useState("");
