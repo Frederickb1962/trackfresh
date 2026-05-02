@@ -2148,10 +2148,10 @@ export default function TrackFreshDashboard() {
                 <div key={recall.id} style={{background:"rgba(255,255,255,0.05)",borderRadius:"12px",padding:"1rem",borderLeft:recall.severity === "high" ? "4px solid #fbbf24" : "4px solid rgba(255,255,255,0.3)"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem"}}>
                     <div style={{flex:1}}>
-                      <div style={{fontWeight:700,fontSize:"0.85rem",color:"#111",lineHeight:1.3}}>{recall.product}</div>
-                      <div style={{fontSize:"0.75rem",color:"#6b7280",marginTop:"3px"}}>Brand: {recall.brand}</div>
-                      <div style={{fontSize:"0.75rem",color:"#374151",marginTop:"0.3rem"}}>{recall.reason}</div>
-                      <div style={{fontSize:"0.65rem",color:"#9ca3af",marginTop:"4px"}}>{recall.date}</div>
+                      <div style={{fontWeight:700,fontSize:"0.85rem",color:"#FFFFFF",lineHeight:1.3}}>{recall.product}</div>
+                      <div style={{fontSize:"0.75rem",color:"#fbbf24",marginTop:"3px"}}>Brand: {recall.brand}</div>
+                      <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.9)",marginTop:"0.3rem"}}>{recall.reason}</div>
+                      <div style={{fontSize:"0.65rem",color:"rgba(251,191,36,0.8)",marginTop:"4px"}}>{recall.date}</div>
                     </div>
                     <span style={{fontSize:"0.6rem",fontWeight:700,padding:"3px 8px",borderRadius:"999px",flexShrink:0,textTransform:"uppercase",background:recall.severity === "high" ? "#fee2e2" : recall.severity === "medium" ? "#ffedd5" : "#f3f4f6",color:recall.severity === "high" ? "#b91c1c" : recall.severity === "medium" ? "#c2410c" : "#374151"}}>{recall.severity === "high" ? t("fdaClassI") : recall.severity === "medium" ? t("fdaClassII") : t("fdaClassIII")}</span>
                   </div>
