@@ -1,0 +1,88 @@
+export const TUTORIALS = {
+  home: [
+    { emoji: "🥦", title: "Welcome to TrackFresh.AI!", body: "Your intelligent kitchen assistant — tracks food, surfaces expiry urgency, suggests recipes, plans meals, and manages your shopping list. All your data saves automatically." },
+    { emoji: "⚡", title: "Your Kitchen Today", body: "The dashboard reads your tracked items and tells you exactly what needs attention — Use Today, Use Soon, Use This Week, or Everything Looks Fresh. It updates automatically as items change." },
+    { emoji: "⚡", title: "Use Soon Tile", body: "The full-width Use Soon tile at the top of the dashboard shows how many items are expiring in 1–3 days. Tap it to see everything sorted by urgency across Fridge, Freezer, and Pantry." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on the dashboard or in Tracker to mark any item as opened. TrackFresh calculates a use-by date based on shelf life after opening and starts a new countdown." },
+    { emoji: "🥗", title: "Set Up Dietary Needs", body: "Go to the Dietary tab and add household restrictions plus individual profiles for each family member. Recipes, shopping alerts, and your meal plan all adapt automatically." },
+  ],
+  tracker: [
+    { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
+    { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
+    { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
+    { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
+  ],
+  recipes: [
+    { emoji: "🍳", title: "Recipes From Your Fridge", body: "Tap 'Get AI Recipe Ideas' and TrackFresh builds recipes around what you already have, prioritizing whatever expires soonest. No more forgotten produce!" },
+    { emoji: "🥦", title: "Use What I Have Mode", body: "Strict mode — only uses your tracked items plus basic pantry staples like salt and oil. Perfect for using up what's already in your kitchen without an extra shopping trip." },
+    { emoji: "✨", title: "Suggest Missing Ingredients", body: "AI adds 1–2 extra ingredients with real brand names (e.g. 'Heinz Ketchup') to complete a dish. Items you already have are marked ✓, extras marked 'need:'." },
+    { emoji: "🔒", title: "Dietary Filters Active", body: "Every recipe respects the restrictions you've set in the Dietary tab — for the whole household and each individual family member." },
+  ],
+  shopping: [
+    { emoji: "🛒", title: "Your Smart Shopping List", body: "Add items with an optional quantity, check them off as you shop, and your list saves automatically — even if you close the app mid-shop." },
+    { emoji: "🔄", title: "Used Items — Restock", body: "When you mark a tracked item as used, it moves to the 'Recently Used — Restock' section as a reminder. Check it off once it's in your cart." },
+    { emoji: "⚠️", title: "Allergen Warnings", body: "Shopping items that match your dietary restrictions are automatically flagged with a red ⚠️ badge — no extra setup needed." },
+    { emoji: "🤖", title: "Auto-Add from Meals", body: "When AI plans your weekly meals, missing ingredients are added to your shopping list with a meal tag showing which meal they belong to." },
+  ],
+  meals: [
+    { emoji: "📅", title: "Plan Your Whole Week", body: "Monday through Sunday — Breakfast, Lunch, and Dinner. Each slot shows the meal name and a toggle to view full ingredients and step-by-step instructions." },
+    { emoji: "🤖", title: "AI Plans for Everyone", body: "Tap 'AI Plan My Week' and TrackFresh fills all 21 meals using your tracked food, prioritizing items expiring soonest. Every meal respects your household and family member dietary restrictions." },
+    { emoji: "✏️", title: "Edit Any Meal", body: "Tap ✕ on any slot to clear it, then tap the slot to pick a different meal. Add custom meal names or search the built-in recipe list. Changes save instantly." },
+    { emoji: "🎯", title: "Tap to See the Recipe", body: "Tap ▼ on any AI-planned meal to expand the full recipe card — ingredients list and cooking instructions included." },
+  ],
+  composting: [
+    { emoji: "🌱", title: "Close the Loop", body: "Food you can't eat doesn't have to be trash. Composting turns scraps into rich soil and keeps methane out of landfills." },
+    { emoji: "🪣", title: "Choose Your Method", body: "Tumbler, Worm Bin, Bokashi, Electric Recycler, or Traditional Bin — each section explains the pros, cons, setup, and what it accepts." },
+    { emoji: "🌍", title: "Real Impact", body: "The average family wastes 30% of the food they buy. Composting that waste meaningfully shrinks your carbon footprint every week." },
+    { emoji: "🛒", title: "Shop Composting Gear", body: "Tap the Shop button in any composting section to find quality gear from our sustainability partners." },
+  ],
+  community: [
+    { emoji: "👥", title: "Community Chat", body: "Connect with other TrackFresh users. Share what you cooked, ask food questions, and cheer each other on. A daily tip posts every morning to kick off the conversation." },
+    { emoji: "🤖", title: "Ask AI by Text", body: "Type a food question and tap 'Ask AI Text' — TrackFresh AI answers in the chat. Storage, cooking, shelf life, and reducing waste are its specialties." },
+    { emoji: "🎤", title: "Ask AI by Voice", body: "Tap '🎤 Ask AI' to speak your question. Your voice is transcribed and sent to AI automatically — no typing needed." },
+    { emoji: "💡", title: "Recipes & Tips Tabs", body: "Share a recipe in the Recipes tab to add it to the community cookbook. Post a tip in the Tips tab to help others waste less." },
+  ],
+  more: [
+    { emoji: "💬", title: "Suggestions", body: "Share feedback on any section of the app — rate your experience and leave ideas. Your input shapes what gets built next." },
+    { emoji: "👤", title: "Your Username", body: "Your username appears in Community when you post. Change it anytime from the Community tab." },
+    { emoji: "🌐", title: "English / Spanish", body: "Switch between English and Español with one tap. Every label, button, tip, and category updates instantly. Your preference saves automatically." },
+    { emoji: "💾", title: "Data Always Saves", body: "All tracked items, meal plans, shopping lists, dietary profiles, and community posts save to your device automatically. No account needed." },
+  ],
+  "stores-page": [
+    { emoji: "🏪", title: "Linked Stores", body: "Connect your favorite grocery stores to TrackFresh so you can shop smarter and compare prices easily." },
+    { emoji: "🔗", title: "Coming Soon", body: "Deep store integrations are on the way — tap an item on your shopping list and jump straight to the store's product page." },
+    { emoji: "💰", title: "Partner Discounts", body: "Partner stores offer TrackFresh users exclusive deals. Check back often for new savings." },
+  ],
+  dietary: [
+    { emoji: "🥗", title: "Household Restrictions", body: "Set restrictions that apply to everyone — vegetarian, vegan, gluten-free, keto, nut-free, dairy-free, and more. These filter every recipe and meal plan automatically." },
+    { emoji: "👨‍👩‍👧", title: "Family Member Profiles", body: "Add a name for each household member and set their individual restrictions. The app merges everyone's needs so every suggested meal is safe for the whole family." },
+    { emoji: "⚠️", title: "Allergen Alerts in Shopping", body: "Shopping list items that match any active restriction are flagged with a red ⚠️ badge automatically — no extra setup needed." },
+    { emoji: "🎯", title: "Active Across the App", body: "Dietary profiles are live in Recipes, Shopping allergen warnings, and the AI Meal Planner. The more you set up here, the smarter the whole app gets." },
+  ],
+  partners: [
+    { emoji: "🤝", title: "TrackFresh Partners", body: "Our partners share our mission — less food waste, healthier kitchens, and a greener planet for everyone." },
+    { emoji: "🎁", title: "Exclusive Benefits", body: "As a TrackFresh user you unlock special offers from partner brands in food, wellness, and sustainability." },
+    { emoji: "🌿", title: "Join the Movement", body: "Every partnership supports our goal: helping 1 million families reduce food waste by 2027." },
+  ],
+};
+
+export const TOUR_SLIDES = [
+  { titleEn:"Welcome to TrackFresh.", titleEs:"Bienvenido a TrackFresh.", bodyEn:"Your kitchen, finally organized.", bodyEs:"Tu cocina, por fin organizada.", visual:{type:"emoji",value:"🌿"} },
+  { titleEn:"Snap a receipt.", titleEs:"Fotografía tu recibo.", bodyEn:"Number one recommended way to start with TrackFresh. Every item, every field, autofilled, done in seconds.", bodyEs:"La forma número uno recomendada para empezar con TrackFresh. Cada artículo, cada campo, llenado solo, listo en segundos.", visual:{type:"img",src:"/tour-receipt.png"} },
+  { titleEn:"Smart Scan.", titleEs:"Escaneo Inteligente.", bodyEn:"Scan one or up to six items — barcodes or labels, all in one shot.", bodyEs:"Escanea uno o hasta seis artículos — códigos de barras o etiquetas, todo en un solo disparo.", visual:{type:"img",src:"/tour-groceries.jpeg"} },
+  { titleEn:"Just save the date.", titleEs:"Solo guarda la fecha.", bodyEn:"Voice recognition for expiration dates is available for hands free input.", bodyEs:"El reconocimiento de voz para fechas de vencimiento está disponible para entrada manos libres.", visual:{type:"emoji",value:"🎤"} },
+  { titleEn:"Auto Detect.", titleEs:"Detección Automática.", bodyEn:"Food, category, shelf life, and expiration dates for after opening.", bodyEs:"Alimento, categoría, vida útil y fechas de vencimiento tras abrir.", visual:{type:"emoji",value:"🏷️"} },
+  { titleEn:"Your fridge, freezer, and pantry.", titleEs:"Tu nevera, congelador y despensa.", bodyEn:"Sort what you have. Know exactly where it is located at all times.", bodyEs:"Organiza lo que tienes. Sabe exactamente dónde se encuentra en todo momento.", visual:{type:"emoji",value:"📦"} },
+  { titleEn:"One-week heads up.", titleEs:"Aviso con una semana de anticipación.", bodyEn:"We remind you before anything expires giving you advanced notice for preparation and to avoid food waste.", bodyEs:"Te avisamos antes de que algo venza para que puedas prepararte y evitar el desperdicio de alimentos.", visual:{type:"emoji",value:"⏰"} },
+  { titleEn:"Cook what you've got.", titleEs:"Cocina lo que tienes.", bodyEn:"Get instant recipe ideas from ingredients that you have on hand in your fridge, freezer, or pantry.", bodyEs:"Obtén ideas de recetas al instante con los ingredientes que tienes a mano en tu nevera, congelador o despensa.", visual:{type:"emoji",value:"🍳"} },
+  { titleEn:"Save what you love.", titleEs:"Guarda lo que te encanta.", bodyEn:"Tap the heart on any AI recipe that you have truly enjoyed to save it for later.", bodyEs:"Toca el corazón en cualquier receta de IA que hayas disfrutado de verdad para guardarla.", visual:{type:"emoji",value:"❤️"} },
+  { titleEn:"Your list, always ready.", titleEs:"Tu lista, siempre lista.", bodyEn:"Items auto-load as you use them. Add anything else with our AI-powered food list.", bodyEs:"Los artículos se cargan solos al usarlos. Agrega lo que falte con nuestra lista de alimentos con IA.", visual:{type:"emoji",value:"🛒"} },
+  { titleEn:"Link and Shop.", titleEs:"Conecta y Compra.", bodyEn:"Link your favorite grocery stores. Shop smarter, save more.", bodyEs:"Conecta tus tiendas favoritas. Compra más inteligente, ahorra más.", visual:{type:"emoji",value:"🏪"} },
+  { titleEn:"Plan your week.", titleEs:"Planifica tu semana.", bodyEn:"A practical way to add meals for every day with the ingredients you have.", bodyEs:"Una forma práctica de agregar comidas para cada día con los ingredientes que tienes.", visual:{type:"emoji",value:"📅"} },
+  { titleEn:"Stay safe.", titleEs:"Mantente seguro.", bodyEn:"Real-time FDA recall alerts, right in the app.", bodyEs:"Alertas de retiros de la FDA en tiempo real, dentro de la app.", visual:{type:"emoji",value:"🚨"} },
+  { titleEn:"English. Español.", titleEs:"Inglés. Español.", bodyEn:"Tap the flag — switch anytime.", bodyEs:"Toca la bandera — cambia cuando quieras.", visual:{type:"emoji",value:"🌐"} },
+  { titleEn:"Your voice shapes TrackFresh.", titleEs:"Tu opinión forma TrackFresh.", bodyEn:"Tell us what to build next.", bodyEs:"Dinos qué construir después.", visual:{type:"img",src:"/tour-feedback.jpg"} },
+  { titleEn:"Ready?", titleEs:"¿Listo?", bodyEn:"Tap the bubbles to begin.", bodyEs:"Toca las burbujas para comenzar.", visual:{type:"emoji",value:"🚀"} },
+];

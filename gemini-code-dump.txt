@@ -2899,8 +2899,8 @@ export default function TrackFreshDashboard() {
 
             {/* Header — always visible */}
             <div className={trackerEntryFlash ? "tracker-entry-flash" : ""} style={{marginBottom:"0.5rem",padding:trackerEntryFlash?"0.4rem 0.5rem":"0",transition:"padding 0s"}}>
-              <h2 className="text-xl font-semibold" style={{margin:0,color:"#F59E0B",letterSpacing:"0.08em"}}>
-                {lang === "es" ? "RASTREA TU COMIDA" : "TRACK YOUR FOOD"}
+              <h2 className="text-xl font-semibold" style={{margin:0,color:"#fff"}}>
+                {lang === "es" ? "Rastrea tu Comida" : "Keep Track of Your Food"}
               </h2>
             </div>
 
@@ -3004,7 +3004,7 @@ export default function TrackFreshDashboard() {
                           const urgent = it.daysLeft !== null && it.daysLeft <= 3;
                           const soon = it.daysLeft !== null && it.daysLeft <= 7 && it.daysLeft > 3;
                           return (
-                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: "linear-gradient(160deg,#064e3b,#065f46)", border: "1px solid rgba(255,255,255,0.15)", boxShadow: it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none"}}>
+                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: "linear-gradient(160deg,#064e3b,#065f46)", border: it.daysLeft !== null && it.daysLeft < 0 ? "3px solid #ef4444" : it.daysLeft !== null && it.daysLeft <= 3 ? "3px solid #f97316" : it.daysLeft !== null && it.daysLeft <= 7 ? "3px solid #eab308" : urgent ? "1px solid rgba(239,68,68,0.4)" : soon ? "1px solid #9ab82e" : "1px solid rgba(255,255,255,0.15)"}}>
                               <div>
                                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
                                   <div>
@@ -4427,3 +4427,1351 @@ export default function TrackFreshDashboard() {
   );
 }
 
+@tailwind base; @tailwind components; @tailwind utilities;
+"use client";
+
+import React from "react";
+import { GLOBAL_STYLES } from "../lib/styles";
+import { TrackFreshLogo } from "./ui/TrackFreshLogo";
+
+export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
+  const isEs = lang === "es";
+  const scrollFrameRef = React.useRef(null);
+  const bottomBtnRef = React.useRef(null);
+  const howItWorksRef = React.useRef(null);
+  const [activeIcon, setActiveIcon] = React.useState(null);
+  const iconDismissRef = React.useRef(null);
+  const handleIconTap = (key) => {
+    if (iconDismissRef.current) clearTimeout(iconDismissRef.current);
+    setActiveIcon(prev => prev === key ? null : key);
+    iconDismissRef.current = setTimeout(() => setActiveIcon(null), 3000);
+  };
+  const ICON_INFO = {
+    ketchup: { emoji:"🍅", label: isEs ? "Ketchup" : "Ketchup", info: isEs ? "Después de abrir: 6 meses en el refrigerador" : "After opening: 6 months in fridge" },
+    mayo:    { emoji:"🫙", label: isEs ? "Mayonesa" : "Mayo",    info: isEs ? "Después de abrir: 2 meses en el refrigerador" : "After opening: 2 months in fridge" },
+    mustard: { emoji:"🌭", label: isEs ? "Mostaza" : "Mustard",  info: isEs ? "Después de abrir: 12 meses en el refrigerador" : "After opening: 12 months in fridge" },
+  };
+
+  React.useEffect(() => {
+    return () => { if (scrollFrameRef.current) cancelAnimationFrame(scrollFrameRef.current); };
+  }, []);
+
+  const handleAutoScroll = () => {
+    window.scrollTo(0, 0);
+    const scrollStep = () => {
+      window.scrollBy(0, 7);
+      if (bottomBtnRef.current) {
+        const rect = bottomBtnRef.current.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.55) {
+          cancelAnimationFrame(scrollFrameRef.current);
+          onLaunchApp();
+          return;
+        }
+      }
+      scrollFrameRef.current = requestAnimationFrame(scrollStep);
+    };
+    scrollFrameRef.current = requestAnimationFrame(scrollStep);
+  };
+
+  const handleSeeHow = () => {
+    if (howItWorksRef.current) howItWorksRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const B = String.fromCodePoint;
+  const broc = B(0x1F966);
+  const rocket = B(0x1F680);
+  const milk = B(0x1F95B);
+  const leafy = B(0x1F96C);
+  const drum = B(0x1F357);
+  const berry = B(0x1FAD0);
+  const cheese = B(0x1F9C0);
+  const pkg = B(0x1F4E6);
+  const cam = B(0x1F4F7);
+  const cart = B(0x1F6D2);
+  const chart = B(0x1F4CA);
+  const snap = B(0x1F4F8);
+  const clock = B(0x23F0);
+  const mic = B(0x1F3A4);
+  const cook = B(0x1F373);
+  const cal = B(0x1F4C5);
+  const warn = B(0x26A0) + B(0xFE0F);
+  const money = B(0x1F4B0);
+  const globe = B(0x1F30D);
+  const apple = B(0x1F34E);
+  const mxFlag = B(0x1F1F2) + B(0x1F1FD);
+  const usFlag = B(0x1F1FA) + B(0x1F1F8);
+  return (
+    <div className="mkt-page">
+      <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+
+      {/* Nav */}
+      <nav className="mkt-nav">
+        <div className="mkt-nav-logo"><TrackFreshLogo /></div>
+        <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
+          <button onClick={() => onChangeLang(lang === "en" ? "es" : "en")} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.4rem 0.75rem",color:"#fff",fontWeight:700,fontSize:"0.8rem",cursor:"pointer"}}>{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
+          <button onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem"}}>{isEs ? "Abrir" : "Launch"}</button>
+        </div>
+      </nav>
+
+      {/* Hero */}
+<div className="mkt-hero">
+  <span className="mkt-hero-eyebrow mkt-animate">
+    {isEs ? "Menos Desperdicio. Mejor Cocina." : "Waste Less. Eat Better."}
+  </span>
+
+<h1 className="mkt-hero-title">
+  <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina. Tu Comida." : "Your Kitchen. Your Food."}</span>
+  <br/>
+  <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Todo Rastreado para Mayor Frescura." : "Fully Tracked for Freshness."}</span>
+</h1>
+
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
+  {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
+</p>
+
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem"}}>
+  {isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}
+</p>
+<p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
+  {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
+</p>
+
+      </div>
+
+      {/* Condiment interactive strip */}
+      <div className="mkt-animate" style={{marginBottom:"0.25rem",marginTop:"0.5rem",animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)}>
+        <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
+          {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; return (
+            <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
+              <div style={{fontWeight:700,fontSize:"0.85rem",color:"#fff",marginBottom:"0.25rem"}}>{item.info}</div>
+              <div style={{fontSize:"0.72rem",color:"#86efac",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea esto por ti" : "TrackFresh tracks this for you!"}</div>
+              <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
+            </div>
+          ); })()}
+          {["ketchup","mustard","mayo"].map(key => {
+            const item = ICON_INFO[key];
+            const isActive = activeIcon === key;
+            return (
+              <div key={key} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+                <button
+                  onClick={e => { e.stopPropagation(); handleIconTap(key); }}
+                  style={{background:"none",border:"none",cursor:"pointer",padding:"4px",lineHeight:1,transition:"transform 0.15s ease",transform:isActive?"scale(1.15)":"scale(1)",display:"inline-flex",alignItems:"flex-end",justifyContent:"center"}}
+                  aria-label={item.label}
+                >
+                  <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mustard" ? 2 : 3}`}>
+                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block",...(key==="mustard"?{mixBlendMode:"multiply",backgroundColor:"#064e3b"}:{})}} />
+                  </div>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        <p className="shimmer-text" style={{textAlign:"center",fontSize:"1.35rem",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "✨ Toca para ver lo que hará TrackFresh" : "✨ Tap to see what TrackFresh will do."}</p>
+      </div>
+
+      {/* The Issue */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "EL PROBLEMA" : "The Issue"}</p>
+        </div>
+        <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año." : "Consumers waste nearly 35 million tons of food each year."}</strong></span></li>
+        </ul>
+        <div style={{height:"2rem"}} />
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}><span style={{color:"#f59e0b"}}>TrackFresh</span>{isEs ? " supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : " outsmarts the labels so you can track freshness in the palm of your hand."}</p>
+      </div>
+
+      {/* The Solution */}
+      <div className="mkt-section mkt-animate mkt-animate-d1" style={{paddingTop:"1.25rem",paddingBottom:"1.25rem"}}>
+        <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
+        </div>
+        <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto o sube tu recibo de compras — nuestra IA identifica al instante cada artículo, categoría, vida útil y ventana tras apertura, luego rellena todo automáticamente y activa alarmas por ti." : "Snap or upload your grocery receipt — our AI instantly identifies every item, category, shelf life, and after-opening window, then autofills and sets alarms for you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "Escanea uno o seis artículos a la vez y TrackFresh los identificará por código de barras y etiquetas en la misma foto y, por supuesto, rellenará el resto automáticamente." : "Scan one or scan six items at the same time and TrackFresh will identify by barcode and labels all in the same shot and of course autofill the rest."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></span></li>
+        </ul>
+        <div style={{height:"2rem"}} />
+        <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:0,letterSpacing:"-0.01em"}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
+      </div>
+
+      {/* Final CTA */}
+      <div className="mkt-section mkt-animate mkt-animate-d4" style={{textAlign:"center",paddingTop:"0.5rem",paddingBottom:"1.5rem"}}>
+        <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.6rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
+        <button ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.6rem 2.5rem"}}>{isEs ? "Empieza a Rastrear tu Comida" : "Start Tracking Your Food"}</button>
+      </div>
+
+      <div className="mkt-footer"><TrackFreshLogo /> © 2026 — {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
+    </div>
+  );
+}
+"use client";
+
+import { useRef, useState, useEffect } from "react";
+
+export default function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const mountedRef = useRef(true);
+  const dateInputRef = useRef(null);
+  const isEs = lang === "es";
+
+  // screen: "camera" | "scanning" | "review" | "dates" | "error"
+  const [screen, setScreen] = useState("camera");
+  const [camError, setCamError] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // review state
+  const [detectedItems, setDetectedItems] = useState([]);
+  const [checked, setChecked] = useState({});
+  const [names, setNames] = useState({});
+  const [locations, setLocations] = useState({});
+
+  // dates state
+  const [dateItems, setDateItems] = useState([]);
+  const [dateIndex, setDateIndex] = useState(0);
+  const [pickedDate, setPickedDate] = useState("");
+  const [sessionCount, setSessionCount] = useState(0);
+  const [groceryVoiceListening, setGroceryVoiceListening] = useState(false);
+  const [groceryVoiceError, setGroceryVoiceError] = useState("");
+  const [groceryVoiceAwaitND, setGroceryVoiceAwaitND] = useState(false);
+  const groceryNDRef = useRef(null);
+
+  const playBeep = (freq, dur, vol = 0.28) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const play = () => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq; osc.type = "sine";
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+      };
+      if (ctx.state === "suspended") { ctx.resume().then(play); } else { play(); }
+    } catch(e) {}
+  };
+  const playShutter = () => playBeep(1000, 0.05);
+  const playSuccess = () => { playBeep(880, 0.2); setTimeout(() => playBeep(1100, 0.25), 220); };
+  const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(300, 0.18), 200); };
+
+  useEffect(() => {
+    mountedRef.current = true;
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "true");
+          await videoRef.current.play();
+        }
+      } catch(e) {
+        if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied.");
+      }
+    }
+    startCamera();
+    return () => {
+      mountedRef.current = false;
+      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+    };
+  }, []);
+
+  const capture = async () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    playShutter();
+    setScreen("scanning");
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+    try {
+      const res = await fetch("/api/scan-smart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+      });
+      if (!mountedRef.current) return;
+      const data = await res.json();
+      const items = data.items || (data.item ? [data.item] : []);
+      if (items.length === 0) {
+        playError();
+        setErrorMsg(isEs ? "No se detectaron artículos. Intenta de nuevo." : "No items detected. Try again.");
+        setScreen("error");
+        return;
+      }
+      playSuccess();
+      setDetectedItems(items);
+      const initChecked = {};
+      const initNames = {};
+      const initLocs = {};
+      items.forEach((it, i) => {
+        initChecked[i] = true;
+        initNames[i] = it.name || "Unknown Item";
+        initLocs[i] = it.location || "Fridge";
+      });
+      setChecked(initChecked);
+      setNames(initNames);
+      setLocations(initLocs);
+      setScreen("review");
+    } catch(e) {
+      if (!mountedRef.current) return;
+      playError();
+      setErrorMsg(e.message || "Scan failed");
+      setScreen("error");
+    }
+  };
+
+  const handleAddSelected = () => {
+    const selected = detectedItems
+      .map((it, i) => ({ ...it, _index: i }))
+      .filter((_, i) => checked[i]);
+    if (selected.length === 0) { onClose(); return; }
+    setDateItems(selected.map(it => ({
+      ...it,
+      name: names[it._index] || it.name,
+      location: locations[it._index] || it.location || "Fridge",
+      date: it.date && it.dateFound ? it.date : "",
+    })));
+    setDateIndex(0);
+    setPickedDate(selected[0]?.date || "");
+    setScreen("dates");
+  };
+
+  const handleSaveDate = () => {
+    const item = dateItems[dateIndex];
+    onAddItem({
+      id: Date.now().toString() + dateIndex,
+      name: item.name,
+      useByDate: pickedDate || item.date || "",
+      openDate: "",
+      category: item.category || "Other",
+      location: item.location,
+      daysAfterOpening: item.daysAfterOpening || null,
+      storageTip: item.storageTip || "",
+      openedTip: item.openedTip || "",
+    });
+    setSessionCount(c => c + 1);
+    const next = dateIndex + 1;
+    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
+  };
+
+  const handleSkipDate = () => {
+    const item = dateItems[dateIndex];
+    onAddItem({
+      id: Date.now().toString() + dateIndex,
+      name: item.name,
+      useByDate: item.date || "",
+      openDate: "",
+      category: item.category || "Other",
+      location: item.location,
+      daysAfterOpening: item.daysAfterOpening || null,
+      storageTip: item.storageTip || "",
+      openedTip: item.openedTip || "",
+    });
+    setSessionCount(c => c + 1);
+    const next = dateIndex + 1;
+    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
+  };
+
+  const startGroceryVoice = () => {
+    setGroceryVoiceError("");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setGroceryVoiceError("Voice not supported on this device"); return; }
+    playBeep(880, 0.15);
+    const recog = new SR();
+    recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1;
+    setGroceryVoiceListening(true);
+    recog.onresult = (e) => {
+      const t = e.results[0][0].transcript;
+      const parsed = parseSpokenDate(t);
+      if (parsed) {
+        setPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180);
+        setGroceryVoiceError(""); setGroceryVoiceListening(false); setGroceryVoiceAwaitND(true);
+        const ndMsg = new SpeechSynthesisUtterance("Say Next to save and continue, or Done to finish.");
+        ndMsg.rate = 1.1;
+        ndMsg.onend = () => {
+          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR2) { setGroceryVoiceAwaitND(false); return; }
+          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} }
+          const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
+          groceryNDRef.current = ndRecog;
+          let settled = false;
+          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setGroceryVoiceAwaitND(false); groceryNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
+          ndRecog.onresult = (ev) => {
+            if (settled) return; settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null;
+            const cmd = ev.results[0][0].transcript.toLowerCase();
+            const nextIdx = dateIndex + 1;
+            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more")) { handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 700); }
+            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish")) { handleSaveDate(); setTimeout(() => onClose(), 300); }
+          };
+          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
+          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
+          ndRecog.start();
+        };
+        window.speechSynthesis.cancel(); window.speechSynthesis.speak(ndMsg);
+      } else { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); }
+    };
+    recog.onerror = () => { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); };
+    recog.onend = () => setGroceryVoiceListening(false);
+    recog.start();
+  };
+
+  if (screen === "scanning") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "1rem", left: "1rem", background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", color: "#fff", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>← {isEs ? "Atrás" : "Back"}</button>
+        <div style={{ width: 56, height: 56, border: "5px solid #4ade80", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
+        <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+      </div>
+    );
+  }
+
+  if (screen === "error") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem", padding: "2rem" }}>
+        <span style={{ fontSize: "3rem" }}>❌</span>
+        <p style={{ color: "#f87171", fontWeight: 700, fontSize: "1.1rem", textAlign: "center", margin: 0 }}>{errorMsg || (isEs ? "Error al escanear" : "Scan error")}</p>
+        <button onClick={() => setScreen("camera")} style={{ padding: "0.9rem 2rem", background: "#16a34a", color: "#fff", fontWeight: 800, fontSize: "1rem", border: "none", borderRadius: "14px", cursor: "pointer" }}>{isEs ? "Intentar de nuevo" : "Try Again"}</button>
+        <button onClick={onClose} style={{ padding: "0.7rem 1.5rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "0.9rem", border: "2px solid rgba(255,255,255,0.2)", borderRadius: "12px", cursor: "pointer" }}>{isEs ? "Cerrar" : "Close"}</button>
+      </div>
+    );
+  }
+
+  if (screen === "review") {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#111", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "#000", flexShrink: 0 }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Artículos Detectados" : "Detected Items"}</span>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.45)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>✕ {isEs ? "Cerrar" : "Close"}</button>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {detectedItems.map((it, i) => (
+            <div key={i} style={{ background: "#1e1e1e", borderRadius: "14px", padding: "0.85rem 1rem", display: "flex", flexDirection: "column", gap: "0.6rem", border: checked[i] ? "1.5px solid #4ade80" : "1.5px solid #333" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
+                <input type="checkbox" checked={!!checked[i]} onChange={e => setChecked(c => ({ ...c, [i]: e.target.checked }))} style={{ width: 22, height: 22, accentColor: "#4ade80", flexShrink: 0, cursor: "pointer" }} />
+                <input type="text" value={names[i] || ""} onChange={e => setNames(n => ({ ...n, [i]: e.target.value }))}
+                  style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1.5px solid #444", color: "#fff", fontWeight: 700, fontSize: "0.95rem", padding: "0.1rem 0", outline: "none" }} />
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", paddingLeft: "2rem" }}>
+                {["Fridge", "Freezer", "Pantry"].map(loc => (
+                  <button key={loc} onClick={() => setLocations(l => ({ ...l, [i]: loc }))}
+                    style={{ flex: 1, padding: "0.45rem 0.25rem", fontSize: "0.72rem", fontWeight: 700, borderRadius: "8px", border: "none", cursor: "pointer",
+                      background: locations[i] === loc ? (loc === "Freezer" ? "#2563eb" : loc === "Fridge" ? "#16a34a" : "#ea580c") : "#2a2a2a",
+                      color: locations[i] === loc ? "#fff" : "#888" }}>
+                    {loc === "Fridge" ? "🥬" : loc === "Freezer" ? "❄️" : "🫙"} {isEs ? (loc === "Fridge" ? "Refri" : loc === "Freezer" ? "Conge" : "Despe") : loc}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <button onClick={handleAddSelected}
+            style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.15rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 4px 0 #14532d" }}>
+            ✅ {isEs ? "Agregar Seleccionados" : "Add All Selected"} ({Object.values(checked).filter(Boolean).length})
+          </button>
+          <button onClick={() => setScreen("camera")}
+            style={{ width: "100%", padding: "0.75rem", background: "transparent", color: "rgba(255,255,255,0.55)", fontWeight: 600, fontSize: "0.9rem", border: "1.5px solid rgba(255,255,255,0.15)", borderRadius: "12px", cursor: "pointer" }}>
+            📷 {isEs ? "Escanear de nuevo" : "Scan Again"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "dates") {
+    const item = dateItems[dateIndex];
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "2rem 1.25rem", gap: "1.25rem" }}>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", fontWeight: 600, margin: "0 0 0.35rem" }}>{dateIndex + 1} / {dateItems.length}</p>
+          <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", margin: 0 }}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
+          <p style={{ color: "#86efac", fontSize: "0.95rem", fontWeight: 700, margin: "0.5rem 0 0" }}>{item?.name}</p>
+        </div>
+        <div style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", overflow: "hidden" }}>
+          <div style={{ width: "100%", padding: "1rem", fontSize: pickedDate ? "1.15rem" : "0.95rem", fontWeight: 700, color: pickedDate ? "#fff" : "rgba(255,255,255,0.45)", textAlign: "center", boxSizing: "border-box", lineHeight: 1.4, pointerEvents: "none" }}>
+            {pickedDate
+              ? (() => { try { return new Date(pickedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch(e) { return pickedDate; } })()
+              : (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
+          </div>
+          <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 1 }} />
+        </div>
+        <div>
+          <button onClick={startGroceryVoice} style={{ width: "100%", padding: "0.85rem", background: groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)", color: groceryVoiceListening || groceryVoiceAwaitND ? "#fca5a5" : "#fb923c", fontWeight: 700, fontSize: "1rem", border: `1.5px solid ${groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`, borderRadius: "16px", cursor: "pointer" }}>
+            {groceryVoiceAwaitND ? "🎤 Say Next or Done..." : groceryVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
+          </button>
+          {groceryVoiceError && <p style={{ color: "#f87171", fontSize: "0.75rem", textAlign: "center", margin: "0.4rem 0 0", fontWeight: 600 }}>{groceryVoiceError}</p>}
+        </div>
+        <button onClick={() => { if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; } setGroceryVoiceAwaitND(false); const nextIdx = dateIndex + 1; handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 600); }}
+          style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
+          ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
+        </button>
+        <button onClick={handleSkipDate}
+          style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontWeight: 700, fontSize: "1rem", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: "16px", cursor: "pointer" }}>
+          {isEs ? "Omitir Fecha" : "Skip Date"} →
+        </button>
+        <button onClick={() => {
+          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; }
+          setGroceryVoiceAwaitND(false);
+          for (let i = dateIndex; i < dateItems.length; i++) {
+            const it = dateItems[i];
+            onAddItem({ id: Date.now().toString() + i, name: it.name, useByDate: it.date || "", openDate: "", category: it.category || "Other", location: it.location, daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" });
+          }
+          onClose();
+        }} style={{ width: "100%", padding: "0.55rem", background: "none", color: "rgba(255,255,255,0.38)", fontWeight: 500, fontSize: "0.78rem", border: "none", cursor: "pointer" }}>
+          {isEs ? "Omitir Todas las Fechas →" : "Skip All Dates for Now →"}
+        </button>
+      </div>
+    );
+  }
+
+  // screen === "camera"
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.8)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.35rem 0.85rem", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", flexShrink: 0 }}>← {isEs ? "Atrás" : "Back"}</button>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
+          {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
+        </div>
+        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>
+          {isEs ? "Listo ✓" : "Done ✓"}
+        </button>
+      </div>
+      <div style={{ flex: 1, position: "relative", overflow: "hidden", background: "#000", minHeight: "80dvh" }}>
+        {camError ? (
+          <div style={{ color: "#f87171", textAlign: "center", padding: "3rem 1.5rem", fontSize: "0.95rem" }}>{camError}</div>
+        ) : (
+          <>
+            <video ref={videoRef} playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
+            <div style={{ position: "absolute", inset: 0, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "85%", height: "65%", border: "2.5px solid #4ade80", borderRadius: "20px", boxShadow: "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px #4ade8044" }} />
+            </div>
+            <button onClick={onClose} style={{ position: "absolute", top: "0.75rem", left: "0.75rem", width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", fontWeight: 900, color: "#111", boxShadow: "0 2px 8px rgba(0,0,0,0.4)", pointerEvents: "auto" }}>✕</button>
+          </>
+        )}
+      </div>
+      <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0 }}>
+        <button onClick={capture} disabled={!!camError}
+          style={{ width: "100%", padding: "1.2rem", background: camError ? "#333" : "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "18px", cursor: camError ? "not-allowed" : "pointer", boxShadow: camError ? "none" : "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)", opacity: camError ? 0.5 : 1 }}>
+          📷 {isEs ? "Capturar y Escanear Todo" : "Capture & Scan All"}
+        </button>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem", textAlign: "center", margin: "0.5rem 0 0", fontWeight: 600 }}>
+          {isEs ? "Apunta a múltiples productos — todos serán detectados" : "Point at multiple items — all will be detected"}
+        </p>
+      </div>
+    </div>
+  );
+}
+"use client";
+
+import { useRef, useState, useEffect } from "react";
+
+export default function SmartScanner({ onResult, onError, captureRef, lang }) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [status, setStatus] = useState("starting");
+  const [scanError, setScanError] = useState("");
+  const detectedRef = useRef(false);
+  const readerRef = useRef(null);
+  const timerRef = useRef(null);
+  const voiceRef = useRef(null);
+
+  const speak = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.1; u.pitch = 1;
+      window.speechSynthesis.speak(u);
+    }
+  };
+
+  const listenForCommand = (onCmd) => {
+    console.log("[SCANNER] listenForCommand started");
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
+    const recog = new SR();
+    recog.lang = lang === "es" ? "es-MX" : "en-US";
+    recog.interimResults = false;
+    recog.maxAlternatives = 3;
+    voiceRef.current = recog;
+    let gotResult = false;
+    recog.onresult = (ev) => {
+      gotResult = true;
+      voiceRef.current = null;
+      const t = ev.results[0][0].transcript.toLowerCase().trim();
+      console.log("[SCANNER] heard:", t);
+      onCmd(t);
+    };
+    recog.onerror = (e) => {
+      console.log("[SCANNER] listenForCommand error:", e.error);
+      if (e.error === 'aborted') return;
+      setTimeout(() => { if (!gotResult) { console.log("[SCANNER] listenForCommand: restarting after error"); listenForCommand(onCmd); } }, 300);
+    };
+    recog.onend = () => {
+      console.log("[SCANNER] listenForCommand ended, gotResult:", gotResult, "voiceRef===recog:", voiceRef.current === recog);
+      setTimeout(() => { if (!gotResult && voiceRef.current === recog) { console.log("[SCANNER] listenForCommand: restarting after onend"); listenForCommand(onCmd); } }, 300);
+    };
+    recog.start();
+  };
+
+  useEffect(() => {
+    detectedRef.current = false;
+    let stream = null;
+
+    async function captureAndScan() {
+      if (detectedRef.current) return;
+      detectedRef.current = true;
+      setStatus("reading");
+      console.log("[SCANNER] captureAndScan: aborting voice, voiceRef.current:", voiceRef.current ? "active" : "null");
+      if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} voiceRef.current = null; }
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      console.log("[SCANNER] captureAndScan: voiceRef nulled, proceeding to capture");
+      speak(lang === "es" ? "Capturando..." : "Capturing...");
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (!video || !canvas) { onError("Camera not ready"); return; }
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const base64 = dataUrl.split(",")[1];
+      try {
+        const res = await fetch("/api/scan-smart", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
+        });
+        const data = await res.json();
+        if (data.items && data.items.length > 0) { onResult({ ...data.items[0], _allItems: data.items, _scanType: data.type, source: data.items[0].source || "label" }); }
+        else if (data.item) { onResult({ ...data.item, source: data.item.source || "label" }); }
+        else { onError(data.error || "Could not read. Say capture to try again."); }
+      } catch (e) { onError("Scan failed: " + e.message); }
+    }
+
+    function startListening() {
+      setStatus("listening");
+      listenForCommand((cmd) => {
+        if (cmd.includes("capture") || cmd.includes("captura") || cmd.includes("photo") || cmd.includes("foto") || cmd.includes("scan") || cmd.includes("escanea")) {
+          captureAndScan();
+        } else if (cmd.includes("stop") || cmd.includes("done") || cmd.includes("listo") || cmd.includes("detener") || cmd.includes("parar")) {
+          onError("__done__");
+        } else {
+          speak(lang === "es" ? "Di capturar cuando estés listo." : "Say capture when ready.");
+          startListening();
+        }
+      });
+    }
+
+    async function start() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 }, advanced: [{ torch: false }] }
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "true");
+          await videoRef.current.play();
+        }
+        setStatus("scanning");
+        // Try barcode detection
+        try {
+          const { BrowserMultiFormatReader } = await import("@zxing/library");
+          readerRef.current = new BrowserMultiFormatReader();
+          readerRef.current.decodeFromStream(stream, videoRef.current, async (result) => {
+            if (result && !detectedRef.current) {
+              detectedRef.current = true;
+              if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
+              if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+              setStatus("barcode_found");
+              speak(lang === "es" ? "Código de barras encontrado." : "Barcode found.");
+              try {
+                const res = await fetch("/api/scan-barcode", {
+                  method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ barcode: result.getText() })
+                });
+                const data = await res.json();
+                if (data.item) { onResult({ ...data.item, barcode: result.getText(), source: "barcode" }); }
+                else { detectedRef.current = false; speak(lang === "es" ? "No encontrado. Di capturar para la etiqueta." : "Not found. Say capture to scan the label."); startListening(); }
+              } catch(e) { detectedRef.current = false; startListening(); }
+            }
+          });
+        } catch(e) { /* barcode lib failed */ }
+        // Prompt user with voice
+        timerRef.current = setTimeout(() => {
+          if (!detectedRef.current) {
+            speak(lang === "es" ? "Apunta a tu artículo. Di capturar cuando estés listo." : "Point at your item. Say capture when ready.");
+            startListening();
+          }
+        }, 2000);
+        if (captureRef) captureRef.current = () => { if (!detectedRef.current) { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} } captureAndScan(); } };
+      } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
+    }
+    start();
+    return () => {
+      console.log("[SCANNER] CLEANUP: SmartScanner unmounting, voiceRef.current:", voiceRef.current ? "active" : "null");
+      if (readerRef.current) { try { readerRef.current.reset(); } catch(e) {} readerRef.current = null; }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (voiceRef.current) { console.log("[SCANNER] CLEANUP: aborting voiceRef"); try { voiceRef.current.abort(); } catch(e) {} }
+      console.log("[SCANNER] CLEANUP: cancelling speechSynthesis");
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (videoRef.current && videoRef.current.srcObject) { videoRef.current.srcObject.getTracks().forEach(t => t.stop()); videoRef.current.srcObject = null; }
+    };
+  }, []);
+
+  return (
+    <div className="relative">
+      {scanError ? <p className="text-sm text-red-600 p-4">{scanError}</p> : (
+        <div className="relative overflow-hidden rounded-xl bg-black">
+          <video ref={videoRef} id="smartScannerVideo" playsInline muted className="w-full rounded-xl" style={{ height: "420px", objectFit: "cover" }} />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {(status === "scanning" || status === "listening") && <div style={{border:"2px solid #4ade80",borderRadius:"12px",width:"280px",height:"200px",opacity:0.7}} />}
+            {status === "reading" && <div style={{border:"2px solid #fb923c",borderRadius:"12px",width:"280px",height:"200px",opacity:0.8}} />}
+            {status === "barcode_found" && <div style={{border:"3px solid #22c55e",borderRadius:"12px",width:"280px",height:"200px",background:"rgba(34,197,94,0.15)"}} />}
+            {status === "listening" && <div style={{position:"absolute",bottom:"80px",background:"rgba(239,68,68,0.9)",borderRadius:"999px",padding:"0.4rem 1rem",display:"flex",alignItems:"center",gap:"0.4rem"}}><span style={{fontSize:"1rem"}}>🎤</span><span style={{color:"#fff",fontSize:"0.75rem",fontWeight:700}}>Listening...</span></div>}
+          </div>
+          <p className="absolute bottom-0 left-0 right-0 text-center text-xs text-white py-2 font-bold" style={{background:"rgba(0,0,0,0.6)"}}>
+            {status === "starting" && "Starting camera..."}
+            {status === "scanning" && (lang === "es" ? "Preparando..." : "Getting ready...")}
+            {status === "listening" && (lang === "es" ? "🎤 Di \"capturar\" cuando estés listo" : "🎤 Say \"capture\" when ready")}
+            {status === "barcode_found" && "✅ Barcode found!"}
+            {status === "reading" && (lang === "es" ? "📖 IA leyendo..." : "📖 AI reading...")}
+          </p>
+          {(status === "scanning" || status === "listening") && (
+            <button onClick={() => { if (captureRef && captureRef.current) captureRef.current(); }}
+              style={{position:"absolute",bottom:"44px",left:"50%",transform:"translateX(-50%)",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#000",border:"none",borderRadius:"24px",padding:"0.65rem 1.25rem",fontWeight:800,fontSize:"0.8rem",cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 4px 0 #8C5A10,0 6px 16px rgba(0,0,0,0.3)",opacity:0.85}}>
+              📸 {lang === "es" ? "o toca aquí" : "or tap here"}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+export const TUTORIALS = {
+  home: [
+    { emoji: "🥦", title: "Welcome to TrackFresh.AI!", body: "Your intelligent kitchen assistant — tracks food, surfaces expiry urgency, suggests recipes, plans meals, and manages your shopping list. All your data saves automatically." },
+    { emoji: "⚡", title: "Your Kitchen Today", body: "The dashboard reads your tracked items and tells you exactly what needs attention — Use Today, Use Soon, Use This Week, or Everything Looks Fresh. It updates automatically as items change." },
+    { emoji: "⚡", title: "Use Soon Tile", body: "The full-width Use Soon tile at the top of the dashboard shows how many items are expiring in 1–3 days. Tap it to see everything sorted by urgency across Fridge, Freezer, and Pantry." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' on the dashboard or in Tracker to mark any item as opened. TrackFresh calculates a use-by date based on shelf life after opening and starts a new countdown." },
+    { emoji: "🥗", title: "Set Up Dietary Needs", body: "Go to the Dietary tab and add household restrictions plus individual profiles for each family member. Recipes, shopping alerts, and your meal plan all adapt automatically." },
+  ],
+  tracker: [
+    { emoji: "🧾", title: "Receipt Scanner — Start Here", body: "The #1 recommended way to add food. Snap your grocery receipt and AI reads every item, sets expiry dates, and organizes by category. After scanning, the Expiry Date Assistant lets you speak dates by voice." },
+    { emoji: "📷", title: "Smart Scan", body: "Point your camera at any food product. Smart Scan detects barcodes or labels automatically — no mode switching needed. It identifies the item, category, location, and storage tips in seconds." },
+    { emoji: "📦", title: "Scan Multiple", body: "Lay several products together or line them up and take one photo. AI identifies every item in the frame at once — great for stocking up after a big shop." },
+    { emoji: "📂", title: "Mark What You've Opened", body: "Tap 'Mark What You've Opened' to mark an existing item as opened. Search by name, use voice, or browse by Fridge/Freezer/Pantry. The countdown switches to opened shelf life automatically." },
+    { emoji: "⏰", title: "Watch the Colors", body: "Red = expires very soon. Orange = 2–4 days. Yellow = this week. Green = all good. Items with no date show a flashing 'Add Date' badge — tap Edit to fill it in." },
+    { emoji: "📅", title: "Date Display", body: "Each item card shows the most relevant date insight: 'Use by Mar 20' for sealed items, or '📂 Opened Mar 16 · Use within 5 days' for opened items. The countdown badge is always the visual anchor." },
+  ],
+  recipes: [
+    { emoji: "🍳", title: "Recipes From Your Fridge", body: "Tap 'Get AI Recipe Ideas' and TrackFresh builds recipes around what you already have, prioritizing whatever expires soonest. No more forgotten produce!" },
+    { emoji: "🥦", title: "Use What I Have Mode", body: "Strict mode — only uses your tracked items plus basic pantry staples like salt and oil. Perfect for using up what's already in your kitchen without an extra shopping trip." },
+    { emoji: "✨", title: "Suggest Missing Ingredients", body: "AI adds 1–2 extra ingredients with real brand names (e.g. 'Heinz Ketchup') to complete a dish. Items you already have are marked ✓, extras marked 'need:'." },
+    { emoji: "🔒", title: "Dietary Filters Active", body: "Every recipe respects the restrictions you've set in the Dietary tab — for the whole household and each individual family member." },
+  ],
+  shopping: [
+    { emoji: "🛒", title: "Your Smart Shopping List", body: "Add items with an optional quantity, check them off as you shop, and your list saves automatically — even if you close the app mid-shop." },
+    { emoji: "🔄", title: "Used Items — Restock", body: "When you mark a tracked item as used, it moves to the 'Recently Used — Restock' section as a reminder. Check it off once it's in your cart." },
+    { emoji: "⚠️", title: "Allergen Warnings", body: "Shopping items that match your dietary restrictions are automatically flagged with a red ⚠️ badge — no extra setup needed." },
+    { emoji: "🤖", title: "Auto-Add from Meals", body: "When AI plans your weekly meals, missing ingredients are added to your shopping list with a meal tag showing which meal they belong to." },
+  ],
+  meals: [
+    { emoji: "📅", title: "Plan Your Whole Week", body: "Monday through Sunday — Breakfast, Lunch, and Dinner. Each slot shows the meal name and a toggle to view full ingredients and step-by-step instructions." },
+    { emoji: "🤖", title: "AI Plans for Everyone", body: "Tap 'AI Plan My Week' and TrackFresh fills all 21 meals using your tracked food, prioritizing items expiring soonest. Every meal respects your household and family member dietary restrictions." },
+    { emoji: "✏️", title: "Edit Any Meal", body: "Tap ✕ on any slot to clear it, then tap the slot to pick a different meal. Add custom meal names or search the built-in recipe list. Changes save instantly." },
+    { emoji: "🎯", title: "Tap to See the Recipe", body: "Tap ▼ on any AI-planned meal to expand the full recipe card — ingredients list and cooking instructions included." },
+  ],
+  composting: [
+    { emoji: "🌱", title: "Close the Loop", body: "Food you can't eat doesn't have to be trash. Composting turns scraps into rich soil and keeps methane out of landfills." },
+    { emoji: "🪣", title: "Choose Your Method", body: "Tumbler, Worm Bin, Bokashi, Electric Recycler, or Traditional Bin — each section explains the pros, cons, setup, and what it accepts." },
+    { emoji: "🌍", title: "Real Impact", body: "The average family wastes 30% of the food they buy. Composting that waste meaningfully shrinks your carbon footprint every week." },
+    { emoji: "🛒", title: "Shop Composting Gear", body: "Tap the Shop button in any composting section to find quality gear from our sustainability partners." },
+  ],
+  community: [
+    { emoji: "👥", title: "Community Chat", body: "Connect with other TrackFresh users. Share what you cooked, ask food questions, and cheer each other on. A daily tip posts every morning to kick off the conversation." },
+    { emoji: "🤖", title: "Ask AI by Text", body: "Type a food question and tap 'Ask AI Text' — TrackFresh AI answers in the chat. Storage, cooking, shelf life, and reducing waste are its specialties." },
+    { emoji: "🎤", title: "Ask AI by Voice", body: "Tap '🎤 Ask AI' to speak your question. Your voice is transcribed and sent to AI automatically — no typing needed." },
+    { emoji: "💡", title: "Recipes & Tips Tabs", body: "Share a recipe in the Recipes tab to add it to the community cookbook. Post a tip in the Tips tab to help others waste less." },
+  ],
+  more: [
+    { emoji: "💬", title: "Suggestions", body: "Share feedback on any section of the app — rate your experience and leave ideas. Your input shapes what gets built next." },
+    { emoji: "👤", title: "Your Username", body: "Your username appears in Community when you post. Change it anytime from the Community tab." },
+    { emoji: "🌐", title: "English / Spanish", body: "Switch between English and Español with one tap. Every label, button, tip, and category updates instantly. Your preference saves automatically." },
+    { emoji: "💾", title: "Data Always Saves", body: "All tracked items, meal plans, shopping lists, dietary profiles, and community posts save to your device automatically. No account needed." },
+  ],
+  "stores-page": [
+    { emoji: "🏪", title: "Linked Stores", body: "Connect your favorite grocery stores to TrackFresh so you can shop smarter and compare prices easily." },
+    { emoji: "🔗", title: "Coming Soon", body: "Deep store integrations are on the way — tap an item on your shopping list and jump straight to the store's product page." },
+    { emoji: "💰", title: "Partner Discounts", body: "Partner stores offer TrackFresh users exclusive deals. Check back often for new savings." },
+  ],
+  dietary: [
+    { emoji: "🥗", title: "Household Restrictions", body: "Set restrictions that apply to everyone — vegetarian, vegan, gluten-free, keto, nut-free, dairy-free, and more. These filter every recipe and meal plan automatically." },
+    { emoji: "👨‍👩‍👧", title: "Family Member Profiles", body: "Add a name for each household member and set their individual restrictions. The app merges everyone's needs so every suggested meal is safe for the whole family." },
+    { emoji: "⚠️", title: "Allergen Alerts in Shopping", body: "Shopping list items that match any active restriction are flagged with a red ⚠️ badge automatically — no extra setup needed." },
+    { emoji: "🎯", title: "Active Across the App", body: "Dietary profiles are live in Recipes, Shopping allergen warnings, and the AI Meal Planner. The more you set up here, the smarter the whole app gets." },
+  ],
+  partners: [
+    { emoji: "🤝", title: "TrackFresh Partners", body: "Our partners share our mission — less food waste, healthier kitchens, and a greener planet for everyone." },
+    { emoji: "🎁", title: "Exclusive Benefits", body: "As a TrackFresh user you unlock special offers from partner brands in food, wellness, and sustainability." },
+    { emoji: "🌿", title: "Join the Movement", body: "Every partnership supports our goal: helping 1 million families reduce food waste by 2027." },
+  ],
+};
+
+export const TOUR_SLIDES = [
+  { titleEn:"Welcome to TrackFresh.", titleEs:"Bienvenido a TrackFresh.", bodyEn:"Your kitchen, finally organized.", bodyEs:"Tu cocina, por fin organizada.", visual:{type:"emoji",value:"🌿"} },
+  { titleEn:"Snap a receipt.", titleEs:"Fotografía tu recibo.", bodyEn:"Number one recommended way to start with TrackFresh. Every item, every field, autofilled, done in seconds.", bodyEs:"La forma número uno recomendada para empezar con TrackFresh. Cada artículo, cada campo, llenado solo, listo en segundos.", visual:{type:"img",src:"/tour-receipt.png"} },
+  { titleEn:"Smart Scan.", titleEs:"Escaneo Inteligente.", bodyEn:"Scan one or up to six items — barcodes or labels, all in one shot.", bodyEs:"Escanea uno o hasta seis artículos — códigos de barras o etiquetas, todo en un solo disparo.", visual:{type:"img",src:"/tour-groceries.jpeg"} },
+  { titleEn:"Just save the date.", titleEs:"Solo guarda la fecha.", bodyEn:"Voice recognition for expiration dates is available for hands free input.", bodyEs:"El reconocimiento de voz para fechas de vencimiento está disponible para entrada manos libres.", visual:{type:"emoji",value:"🎤"} },
+  { titleEn:"Auto Detect.", titleEs:"Detección Automática.", bodyEn:"Food, category, shelf life, and expiration dates for after opening.", bodyEs:"Alimento, categoría, vida útil y fechas de vencimiento tras abrir.", visual:{type:"emoji",value:"🏷️"} },
+  { titleEn:"Your fridge, freezer, and pantry.", titleEs:"Tu nevera, congelador y despensa.", bodyEn:"Sort what you have. Know exactly where it is located at all times.", bodyEs:"Organiza lo que tienes. Sabe exactamente dónde se encuentra en todo momento.", visual:{type:"emoji",value:"📦"} },
+  { titleEn:"One-week heads up.", titleEs:"Aviso con una semana de anticipación.", bodyEn:"We remind you before anything expires giving you advanced notice for preparation and to avoid food waste.", bodyEs:"Te avisamos antes de que algo venza para que puedas prepararte y evitar el desperdicio de alimentos.", visual:{type:"emoji",value:"⏰"} },
+  { titleEn:"Cook what you've got.", titleEs:"Cocina lo que tienes.", bodyEn:"Get instant recipe ideas from ingredients that you have on hand in your fridge, freezer, or pantry.", bodyEs:"Obtén ideas de recetas al instante con los ingredientes que tienes a mano en tu nevera, congelador o despensa.", visual:{type:"emoji",value:"🍳"} },
+  { titleEn:"Save what you love.", titleEs:"Guarda lo que te encanta.", bodyEn:"Tap the heart on any AI recipe that you have truly enjoyed to save it for later.", bodyEs:"Toca el corazón en cualquier receta de IA que hayas disfrutado de verdad para guardarla.", visual:{type:"emoji",value:"❤️"} },
+  { titleEn:"Your list, always ready.", titleEs:"Tu lista, siempre lista.", bodyEn:"Items auto-load as you use them. Add anything else with our AI-powered food list.", bodyEs:"Los artículos se cargan solos al usarlos. Agrega lo que falte con nuestra lista de alimentos con IA.", visual:{type:"emoji",value:"🛒"} },
+  { titleEn:"Link and Shop.", titleEs:"Conecta y Compra.", bodyEn:"Link your favorite grocery stores. Shop smarter, save more.", bodyEs:"Conecta tus tiendas favoritas. Compra más inteligente, ahorra más.", visual:{type:"emoji",value:"🏪"} },
+  { titleEn:"Plan your week.", titleEs:"Planifica tu semana.", bodyEn:"A practical way to add meals for every day with the ingredients you have.", bodyEs:"Una forma práctica de agregar comidas para cada día con los ingredientes que tienes.", visual:{type:"emoji",value:"📅"} },
+  { titleEn:"Stay safe.", titleEs:"Mantente seguro.", bodyEn:"Real-time FDA recall alerts, right in the app.", bodyEs:"Alertas de retiros de la FDA en tiempo real, dentro de la app.", visual:{type:"emoji",value:"🚨"} },
+  { titleEn:"English. Español.", titleEs:"Inglés. Español.", bodyEn:"Tap the flag — switch anytime.", bodyEs:"Toca la bandera — cambia cuando quieras.", visual:{type:"emoji",value:"🌐"} },
+  { titleEn:"Your voice shapes TrackFresh.", titleEs:"Tu opinión forma TrackFresh.", bodyEn:"Tell us what to build next.", bodyEs:"Dinos qué construir después.", visual:{type:"img",src:"/tour-feedback.jpg"} },
+  { titleEn:"Ready?", titleEs:"¿Listo?", bodyEn:"Tap the bubbles to begin.", bodyEs:"Toca las burbujas para comenzar.", visual:{type:"emoji",value:"🚀"} },
+];
+export const GLOBAL_STYLES = `
+  .btn-3d {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 60%, rgba(0,0,0,0.1) 100%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.22), 0 6px 12px rgba(0,0,0,0.18), inset 0 1.5px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.12);
+    transition: all 0.15s ease;
+    position: relative;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    border-radius: 10px;
+  }
+  .btn-3d.text-white, .btn-3d .text-white {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+  }
+  .btn-3d:hover {
+    box-shadow: 0 6px 0 rgba(0,0,0,0.22), 0 8px 16px rgba(0,0,0,0.22), inset 0 1.5px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  .btn-3d:active {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.22), 0 2px 4px rgba(0,0,0,0.12), inset 0 2px 4px rgba(0,0,0,0.12);
+    transform: translateY(3px);
+    transition-duration: 0.08s;
+  }
+  .pill-3d {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.06) 100%);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: all 0.15s ease;
+    font-weight: 600 !important;
+  }
+  .pill-3d:hover {
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+  .pill-3d:active {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(2px);
+    transition-duration: 0.08s;
+  }
+  .pill-3d-active {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.2);
+    font-weight: 700 !important;
+  }
+  input[type="text"], input[type="date"], input[type="number"], select, textarea,
+  input.rounded.border, input.flex-1.rounded.border {
+    border-radius: 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
+    transition: all 0.15s ease !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+    border-color: #059669 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 3px rgba(5,150,105,0.15) !important;
+    outline: none !important;
+  }
+  select {
+    border-radius: 0.75rem !important;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(0,0,0,0.02) 100%) !important;
+  }
+  .btn-green-3d {
+    background: linear-gradient(to bottom, #16a34a, #14532d) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    box-shadow: 0 5px 0px #0a2e16, 0 8px 16px rgba(0,0,0,0.35), inset 0 1.5px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    border: none !important;
+    border-radius: 12px;
+    transition: all 0.12s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+  .btn-green-3d:hover {
+    background: linear-gradient(to bottom, #22c55e, #15803d) !important;
+    box-shadow: 0 7px 0px #0a2e16, 0 10px 20px rgba(0,0,0,0.4), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px);
+  }
+  .btn-green-3d:active {
+    box-shadow: 0 1px 0px #0a2e16, 0 2px 6px rgba(0,0,0,0.25), inset 0 2px 4px rgba(0,0,0,0.15) !important;
+    transform: translateY(4px);
+    transition-duration: 0.08s;
+  }
+  .btn-amber-3d {
+    background: linear-gradient(to bottom, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
+    box-shadow: 0 5px 0px #92400e, 0 8px 16px rgba(0,0,0,0.35), inset 0 1.5px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    border: none !important;
+    border-radius: 12px;
+    transition: all 0.12s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+  .btn-amber-3d:hover {
+    background: linear-gradient(to bottom, #fbbf24, #b45309) !important;
+    box-shadow: 0 7px 0px #92400e, 0 10px 20px rgba(0,0,0,0.4), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px);
+  }
+  .btn-amber-3d:active {
+    box-shadow: 0 1px 0px #92400e, 0 2px 6px rgba(0,0,0,0.25), inset 0 2px 4px rgba(0,0,0,0.15) !important;
+    transform: translateY(4px);
+    transition-duration: 0.08s;
+  }
+  .bubble-blue {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #1e3a8a, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+  }
+  .bubble-blue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0px #1e3a8a, 0 10px 20px rgba(0,0,0,0.35), inset 0 2px 0 rgba(255,255,255,0.25);
+  }
+  .bubble-blue:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0px #1e3a8a, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  @keyframes bubbleBurst {
+    0% { transform: scale(1); opacity: 1; }
+    30% { transform: scale(1.8); opacity: 0.8; }
+    60% { transform: scale(3.5); opacity: 0.4; border-radius: 30%; }
+    100% { transform: scale(8); opacity: 0; border-radius: 10%; }
+  }
+  .bubble-burst {
+    animation: bubbleBurst 0.4s ease-out forwards !important;
+    z-index: 100;
+    pointer-events: none;
+  }
+  @keyframes tableShine {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+  }
+  
+  @keyframes handGrab {
+    0% { transform: translateX(120px) rotate(0deg); opacity: 0; }
+    20% { transform: translateX(40px) rotate(-5deg); opacity: 1; }
+    40% { transform: translateX(0px) rotate(-10deg); opacity: 1; }
+    60% { transform: translateX(-30px) rotate(-5deg); opacity: 1; }
+    100% { transform: translateX(-300px) rotate(15deg); opacity: 0; }
+  }
+  @keyframes platePulled {
+    0% { transform: scale(1) translateX(0); opacity: 1; }
+    30% { transform: scale(1.05) translateX(-10px); opacity: 1; }
+    100% { transform: scale(0.6) translateX(-350px) rotate(-20deg); opacity: 0; }
+  }
+  @keyframes fadeInPage {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  .bubble-green {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #14532d 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #0f3d20, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    animation: float 3s ease-in-out infinite;
+  }
+  .bubble-green:nth-child(1) { animation-delay: 0s; }
+  .bubble-green:nth-child(2) { animation-delay: 0.4s; }
+  .bubble-green:nth-child(3) { animation-delay: 0.8s; }
+  .bubble-green:nth-child(4) { animation-delay: 1.2s; }
+  .bubble-green:nth-child(5) { animation-delay: 1.6s; }
+  .bubble-green:nth-child(6) { animation-delay: 2.0s; }
+  .bubble-green:active {
+    animation-play-state: paused;
+    transform: scale(0.92);
+    box-shadow: 0 2px 0px #0f3d20, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  .bubble-amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0px #78350f, 0 8px 16px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    animation: float 3s ease-in-out infinite;
+  }
+  .bubble-amber:nth-child(1) { animation-delay: 0s; }
+  .bubble-amber:nth-child(2) { animation-delay: 0.4s; }
+  .bubble-amber:nth-child(3) { animation-delay: 0.8s; }
+  .bubble-amber:nth-child(4) { animation-delay: 1.2s; }
+  .bubble-amber:nth-child(5) { animation-delay: 1.6s; }
+  .bubble-amber:nth-child(6) { animation-delay: 2.0s; }
+  .bubble-amber:active {
+    animation-play-state: paused;
+    transform: scale(0.92);
+    box-shadow: 0 2px 0px #78350f, 0 3px 6px rgba(0,0,0,0.2);
+  }
+  @keyframes dance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-15px) rotate(-8deg); }
+    50% { transform: translateY(-5px) rotate(0deg); }
+    75% { transform: translateY(-15px) rotate(8deg); }
+  }
+  @keyframes danceRight {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-12px) rotate(10deg); }
+    50% { transform: translateY(-3px) rotate(0deg); }
+    75% { transform: translateY(-12px) rotate(-10deg); }
+  }
+  @keyframes jumpIn {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    40% { transform: translateY(-60px) scale(1.2); opacity: 1; }
+    70% { transform: translateY(-20px) scale(0.9); opacity: 1; }
+    85% { transform: translateY(30px) scale(0.7); opacity: 0.7; }
+    100% { transform: translateY(40px) scale(0.3); opacity: 0; }
+  }
+  @keyframes potBubble {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.5) translateY(-8px); opacity: 0; }
+  }
+  @keyframes potSteam {
+    0% { transform: translateY(0) scaleX(1); opacity: 0.6; }
+    100% { transform: translateY(-30px) scaleX(1.5); opacity: 0; }
+  }
+  @keyframes potWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+  }
+  @keyframes happy {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .stew-scene { position: relative; height: 220px; width: 100%; overflow: hidden; margin: 0 auto; }
+  .stew-pot {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 160px; height: 90px; background: linear-gradient(to bottom, #6b7280, #4b5563);
+    border-radius: 0 0 40% 40%; border-top: 8px solid #374151;
+    animation: potWiggle 0.5s ease-in-out infinite;
+    z-index: 10;
+  }
+  .pot-rim {
+    position: absolute; bottom: 82px; left: 50%; transform: translateX(-50%);
+    width: 180px; height: 16px; background: linear-gradient(to bottom, #9ca3af, #6b7280);
+    border-radius: 8px; z-index: 11;
+  }
+  .pot-liquid {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 148px; height: 50px; background: linear-gradient(to bottom, #ea580c, #c2410c);
+    border-radius: 0 0 38% 38%; z-index: 11;
+  }
+  .pot-handle-l {
+    position: absolute; bottom: 55px; left: calc(50% - 95px);
+    width: 20px; height: 30px; border: 4px solid #374151; border-right: none;
+    border-radius: 10px 0 0 10px; z-index: 9;
+  }
+  .pot-handle-r {
+    position: absolute; bottom: 55px; left: calc(50% + 75px);
+    width: 20px; height: 30px; border: 4px solid #374151; border-left: none;
+    border-radius: 0 10px 10px 0; z-index: 9;
+  }
+  .food-char {
+    position: absolute; bottom: 95px; font-size: 32px; z-index: 12;
+    animation: dance 0.8s ease-in-out infinite;
+  }
+  .food-char.r { animation-name: danceRight; }
+  .food-char.jump {
+    animation: jumpIn 1s ease-in forwards;
+  }
+  .steam {
+    position: absolute; font-size: 18px; z-index: 15; opacity: 0.6;
+    animation: potSteam 1.5s ease-out infinite;
+  }
+  .bubble-pot {
+    position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.6);
+    border-radius: 50%; z-index: 12;
+    animation: potBubble 1s ease-in-out infinite;
+  }
+  .btn-green-3d:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0px #0f3d20, 0 2px 4px rgba(0,0,0,0.2) !important;
+  }
+  .card-3d {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+  }
+  .card-3d:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* === MARKETING PAGE === */
+  .mkt-page { min-height: 100vh; background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%); color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
+  .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto; }
+  .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
+  .mkt-cta { display: inline-block; background: linear-gradient(to bottom, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 1.05rem; padding: 1rem 2.35rem; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 0px #92400e, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.15); transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; -webkit-tap-highlight-color:transparent; }
+  .mkt-cta:hover { transform: translateY(-3px); box-shadow: 0 8px 0px #92400e, 0 14px 32px rgba(0,0,0,0.36), 0 0 22px rgba(245,158,11,0.35), inset 0 1.5px 0 rgba(255,255,255,0.45); }
+  .mkt-cta:active { transform: translateY(4px); box-shadow: 0 1px 0px #92400e, 0 2px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
+  .mkt-cta-ghost { display: inline-block; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); color: #fff; font-weight: 700; font-size: 1.05rem; padding: 0.97rem 2.1rem; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.52); cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1); text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.22), 0 8px 18px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3); -webkit-tap-highlight-color:transparent; }
+  .mkt-cta-ghost:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.27), rgba(255,255,255,0.11)); border-color: rgba(255,255,255,0.88); box-shadow: 0 6px 0 rgba(0,0,0,0.22), 0 10px 22px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35); transform: translateY(-2px); }
+  .mkt-cta-ghost:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 2px 4px rgba(0,0,0,0.12); transition-duration: 0.08s; }
+  .mkt-hero { text-align: center; padding: 1.5rem 1.5rem 0.5rem; max-width: 680px; margin: 0 auto; }
+  .mkt-hero-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #86efac; margin-bottom: 0.6rem; display: block; }
+  .mkt-hero h1 { font-size: 2.9rem; font-weight: 900; line-height: 1.03; margin-bottom: 0.75rem; letter-spacing: -0.025em; color: #ffffff; }
+  .mkt-hero h1 span { color: #ffffff; }
+  .mkt-hero-sub { font-size: 1rem; color: rgba(255,255,255,0.72); line-height: 1.4; margin-bottom: 0.65rem; }
+  .mkt-hero-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
+  .mkt-section { padding: 0.5rem 1.5rem; max-width: 800px; margin: 0 auto; }
+  .mkt-section-dark { background: rgba(0,0,0,0.15); }
+  .mkt-section-title { text-align: center; margin-bottom: 0.4rem; }
+  .mkt-section-title h2 { font-size: 1.6rem; font-weight: 900; margin-top: 0; letter-spacing: -0.01em; }
+  .mkt-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0; text-align: center; padding: 0.1rem 0; }
+  .mkt-stat-num { font-size: 1.65rem; font-weight: 900; color: #B7D63A; }
+  .mkt-stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 0.1rem; }
+  /* Dashboard mockup */
+  .mkt-dashboard { max-width: 540px; margin: 0.75rem auto; background: linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%); border-radius: 20px; padding: 1.25rem; box-shadow: 0 24px 64px rgba(0,0,0,0.4); color: #fff; border: 2px solid rgba(183,214,58,0.55); }
+  .mkt-dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem; padding-bottom: 0.625rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .mkt-dash-title { font-size: 0.875rem; font-weight: 800; color: #fff; }
+  .mkt-dash-date { font-size: 0.7rem; color: rgba(255,255,255,0.55); font-weight: 600; }
+  .mkt-dash-section { margin-bottom: 0.75rem; }
+  .mkt-dash-section-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
+  .mkt-dash-item { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.6rem; border-radius: 10px; margin-bottom: 0.3rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); }
+  .mkt-dash-item-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
+  .mkt-dash-badge { font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+  .mkt-dash-badge-red { background: rgba(220,38,38,0.25); color: #fca5a5; border: 1px solid rgba(220,38,38,0.5); }
+  .mkt-dash-badge-yellow { background: rgba(163,230,53,0.15); color: #a3e635; border: 1px solid rgba(163,230,53,0.4); }
+  .mkt-dash-badge-green { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+  .mkt-dash-badge-blue { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25); }
+  .mkt-dash-use-soon { background: rgba(183,214,58,0.12); border: 1.5px solid rgba(183,214,58,0.45); border-radius: 10px; padding: 0.55rem 0.65rem; }
+  .mkt-dash-use-soon-label { font-size: 0.6rem; font-weight: 700; color: #B7D63A; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+  .mkt-dash-use-soon-items { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .mkt-dash-use-soon-chip { background: rgba(183,214,58,0.2); color: #B7D63A; font-size: 0.65rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 999px; border: 1px solid rgba(183,214,58,0.4); }
+  /* Benefit cards */
+  .mkt-benefits { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem; margin-top: 0.15rem; }
+  .mkt-benefit-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 0.35rem 0.5rem; backdrop-filter: blur(4px); transition: transform 0.2s, background 0.2s; width: calc(50% - 0.1rem); max-width: 280px; }
+  .mkt-benefit-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+  .mkt-benefit-icon { font-size: 1.2rem; margin-bottom: 0.1rem; }
+  .mkt-benefit-card h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.1rem; }
+  .mkt-benefit-card p { font-size: 0.75rem; opacity: 0.72; line-height: 1.2; }
+  /* 3-step */
+  .mkt-3steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; margin-top: 0.3rem; text-align: center; }
+  .mkt-3step { padding: 0.15rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+  .mkt-3step-num { width: 32px; height: 32px; background: linear-gradient(135deg, #F0C070, #E8A63C); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; margin: 0; flex-shrink: 0; box-shadow: 0 2px 0 #8C5A10; }
+  .mkt-3step h3 { font-size: 1rem; font-weight: 800; margin: 0; }
+  .mkt-footer { text-align: center; padding: 1.25rem 1.5rem; opacity: 0.6; font-size: 0.75rem; }
+  @media (max-width: 560px) { .mkt-3steps { grid-template-columns: repeat(3, 1fr); gap: 0.3rem; } .mkt-stats { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; } .mkt-hero h1 { font-size: 2.1rem; } .mkt-dashboard { margin: 0.75rem 0.75rem; } }
+  @keyframes mktFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .mkt-animate { animation: mktFadeIn 0.45s ease-out both; }
+  @keyframes heroSlideFromLeft { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes heroSlideFromRight { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
+  .hero-slide-left { display: inline-block; animation: heroSlideFromLeft 0.52s cubic-bezier(0.22,1,0.36,1) both; }
+  .hero-slide-right { display: inline-block; animation: heroSlideFromRight 0.52s cubic-bezier(0.22,1,0.36,1) both; }
+  .mkt-animate-d1 { animation-delay: 0.1s; }
+  .mkt-animate-d2 { animation-delay: 0.2s; }
+  .mkt-animate-d3 { animation-delay: 0.3s; }
+  .mkt-animate-d4 { animation-delay: 0.4s; }
+  .icon-bounce-1 { }
+  .icon-bounce-2 { }
+  .icon-bounce-3 { }
+  /* === TOP NAV === */
+  @keyframes navWobble { 0%,100% { transform: rotate(0deg); } 4% { transform: rotate(-11deg); } 8% { transform: rotate(10deg); } 12% { transform: rotate(-5deg); } 16% { transform: rotate(0deg); } }
+  .top-nav { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, #7c2d12, #c2410c); border-bottom: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.55); overflow-x: auto; }
+  .top-nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 0.45rem 0.5rem; min-width: 56px; flex-shrink: 0; border-radius: 8px; }
+  .top-nav button span.nav-icon { font-size: 1.6rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .top-nav button span.nav-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.03em; }
+  .top-nav button.nav-active { background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(255,255,255,0.2), inset 0 0 8px rgba(255,255,255,0.08); }
+  .top-nav button.nav-active span.nav-icon { transform: scale(1.18); filter: drop-shadow(0 0 5px rgba(255,255,255,0.7)) drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .top-nav button.nav-active span.nav-label { color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+  .top-nav button:not(.nav-active) span.nav-label { color: rgba(255,255,255,0.75); }
+  .top-nav button:not(.nav-active) span.nav-icon { opacity: 0.85; }
+  .top-nav button:not(:last-child) { border-right: 1px solid rgba(0,0,0,0.2); }
+  .top-nav button:nth-child(1) { animation: navWobble 4.2s 0.0s infinite; }
+  .top-nav button:nth-child(2) { animation: navWobble 4.2s 0.7s infinite; }
+  .top-nav button:nth-child(3) { animation: navWobble 4.2s 1.4s infinite; }
+  .top-nav button:nth-child(4) { animation: navWobble 4.2s 2.1s infinite; }
+  .top-nav button:nth-child(5) { animation: navWobble 4.2s 2.8s infinite; }
+  .top-nav button:nth-child(6) { animation: navWobble 4.2s 3.5s infinite; }
+  .main-content { padding-bottom: 5.5rem !important; }
+  /* === FOOTER NAV === */
+  .footer-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: linear-gradient(to top, #7c2d12, #c2410c); border-top: 2px solid rgba(0,0,0,0.25); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -4px 24px rgba(0,0,0,0.55); padding: 0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom)); overflow-x: auto; }
+  .footer-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0.35rem 0.5rem; min-width: 52px; flex-shrink: 0; border-radius: 8px; }
+  .footer-nav button span.footer-icon { font-size: 1.45rem; transition: transform 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .footer-nav button span.footer-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.02em; text-align: center; line-height: 1.2; }
+  .footer-nav button.footer-active { background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(255,255,255,0.2), inset 0 0 8px rgba(255,255,255,0.08); }
+  .footer-nav button.footer-active span.footer-icon { transform: scale(1.18); filter: drop-shadow(0 0 5px rgba(255,255,255,0.7)) drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .footer-nav button.footer-active span.footer-label { color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+  .footer-nav button:not(.footer-active) span.footer-label { color: rgba(255,255,255,0.75); }
+  .footer-nav button:not(.footer-active) span.footer-icon { opacity: 0.85; }
+  .footer-nav button:not(:last-child) { border-right: 1px solid rgba(0,0,0,0.2); }
+  .footer-nav button:nth-child(1) { animation: navWobble 4.2s 0.0s infinite; }
+  .footer-nav button:nth-child(2) { animation: navWobble 4.2s 0.7s infinite; }
+  .footer-nav button:nth-child(3) { animation: navWobble 4.2s 1.4s infinite; }
+  .footer-nav button:nth-child(4) { animation: navWobble 4.2s 2.1s infinite; }
+  .footer-nav button:nth-child(5) { animation: navWobble 4.2s 2.8s infinite; }
+  .footer-nav button:nth-child(6) { animation: navWobble 4.2s 3.5s infinite; }
+  .footer-nav button:not(:last-child) { border-right: 1px solid rgba(255,102,0,0.2); }
+  .cart-icon { display: inline-block; filter: drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13); }
+  /* Enter Beta button — override inline box-shadow on hover/active */
+  .enter-beta-btn { transition: transform 0.16s ease, box-shadow 0.16s ease !important; }
+  .enter-beta-btn:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 18px rgba(0,0,0,0.18), 0 2px 8px rgba(210,130,40,0.22) !important; }
+  .enter-beta-btn:active { transform: translateY(2px) scale(0.97) !important; box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important; transition-duration: 0.08s !important; }
+  /* Landing store tile hover */
+  .mkt-store-card { transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; }
+  .mkt-store-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.35) !important; }
+  .mkt-store-card:active { transform: translateY(1px); transition-duration: 0.08s; }
+
+  /* === APP INTERIOR THEME (matches landing page) === */
+  .app-bg { background: linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%); background-attachment: fixed; }
+  .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
+  .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07)); border: 2px solid #f59e0b; border-bottom: 3px solid rgba(80,105,15,0.7); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); width: 100%; box-shadow: 0 4px 0 rgba(80,105,15,0.5), 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.22); -webkit-tap-highlight-color:transparent; }
+  @keyframes letterPop { 0%,100% { transform:scale(1); color:#f97316; text-shadow:none; } 4% { transform:scale(1.28); color:#fde68a; text-shadow:0 0 10px rgba(251,191,36,0.9),0 0 4px rgba(249,115,22,0.7); } 10% { transform:scale(1); color:#f97316; text-shadow:none; } }
+  .glass-scan-btn:hover { background: rgba(255,255,255,0.2); border-color: #fbbf24; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  .glass-scan-btn:active { transform: translateY(1px); background: rgba(255,255,255,0.08); }
+  .tracker-items-card { background: rgba(255,255,255,0.12) !important; border: 3px solid #B7D63A !important; backdrop-filter: blur(4px); }
+  .glass-tile { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 1.25rem 1rem; text-align: center; backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s; cursor: pointer; width: 100%; display: block; }
+  .glass-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.18); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .glass-tile:active { transform: translateY(1px); }
+  .app-header-btn { background: none; border: none; border-radius: 0; padding: 0.4rem 0.5rem; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+  .app-header-btn:hover { opacity: 0.75; }
+  .back-btn { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 50%; color: #fff; font-size: 1rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; padding: 0; line-height: 1; }
+  .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.35); }
+  @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
+  @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  @keyframes textShimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+  .shimmer-text { background: linear-gradient(90deg, #E8A63C 25%, #fffbe8 50%, #E8A63C 75%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: textShimmer 3s linear infinite; }
+  .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
+  .arrow-up   { color:#B7D63A; display:inline-block; animation:arrowBounceUp   1.1s ease-in-out infinite; }
+  /* === TUTORIAL === */
+  @keyframes tutSlideUp { from { opacity:0; transform:translateY(60px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes tutEmojiPop { 0%,100% { transform:scale(1) rotate(0deg); } 20% { transform:scale(1.45) rotate(-10deg); } 45% { transform:scale(1.2) rotate(8deg); } 65% { transform:scale(1.3) rotate(-4deg); } 82% { transform:scale(1.1) rotate(2deg); } }
+  @keyframes tutStepIn { from { opacity:0; transform:translateX(36px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes tutBtnPulse { 0%,100% { box-shadow:0 0 0 0 rgba(183,214,58,0.55); } 50% { box-shadow:0 0 0 7px rgba(183,214,58,0); } }
+  .tut-pulse { animation: tutBtnPulse 2.5s infinite; }
+  .tut-modal { animation: tutSlideUp 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .tut-step { animation: tutStepIn 0.28s ease both; }
+  @keyframes flashRed { 0%,100% { opacity:1; background:rgba(220,38,38,0.25); } 50% { opacity:0.45; background:rgba(220,38,38,0.05); } }
+  .flash-red { animation: flashRed 1.1s ease-in-out infinite; }
+  @keyframes pulseRed { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.75; transform:scale(0.95); } }
+  .pulse-red { animation: pulseRed 1.2s ease-in-out infinite; }
+  @keyframes arrowBounceDown { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
+  @keyframes arrowBounceUp   { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+  .arrow-down { color:#B7D63A; display:inline-block; animation:arrowBounceDown 1.1s ease-in-out infinite; }
+  .arrow-up   { color:#B7D63A; display:inline-block; animation:arrowBounceUp   1.1s ease-in-out infinite; }
+
+  /* ── Premium polish ── */
+  /* 1. Dashboard tile — lift on hover (desktop) + visible tap feedback (mobile) */
+  .dash-tile { background:linear-gradient(175deg,rgba(255,255,255,0.26) 0%,rgba(255,255,255,0.08) 55%,rgba(0,0,0,0.08) 100%); border:1.5px solid rgba(255,255,255,0.28); border-bottom:3.5px solid rgba(0,0,0,0.35); border-radius:20px; padding:1rem 0.5rem; display:flex; flex-direction:column; align-items:center; gap:0.4rem; cursor:pointer; transition:transform 0.18s ease, box-shadow 0.18s ease; backdrop-filter:blur(8px); width:100%; -webkit-tap-highlight-color:transparent; box-shadow:0 6px 0 rgba(0,0,0,0.35), 0 10px 18px rgba(0,0,0,0.25), inset 0 1.5px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:hover { transform:translateY(-3px); box-shadow:0 9px 0 rgba(0,0,0,0.35), 0 14px 24px rgba(0,0,0,0.28), inset 0 1.5px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.15); }
+  .dash-tile:active { transform:translateY(5px) scale(0.96); box-shadow:0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 2px 6px rgba(0,0,0,0.1), 0 0 0 2.5px rgba(183,214,58,0.5), 0 0 18px rgba(183,214,58,0.22); outline:none; transition-duration:0.08s; }
+  /* 2. I Opened Something — visible on tap */
+  .opened-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(to bottom, rgba(183,214,58,0.22), rgba(183,214,58,0.1)); border:1.5px solid rgba(183,214,58,0.55); border-bottom:2.5px solid rgba(70,90,10,0.4); border-radius:12px; padding:0.6rem; cursor:pointer; color:#B7D63A; font-weight:800; font-size:0.82rem; transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 0 rgba(70,90,10,0.35), 0 6px 14px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+  .opened-btn:hover { transform:translateY(-2px); background:linear-gradient(to bottom, rgba(183,214,58,0.32), rgba(183,214,58,0.16)); box-shadow:0 6px 0 rgba(70,90,10,0.35), 0 10px 20px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.2); border-color:rgba(183,214,58,0.8); }
+  .opened-btn:active { transform:translateY(4px); background:rgba(183,214,58,0.28); box-shadow:0 1px 0 rgba(70,90,10,0.35), inset 0 2px 4px rgba(0,0,0,0.1); transition-duration:0.08s; }
+  /* 3. Tab fade-up transition — increased distance for visibility */
+  @keyframes tabFadeUp { from { opacity:0; } to { opacity:1; } }
+  .tab-enter { animation:tabFadeUp 0.28s ease-out both; }
+  @keyframes trackerLinkPulse { 0%{opacity:0} 25%{opacity:1} 100%{opacity:0} }
+  .tracker-link-overlay { position:fixed; inset:0; background:rgba(183,214,58,0.06); pointer-events:none; z-index:9990; animation:trackerLinkPulse 0.85s ease-out forwards; }
+  @keyframes trackerEntryGlow { 0%{box-shadow:0 0 0 0 rgba(183,214,58,0);} 25%{box-shadow:0 0 0 3px rgba(183,214,58,0.5), 0 0 22px rgba(183,214,58,0.22);} 100%{box-shadow:0 0 0 0 rgba(183,214,58,0);} }
+  .tracker-entry-flash { animation:trackerEntryGlow 0.65s ease-out both; border-radius:12px; }
+  @keyframes trackerTilePulse { 0%{transform:translateY(0) scale(1);box-shadow:0 6px 0 rgba(0,0,0,0.35),0 10px 18px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.28);filter:brightness(1);} 20%{transform:translateY(4px) scale(0.93);box-shadow:0 1px 0 rgba(0,0,0,0.3),0 0 0 3px rgba(183,214,58,0.65),0 0 28px rgba(183,214,58,0.35),inset 0 1px 0 rgba(255,255,255,0.15);filter:brightness(1.25);} 60%{transform:translateY(4px) scale(0.93);box-shadow:0 1px 0 rgba(0,0,0,0.3),0 0 0 3px rgba(183,214,58,0.5),0 0 22px rgba(183,214,58,0.25),inset 0 1px 0 rgba(255,255,255,0.15);filter:brightness(1.15);} 100%{transform:translateY(0) scale(1);box-shadow:0 6px 0 rgba(0,0,0,0.35),0 10px 18px rgba(0,0,0,0.25),inset 0 1.5px 0 rgba(255,255,255,0.28);filter:brightness(1);} }
+  .tracker-tile-active { animation:trackerTilePulse 0.7s ease-out both; }
+  /* 4. Card depth */
+  .card-premium { box-shadow:0 4px 6px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.95); }
+  /* 5. Urgency pulse — red only, more visible */
+  @keyframes urgencyGlow { 0%,100% { box-shadow:0 0 0 0 rgba(220,38,38,0.6); } 50% { box-shadow:0 0 0 6px rgba(220,38,38,0); } }
+  .urgency-pulse { animation:urgencyGlow 1.6s ease-in-out infinite; }
+  /* CTA tap/hover feedback */
+  .mkt-cta:hover { transform:translateY(-2px); box-shadow:0 6px 0px #8C5A10, 0 10px 24px rgba(0,0,0,0.35), 0 0 18px rgba(232,166,60,0.3); }
+  .mkt-cta:active { transform:translateY(2px); box-shadow:0 1px 0px #8C5A10, 0 2px 8px rgba(0,0,0,0.25); }
+  /* glass-scan-btn tap feedback */
+  .glass-scan-btn:hover { background: linear-gradient(to bottom, rgba(255,255,255,0.26), rgba(255,255,255,0.1)); border-color: #fbbf24; transform: translateY(-3px); box-shadow: 0 7px 0 rgba(80,105,15,0.5), 0 10px 20px rgba(0,0,0,0.25), 0 0 14px rgba(183,214,58,0.18), inset 0 1px 0 rgba(255,255,255,0.28); }
+  .glass-scan-btn:active { transform: translateY(3px); background: rgba(255,255,255,0.1); box-shadow: 0 1px 0 rgba(150,50,0,0.5), 0 2px 6px rgba(0,0,0,0.15), inset 0 2px 4px rgba(0,0,0,0.1); transition-duration: 0.08s; }
+  @keyframes mic-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+  @keyframes tf-first-item { 0%{opacity:0;transform:translateY(5px)} 12%{opacity:1;transform:translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateY(-3px)} }
+  .tf-first-item-msg { animation: tf-first-item 2.2s ease forwards; pointer-events:none; }
+  .voice-mic-btn { display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.65);cursor:pointer;font-size:1rem;transition:all 0.2s;flex-shrink:0; }
+  .voice-mic-btn:hover { background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4); }
+  .voice-mic-btn.listening { background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.55);color:#ef4444;animation:mic-pulse 1.1s infinite; }
+`;
+"use client";
+
+import React from "react";
+
+export function AiBadge({ style = {} }) {
+  return (
+    <span style={{whiteSpace:"nowrap",...style}}>
+      <span style={{color:"#f97316",fontWeight:900,fontSize:"1.2em",lineHeight:1,letterSpacing:"-0.02em"}}>A</span><span style={{color:"#4ade80",fontWeight:900,lineHeight:1,marginLeft:"0.02em"}}>i</span>
+    </span>
+  );
+}
+
+export function GreenDot() {
+  return <span style={{display:"inline-block",width:"0.32em",height:"0.32em",background:"#22c55e",borderRadius:"50%",marginLeft:"0.05em",marginRight:"0em",verticalAlign:"baseline",boxShadow:"0 0 7px #22c55e,0 0 14px rgba(34,197,94,0.4)",flexShrink:0}} />;
+}
+
+export function TrackFreshLogo({ showBroc = true, style = {} }) {
+  return (
+    <span style={{whiteSpace:"nowrap",...style}}>
+      {showBroc && <>{String.fromCodePoint(0x1F966)} </>}<span style={{color:"#fff",fontWeight:900}}>TrackFresh</span><GreenDot /><AiBadge />
+    </span>
+  );
+}
