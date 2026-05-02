@@ -2135,17 +2135,17 @@ export default function TrackFreshDashboard() {
 
         {showRecallsPanel && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
-          <div style={{background:"white",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
+          <div style={{background:"rgba(0,0,0,0.85)",backdropFilter:"blur(20px)",border:"2px solid #fbbf24",borderRadius:"24px 24px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
               <button onClick={() => setShowRecallsPanel(false)} style={{background:"none",border:"none",cursor:"pointer",color:"#111",fontSize:"1.1rem",fontWeight:"bold",display:"flex",alignItems:"center",gap:"4px",padding:0}}><span style={{color:"#111",fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Atrás" : "Back"}</button>
-              <h2 style={{fontWeight:800,fontSize:"1.1rem",color:"#991b1b",margin:0}}>&#9888;&#65039; {t("fdaRecallsBanner")}</h2>
+              <h2 style={{fontWeight:800,fontSize:"1.1rem",color:"#fbbf24",margin:0}}>{lang === "es" ? "🛡️ GUARDIÁN DE COCINA: ALERTAS ACTIVAS" : "🛡️ KITCHEN GUARD: ACTIVE ALERTS"}</h2>
               <button onClick={() => setShowRecallsPanel(false)} style={{background:"#f3f4f6",border:"none",borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>&#10005;</button>
             </div>
             {fdaLoading && <p style={{textAlign:"center",color:"#6b7280",padding:"2rem 0"}}>{t("fdaLoading")}</p>}
             {fdaRecalls.length === 0 && !fdaLoading && <p style={{textAlign:"center",color:"#6b7280",padding:"2rem 0"}}>{t("fdaError")}</p>}
             <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
               {fdaRecalls.map(recall => (
-                <div key={recall.id} style={{background:"white",borderRadius:"12px",padding:"1rem",border:recall.severity === "high" ? "2px solid #fecaca" : recall.severity === "medium" ? "2px solid #fed7aa" : "1px solid #e5e7eb",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+                <div key={recall.id} style={{background:"rgba(255,255,255,0.05)",borderRadius:"12px",padding:"1rem",borderLeft:recall.severity === "high" ? "4px solid #fbbf24" : "4px solid rgba(255,255,255,0.3)"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem"}}>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:700,fontSize:"0.85rem",color:"#111",lineHeight:1.3}}>{recall.product}</div>
@@ -2959,7 +2959,6 @@ export default function TrackFreshDashboard() {
                 {/* Track Your Food + scan actions */}
                 <div>
                   <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
-                  <h2 className="app-section-h2" style={{marginBottom:"0.25rem",color:"#F59E0B",letterSpacing:"0.08em"}}>{lang === "es" ? "RASTREA TU COMIDA" : "TRACK YOUR FOOD"}</h2>
                 </div>
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",marginBottom:"0.75rem"}}>
