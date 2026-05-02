@@ -4422,6 +4422,13 @@ export default function TrackFreshDashboard() {
         </div>
       )}
 
+      {/* FAB - Smart Scanner */}
+      <button
+        onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("multi"); }}
+        style={{position:"fixed",bottom:"2rem",left:"50%",transform:"translateX(-50%)",width:"65px",height:"65px",backgroundColor:"#f59e0b",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px rgba(0,0,0,0.4)",animation:"emberPulse 2s infinite",zIndex:100,border:"2px solid #fbbf24",cursor:"pointer",fontSize:"1.75rem"}}
+        aria-label="Open Smart Scanner"
+      >📷</button>
+
     </>
   );
 }

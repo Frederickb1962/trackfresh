@@ -499,4 +499,9 @@ export const GLOBAL_STYLES = `
   .voice-mic-btn { display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.65);cursor:pointer;font-size:1rem;transition:all 0.2s;flex-shrink:0; }
   .voice-mic-btn:hover { background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4); }
   .voice-mic-btn.listening { background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.55);color:#ef4444;animation:mic-pulse 1.1s infinite; }
+  @keyframes emberPulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  }
 `;
