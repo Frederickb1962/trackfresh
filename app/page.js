@@ -2959,7 +2959,7 @@ export default function TrackFreshDashboard() {
                 {/* Track Your Food + scan actions */}
                 <div>
                   <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
-                  <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{lang === "es" ? "Rastrea tu Comida" : "Track Your Food"}</h2>
+                  <h2 className="app-section-h2" style={{marginBottom:"0.25rem",color:"#F59E0B",letterSpacing:"0.08em"}}>{lang === "es" ? "RASTREA TU COMIDA" : "TRACK YOUR FOOD"}</h2>
                 </div>
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="glass-scan-btn w-full" style={{padding:"0.85rem 1rem",fontSize:"0.875rem",flexDirection:"column",justifyContent:"center",gap:"0.35rem",marginBottom:"0.75rem"}}>
