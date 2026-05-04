@@ -800,23 +800,7 @@ export default function TrackFreshDashboard() {
   const startVoiceDatePrompt = (productName) => {
     console.log("[VOICE] startVoiceDatePrompt called for:", productName);
     setVoicePromptDone(false);
-    window.speechSynthesis.cancel();
-    const speak = () => {
-      const msg = new SpeechSynthesisUtterance("I found " + productName + ". Say the expiration date, or enter it manually.");
-      const voices = window.speechSynthesis.getVoices();
-      const natural = voices.find(v => v.name === "Google US English")
-        || voices.find(v => v.name === "Samantha")
-        || voices.find(v => v.name.includes("Zoe") && v.lang.startsWith("en"))
-        || voices.find(v => v.lang === "en-US");
-      if (natural) msg.voice = natural;
-      msg.pitch = 1.05;
-      msg.rate = 0.9;
-      msg.onend = () => { console.log("[VOICE] date prompt speech ended, starting voice listening"); startVoiceListening(); };
-      msg.onerror = (e) => { console.log("[VOICE] date prompt speech ERROR:", e.error, "— still starting voice listening"); startVoiceListening(); };
-      window.speechSynthesis.speak(msg);
-    };
-    if (window.speechSynthesis.getVoices().length > 0) { speak(); }
-    else { window.speechSynthesis.addEventListener('voiceschanged', function onVoicesChanged() { window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged); speak(); }); }
+    startVoiceListening();
   };
 
   const startVoiceListening = () => {
@@ -843,16 +827,9 @@ export default function TrackFreshDashboard() {
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
         setVoiceListening(false);
         setVoicePromptDone(true);
-        speakThen("Got it. Do you have more items? Say Next to continue or Done to finish.", () => {
-          console.log("[VOICE] NEXT/DONE listener started via startVoiceCommand");
-          setVoiceFlowStep("listening_next");
-          startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
-        });
+        setVoiceFlowStep(null);
       } else {
         console.log("[VOICE] date not parsed from:", transcript);
-        const retry = new SpeechSynthesisUtterance("Sorry, I did not catch that. Please enter the date manually.");
-        retry.rate = 1.0;
-        window.speechSynthesis.speak(retry);
         setVoiceListening(false);
         setVoicePromptDone(true);
       }
@@ -978,34 +955,16 @@ export default function TrackFreshDashboard() {
     setVoiceFlowStep("listening_date");
     startVoiceCommand((transcript) => {
       const t = transcript.toLowerCase();
-      if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); speak(lang === "es" ? "Pausado." : "Paused."); return; }
-      if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); speak(lang === "es" ? "Modo edición." : "Edit mode. Say Return to Scan when done."); return; }
+      if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); return; }
+      if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); return; }
       if (t.includes("stop") || t.includes("detener")) { handleDoneUniScan(); return; }
-      if (t.includes("skip") || t.includes("omitir")) { speak(lang === "es" ? "Omitido." : "Skipped."); resetSmartScanner(); setTimeout(() => startScanCommandLoop(), 1200); return; }
+      if (t.includes("skip") || t.includes("omitir")) { resetSmartScanner(); setTimeout(() => startScanCommandLoop(), 500); return; }
       const parsed = parseSpokenDate(transcript);
       if (parsed) {
         setSmartUseBy(parsed);
-        setVoiceFlowStep("say_next");
-        const loc = smartLocation || 'Fridge';
-        const locPrompt = lang === 'es'
-          ? 'Fecha capturada. Donde lo guardas? Di Refrigerador, Congelador o Despensa.'
-          : 'Date captured. Where are you storing it? Say Fridge, Freezer, or Pantry.';
-        speakThen(locPrompt, () => {
-          setVoiceFlowStep('listening_location');
-          startVoiceCommand((cmd) => {
-            const t = cmd.toLowerCase();
-            if (t.includes('fridge') || t.includes('refrigerador') || t.includes('refri')) setSmartLocation('Fridge');
-            else if (t.includes('freeze') || t.includes('freezer') || t.includes('congelador')) setSmartLocation('Freezer');
-            else if (t.includes('pantry') || t.includes('despensa')) setSmartLocation('Pantry');
-            speakThen(lang === 'es' ? 'Di Siguiente para continuar o Listo para terminar.' : 'Say Next to continue or Done to finish.', () => {
-              setVoiceFlowStep('listening_next');
-              startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
-            });
-          });
-        });
+        setVoiceFlowStep(null);
       } else {
-        speak(lang === "es" ? "No entendí. Intente de nuevo." : "Could not understand. Try again.");
-        setTimeout(() => listenForDate(), 1800);
+        setTimeout(() => listenForDate(), 500);
       }
     });
   };
@@ -1017,19 +976,17 @@ export default function TrackFreshDashboard() {
         if (smartCaptureRef && smartCaptureRef.current) smartCaptureRef.current();
         else setTimeout(() => startScanCommandLoop(), 500);
       } else if (t.includes('skip') || t.includes('omitir') || t.includes('saltar')) {
-        speakThen(lang === "es" ? "Omitido." : "Skipped.", () => startScanCommandLoop());
+        startScanCommandLoop();
       } else if (t.includes('edit') || t.includes('editar')) {
         setShowVoiceEditForm(true);
-        speak(lang === "es" ? "Modo edición. Di Volver a Escanear para continuar." : "Edit mode. Say Return to Scan when done.");
       } else if (t.includes('pause') || t.includes('pausa')) {
         setVoiceFlowPaused(true);
-        speak(lang === "es" ? "Pausado. Di Continuar." : "Paused. Say Continue to resume.");
       } else if (t.includes('continue') || t.includes('continuar')) {
         setVoiceFlowPaused(false);
-        speakThen(lang === "es" ? "Continuando." : "Continuing.", () => startScanCommandLoop());
+        startScanCommandLoop();
       } else if (t.includes('return') || t.includes('volver')) {
         setShowVoiceEditForm(false);
-        speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop());
+        startScanCommandLoop();
       } else if (t.includes('stop') || t.includes('detener') || t.includes('parar')) {
         handleDoneUniScan();
       } else {
@@ -1047,8 +1004,6 @@ export default function TrackFreshDashboard() {
       setSelectedSmartMulti(item._allItems.map((_, i) => i));
       setShowSmartMultiReview(true);
       setSmartError("");
-      const count = item._allItems.length;
-      speak(lang === "es" ? `Encontré ${count} productos. Revisa la lista.` : `Found ${count} items. Review the list.`);
       return;
     }
     setSmartResult(item);
@@ -1057,16 +1012,16 @@ export default function TrackFreshDashboard() {
     resetUniScanTimer();
     setSmartLocation(item.location || "Fridge");
     const itemName = item.name || "item";
-    speak(lang === "es" ? `Encontré ${itemName}. Revisa los detalles.` : `Found ${itemName}. Review the details.`);
     setVoiceFlowStep("say_date");
+    listenForDate();
 
   };
   const handleVoiceNextDone = (cmd) => {
     console.log("[VOICE] handleVoiceNextDone called with:", cmd);
     const t = cmd.toLowerCase();
     if (voiceNDTimeoutRef.current) { clearTimeout(voiceNDTimeoutRef.current); voiceNDTimeoutRef.current = null; }
-    if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); speak(lang === "es" ? "Pausado." : "Paused. Say Continue."); return; }
-    if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); speak(lang === "es" ? "Modo edición." : "Edit mode. Say Return to Scan when done."); return; }
+    if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); return; }
+    if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); return; }
     if (t.includes("stop") || t.includes("detener")) { console.log("[VOICE] DONE via stop — calling handleDoneUniScan"); handleDoneUniScan(); return; }
     if (t.includes("next") || t.includes("yes") || t.includes("more") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { console.log("[VOICE] NEXT — calling handleAddSmartItemMulti"); handleAddSmartItemMulti(); return; }
     if (t.includes("done") || t.includes("listo") || t.includes("lista") || t.includes("finish") || t.includes("terminar")) { console.log("[VOICE] DONE — calling handleAddSmartItemMulti + handleDoneUniScan"); handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
@@ -2457,7 +2412,7 @@ export default function TrackFreshDashboard() {
                   ))}
                 </div>
               </div>
-              <button onClick={() => { setShowVoiceEditForm(false); speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop()); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
+              <button onClick={() => { setShowVoiceEditForm(false); startScanCommandLoop(); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
                 🎙️ {lang === "es" ? "Volver a Escanear" : "Return to Scan"}
               </button>
               <button onClick={() => handleAddSmartItemMulti()} style={{width:"100%",background:"#3b82f6",color:"white",borderRadius:"10px",border:"none",cursor:"pointer",padding:"0.625rem",fontSize:"0.875rem",fontWeight:"bold"}}>
@@ -2488,7 +2443,7 @@ export default function TrackFreshDashboard() {
                   ))}
                 </div>
               </div>
-              <button onClick={() => { setShowVoiceEditForm(false); speakThen(lang === "es" ? "Volviendo al escáner." : "Returning to scanner.", () => startScanCommandLoop()); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
+              <button onClick={() => { setShowVoiceEditForm(false); startScanCommandLoop(); }} className="w-full rounded-xl py-2.5 text-sm font-bold btn-green-3d" style={{marginBottom:"0.5rem",display:"block"}}>
                 🎙️ {lang === "es" ? "Volver a Escanear" : "Return to Scan"}
               </button>
               <button onClick={() => handleAddSmartItemMulti()} style={{width:"100%",background:"#3b82f6",color:"white",borderRadius:"10px",border:"none",cursor:"pointer",padding:"0.625rem",fontSize:"0.875rem",fontWeight:"bold"}}>
@@ -4435,13 +4390,6 @@ export default function TrackFreshDashboard() {
           })()}
         </div>
       )}
-
-      {/* FAB - Smart Scanner */}
-      <button
-        onClick={() => { setShowSmartScanner(true); setUniScanCount(0); setUniScanLastItem(""); setVoiceFlowStep(null); setScanMode("multi"); }}
-        style={{position:"fixed",bottom:"2rem",left:"50%",transform:"translateX(-50%)",width:"65px",height:"65px",backgroundColor:"#f59e0b",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px rgba(0,0,0,0.4)",animation:"emberPulse 2s infinite",zIndex:100,border:"2px solid #fbbf24",cursor:"pointer",fontSize:"1.75rem"}}
-        aria-label="Open Smart Scanner"
-      >📷</button>
 
     </>
   );
