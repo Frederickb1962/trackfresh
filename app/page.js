@@ -828,6 +828,10 @@ export default function TrackFreshDashboard() {
         setVoiceListening(false);
         setVoicePromptDone(true);
         setVoiceFlowStep(null);
+        if (window.currentRecognition) {
+          window.currentRecognition.stop();
+          window.currentRecognition = null;
+        }
         startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
       } else {
         console.log("[VOICE] date not parsed from:", transcript);
