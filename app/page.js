@@ -1068,14 +1068,15 @@ export default function TrackFreshDashboard() {
   const handleSmartError = (msg) => { if (msg === "__done__") { handleDoneUniScan(); return; } setSmartError(msg); setSmartResult(null); };
 
   const handleAddSmartMultiItems = () => {
-    const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;
-    const newItems = selectedSmartMulti.map(i => smartMultiItems[i]).filter(Boolean).map(item => ({
+    const items = selectedSmartMulti.map(i => smartMultiItems[i]).filter(Boolean).map(item => ({
       id: crypto.randomUUID(), name: item.name || "Unknown", useByDate: item.date || "", openDate: "",
       category: item.category || "Other", quantity: "1", location: item.location || "Fridge",
       daysAfterOpening: item.daysAfterOpening || null, storageTip: item.storageTip || "", openedTip: item.openedTip || ""
     }));
-    setTrackedItems(prev => [...newItems, ...prev]);
     setShowSmartScanner(false); setSmartMultiItems([]); setSelectedSmartMulti([]); setShowSmartMultiReview(false); resetSmartScanner(); setScanMode(null);
+    setPendingDateItems(items);
+    setPendingDateIndex(0);
+    setPendingPickedDate("");
   };
 
   const handleMultiScan = async (file) => {
@@ -1860,28 +1861,23 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setPendingPickedDate(parsed);
         setPendingVoiceError(""); setPendingVoiceListening(false); setPendingVoiceAwaitND(true);
-        const ndMsg = new SpeechSynthesisUtterance("Say Next to save and continue, or Done to finish.");
-        ndMsg.rate = 1.1;
-        ndMsg.onend = () => {
-          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (!SR2) { setPendingVoiceAwaitND(false); return; }
-          if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} }
-          const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
-          pendingNDRef.current = ndRecog;
-          let settled = false;
-          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setPendingVoiceAwaitND(false); pendingNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
-          ndRecog.onresult = (ev) => {
-            if (settled) return; settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null;
-            const cmd = ev.results[0][0].transcript.toLowerCase();
-            const nextIdx = pendingDateIndex + 1;
-            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more")) { handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 700); }
-            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish")) { handlePendingSaveDate(); setTimeout(() => { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }, 300); }
-          };
-          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
-          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
-          ndRecog.start();
+        const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR2) { setPendingVoiceAwaitND(false); return; }
+        if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} }
+        const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
+        pendingNDRef.current = ndRecog;
+        let settled = false;
+        const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setPendingVoiceAwaitND(false); pendingNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
+        ndRecog.onresult = (ev) => {
+          if (settled) return; settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null;
+          const cmd = ev.results[0][0].transcript.toLowerCase();
+          const nextIdx = pendingDateIndex + 1;
+          if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more") || cmd.includes("another") || cmd.includes("continue") || cmd.includes("again") || cmd.includes("keep") || cmd.includes("one more")) { handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 500); }
+          else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish") || cmd.includes("finished") || cmd.includes("complete") || cmd.includes("all")) { handlePendingSaveDate(); setTimeout(() => { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }, 300); }
         };
-        window.speechSynthesis.cancel(); window.speechSynthesis.speak(ndMsg);
+        ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
+        ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
+        ndRecog.start();
       } else { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); }
     };
     recog.onerror = () => { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); };
