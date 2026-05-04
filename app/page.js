@@ -1861,6 +1861,7 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setPendingPickedDate(parsed);
         setPendingVoiceError(""); setPendingVoiceListening(false); setPendingVoiceAwaitND(true);
+        recog.stop();
         const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR2) { setPendingVoiceAwaitND(false); return; }
         if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} }
