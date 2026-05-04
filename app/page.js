@@ -828,6 +828,7 @@ export default function TrackFreshDashboard() {
         setVoiceListening(false);
         setVoicePromptDone(true);
         setVoiceFlowStep(null);
+        startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
       } else {
         console.log("[VOICE] date not parsed from:", transcript);
         setVoiceListening(false);
@@ -963,6 +964,7 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setSmartUseBy(parsed);
         setVoiceFlowStep(null);
+        startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
       } else {
         setTimeout(() => listenForDate(), 500);
       }
@@ -1022,9 +1024,8 @@ export default function TrackFreshDashboard() {
     if (voiceNDTimeoutRef.current) { clearTimeout(voiceNDTimeoutRef.current); voiceNDTimeoutRef.current = null; }
     if (t.includes("pause") || t.includes("pausa")) { setVoiceFlowPaused(true); return; }
     if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); return; }
-    if (t.includes("stop") || t.includes("detener")) { console.log("[VOICE] DONE via stop — calling handleDoneUniScan"); handleDoneUniScan(); return; }
-    if (t.includes("next") || t.includes("yes") || t.includes("more") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { console.log("[VOICE] NEXT — calling handleAddSmartItemMulti"); handleAddSmartItemMulti(); return; }
-    if (t.includes("done") || t.includes("listo") || t.includes("lista") || t.includes("finish") || t.includes("terminar")) { console.log("[VOICE] DONE — calling handleAddSmartItemMulti + handleDoneUniScan"); handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
+    if (t.includes("next") || t.includes("yes") || t.includes("more") || t.includes("another") || t.includes("continue") || t.includes("again") || t.includes("keep") || t.includes("one more") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { console.log("[VOICE] NEXT — calling handleAddSmartItemMulti"); handleAddSmartItemMulti(); setTimeout(() => startScanCommandLoop(), 1200); return; }
+    if (t.includes("done") || t.includes("finish") || t.includes("stop") || t.includes("finished") || t.includes("complete") || t.includes("all") || t.includes("listo") || t.includes("lista") || t.includes("terminar") || t.includes("detener")) { console.log("[VOICE] DONE — calling handleAddSmartItemMulti + handleDoneUniScan"); handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
     console.log("[VOICE] handleVoiceNextDone: unrecognized command, retrying");
     setVoiceFlowStep("listening_next");
     voiceNDTimeoutRef.current = setTimeout(() => { setVoiceFlowStep(null); if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(ex) {} voiceFlowRef.current = null; } }, 10000);
