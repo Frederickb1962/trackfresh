@@ -1854,35 +1854,33 @@ export default function TrackFreshDashboard() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { setPendingVoiceError("Voice not supported on this device"); return; }
     const recog = new SR(); recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1;
+    let dateParsed = false;
     setPendingVoiceListening(true);
     recog.onresult = (e) => {
       const t = e.results[0][0].transcript;
       const parsed = parseSpokenDate(t);
       if (parsed) {
-        setPendingPickedDate(parsed);
-        setPendingVoiceError(""); setPendingVoiceListening(false); setPendingVoiceAwaitND(true);
+        dateParsed = true;
         recog.stop();
-        const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR2) { setPendingVoiceAwaitND(false); return; }
-        if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} }
-        const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
-        pendingNDRef.current = ndRecog;
-        let settled = false;
-        const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setPendingVoiceAwaitND(false); pendingNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
-        ndRecog.onresult = (ev) => {
-          if (settled) return; settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null;
-          const cmd = ev.results[0][0].transcript.toLowerCase();
-          const nextIdx = pendingDateIndex + 1;
-          if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more") || cmd.includes("another") || cmd.includes("continue") || cmd.includes("again") || cmd.includes("keep") || cmd.includes("one more")) { handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 500); }
-          else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish") || cmd.includes("finished") || cmd.includes("complete") || cmd.includes("all")) { handlePendingSaveDate(); setTimeout(() => { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }, 300); }
-        };
-        ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
-        ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setPendingVoiceAwaitND(false); pendingNDRef.current = null; } };
-        ndRecog.start();
-      } else { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); }
+        setPendingVoiceListening(false);
+        setPendingPickedDate(parsed);
+        const item = pendingDateItems[pendingDateIndex];
+        if (item) setTrackedItems(prev => [{ ...item, useByDate: parsed }, ...prev]);
+        const nextIdx = pendingDateIndex + 1;
+        if (nextIdx >= pendingDateItems.length) {
+          setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate("");
+        } else {
+          setPendingDateIndex(nextIdx);
+          setPendingPickedDate("");
+          setTimeout(() => startPendingVoice(), 500);
+        }
+      } else {
+        setPendingVoiceError("Could not understand. Try: April 20");
+        setPendingVoiceListening(false);
+      }
     };
-    recog.onerror = () => { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); };
-    recog.onend = () => setPendingVoiceListening(false);
+    recog.onerror = () => { if (!dateParsed) { setPendingVoiceError("Could not understand. Try: April 20"); setPendingVoiceListening(false); } };
+    recog.onend = () => { if (!dateParsed) setPendingVoiceListening(false); };
     recog.start();
   };
 
