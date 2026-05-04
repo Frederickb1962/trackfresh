@@ -13,11 +13,21 @@ export default function SmartScanner({ onResult, onError, captureRef, lang }) {
   const voiceRef = useRef(null);
 
   const speak = (text) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.1; u.pitch = 1;
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.8; u.pitch = 1;
+    const preferred = ["Google US English", "Samantha", "Zoe"];
+    const doSpeak = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const pick = preferred.map(n => voices.find(v => v.name === n)).find(Boolean);
+      if (pick) u.voice = pick;
       window.speechSynthesis.speak(u);
+    };
+    if (window.speechSynthesis.getVoices().length > 0) {
+      doSpeak();
+    } else {
+      window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true });
     }
   };
 
@@ -25,7 +35,13 @@ export default function SmartScanner({ onResult, onError, captureRef, lang }) {
     console.log("[SCANNER] listenForCommand started");
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
-    if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} }
+    let isAborting = false;
+    if (voiceRef.current) {
+      isAborting = true;
+      try { voiceRef.current.stop(); } catch(e) {}
+      voiceRef.current = null;
+    }
+    isAborting = false;
     const recog = new SR();
     recog.lang = lang === "es" ? "es-MX" : "en-US";
     recog.interimResults = false;
@@ -42,11 +58,11 @@ export default function SmartScanner({ onResult, onError, captureRef, lang }) {
     recog.onerror = (e) => {
       console.log("[SCANNER] listenForCommand error:", e.error);
       if (e.error === 'aborted') return;
-      setTimeout(() => { if (!gotResult) { console.log("[SCANNER] listenForCommand: restarting after error"); listenForCommand(onCmd); } }, 300);
+      setTimeout(() => { if (!isAborting && !gotResult) { console.log("[SCANNER] listenForCommand: restarting after error"); listenForCommand(onCmd); } }, 500);
     };
     recog.onend = () => {
       console.log("[SCANNER] listenForCommand ended, gotResult:", gotResult, "voiceRef===recog:", voiceRef.current === recog);
-      setTimeout(() => { if (!gotResult && voiceRef.current === recog) { console.log("[SCANNER] listenForCommand: restarting after onend"); listenForCommand(onCmd); } }, 300);
+      setTimeout(() => { if (!isAborting && !gotResult && voiceRef.current === recog) { console.log("[SCANNER] listenForCommand: restarting after onend"); listenForCommand(onCmd); } }, 500);
     };
     recog.start();
   };
@@ -92,7 +108,7 @@ export default function SmartScanner({ onResult, onError, captureRef, lang }) {
         } else if (cmd.includes("stop") || cmd.includes("done") || cmd.includes("listo") || cmd.includes("detener") || cmd.includes("parar")) {
           onError("__done__");
         } else {
-          speak(lang === "es" ? "Di capturar cuando estés listo." : "Say capture when ready.");
+          speak(lang === "es" ? "Di capturar cuando estés listo." : "Say 'capture' when you're ready.");
           startListening();
         }
       });
@@ -135,10 +151,10 @@ export default function SmartScanner({ onResult, onError, captureRef, lang }) {
         // Prompt user with voice
         timerRef.current = setTimeout(() => {
           if (!detectedRef.current) {
-            speak(lang === "es" ? "Apunta a tu artículo. Di capturar cuando estés listo." : "Point at your item. Say capture when ready.");
+            speak(lang === "es" ? "Apunta a tu artículo. Di capturar cuando estés listo." : "Point at your item. Say 'capture' when you're ready.");
             startListening();
           }
-        }, 2000);
+        }, 500);
         if (captureRef) captureRef.current = () => { if (!detectedRef.current) { if (voiceRef.current) { try { voiceRef.current.abort(); } catch(e) {} } captureAndScan(); } };
       } catch (e) { setScanError("Camera access denied. Please allow camera access."); }
     }
