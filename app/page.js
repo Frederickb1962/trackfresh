@@ -797,54 +797,39 @@ export default function TrackFreshDashboard() {
     }
   };
 
-  const startVoiceDatePrompt = (productName) => {
-    console.log("[VOICE] startVoiceDatePrompt called for:", productName);
-    setVoicePromptDone(false);
-    startVoiceListening();
-  };
-
   const startVoiceListening = () => {
-    console.log("[VOICE] DATE listener started");
     if (window.currentRecognition) {
-      window.currentRecognition.stop();
-      window.currentRecognition = null;
+      try { window.currentRecognition.onend = null; window.currentRecognition.abort(); } catch(e) {}
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { console.log("[VOICE] no SR support, aborting"); setVoicePromptDone(true); return; }
+    if (!SR) return;
     const recognition = new SR();
     window.currentRecognition = recognition;
     recognition.lang = lang === "es" ? "es-MX" : "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     setVoiceListening(true);
+
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      console.log("[VOICE] heard date transcript:", transcript);
       const parsed = parseSpokenDate(transcript);
       if (parsed) {
-        console.log("[VOICE] date parsed:", parsed, "— advancing to next step");
+        if (typeof playBeep === 'function') playBeep(880, 120);
         setSmartUseBy(parsed);
         setSmartResult(prev => prev ? {...prev, dateFound: true, date: parsed} : prev);
         setVoiceListening(false);
         setVoicePromptDone(true);
-        setVoiceFlowStep(null);
-        if (window.currentRecognition) {
-          window.currentRecognition.stop();
-          window.currentRecognition = null;
-        }
-        startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
+        // This is the magic line that advances without asking "Next"
+        setTimeout(() => { handleAddSmartItemMulti(); }, 300);
       } else {
-        console.log("[VOICE] date not parsed from:", transcript);
+        if (typeof playBeep === 'function') playBeep(220, 150);
         setVoiceListening(false);
         setVoicePromptDone(true);
       }
     };
-    recognition.onerror = (e) => { console.log("[VOICE] DATE recognition error:", e.error); setVoiceListening(false); setVoicePromptDone(true); };
-    recognition.onend = () => { console.log("[VOICE] DATE recognition ended"); setVoiceListening(false); };
-    setTimeout(() => {
-      console.log("[VOICE] DATE recognition.start() called after 500ms delay");
-      recognition.start();
-    }, 500);
+    recognition.onerror = () => { setVoiceListening(false); setVoicePromptDone(true); };
+    recognition.onend = () => { setVoiceListening(false); };
+    setTimeout(() => { recognition.start(); }, 500);
   };
   const [uniScanCount, setUniScanCount] = useState(0);
   const [uniScanLastItem, setUniScanLastItem] = useState("");
@@ -883,6 +868,20 @@ export default function TrackFreshDashboard() {
     uniScanTimer.current = setTimeout(() => {
       handleDoneUniScan();
     }, 30000);
+  };
+
+  const playBeep = (freq = 880, dur = 120, vol = 0.25) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur / 1000);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur / 1000);
+      osc.onended = () => ctx.close();
+    } catch(e) {}
   };
 
   const speak = (text) => {
@@ -968,7 +967,7 @@ export default function TrackFreshDashboard() {
       if (parsed) {
         setSmartUseBy(parsed);
         setVoiceFlowStep(null);
-        startVoiceCommand((cmd) => handleVoiceNextDone(cmd));
+        playBeep(880, 120);
       } else {
         setTimeout(() => listenForDate(), 500);
       }
@@ -1030,10 +1029,7 @@ export default function TrackFreshDashboard() {
     if (t.includes("edit") || t.includes("editar")) { setShowVoiceEditForm(true); return; }
     if (t.includes("next") || t.includes("yes") || t.includes("more") || t.includes("another") || t.includes("continue") || t.includes("again") || t.includes("keep") || t.includes("one more") || t.includes("siguiente") || t.includes("próxima") || t.includes("proxima")) { console.log("[VOICE] NEXT — calling handleAddSmartItemMulti"); handleAddSmartItemMulti(); setTimeout(() => startScanCommandLoop(), 1200); return; }
     if (t.includes("done") || t.includes("finish") || t.includes("stop") || t.includes("finished") || t.includes("complete") || t.includes("all") || t.includes("listo") || t.includes("lista") || t.includes("terminar") || t.includes("detener")) { console.log("[VOICE] DONE — calling handleAddSmartItemMulti + handleDoneUniScan"); handleAddSmartItemMulti(); setTimeout(() => handleDoneUniScan(), 300); return; }
-    console.log("[VOICE] handleVoiceNextDone: unrecognized command, retrying");
-    setVoiceFlowStep("listening_next");
-    voiceNDTimeoutRef.current = setTimeout(() => { setVoiceFlowStep(null); if (voiceFlowRef.current) { try { voiceFlowRef.current.abort(); } catch(ex) {} voiceFlowRef.current = null; } }, 10000);
-    startVoiceCommand((cmd2) => handleVoiceNextDone(cmd2));
+    console.log("[VOICE] handleVoiceNextDone: unrecognized command, ignoring");
   };
   const handleAddSmartItemMulti = () => {
     if (!smartResult) return;
@@ -1849,7 +1845,8 @@ export default function TrackFreshDashboard() {
     else { setPendingDateIndex(next); setPendingPickedDate(""); }
   };
 
-  const startPendingVoice = () => {
+  const startPendingVoice = (idx) => {
+    const currentIdx = idx !== undefined ? idx : pendingDateIndex;
     setPendingVoiceError("");
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { setPendingVoiceError("Voice not supported on this device"); return; }
@@ -1864,15 +1861,21 @@ export default function TrackFreshDashboard() {
         recog.stop();
         setPendingVoiceListening(false);
         setPendingPickedDate(parsed);
-        const item = pendingDateItems[pendingDateIndex];
+        playBeep(880, 120);
+        const item = pendingDateItems[currentIdx];
         if (item) setTrackedItems(prev => [{ ...item, useByDate: parsed }, ...prev]);
-        const nextIdx = pendingDateIndex + 1;
+        const nextIdx = currentIdx + 1;
         if (nextIdx >= pendingDateItems.length) {
-          setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate("");
+          setTimeout(() => playBeep(660, 150), 220);
+          setTimeout(() => playBeep(660, 150), 470);
+          setTimeout(() => { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }, 700);
         } else {
           setPendingDateIndex(nextIdx);
           setPendingPickedDate("");
-          setTimeout(() => startPendingVoice(), 500);
+          setTimeout(() => {
+            playBeep(660, 120);
+            setTimeout(() => startPendingVoice(nextIdx), 300);
+          }, 350);
         }
       } else {
         setPendingVoiceError("Could not understand. Try: April 20");
@@ -2078,7 +2081,7 @@ export default function TrackFreshDashboard() {
               </div>
               <div>
                 <button onClick={startPendingVoice} style={{width:"100%",padding:"0.85rem",background: pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)",color: pendingVoiceListening || pendingVoiceAwaitND ? "#fca5a5" : "#fb923c",fontWeight:700,fontSize:"1rem",border:`1.5px solid ${pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`,borderRadius:"16px",cursor:"pointer"}}>
-                  {pendingVoiceAwaitND ? "🎤 Say Next or Done..." : pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
+                  {pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
                 </button>
                 {pendingVoiceError && <p style={{color:"#f87171",fontSize:"0.75rem",textAlign:"center",margin:"0.4rem 0 0",fontWeight:600}}>{pendingVoiceError}</p>}
               </div>
@@ -2228,7 +2231,7 @@ export default function TrackFreshDashboard() {
                       {!voiceFlowPaused && voiceFlowStep === "say_date" && (lang === "es" ? "Preparando..." : "Preparing...")}
                       {!voiceFlowPaused && voiceFlowStep === "listening_date" && (lang === "es" ? "🔴 Di la fecha..." : "🔴 Say the date...")}
                       {!voiceFlowPaused && voiceFlowStep === "say_next" && "✓ Date saved!"}
-                      {!voiceFlowPaused && voiceFlowStep === "listening_next" && (lang === "es" ? "🔴 Di Siguiente o Listo..." : "🔴 Say Next or Done...")}
+                      {!voiceFlowPaused && voiceFlowStep === "listening_next" && ""}
                     </span>
                   </div>
                 )}
