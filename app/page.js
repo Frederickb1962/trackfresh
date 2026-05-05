@@ -2080,9 +2080,32 @@ export default function TrackFreshDashboard() {
                 <input type="date" value={pendingPickedDate} onChange={e => setPendingPickedDate(e.target.value)} style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}} />
               </div>
               <div>
-                <button onClick={startPendingVoice} style={{width:"100%",padding:"0.85rem",background: pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)",color: pendingVoiceListening || pendingVoiceAwaitND ? "#fca5a5" : "#fb923c",fontWeight:700,fontSize:"1rem",border:`1.5px solid ${pendingVoiceListening || pendingVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`,borderRadius:"16px",cursor:"pointer"}}>
-                  {pendingVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
-                </button>
+     recog.onresult = (e) => {
+      const t = e.results[0][0].transcript;
+      const parsed = parseSpokenDate(t);
+      if (parsed) {
+        dateParsed = true;
+        recog.stop();
+        setPendingVoiceListening(false);
+        setPendingPickedDate(parsed);
+        if (typeof playBeep === 'function') playBeep(880, 120);
+        
+        // SAVE AND MOVE ON IMMEDIATELY
+        handlePendingSaveDate(); 
+        
+        const nextIdx = currentIdx + 1;
+        if (nextIdx < pendingDateItems.length) {
+          setTimeout(() => startPendingVoice(nextIdx), 600); // Auto-jump
+        } else {
+          // BATCH FINISHED
+          setTimeout(() => {
+            if (typeof playBeep === 'function') { playBeep(660, 150); setTimeout(() => playBeep(660, 150), 200); }
+            setPendingDateItems([]); 
+            setPendingDateIndex(0);
+          }, 400);
+        }
+      }
+    };
                 {pendingVoiceError && <p style={{color:"#f87171",fontSize:"0.75rem",textAlign:"center",margin:"0.4rem 0 0",fontWeight:600}}>{pendingVoiceError}</p>}
               </div>
               <button onClick={() => { if (pendingNDRef.current) { try { pendingNDRef.current.abort(); } catch(ex) {} pendingNDRef.current = null; } setPendingVoiceAwaitND(false); const nextIdx = pendingDateIndex + 1; handlePendingSaveDate(); if (nextIdx < pendingDateItems.length) setTimeout(() => startPendingVoice(), 600); }} style={{width:"100%",padding:"1.1rem",background:"linear-gradient(to bottom,#16a34a,#15803d)",color:"#fff",fontWeight:900,fontSize:"1.2rem",border:"none",borderRadius:"16px",cursor:"pointer",boxShadow:"0 5px 0 #14532d"}}>
