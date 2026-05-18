@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -35,9 +36,12 @@ For EACH item, provide:
 3. "category" - one of: Produce, Dairy, Meat, Pantry, Frozen, Beverages, Snacks, Bread, Condiments, Other
 4. "location" - recommended storage: "Fridge", "Freezer", or "Pantry"
 5. "daysSealed" - estimated days the product lasts while SEALED/UNOPENED from purchase date
-6. "daysAfterOpening" - estimated days the product lasts AFTER OPENING (null if not applicable, e.g. fresh produce)
+6. "daysAfterOpening" - estimated days AFTER OPENING for packaged goods (null for fresh Produce — fruits/vegetables/herbs)
 7. "storageTip" - brief tip on storing sealed for max freshness
-8. "openedTip" - brief tip on storing after opening (null if not applicable)
+8. "openedTip" - brief tip after opening for packaged goods (null for Produce)
+9. "inGeneralDaysMin" and "inGeneralDaysMax" - for category Produce ONLY: whole-day fresh shelf-life window (e.g. 3 and 5 for about 3–5 days). For all other categories use null.
+
+Produce rules: If category is Produce, daysAfterOpening and openedTip MUST be null. inGeneralDaysMin/Max MUST be positive integers with min <= max. daysSealed MUST equal inGeneralDaysMin (conservative default).
 
 Use your food safety knowledge. Examples:
 - Ketchup: daysSealed=365, daysAfterOpening=180, openedTip="Refrigerate after opening"
@@ -48,7 +52,7 @@ Use your food safety knowledge. Examples:
 - Bread: daysSealed=7, daysAfterOpening=5, openedTip="Store at room temp or freeze for longer life"
 
 Reply ONLY with valid JSON, no markdown, no backticks:
-{"items":[{"name":"...","brand":"...","category":"...","location":"...","daysSealed":7,"daysAfterOpening":null,"storageTip":"...","openedTip":null}]}
+{"items":[{"name":"...","brand":"...","category":"...","location":"...","daysSealed":7,"daysAfterOpening":null,"storageTip":"...","openedTip":null,"inGeneralDaysMin":null,"inGeneralDaysMax":null}]}
 
 If you cannot read the receipt clearly, return: {"items":[],"error":"Could not read receipt clearly"}`,
             },
@@ -97,6 +101,7 @@ If you cannot read the receipt clearly, return: {"items":[],"error":"Could not r
       return NextResponse.json({ items: [], error: "Invalid scanner response", rawResponse: rawText.slice(0, 300), stopReason });
     }
     if (!Array.isArray(data.items)) data.items = [];
+    data.items = finalizeProduceScannerItems(data.items);
     return NextResponse.json(data);
   } catch (e) {
     console.error("Receipt scan error:", e);

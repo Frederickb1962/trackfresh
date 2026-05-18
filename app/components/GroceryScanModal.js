@@ -1,35 +1,105 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import {
+  finalizeProduceScannerItems,
+  conservativeProduceShelfDays,
+  finalizeProduceScannerItem,
+  formatInGeneralInstruction,
+  isProduceCategory,
+} from "../lib/aiProduceNormalize";
 
-export default function GroceryScanModal({ onAddItem, onClose, lang, parseSpokenDate }) {
+const glassBtnLayout = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "#fff",
+  fontWeight: 700,
+  borderRadius: "16px",
+  cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
+};
+
+/** Match desktop split layout breakpoint (Tailwind lg). */
+const DESKTOP_MIN_PX = 1024;
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(`(min-width: ${DESKTOP_MIN_PX}px)`).matches;
+  });
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${DESKTOP_MIN_PX}px)`);
+    const onChange = () => setIsDesktop(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isDesktop;
+}
+
+/**
+ * Matches parent VoiceDateNextHint — only `tf-voice-date-hint` / `tf-voice-date-hint__kw` (globals.css).
+ * English string is fixed copy for downstream voice queue parity.
+ */
+function VoiceQueueHint({ lang }) {
+  return (
+    <p className="tf-voice-date-hint" style={{ maxWidth: "100%", marginTop: "0.5rem", marginBottom: "0.85rem" }}>
+      {lang === "es" ? (
+        <>
+          Di la fecha y di <span className="tf-voice-date-hint__kw">NEXT</span>. Di <span className="tf-voice-date-hint__kw">DONE</span> cuando hayas terminado.
+        </>
+      ) : (
+        <>
+          Speak date and say <span className="tf-voice-date-hint__kw">NEXT</span>. Say <span className="tf-voice-date-hint__kw">DONE</span> when finished.
+        </>
+      )}
+    </p>
+  );
+}
+
+/** Produce verification line: never “after opening”; prefer range copy, else conservativeProduceShelfDays (lesser fallback). */
+function produceInGeneralMicrocopy(item, lang) {
+  if (!isProduceCategory(item?.category)) return null;
+  const fin = finalizeProduceScannerItem({ ...item });
+  const ranged = formatInGeneralInstruction(fin, lang);
+  if (ranged) return ranged;
+  const days = conservativeProduceShelfDays(fin);
+  if (days == null) return null;
+  return lang === "es"
+    ? `En general: usar en ~${days} días (estimación conservadora)`
+    : `In General: use within ~${days} days (conservative estimate)`;
+}
+
+function suggestedExpiryISO(item) {
+  const fin = finalizeProduceScannerItem({ ...item });
+  const iso = typeof fin.date === "string" && fin.date.trim() ? fin.date.trim() : "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const days = conservativeProduceShelfDays(fin);
+  if (days == null) return "";
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * Smart Scan (grocery): camera (mobile) or drag‑drop/file (desktop) → POST /api/scan-smart → onEnqueue(items).
+ */
+export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const fileInputRef = useRef(null);
   const mountedRef = useRef(true);
-  const dateInputRef = useRef(null);
   const isEs = lang === "es";
 
-  // screen: "camera" | "scanning" | "review" | "dates" | "error"
+  const isDesktop = useIsDesktop();
   const [screen, setScreen] = useState("camera");
   const [camError, setCamError] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
-  // review state
-  const [detectedItems, setDetectedItems] = useState([]);
-  const [checked, setChecked] = useState({});
-  const [names, setNames] = useState({});
-  const [locations, setLocations] = useState({});
-
-  // dates state
-  const [dateItems, setDateItems] = useState([]);
-  const [dateIndex, setDateIndex] = useState(0);
-  const [pickedDate, setPickedDate] = useState("");
-  const [sessionCount, setSessionCount] = useState(0);
-  const [groceryVoiceListening, setGroceryVoiceListening] = useState(false);
-  const [groceryVoiceError, setGroceryVoiceError] = useState("");
-  const [groceryVoiceAwaitND, setGroceryVoiceAwaitND] = useState(false);
-  const groceryNDRef = useRef(null);
+  const [parsedItems, setParsedItems] = useState([]);
+  const [desktopBusy, setDesktopBusy] = useState(false);
+  const [desktopError, setDesktopError] = useState("");
 
   const playBeep = (freq, dur, vol = 0.28) => {
     try {
@@ -37,307 +107,595 @@ export default function GroceryScanModal({ onAddItem, onClose, lang, parseSpoken
       const play = () => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = freq; osc.type = "sine";
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
         gain.gain.setValueAtTime(vol, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + dur);
       };
-      if (ctx.state === "suspended") { ctx.resume().then(play); } else { play(); }
-    } catch(e) {}
+      if (ctx.state === "suspended") {
+        ctx.resume().then(play);
+      } else {
+        play();
+      }
+    } catch (e) {}
   };
+
   const playShutter = () => playBeep(1000, 0.05);
-  const playSuccess = () => { playBeep(880, 0.2); setTimeout(() => playBeep(1100, 0.25), 220); };
-  const playError   = () => { playBeep(400, 0.12); setTimeout(() => playBeep(300, 0.18), 200); };
+  const playError = () => {
+    playBeep(400, 0.12);
+    setTimeout(() => playBeep(300, 0.18), 200);
+  };
+
+  const runSmartScan = useCallback(
+    async (base64, mediaType = "image/jpeg") => {
+      if (isDesktop) {
+        setDesktopError("");
+        setDesktopBusy(true);
+      } else {
+        setScreen("scanning");
+      }
+      try {
+        const res = await fetch("/api/scan-smart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }),
+        });
+        if (!mountedRef.current) return;
+        const data = await res.json();
+        const raw = data.items || (data.item ? [data.item] : []);
+        const items = finalizeProduceScannerItems(Array.isArray(raw) ? raw : []);
+        if (!items.length) {
+          playError();
+          const msg = isEs ? "No se detectaron artículos. Intenta de nuevo." : "No items detected. Try again.";
+          if (isDesktop) {
+            setDesktopError(msg);
+            setParsedItems([]);
+          } else {
+            setErrorMsg(msg);
+            setScreen("error");
+          }
+          return;
+        }
+        if (isDesktop) {
+          setParsedItems(items);
+        } else {
+          onEnqueue(items);
+        }
+      } catch (e) {
+        if (!mountedRef.current) return;
+        playError();
+        const msg = e.message || (isEs ? "Error al escanear" : "Scan failed");
+        if (isDesktop) {
+          setDesktopError(msg);
+          setParsedItems([]);
+        } else {
+          setErrorMsg(msg);
+          setScreen("error");
+        }
+      } finally {
+        if (mountedRef.current && isDesktop) setDesktopBusy(false);
+      }
+    },
+    [isDesktop, isEs, onEnqueue]
+  );
+
+  const processImageFile = useCallback(
+    (file) => {
+      if (!file || !String(file.type || "").startsWith("image/")) {
+        const msg = isEs ? "Elige una imagen (JPG, PNG, WEBP)." : "Please choose an image file (JPG, PNG, WEBP).";
+        setDesktopError(msg);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result;
+        if (typeof dataUrl !== "string" || !dataUrl.includes(",")) return;
+        const base64 = dataUrl.split(",")[1];
+        runSmartScan(base64, file.type || "image/jpeg");
+      };
+      reader.readAsDataURL(file);
+    },
+    [isEs, runSmartScan]
+  );
 
   useEffect(() => {
     mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    /** Mobile / narrow: keep existing camera lifecycle unchanged. Desktop: skip webcam to avoid needless permission prompts. */
+    if (isDesktop) return;
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
         });
-        if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
+        if (!mountedRef.current) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.setAttribute("playsinline", "true");
           await videoRef.current.play();
         }
-      } catch(e) {
+      } catch (e) {
         if (mountedRef.current) setCamError(isEs ? "Acceso a cámara denegado." : "Camera access denied.");
       }
     }
     startCamera();
     return () => {
-      mountedRef.current = false;
-      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
     };
-  }, []);
+  }, [isDesktop, isEs]);
 
   const capture = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
     playShutter();
-    setScreen("scanning");
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
     canvas.getContext("2d").drawImage(video, 0, 0);
     const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-    try {
-      const res = await fetch("/api/scan-smart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageData: base64, mediaType: "image/jpeg" })
-      });
-      if (!mountedRef.current) return;
-      const data = await res.json();
-      const items = data.items || (data.item ? [data.item] : []);
-      if (items.length === 0) {
-        playError();
-        setErrorMsg(isEs ? "No se detectaron artículos. Intenta de nuevo." : "No items detected. Try again.");
-        setScreen("error");
-        return;
-      }
-      playSuccess();
-      setDetectedItems(items);
-      const initChecked = {};
-      const initNames = {};
-      const initLocs = {};
-      items.forEach((it, i) => {
-        initChecked[i] = true;
-        initNames[i] = it.name || "Unknown Item";
-        initLocs[i] = it.location || "Fridge";
-      });
-      setChecked(initChecked);
-      setNames(initNames);
-      setLocations(initLocs);
-      setScreen("review");
-    } catch(e) {
-      if (!mountedRef.current) return;
-      playError();
-      setErrorMsg(e.message || "Scan failed");
-      setScreen("error");
-    }
+    await runSmartScan(base64, "image/jpeg");
   };
 
-  const handleAddSelected = () => {
-    const selected = detectedItems
-      .map((it, i) => ({ ...it, _index: i }))
-      .filter((_, i) => checked[i]);
-    if (selected.length === 0) { onClose(); return; }
-    setDateItems(selected.map(it => ({
-      ...it,
-      name: names[it._index] || it.name,
-      location: locations[it._index] || it.location || "Fridge",
-      date: it.date && it.dateFound ? it.date : "",
-    })));
-    setDateIndex(0);
-    setPickedDate(selected[0]?.date || "");
-    setScreen("dates");
-  };
-
-  const handleSaveDate = () => {
-    const item = dateItems[dateIndex];
-    onAddItem({
-      id: Date.now().toString() + dateIndex,
-      name: item.name,
-      useByDate: pickedDate || item.date || "",
-      openDate: "",
-      category: item.category || "Other",
-      location: item.location,
-      daysAfterOpening: item.daysAfterOpening || null,
-      storageTip: item.storageTip || "",
-      openedTip: item.openedTip || "",
-    });
-    setSessionCount(c => c + 1);
-    const next = dateIndex + 1;
-    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
-  };
-
-  const handleSkipDate = () => {
-    const item = dateItems[dateIndex];
-    onAddItem({
-      id: Date.now().toString() + dateIndex,
-      name: item.name,
-      useByDate: item.date || "",
-      openDate: "",
-      category: item.category || "Other",
-      location: item.location,
-      daysAfterOpening: item.daysAfterOpening || null,
-      storageTip: item.storageTip || "",
-      openedTip: item.openedTip || "",
-    });
-    setSessionCount(c => c + 1);
-    const next = dateIndex + 1;
-    if (next >= dateItems.length) { onClose(); } else { setDateIndex(next); setPickedDate(dateItems[next]?.date || ""); }
-  };
-
-  const startGroceryVoice = () => {
-    setGroceryVoiceError("");
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setGroceryVoiceError("Voice not supported on this device"); return; }
-    playBeep(880, 0.15);
-    const recog = new SR();
-    recog.lang = "en-US"; recog.interimResults = false; recog.maxAlternatives = 1;
-    setGroceryVoiceListening(true);
-    recog.onresult = (e) => {
-      const t = e.results[0][0].transcript;
-      const parsed = parseSpokenDate(t);
-      if (parsed) {
-        setPickedDate(parsed); playBeep(880, 0.12); setTimeout(() => playBeep(660, 0.1), 180);
-        setGroceryVoiceError(""); setGroceryVoiceListening(false); setGroceryVoiceAwaitND(true);
-        const ndMsg = new SpeechSynthesisUtterance("Say Next to save and continue, or Done to finish.");
-        ndMsg.rate = 1.1;
-        ndMsg.onend = () => {
-          const SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (!SR2) { setGroceryVoiceAwaitND(false); return; }
-          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} }
-          const ndRecog = new SR2(); ndRecog.lang = "en-US"; ndRecog.interimResults = false; ndRecog.maxAlternatives = 1;
-          groceryNDRef.current = ndRecog;
-          let settled = false;
-          const ndTimeout = setTimeout(() => { if (!settled) { settled = true; setGroceryVoiceAwaitND(false); groceryNDRef.current = null; try { ndRecog.abort(); } catch(ex) {} } }, 10000);
-          ndRecog.onresult = (ev) => {
-            if (settled) return; settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null;
-            const cmd = ev.results[0][0].transcript.toLowerCase();
-            const nextIdx = dateIndex + 1;
-            if (cmd.includes("next") || cmd.includes("yes") || cmd.includes("more")) { handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 700); }
-            else if (cmd.includes("done") || cmd.includes("stop") || cmd.includes("finish")) { handleSaveDate(); setTimeout(() => onClose(), 300); }
-          };
-          ndRecog.onerror = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
-          ndRecog.onend = () => { if (!settled) { settled = true; clearTimeout(ndTimeout); setGroceryVoiceAwaitND(false); groceryNDRef.current = null; } };
-          ndRecog.start();
-        };
-        window.speechSynthesis.cancel(); window.speechSynthesis.speak(ndMsg);
-      } else { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); }
-    };
-    recog.onerror = () => { setGroceryVoiceError("Could not understand. Try: April 20"); setGroceryVoiceListening(false); };
-    recog.onend = () => setGroceryVoiceListening(false);
-    recog.start();
-  };
-
-  if (screen === "scanning") {
+  /** ─── Mobile fullscreen: scanning ─── */
+  if (screen === "scanning" && !isDesktop) {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: "1rem", left: "1rem", background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", color: "#fff", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer" }}>← {isEs ? "Atrás" : "Back"}</button>
-        <div style={{ width: 56, height: 56, border: "5px solid #4ade80", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.9s linear infinite" }} />
-        <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+      <div
+        className="tf-premium-bg"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 10001,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1.5rem",
+        }}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="tf-glass-scan"
+          style={{
+            position: "absolute",
+            top: "1rem",
+            left: "1rem",
+            ...glassBtnLayout,
+            padding: "0.4rem 1rem",
+            fontSize: "0.9rem",
+          }}
+        >
+          ← {isEs ? "Atrás" : "Back"}
+        </button>
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            border: "5px solid #4ade80",
+            borderTopColor: "transparent",
+            borderRadius: "50%",
+            animation: "spin 0.9s linear infinite",
+          }}
+        />
+        <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>
+          {isEs ? "Analizando imagen..." : "Analyzing image..."}
+        </p>
       </div>
     );
   }
 
-  if (screen === "error") {
+  /** ─── Mobile fullscreen: error ─── */
+  if (screen === "error" && !isDesktop) {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.5rem", padding: "2rem" }}>
+      <div
+        className="tf-premium-bg"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 10001,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1.5rem",
+          padding: "2rem",
+        }}
+      >
         <span style={{ fontSize: "3rem" }}>❌</span>
-        <p style={{ color: "#f87171", fontWeight: 700, fontSize: "1.1rem", textAlign: "center", margin: 0 }}>{errorMsg || (isEs ? "Error al escanear" : "Scan error")}</p>
-        <button onClick={() => setScreen("camera")} style={{ padding: "0.9rem 2rem", background: "#16a34a", color: "#fff", fontWeight: 800, fontSize: "1rem", border: "none", borderRadius: "14px", cursor: "pointer" }}>{isEs ? "Intentar de nuevo" : "Try Again"}</button>
-        <button onClick={onClose} style={{ padding: "0.7rem 1.5rem", background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 700, fontSize: "0.9rem", border: "2px solid rgba(255,255,255,0.2)", borderRadius: "12px", cursor: "pointer" }}>{isEs ? "Cerrar" : "Close"}</button>
+        <p style={{ color: "#f87171", fontWeight: 700, fontSize: "1.1rem", textAlign: "center", margin: 0 }}>
+          {errorMsg || (isEs ? "Error al escanear" : "Scan error")}
+        </p>
+        <button
+          type="button"
+          onClick={() => setScreen("camera")}
+          className="tf-glass-scan"
+          style={{
+            padding: "0.9rem 2rem",
+            ...glassBtnLayout,
+            fontSize: "1rem",
+          }}
+        >
+          {isEs ? "Intentar de nuevo" : "Try Again"}
+        </button>
+        <button type="button" onClick={onClose} className="tf-glass-scan" style={{ padding: "0.7rem 1.5rem", ...glassBtnLayout, fontSize: "0.9rem" }}>
+          {isEs ? "Cerrar" : "Close"}
+        </button>
       </div>
     );
   }
 
-  if (screen === "review") {
+  /** ─── Desktop dashboard panel ─── */
+  if (isDesktop) {
+    const title = scanTitle ?? (isEs ? "Escaneo Inteligente" : "Smart Scan");
+    const dropLabel = isEs ? "Arrastra y suelta recibos/fotos o haz clic para buscar" : "Drag & Drop Receipts/Photos or Click to Browse";
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#111", display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "#000", flexShrink: 0 }}>
-          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Artículos Detectados" : "Detected Items"}</span>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.45)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>✕ {isEs ? "Cerrar" : "Close"}</button>
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {detectedItems.map((it, i) => (
-            <div key={i} style={{ background: "#1e1e1e", borderRadius: "14px", padding: "0.85rem 1rem", display: "flex", flexDirection: "column", gap: "0.6rem", border: checked[i] ? "1.5px solid #4ade80" : "1.5px solid #333" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
-                <input type="checkbox" checked={!!checked[i]} onChange={e => setChecked(c => ({ ...c, [i]: e.target.checked }))} style={{ width: 22, height: 22, accentColor: "#4ade80", flexShrink: 0, cursor: "pointer" }} />
-                <input type="text" value={names[i] || ""} onChange={e => setNames(n => ({ ...n, [i]: e.target.value }))}
-                  style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1.5px solid #444", color: "#fff", fontWeight: 700, fontSize: "0.95rem", padding: "0.1rem 0", outline: "none" }} />
+      <div className="tf-premium-bg" style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem", overflow: "auto" }}>
+        <div
+          style={{
+            width: "min(90vw, 1000px)",
+            maxWidth: "100%",
+            maxHeight: "min(92vh, 880px)",
+            minHeight: "min(78vh, 720px)",
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: "20px",
+            overflow: "hidden",
+            border: "1px solid rgba(251,191,36,0.45)",
+            boxShadow:
+              "0 0 0 1px rgba(249,115,22,0.35), 0 0 48px rgba(251,146,60,0.42), 0 0 80px rgba(234,88,12,0.22), 0 24px 56px rgba(0,0,0,0.55)",
+            background: "linear-gradient(160deg,rgba(6,46,38,0.92),rgba(3,26,22,0.96))",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0.75rem 1rem",
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              flexShrink: 0,
+              borderBottom: "0.5px solid rgba(255,255,255,0.28)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <button type="button" onClick={onClose} className="tf-glass-scan" style={{ ...glassBtnLayout, padding: "0.35rem 0.85rem", fontSize: "0.85rem" }}>
+                ← {isEs ? "Atrás" : "Back"}
+              </button>
+              <span
+                style={{
+                  color: "#fff",
+                  fontWeight: 900,
+                  fontSize: "1.05rem",
+                  textShadow: "0 0 18px rgba(249,115,22,0.85), 0 0 6px rgba(251,146,60,0.5)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                🛒 {title}
+              </span>
+            </div>
+            <button type="button" onClick={onClose} className="tf-glass-scan" style={{ ...glassBtnLayout, padding: "0.35rem 1rem", fontSize: "0.85rem" }}>
+              ✕ {isEs ? "Cerrar" : "Close"}
+            </button>
+          </div>
+
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "stretch",
+              gap: "1rem",
+              padding: "1rem",
+              minHeight: 0,
+              boxSizing: "border-box",
+            }}
+          >
+            {/* Left — drag & drop (same JSON body as mobile: imageData + mediaType → /api/scan-smart) */}
+            <div
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (desktopBusy) return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              aria-label={dropLabel}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (desktopBusy) return;
+                const f = e.dataTransfer.files && e.dataTransfer.files[0];
+                if (f) processImageFile(f);
+              }}
+              onClick={() => {
+                if (desktopBusy) return;
+                fileInputRef.current?.click();
+              }}
+              style={{
+                flex: "1 1 42%",
+                minWidth: 0,
+                alignSelf: "stretch",
+                position: "relative",
+                background: "rgba(0, 0, 0, 0.5)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "2px dashed #f97316",
+                borderRadius: "12px",
+                cursor: desktopBusy ? "wait" : "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.75rem",
+                padding: "1.75rem 1.25rem",
+                opacity: desktopBusy ? 0.75 : 1,
+                pointerEvents: desktopBusy ? "none" : "auto",
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) processImageFile(f);
+                  e.target.value = "";
+                }}
+              />
+              <span style={{ fontSize: "2.75rem", lineHeight: 1 }}>📎</span>
+              <p
+                style={{
+                  margin: 0,
+                  color: "#ffedd5",
+                  fontWeight: 800,
+                  fontSize: "1rem",
+                  textAlign: "center",
+                  lineHeight: 1.35,
+                  textShadow: "0 0 20px rgba(249,115,22,0.45)",
+                }}
+              >
+                {dropLabel}
+              </p>
+              <p style={{ margin: 0, color: "rgba(255,237,213,0.65)", fontSize: "0.78rem", textAlign: "center", fontWeight: 600 }}>
+                {isEs ? "Misma IA que Capturar en móvil (API /scan-smart)" : "Same AI endpoint as mobile “Capture & Scan All”"}
+              </p>
+            </div>
+
+            {/* Right — verification panel */}
+            <div
+              style={{
+                flex: "1 1 58%",
+                minWidth: 0,
+                alignSelf: "stretch",
+                position: "relative",
+                minHeight: "min(50vh, 420px)",
+                borderRadius: "14px",
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "0.5px solid rgba(255,255,255,0.3)",
+                padding: "1rem 1rem 1.1rem",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {desktopBusy && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 2,
+                    height: "100%",
+                    background: "rgba(4, 24, 20, 0.72)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    gap: "1rem",
+                    borderRadius: "14px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      border: "4px solid #4ade80",
+                      borderTopColor: "transparent",
+                      borderRadius: "50%",
+                      animation: "spin 0.9s linear infinite",
+                    }}
+                  />
+                  <p style={{ color: "#fff", fontWeight: 700, textShadow: "0 0 12px rgba(249,115,22,0.5)" }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+                </div>
+              )}
+
+              <h3
+                style={{
+                  margin: "0 0 0.25rem",
+                  fontSize: "0.92rem",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  color: "#fff",
+                  textShadow: "0 0 14px rgba(249,115,22,0.75)",
+                }}
+              >
+                {isEs ? "Verificación — próximo paso" : "Verification — next step"}
+              </h3>
+              <p style={{ margin: "0 0 0.35rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.76)", fontWeight: 600, lineHeight: 1.4 }}>
+                {isEs
+                  ? "Al continuar se abrirá la cola de fechas por voz. Usa tu calendario o el micrófono igual que en el teléfono."
+                  : "When you continue, the voice date queue opens. Use the calendar picker or mic exactly like on your phone."}
+              </p>
+              <VoiceQueueHint lang={lang} />
+
+              {desktopError ? (
+                <p style={{ color: "#fca5a5", fontWeight: 700, fontSize: "0.88rem", margin: "0.25rem 0 0.75rem" }}>{desktopError}</p>
+              ) : null}
+
+              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", marginBottom: "0.75rem" }}>
+                {!parsedItems.length && !desktopError && !desktopBusy ? (
+                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.85rem", margin: "0.5rem 0 0" }}>
+                    {isEs ? "Aún no hay artículos. Suelta o elige una imagen a la izquierda." : "No parsed items yet. Drop or browse for an image on the left."}
+                  </p>
+                ) : null}
+                {parsedItems.length > 0 && (
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                    {parsedItems.map((item, idx) => {
+                      const name = item.name || (isEs ? "Artículo" : "Item");
+                      const brand = item.brand ? ` (${item.brand})` : "";
+                      const sug = suggestedExpiryISO(item);
+                      const inGeneralLine = produceInGeneralMicrocopy(item, lang);
+                      const source =
+                        item.date && String(item.date).trim().match(/^\d{4}-\d{2}-\d{2}$/)
+                          ? isEs
+                            ? "fecha en imagen"
+                            : "from photo"
+                          : isEs
+                            ? "estimada (conservador)"
+                            : "estimated (conservative)";
+                      const nonProduceOpened =
+                        !isProduceCategory(item.category) && item.openedTip ? String(item.openedTip) : "";
+                      return (
+                        <li
+                          key={item.id ?? `${name}-${idx}`}
+                          style={{
+                            borderRadius: "10px",
+                            padding: "0.55rem 0.65rem",
+                            background: "rgba(0,0,0,0.25)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                          }}
+                        >
+                          <div style={{ fontWeight: 800, color: "#f1f5f9", fontSize: "0.92rem", textShadow: "0 1px 0 rgba(0,0,0,0.4)" }}>
+                            {name}
+                            <span style={{ fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>{brand}</span>
+                          </div>
+                          <div style={{ marginTop: "0.25rem", fontSize: "0.78rem", color: "#86efac", fontWeight: 600 }}>
+                            {item.category || "Other"} · {item.location || "Fridge"}
+                          </div>
+                          <div style={{ marginTop: "0.35rem", fontSize: "0.8rem", fontWeight: 700, color: "#fdba74" }}>
+                            ≈{" "}
+                            {sug
+                              ? sug
+                              : isEs
+                                ? "fecha por confirmar"
+                                : "confirm date"}
+                            <span style={{ fontWeight: 600, opacity: 0.85 }}>
+                              {" · "}
+                              {source}
+                            </span>
+                          </div>
+                          {inGeneralLine ? (
+                            <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", fontWeight: 600, color: "rgba(255,200,120,0.95)" }}>🥬 {inGeneralLine}</div>
+                          ) : nonProduceOpened ? (
+                            <div style={{ marginTop: "0.35rem", fontSize: "0.74rem", fontWeight: 600, color: "rgba(254,215,170,0.95)" }}>📂 {nonProduceOpened}</div>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
-              <div style={{ display: "flex", gap: "0.5rem", paddingLeft: "2rem" }}>
-                {["Fridge", "Freezer", "Pantry"].map(loc => (
-                  <button key={loc} onClick={() => setLocations(l => ({ ...l, [i]: loc }))}
-                    style={{ flex: 1, padding: "0.45rem 0.25rem", fontSize: "0.72rem", fontWeight: 700, borderRadius: "8px", border: "none", cursor: "pointer",
-                      background: locations[i] === loc ? (loc === "Freezer" ? "#2563eb" : loc === "Fridge" ? "#16a34a" : "#ea580c") : "#2a2a2a",
-                      color: locations[i] === loc ? "#fff" : "#888" }}>
-                    {loc === "Fridge" ? "🥬" : loc === "Freezer" ? "❄️" : "🫙"} {isEs ? (loc === "Fridge" ? "Refri" : loc === "Freezer" ? "Conge" : "Despe") : loc}
-                  </button>
-                ))}
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                <button
+                  type="button"
+                  disabled={!parsedItems.length || desktopBusy}
+                  className="tf-glass-scan"
+                  style={{
+                    ...glassBtnLayout,
+                    padding: "0.85rem 1.25rem",
+                    fontSize: "0.95rem",
+                    fontWeight: 900,
+                    opacity: !parsedItems.length || desktopBusy ? 0.5 : 1,
+                    cursor: !parsedItems.length || desktopBusy ? "not-allowed" : "pointer",
+                    flex: "1 1 auto",
+                    minWidth: "200px",
+                    boxShadow: parsedItems.length ? "0 0 18px rgba(249,115,22,0.35)" : "none",
+                  }}
+                  onClick={() => {
+                    if (!parsedItems.length) return;
+                    /* Parent: apiItems.map(mapScanApiItemToPendingRow) → enqueue pending voice queue */
+                    onEnqueue(parsedItems);
+                  }}
+                >
+                  {isEs ? "Continuar → cola de voz / fechas" : "Continue → voice date queue"}
+                </button>
+                <button
+                  type="button"
+                  disabled={!parsedItems.length || desktopBusy}
+                  className="tf-glass-primary-btn"
+                  style={{ padding: "0.65rem 1rem", fontSize: "0.85rem", fontWeight: 700, opacity: !parsedItems.length ? 0.45 : 1 }}
+                  onClick={() => {
+                    setParsedItems([]);
+                    setDesktopError("");
+                  }}
+                >
+                  {isEs ? "Borrar resultados" : "Clear results"}
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-        <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <button onClick={handleAddSelected}
-            style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.15rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 4px 0 #14532d" }}>
-            ✅ {isEs ? "Agregar Seleccionados" : "Add All Selected"} ({Object.values(checked).filter(Boolean).length})
-          </button>
-          <button onClick={() => setScreen("camera")}
-            style={{ width: "100%", padding: "0.75rem", background: "transparent", color: "rgba(255,255,255,0.55)", fontWeight: 600, fontSize: "0.9rem", border: "1.5px solid rgba(255,255,255,0.15)", borderRadius: "12px", cursor: "pointer" }}>
-            📷 {isEs ? "Escanear de nuevo" : "Scan Again"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (screen === "dates") {
-    const item = dateItems[dateIndex];
-    return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "2rem 1.25rem", gap: "1.25rem" }}>
-        <div style={{ textAlign: "center" }}>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", fontWeight: 600, margin: "0 0 0.35rem" }}>{dateIndex + 1} / {dateItems.length}</p>
-          <p style={{ color: "#facc15", fontWeight: 900, fontSize: "1.1rem", margin: 0 }}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
-          <p style={{ color: "#86efac", fontSize: "0.95rem", fontWeight: 700, margin: "0.5rem 0 0" }}>{item?.name}</p>
-        </div>
-        <div style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", overflow: "hidden" }}>
-          <div style={{ width: "100%", padding: "1rem", fontSize: pickedDate ? "1.15rem" : "0.95rem", fontWeight: 700, color: pickedDate ? "#fff" : "rgba(255,255,255,0.45)", textAlign: "center", boxSizing: "border-box", lineHeight: 1.4, pointerEvents: "none" }}>
-            {pickedDate
-              ? (() => { try { return new Date(pickedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch(e) { return pickedDate; } })()
-              : (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
           </div>
-          <input type="date" value={pickedDate} onChange={e => setPickedDate(e.target.value)}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 1 }} />
         </div>
-        <div>
-          <button onClick={startGroceryVoice} style={{ width: "100%", padding: "0.85rem", background: groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.2)" : "rgba(249,115,22,0.15)", color: groceryVoiceListening || groceryVoiceAwaitND ? "#fca5a5" : "#fb923c", fontWeight: 700, fontSize: "1rem", border: `1.5px solid ${groceryVoiceListening || groceryVoiceAwaitND ? "rgba(239,68,68,0.5)" : "rgba(249,115,22,0.4)"}`, borderRadius: "16px", cursor: "pointer" }}>
-            {groceryVoiceAwaitND ? "🎤 Say Next or Done..." : groceryVoiceListening ? "🎤 Listening..." : (isEs ? "🎤 Hablar Fecha(s)" : "🎤 Tap to Speak Date(s)")}
-          </button>
-          {groceryVoiceError && <p style={{ color: "#f87171", fontSize: "0.75rem", textAlign: "center", margin: "0.4rem 0 0", fontWeight: 600 }}>{groceryVoiceError}</p>}
-        </div>
-        <button onClick={() => { if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; } setGroceryVoiceAwaitND(false); const nextIdx = dateIndex + 1; handleSaveDate(); if (nextIdx < dateItems.length) setTimeout(() => startGroceryVoice(), 600); }}
-          style={{ width: "100%", padding: "1.1rem", background: "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "16px", cursor: "pointer", boxShadow: "0 5px 0 #14532d" }}>
-          ✅ {isEs ? "Guardar con Fecha" : "Save with Date"}
-        </button>
-        <button onClick={handleSkipDate}
-          style={{ width: "100%", padding: "1rem", background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontWeight: 700, fontSize: "1rem", border: "1.5px solid rgba(255,255,255,0.2)", borderRadius: "16px", cursor: "pointer" }}>
-          {isEs ? "Omitir Fecha" : "Skip Date"} →
-        </button>
-        <button onClick={() => {
-          if (groceryNDRef.current) { try { groceryNDRef.current.abort(); } catch(ex) {} groceryNDRef.current = null; }
-          setGroceryVoiceAwaitND(false);
-          for (let i = dateIndex; i < dateItems.length; i++) {
-            const it = dateItems[i];
-            onAddItem({ id: Date.now().toString() + i, name: it.name, useByDate: it.date || "", openDate: "", category: it.category || "Other", location: it.location, daysAfterOpening: it.daysAfterOpening || null, storageTip: it.storageTip || "", openedTip: it.openedTip || "" });
-          }
-          onClose();
-        }} style={{ width: "100%", padding: "0.55rem", background: "none", color: "rgba(255,255,255,0.38)", fontWeight: 500, fontSize: "0.78rem", border: "none", cursor: "pointer" }}>
-          {isEs ? "Omitir Todas las Fechas →" : "Skip All Dates for Now →"}
-        </button>
       </div>
     );
   }
 
-  // screen === "camera"
+  /** ─── Mobile-only (unchanged UX): fullscreen camera ─── */
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "#000", display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1rem", background: "rgba(0,0,0,0.8)", flexShrink: 0 }}>
+    <div className="tf-premium-bg" style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0.75rem 1rem",
+          background: "rgba(0,0,0,0.4)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          flexShrink: 0,
+          borderBottom: "0.5px solid rgba(255,255,255,0.35)",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "999px", padding: "0.35rem 0.85rem", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", flexShrink: 0 }}>← {isEs ? "Atrás" : "Back"}</button>
-          <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>🛒 {isEs ? "Escaneo de Compras" : "Grocery Scan"}</span>
-          {sessionCount > 0 && <span style={{ background: "#22c55e", color: "#fff", fontSize: "0.65rem", fontWeight: 700, borderRadius: "999px", padding: "0.15rem 0.55rem" }}>{sessionCount} added</span>}
+          <button type="button" onClick={onClose} className="tf-glass-scan" style={{ ...glassBtnLayout, padding: "0.35rem 0.85rem", fontSize: "0.85rem", flexShrink: 0 }}>
+            ← {isEs ? "Atrás" : "Back"}
+          </button>
+          <span style={{ color: "#d1fae5", fontWeight: 800, fontSize: "1rem", textShadow: "0 0 14px rgba(134,239,172,0.25)" }}>
+            🛒 {scanTitle ?? (isEs ? "Escaneo Inteligente" : "Smart Scan")}
+          </span>
         </div>
-        <button onClick={onClose} style={{ background: "rgba(255,255,255,0.18)", border: "2px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "999px", padding: "0.35rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.85rem" }}>
-          {isEs ? "Listo ✓" : "Done ✓"}
+        <button type="button" onClick={onClose} className="tf-glass-scan" style={{ ...glassBtnLayout, padding: "0.35rem 1rem", fontSize: "0.85rem" }}>
+          ✕ {isEs ? "Cerrar" : "Close"}
         </button>
       </div>
       <div style={{ flex: 1, position: "relative", overflow: "hidden", background: "#000", minHeight: "80dvh" }}>
@@ -348,19 +706,35 @@ export default function GroceryScanModal({ onAddItem, onClose, lang, parseSpoken
             <video ref={videoRef} playsInline muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             <canvas ref={canvasRef} style={{ display: "none" }} />
             <div style={{ position: "absolute", inset: 0, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: "85%", height: "65%", border: "2.5px solid #4ade80", borderRadius: "20px", boxShadow: "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px #4ade8044" }} />
+              <div
+                style={{
+                  width: "85%",
+                  height: "65%",
+                  border: "2.5px solid #4ade80",
+                  borderRadius: "20px",
+                  boxShadow: "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px #4ade8044",
+                }}
+              />
             </div>
-            <button onClick={onClose} style={{ position: "absolute", top: "0.75rem", left: "0.75rem", width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.9)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", fontWeight: 900, color: "#111", boxShadow: "0 2px 8px rgba(0,0,0,0.4)", pointerEvents: "auto" }}>✕</button>
           </>
         )}
       </div>
-      <div style={{ padding: "0.75rem 1rem", paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))", background: "#000", flexShrink: 0 }}>
-        <button onClick={capture} disabled={!!camError}
-          style={{ width: "100%", padding: "1.2rem", background: camError ? "#333" : "linear-gradient(to bottom,#16a34a,#15803d)", color: "#fff", fontWeight: 900, fontSize: "1.2rem", border: "none", borderRadius: "18px", cursor: camError ? "not-allowed" : "pointer", boxShadow: camError ? "none" : "0 5px 0 #14532d,0 8px 20px rgba(0,0,0,0.3)", opacity: camError ? 0.5 : 1 }}>
+      <div
+        style={{
+          padding: "0.75rem 1rem",
+          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))",
+          background: "rgba(0,0,0,0.4)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          flexShrink: 0,
+          borderTop: "0.5px solid rgba(255,255,255,0.35)",
+        }}
+      >
+        <button type="button" onClick={capture} disabled={!!camError} className="tf-glass-scan" style={{ width: "100%", padding: "1.2rem", ...glassBtnLayout, fontSize: "1.2rem", fontWeight: 900, opacity: camError ? 0.45 : 1, cursor: camError ? "not-allowed" : "pointer" }}>
           📷 {isEs ? "Capturar y Escanear Todo" : "Capture & Scan All"}
         </button>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.7rem", textAlign: "center", margin: "0.5rem 0 0", fontWeight: 600 }}>
-          {isEs ? "Apunta a múltiples productos — todos serán detectados" : "Point at multiple items — all will be detected"}
+        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.7rem", textAlign: "center", margin: "0.5rem 0 0", fontWeight: 600 }}>
+          {isEs ? "Los artículos van a la cola de voz (fecha → Next / Done)" : "Items go to the voice queue (date → Next / Done)"}
         </p>
       </div>
     </div>

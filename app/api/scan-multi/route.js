@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -29,14 +30,16 @@ For EACH product you can see, provide:
 - dateFound: true if date was found
 - category: Produce | Dairy | Meat | Pantry | Frozen | Beverages | Snacks | Bread | Condiments | Other
 - location: Fridge | Freezer | Pantry
-- daysAfterOpening: number or null
+- daysSealed: estimated days while fresh/sealed (for Produce use the conservative lower bound only, same as inGeneralDaysMin)
+- daysAfterOpening: number or null (null for Produce)
 - storageTip: brief storage tip
-- openedTip: brief tip after opening, or null
+- openedTip: brief tip after opening, or null (null for Produce)
+- inGeneralDaysMin, inGeneralDaysMax: for Produce only — integer day range for fresh use (e.g. 3 and 5); null for other categories
 
-Include every distinct product you can identify. Skip non-food items. Do not duplicate.
+Produce: category Produce → daysAfterOpening null, openedTip null, inGeneralDaysMin/Max required positive integers with min<=max, daysSealed equals inGeneralDaysMin.
 
 Reply ONLY with valid JSON, no markdown:
-{"items":[{"barcode":null,"name":"...","date":"","dateFound":false,"category":"Other","location":"Fridge","daysAfterOpening":null,"storageTip":"...","openedTip":null}]}`
+{"items":[{"barcode":null,"name":"...","date":"","dateFound":false,"category":"Other","location":"Fridge","daysSealed":7,"daysAfterOpening":null,"storageTip":"...","openedTip":null,"inGeneralDaysMin":null,"inGeneralDaysMax":null}]}`
           }
         ]
       }]
@@ -47,7 +50,7 @@ Reply ONLY with valid JSON, no markdown:
     const aiData = JSON.parse(text);
 
     // For items with barcodes, enrich from Open Food Facts
-    const items = await Promise.all((aiData.items || []).map(async (item) => {
+    let items = await Promise.all((aiData.items || []).map(async (item) => {
       if (item.barcode) {
         try {
           const offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${item.barcode}.json`);
@@ -88,6 +91,8 @@ Reply ONLY with valid JSON, no markdown:
       }
       return item;
     }));
+
+    items = finalizeProduceScannerItems(items);
 
     return NextResponse.json({ items });
   } catch (e) {

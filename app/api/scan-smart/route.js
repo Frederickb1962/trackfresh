@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -91,10 +92,17 @@ Reply ONLY with valid JSON, no markdown:
       "daysSealed": 30,
       "daysAfterOpening": 14,
       "storageTip": "brief storage tip",
-      "openedTip": "brief tip after opening or null"
+      "openedTip": "brief tip after opening or null",
+      "inGeneralDaysMin": null,
+      "inGeneralDaysMax": null
     }
   ]
 }
+
+PRODUCE (fresh fruits, vegetables, herbs, loose greens — category MUST be "Produce"):
+- Set daysAfterOpening and openedTip to null always (produce is not shelf-stable "after opening" like a jar).
+- Set inGeneralDaysMin and inGeneralDaysMax to a realistic fresh-use window in whole days (example: strawberries → 3 and 5 meaning about 3–5 days). If uncertain, use a conservative narrow window.
+- Set daysSealed to the LOWER bound only (same as inGeneralDaysMin) so defaults stay conservative.
 
 For single product photos, items array will have 1 entry.
 For multiple products or receipts, include every item found.
@@ -108,7 +116,8 @@ Use null for barcode if none visible, empty string for date if not found.`
     text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const aiData = JSON.parse(text);
 
-    const items = await Promise.all((aiData.items || []).map(enrichWithBarcode));
+    let items = await Promise.all((aiData.items || []).map(enrichWithBarcode));
+    items = finalizeProduceScannerItems(items);
 
     // If single item, return in original format for backward compatibility
     if (aiData.type === "single" && items.length === 1) {

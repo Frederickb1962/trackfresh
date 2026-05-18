@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { finalizeProduceScannerItem } from "../../lib/aiProduceNormalize";
 
 export async function POST(request) {
   try {
@@ -27,11 +28,14 @@ export async function POST(request) {
       "date (YYYY-MM-DD or empty string if not found),",
       "dateFound (true or false),",
       "daysSealed (number),",
-      "daysAfterOpening (number or null),",
+      "daysAfterOpening (number or null — null for Produce),",
       "storageTip (string),",
-      "openedTip (string or null),",
+      "openedTip (string or null — null for Produce),",
+      "inGeneralDaysMin (integer or null — for Produce only, lower bound of fresh-use days),",
+      "inGeneralDaysMax (integer or null — for Produce only, upper bound),",
       "category (Produce Dairy Meat Pantry Frozen Beverages Snacks Bread Condiments or Other),",
       "location (Fridge Freezer or Pantry).",
+      "For Produce: daysAfterOpening and openedTip must be null; set inGeneralDaysMin/Max and daysSealed to the lower bound.",
       "Example: {name: Hellmanns Real Mayonnaise, date: 2026-05-15, dateFound: true, category: Condiments, location: Fridge}"
     ];
     const prompt = parts.join(" ");
@@ -47,7 +51,7 @@ export async function POST(request) {
     const text = message.content[0].text;
     const clean = text.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
-    return Response.json({ item: parsed });
+    return Response.json({ item: finalizeProduceScannerItem(parsed) });
 
   } catch (error) {
     return Response.json({ error: "AI busy" }, { status: 500 });
