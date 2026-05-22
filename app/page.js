@@ -41,6 +41,11 @@ const T = {
   welcomeF7: { en: "Full English & Spanish language support", es: "Soporte completo en inglés y español" },
   welcomeLocal: { en: "Your data is stored locally on your device. No account required.", es: "Tus datos se guardan en tu dispositivo. No necesitas cuenta." },
   getStarted: { en: "\ud83d\ude80 Get Started", es: "\ud83d\ude80 Comenzar" },
+  welcomeNoticeData: { en: "\ud83d\udca1 Heads up: Your data lives on this device. It's stored locally in your browser, so avoid clearing your Safari history and website data \u2014 that would erase your items. Cloud backup is coming in Phase 2!", es: "\ud83d\udca1 Importante: Tus datos viven en este dispositivo. Se guardan localmente en tu navegador, as\u00ed que evita borrar el historial y los datos del sitio en Safari \u2014 eso borrar\u00eda tus productos. \u00a1La copia de seguridad en la nube llegar\u00e1 en la Fase 2!" },
+  welcomeNoticeExpiry: { en: "\u26a0\ufe0f About expiration dates: Dates can vary based on how food is stored. We use the best AI sources to give you accurate estimates, but always check the product label and trust your senses. TrackFresh can't be responsible for how this information is used \u2014 by continuing, you acknowledge that estimates may not be exact.", es: "\u26a0\ufe0f Sobre las fechas de vencimiento: Las fechas pueden variar seg\u00fan c\u00f3mo se almacenen los alimentos. Usamos las mejores fuentes de IA para darte estimaciones precisas, pero siempre revisa la etiqueta del producto y conf\u00eda en tus sentidos. TrackFresh no puede ser responsable de c\u00f3mo se use esta informaci\u00f3n \u2014 al continuar, reconoces que las estimaciones pueden no ser exactas." },
+  welcomeAgree: { en: "I Understand & Agree", es: "Entiendo y acepto" },
+  welcomeHeading: { en: "Welcome to TrackFresh!", es: "\u00a1Bienvenido a TrackFresh!" },
+  welcomeLetsGo: { en: "Let's Go", es: "\u00a1Vamos!" },
   tracker: { en: "Tracker", es: "Rastreador" },
   trackerDesc: { en: "AI tracks your food & freshness", es: "IA rastrea tu comida y frescura" },
   recipes: { en: "Recipes", es: "Recetas" },
@@ -652,17 +657,15 @@ export default function TrackFreshDashboard() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const handlePwSubmit = () => {
     if (pwInput === "fresh2026" || pwInput === "CarlosG2026") {
       setIsUnlocked(true); setPwError(false);
       try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {}
       if (pwInput === "fresh2026") setIsAdmin(true);
-      try { if (localStorage.getItem("tf_disclaimer_seen") !== "1") setShowDisclaimer(true); } catch(e) {}
     } else { setPwError(true); }
   };
   const [isAdmin, setIsAdmin] = useState(false);
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") { setIsUnlocked(true); try { if (localStorage.getItem("tf_disclaimer_seen") !== "1") setShowDisclaimer(true); } catch(e) {} } if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
+  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
   const [activeTab, setActiveTab] = useState("home");
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
@@ -949,8 +952,8 @@ export default function TrackFreshDashboard() {
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
   const [receiptScanning, setReceiptScanning] = useState(false);
   const [receiptError, setReceiptError] = useState("");
-  const [showWelcome, setShowWelcome] = useState(false);
-  useEffect(() => { try { if (!localStorage.getItem("trackfresh.welcomed")) setShowWelcome(true); } catch(e) {} }, []);
+  const [welcomeStep, setWelcomeStep] = useState(0);
+  useEffect(() => { try { if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(1); } catch(e) {} }, []);
   useEffect(() => {
     if (trackedItems.length === 0) return;
     const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2);
@@ -2143,60 +2146,29 @@ export default function TrackFreshDashboard() {
   );
 
     return (
-    <>{showDisclaimer && (
+    <>{welcomeStep === 1 && (
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
         <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
           <div className="text-5xl mb-3">🥦</div>
           <h2 className="text-xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
           <div className="space-y-4 text-left mb-6">
             <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>
-                {lang === "es"
-                  ? "💡 Tus datos se almacenan localmente en este dispositivo. Para mantener tus datos seguros, evita borrar el historial y los datos del sitio de Safari. Una opción de respaldo en la nube llegará en la Fase 2."
-                  : "💡 Your data is stored locally on this device. To keep your data safe, avoid clearing your Safari history and website data. A cloud backup option is coming in Phase 2."}
-              </p>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeData")}</p>
             </div>
             <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(251,191,36,0.3)"}}>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>
-                {lang === "es"
-                  ? "⚠️ Aviso sobre Fechas de Vencimiento: Las fechas de vencimiento pueden variar según cómo se almacenen los alimentos. Hemos utilizado la mejor información de IA para proporcionar fechas de caducidad precisas. Siempre verifique las etiquetas del producto y siga las sugerencias de almacenamiento. TrackFresh no puede ser responsable de cómo uses esta información. Al continuar, aceptas reconocer los riesgos de cualquier inexactitud."
-                  : "⚠️ Food Expiration Notice: Expiration dates can fluctuate based on how food is stored. We have sourced the best AI information to provide accurate expiry dates. Please always check product labels and follow storage suggestions. TrackFresh cannot be responsible for how you use this information. By continuing you agree to acknowledge the risks of any inaccuracies."}
-              </p>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeExpiry")}</p>
             </div>
           </div>
-          <button
-            onClick={() => { try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch(e) {} setShowDisclaimer(false); }}
-            className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d"
-          >
-            {lang === "es" ? "Entendido — ¡Vamos! 🥦" : "I Understand — Let's Go! 🥦"}
-          </button>
+          <button onClick={() => setWelcomeStep(2)} className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d">{t("welcomeAgree")}</button>
         </div>
       </div>
     )}
-    {showWelcome && (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
-        <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease] py-6" style={{background:"rgba(0,0,0,0.3)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
+    {welcomeStep === 2 && (
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
+        <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
           <div className="text-5xl mb-3">🥦</div>
-          <h2 className="text-2xl font-extrabold text-white mb-1" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
-          <p className="text-green-200 text-sm mb-4">{t("welcomeDesc")}</p>
-          <div className="mb-4">
-            <p className="text-xs font-bold text-green-300 mb-2 uppercase tracking-wider">🌐 Language / Idioma</p>
-            <div className="flex justify-center gap-3">
-              <button onClick={() => changeLang("en")} className={`rounded-xl px-5 py-2.5 text-sm font-bold border-2 transition-all ${lang === "en" ? "border-orange-500 bg-orange-500/20 text-white" : "border-white/20 bg-white/10 text-white/70"}`}>🇺🇸 English</button>
-              <button onClick={() => changeLang("es")} className={`rounded-xl px-5 py-2.5 text-sm font-bold border-2 transition-all ${lang === "es" ? "border-orange-500 bg-orange-500/20 text-white" : "border-white/20 bg-white/10 text-white/70"}`}>🇲🇽 Español</button>
-            </div>
-          </div>
-          <div className="text-left rounded-xl p-4 mb-4 space-y-2" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)"}}>
-            <div className="flex items-center gap-2 text-sm"><span>📸</span><span className="text-green-100">{t("welcomeF1")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>⏰</span><span className="text-green-100">{t("welcomeF2")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🎤</span><span className="text-green-100">{t("welcomeF3")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🍳</span><span className="text-green-100">{t("welcomeF4")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>📅</span><span className="text-green-100">{t("welcomeF5")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>💬</span><span className="text-green-100">{t("welcomeF6")}</span></div>
-            <div className="flex items-center gap-2 text-sm"><span>🌎</span><span className="text-green-100">{t("welcomeF7")}</span></div>
-          </div>
-          <p className="text-xs text-green-300/60 mb-4">{t("welcomeLocal")}</p>
-          <button onClick={() => { setShowWelcome(false); try { localStorage.setItem("trackfresh.welcomed", "true"); } catch(e) {} }} className="glass-scan-btn w-full py-3 text-base font-bold">{t("getStarted")}</button>
+          <h2 className="text-2xl font-extrabold text-white mb-6" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeHeading")}</h2>
+          <button onClick={() => { setWelcomeStep(0); try { localStorage.setItem("trackfresh.welcomed", "true"); } catch(e) {} }} className="glass-scan-btn w-full py-3 text-base font-bold">{t("welcomeLetsGo")}</button>
         </div>
       </div>
     )}
