@@ -20,7 +20,7 @@ export function MealSearchInput({ value, onChange, onKeyDown }) {
   );
 }
 
-export function FoodAutocomplete({ value, onChange, onSelect, lang }) {
+export function FoodAutocomplete({ value, onChange, onSelect, lang, dark = false, menuZIndex = 50 }) {
   const fn = (name) => (lang === "es" && FOOD_ES[name]) ? FOOD_ES[name] : name;
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
@@ -58,18 +58,20 @@ export function FoodAutocomplete({ value, onChange, onSelect, lang }) {
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder={lang === "es" ? "ej. Pechuga de Pollo" : "e.g. Chicken Breast"}
-        className="w-full rounded border px-3 py-2 text-sm text-gray-900"
+        className={dark ? "w-full rounded-xl px-3 py-2 text-sm" : "w-full rounded border px-3 py-2 text-sm text-gray-900"}
+        style={dark ? { background: "#1a1a1a", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" } : undefined}
       />
       {open && matches.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg">
+        <div className="absolute mt-1 w-full rounded-lg border bg-white shadow-lg" style={{ zIndex: menuZIndex, maxHeight: "220px", overflowY: "auto" }}>
           {matches.map((f, i) => (
             <button
+              type="button"
               key={f.name}
               onMouseDown={() => { onSelect(f); setOpen(false); }}
               onMouseEnter={() => setHighlighted(i)}
-              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
+              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm text-gray-900 ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
             >
-              <span>{fn(f.name)}</span>
+              <span style={{ color: "#0f172a", fontWeight: 600 }}>{fn(f.name)}</span>
               <div className="flex items-center gap-1">
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[f.location]}`}>{LOCATION_ICONS[f.location]} {f.location}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[f.category]}`}>{f.category}</span>

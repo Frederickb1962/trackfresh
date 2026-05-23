@@ -806,6 +806,13 @@ export default function TrackFreshDashboard() {
   const pendingProduceDefaultedRef = React.useRef(new Set());
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
   const [quickAddLocation, setQuickAddLocation] = useState("Fridge");
+  const quickAddFoodOptions = useMemo(() => {
+    return [...FOOD_DB].sort((a, b) => {
+      const an = lang === "es" && FOOD_ES[a.name] ? FOOD_ES[a.name] : a.name;
+      const bn = lang === "es" && FOOD_ES[b.name] ? FOOD_ES[b.name] : b.name;
+      return an.localeCompare(bn, lang === "es" ? "es" : "en");
+    });
+  }, [lang]);
   const [meals, setMeals] = useState({});
   const [showMealPicker, setShowMealPicker] = useState(false);
   const [mealPickerDay, setMealPickerDay] = useState("");
@@ -1182,7 +1189,7 @@ export default function TrackFreshDashboard() {
       if (/\b(add|agregar|añadir|track|log)\b/.test(t)) {
         const m = t.match(/(?:add|agregar|añadir|track|log)\s+(?:a\s+|an\s+|some\s+|un\s+|una\s+|unos\s+)?(.+)/);
         const name = m?.[1]?.replace(/[?.!,]+$/,"").trim() || "";
-        setItemName(name);
+        setQuickAddName(name);
         setShowQuickAdd(true);
         finish(name
           ? (isEs ? `Listo para agregar ${name}.` : `Ready to add ${name}.`)
@@ -1610,6 +1617,18 @@ export default function TrackFreshDashboard() {
     recognition.onerror = () => { setQuickVoiceError("Could not hear you. Please try again."); setQuickVoiceListening(""); };
     recognition.onend = () => setQuickVoiceListening("");
     recognition.start();
+  };
+
+  const applyQuickAddFoodSelection = (f) => {
+    if (!f) return;
+    setQuickAddName(f.name);
+    setQuickAddCategory(f.category || "Other");
+    setQuickAddLocation(f.location || "Fridge");
+    if (f.daysSealed) {
+      const d = new Date();
+      d.setDate(d.getDate() + f.daysSealed);
+      setQuickAddDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
+    }
   };
 
   const handleQuickAdd = async () => {
@@ -2594,10 +2613,29 @@ export default function TrackFreshDashboard() {
               <div className="space-y-3">
                 <div>
                   <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>{t("foodItem")}</label>
-                  <FoodAutocomplete lang={lang}
+                  <select
+                    value={FOOD_DB.some((f) => f.name === quickAddName) ? quickAddName : ""}
+                    onChange={(e) => {
+                      const f = FOOD_DB.find((x) => x.name === e.target.value);
+                      if (f) applyQuickAddFoodSelection(f);
+                    }}
+                    className="w-full rounded-xl px-3 py-2 text-sm mb-2"
+                    style={{ background: "#1a1a1a", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", colorScheme: "light" }}
+                  >
+                    <option value="" style={{ color: "#0f172a", background: "#ffffff" }}>{lang === "es" ? "Elegir de la lista…" : "Choose from list…"}</option>
+                    {quickAddFoodOptions.map((f) => (
+                      <option key={f.name} value={f.name} style={{ color: "#0f172a", background: "#ffffff" }}>
+                        {lang === "es" && FOOD_ES[f.name] ? FOOD_ES[f.name] : f.name}
+                      </option>
+                    ))}
+                  </select>
+                  <FoodAutocomplete
+                    lang={lang}
+                    dark
+                    menuZIndex={300}
                     value={quickAddName}
                     onChange={setQuickAddName}
-                    onSelect={(f) => { setQuickAddName(f.name); setQuickAddCategory(f.category); setQuickAddLocation(f.location); }}
+                    onSelect={applyQuickAddFoodSelection}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
