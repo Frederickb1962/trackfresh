@@ -2755,21 +2755,10 @@ export default function TrackFreshDashboard() {
               const useSoon       = [...itemsWithCountdown].filter(it => it.daysLeft !== null && it.daysLeft >= 1 && it.daysLeft <= 3).sort((a,b) => a.daysLeft - b.daysLeft);
               const alertItems    = [...expired, ...expiringToday, ...useSoon];
               const hasAlerts     = alertItems.length > 0;
-              const pastDateCount = itemsWithCountdown.filter(itemIsPastDate).length;
-              const hasPastDate = pastDateCount > 0;
-              const pastDateHeadline = pastDateAlertMessage(pastDateCount, lang);
-              const attentionCount = expired.length + expiringToday.length + useSoon.length;
-              let subtitle;
-              let subtitleIsAlert = false;
-              if (hasPastDate) {
-                subtitle = pastDateHeadline;
-                subtitleIsAlert = true;
-              } else if (attentionCount > 0) {
-                subtitle = isEs ? `${attentionCount} artículo${attentionCount>1?"s":""} necesitan tu atención` : `${attentionCount} item${attentionCount>1?"s":""} need your attention`;
-                subtitleIsAlert = true;
-              } else {
-                subtitle = isEs ? "Todo se ve bien hoy" : "Everything looks good today";
-              }
+              const hasPastDate = itemsWithCountdown.some(itemIsPastDate);
+              const subtitle = hasAlerts
+                ? null
+                : (isEs ? "Todo se ve bien hoy" : "Everything looks good today");
               const accentColor = hasAlerts ? "#dc2626" : "#4ade80";
 
               const UrgentAlertCard = ({ item }) => {
@@ -2819,29 +2808,11 @@ export default function TrackFreshDashboard() {
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.75rem",gap:"0.75rem"}}>
                     <div style={{minWidth:0}}>
                       <h2 className="app-section-h2" style={{margin:0}}>🍽️ {isEs?"Tu Cocina Hoy":"Your Kitchen Today"}</h2>
-                      <div
-                        className={subtitleIsAlert ? "tf-past-date-headline" : ""}
-                        style={subtitleIsAlert ? {
-                          marginTop: "0.35rem",
-                          fontSize: "1rem",
-                          fontWeight: 900,
-                          color: "#fecaca",
-                          lineHeight: 1.35,
-                          textShadow: "0 0 16px rgba(239,68,68,0.75), 0 2px 6px rgba(0,0,0,0.55)",
-                          background: "rgba(127,29,29,0.4)",
-                          border: "1px solid rgba(248,113,113,0.55)",
-                          borderRadius: "10px",
-                          padding: "0.5rem 0.65rem",
-                        } : {
-                          fontSize: "0.72rem",
-                          color: "rgba(255,255,255,0.75)",
-                          marginTop: "0.2rem",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {subtitleIsAlert && <span aria-hidden="true" style={{ marginRight: "0.35em" }}>🔴</span>}
-                        {subtitle}
-                      </div>
+                      {subtitle && (
+                        <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.75)", marginTop: "0.2rem", fontWeight: 500, marginBottom: 0 }}>
+                          {subtitle}
+                        </p>
+                      )}
                     </div>
                     <button type="button" onClick={() => setActiveTab("tracker")} className="tf-glass-scan" style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
                       {isEs?"Ver Todo":"See All"} ›
@@ -2850,10 +2821,10 @@ export default function TrackFreshDashboard() {
                   <div className="tf-card-surface" style={{borderLeft:`4px solid ${accentColor}`,padding:"1rem 1.1rem",marginBottom:"1.25rem"}}>
                     {hasAlerts ? (
                       <>
-                        {(hasPastDate || alertItems.length > 0) && (
+                        {!hasPastDate && alertItems.length > 0 && (
                           <p
                             style={{
-                              fontSize: hasPastDate ? "0.95rem" : "0.82rem",
+                              fontSize: "0.82rem",
                               fontWeight: 800,
                               color: "#fecaca",
                               marginBottom: "0.65rem",
@@ -2866,11 +2837,9 @@ export default function TrackFreshDashboard() {
                             }}
                           >
                             <span aria-hidden="true" style={{ marginRight: "0.35em" }}>🔴</span>
-                            {hasPastDate
-                              ? pastDateHeadline
-                              : (isEs
-                                  ? `${alertItems.length} artículo${alertItems.length > 1 ? "s" : ""} por vencer pronto`
-                                  : `${alertItems.length} item${alertItems.length > 1 ? "s" : ""} expiring soon`)}
+                            {isEs
+                              ? `${alertItems.length} artículo${alertItems.length > 1 ? "s" : ""} por vencer pronto`
+                              : `${alertItems.length} item${alertItems.length > 1 ? "s" : ""} expiring soon`}
                           </p>
                         )}
                         <div className="tf-kitchen-urgent-list" role="list" aria-label={isEs ? "Artículos vencidos o por vencer" : "Past due and expiring items"}>
