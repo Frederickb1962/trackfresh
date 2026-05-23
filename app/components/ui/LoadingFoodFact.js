@@ -21,23 +21,21 @@ export function LoadingFoodFact({ lang, className = "", style }) {
   }, []);
 
   const fact = FOOD_FACTS[idx];
+  const text = isEs ? fact.es : fact.en;
   return (
     <p
-      className={className}
+      className={`tf-loading-food-fact${className ? ` ${className}` : ""}`}
       style={{
         margin: 0,
         textAlign: "center",
         lineHeight: 1.5,
-        fontStyle: "italic",
-        color: "#F0C070",
-        fontSize: "0.85rem",
-        fontWeight: 600,
+        fontSize: "0.9rem",
         maxWidth: "22rem",
-        textShadow: "0 0 12px rgba(232, 166, 60, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4)",
         ...style,
       }}
     >
-      🥦 {isEs ? fact.es : fact.en}
+      <span aria-hidden="true">🥦 </span>
+      <span className="tf-loading-food-fact__text">{text}</span>
     </p>
   );
 }

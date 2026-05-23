@@ -646,3 +646,22 @@ body {
   box-shadow: 0 0 14px rgba(255, 140, 0, 0.38) !important;
   color: #fffef5 !important;
 }
+
+/* Loading / scanning — rotating food facts (amber-orange, beats modal inherit) */
+.tf-loading-food-fact {
+  color: #f97316 !important;
+  -webkit-text-fill-color: #f97316 !important;
+  font-weight: 700 !important;
+  font-style: italic;
+  text-shadow:
+    0 0 16px rgba(249, 115, 22, 0.65),
+    0 0 32px rgba(232, 166, 60, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.55) !important;
+}
+.tf-loading-food-fact__text {
+  background: linear-gradient(135deg, #fde68a 0%, #f97316 55%, #ea580c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
