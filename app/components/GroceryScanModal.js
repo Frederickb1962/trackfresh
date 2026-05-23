@@ -8,6 +8,9 @@ import {
   formatInGeneralInstruction,
   isProduceCategory,
 } from "../lib/aiProduceNormalize";
+import { LoadingFoodFact } from "./ui/LoadingFoodFact";
+import { compressImageFile } from "../lib/compressImage";
+import { formatAiError } from "../lib/formatAiError";
 
 const glassBtnLayout = {
   display: "inline-flex",
@@ -146,6 +149,18 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
         });
         if (!mountedRef.current) return;
         const data = await res.json();
+        if (!res.ok || data.error) {
+          playError();
+          const msg = formatAiError(data.error, lang);
+          if (isDesktop) {
+            setDesktopError(msg);
+            setParsedItems([]);
+          } else {
+            setErrorMsg(msg);
+            setScreen("error");
+          }
+          return;
+        }
         const raw = data.items || (data.item ? [data.item] : []);
         const items = finalizeProduceScannerItems(Array.isArray(raw) ? raw : []);
         if (!items.length) {
@@ -168,7 +183,7 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
       } catch (e) {
         if (!mountedRef.current) return;
         playError();
-        const msg = e.message || (isEs ? "Error al escanear" : "Scan failed");
+        const msg = formatAiError(e.message, lang);
         if (isDesktop) {
           setDesktopError(msg);
           setParsedItems([]);
@@ -180,24 +195,22 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
         if (mountedRef.current && isDesktop) setDesktopBusy(false);
       }
     },
-    [isDesktop, isEs, onEnqueue]
+    [isDesktop, isEs, lang, onEnqueue]
   );
 
   const processImageFile = useCallback(
-    (file) => {
+    async (file) => {
       if (!file || !String(file.type || "").startsWith("image/")) {
         const msg = isEs ? "Elige una imagen (JPG, PNG, WEBP)." : "Please choose an image file (JPG, PNG, WEBP).";
         setDesktopError(msg);
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result;
-        if (typeof dataUrl !== "string" || !dataUrl.includes(",")) return;
-        const base64 = dataUrl.split(",")[1];
-        runSmartScan(base64, file.type || "image/jpeg");
-      };
-      reader.readAsDataURL(file);
+      try {
+        const { base64, mimeType } = await compressImageFile(file);
+        runSmartScan(base64, mimeType);
+      } catch {
+        setDesktopError(isEs ? "No se pudo procesar la imagen." : "Could not process image.");
+      }
     },
     [isEs, runSmartScan]
   );
@@ -296,6 +309,7 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
         <p style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>
           {isEs ? "Analizando imagen..." : "Analyzing image..."}
         </p>
+        <LoadingFoodFact lang={lang} style={{ padding: "0 1.25rem" }} />
       </div>
     );
   }
@@ -534,7 +548,8 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
                       animation: "spin 0.9s linear infinite",
                     }}
                   />
-                  <p style={{ color: "#fff", fontWeight: 700, textShadow: "0 0 12px rgba(249,115,22,0.5)" }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+                  <p style={{ color: "#fff", fontWeight: 700, textShadow: "0 0 12px rgba(249,115,22,0.5)", margin: 0 }}>{isEs ? "Analizando imagen..." : "Analyzing image..."}</p>
+                  <LoadingFoodFact lang={lang} style={{ padding: "0 1rem" }} />
                 </div>
               )}
 

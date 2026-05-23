@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
+import { aiErrorPayload } from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -97,6 +98,7 @@ Reply ONLY with valid JSON, no markdown:
     return NextResponse.json({ items });
   } catch (e) {
     console.error("Multi scan error:", e);
-    return NextResponse.json({ error: "AI busy" }, { status: 500 });
+    const { error: errMsg, status } = aiErrorPayload(e, "Multi scan failed");
+    return NextResponse.json({ error: errMsg }, { status });
   }
 }

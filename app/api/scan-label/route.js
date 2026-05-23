@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { finalizeProduceScannerItem } from "../../lib/aiProduceNormalize";
+import { aiErrorPayload } from "../../lib/apiAiError";
 
 export async function POST(request) {
   try {
@@ -43,7 +44,7 @@ export async function POST(request) {
     const content = [{ type: "text", text: prompt }, ...imageContent];
 
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
+      model: "claude-sonnet-4-5-20250929",
       max_tokens: 1024,
       messages: [{ role: "user", content: content }]
     });
@@ -54,6 +55,8 @@ export async function POST(request) {
     return Response.json({ item: finalizeProduceScannerItem(parsed) });
 
   } catch (error) {
-    return Response.json({ error: "AI busy" }, { status: 500 });
+    console.error("Label scan error:", error);
+    const { error: errMsg, status } = aiErrorPayload(error, "Label scan failed");
+    return Response.json({ error: errMsg }, { status });
   }
 }

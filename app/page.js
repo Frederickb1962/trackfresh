@@ -14,7 +14,10 @@ import GroceryScanModal from "./components/GroceryScanModal";
 import { FOOD_ES, FOOD_DB } from "./lib/foodData";
 import { CATEGORY_COLORS, LOCATION_COLORS, LOCATION_ICONS } from "./lib/uiConstants";
 import { conservativeProduceShelfDays, finalizeProduceScannerItem, formatInGeneralInstruction, isProduceCategory } from "./lib/aiProduceNormalize";
+import { compressImageFile } from "./lib/compressImage";
+import { formatAiError } from "./lib/formatAiError";
 import { MealSearchInput, FoodAutocomplete, CommunityStewAnim } from "./components/ui/MealComponents";
+import { LoadingFoodFact } from "./components/ui/LoadingFoodFact";
 
 
 const LANG_KEY = "trackfresh.lang";
@@ -835,8 +838,6 @@ export default function TrackFreshDashboard() {
   const removeFamilyMember = (i) => { const next = familyMembers.filter((_,idx) => idx !== i); setFamilyMembers(next); saveMembersToStorage(next); if (expandedMember === i) setExpandedMember(null); };
   const toggleMemberTag = (i, key) => { const next = familyMembers.map((m, idx) => idx === i ? {...m, restrictions: {...(m.restrictions||{}), [key]: !(m.restrictions||{})[key]}} : m); setFamilyMembers(next); saveMembersToStorage(next); };
   const saveMemberName = (i) => { if (!editMemberName.trim()) return; const next = familyMembers.map((m, idx) => idx === i ? {...m, name: editMemberName.trim()} : m); setFamilyMembers(next); saveMembersToStorage(next); setEditingMember(null); setEditMemberName(""); };
-  const [quickVoiceListening, setQuickVoiceListening] = useState("");
-  const [quickVoiceError, setQuickVoiceError] = useState("");
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [scanMode, setScanMode] = useState(null);
   const [multiScanCount, setMultiScanCount] = useState(0);
@@ -1019,9 +1020,16 @@ export default function TrackFreshDashboard() {
         body: JSON.stringify({ expiring: expiringNames, available: allItems, dietaryNeeds: activeDietaryProfile })
       });
       const data = await res.json();
+      if (!res.ok || data.error) {
+        window.alert(formatAiError(data.error, lang));
+        return;
+      }
       if (data.plan) setMeals(data.plan);
-    } catch (err) { console.error(err); }
-    setAiPlanLoading(false);
+    } catch (err) {
+      window.alert(formatAiError(err.message, lang));
+    } finally {
+      setAiPlanLoading(false);
+    }
   };
 
   const handleAddMealIngredientsToShopping = (mealName) => {
@@ -1391,10 +1399,10 @@ export default function TrackFreshDashboard() {
     try {
       const res = await fetch("/api/suggest-recipes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: trackedItems.map(it => ({ name: it.name, daysLeft: it.daysLeft, category: it.category, location: it.location })) }) });
       const data = await res.json();
-      if (data.error) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setRecipesLoading(false); return; }
+      if (!res.ok || data.error) { window.alert(formatAiError(data.error, lang)); setRecipesLoading(false); return; }
       setRecipeSuggestions(data.recipes || []);
       setRecipesGenerated(true);
-    } catch (e) { window.alert(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); }
+    } catch (e) { window.alert(formatAiError(e.message, lang)); }
     setRecipesLoading(false);
   };
 
@@ -1431,27 +1439,29 @@ export default function TrackFreshDashboard() {
     setReceiptScanning(true);
     setReceiptError("");
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64 = e.target.result.split(",")[1];
-        const mediaType = file.type;
-        const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType: mediaType || "image/jpeg" }) });
-        const data = await res.json();
-        if (data.error) { setReceiptError(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setReceiptScanning(false); return; }
-        const list = data.items || [];
-        if (!list.length) {
-          setReceiptError(lang === "es" ? "No se encontraron productos en el recibo." : "No items found on this receipt.");
-          setReceiptScanning(false);
-          return;
-        }
-        const rows = list.map(mapScanApiItemToPendingRow);
-        enqueuePendingRows(rows);
+      const { base64, mimeType } = await compressImageFile(file);
+      const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType }) });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setReceiptError(formatAiError(data.error, lang));
         setReceiptScanning(false);
-        setReceiptError("");
-        queueMicrotask(() => setShowReceiptScanner(false));
-      };
-      reader.readAsDataURL(file);
-    } catch (err) { setReceiptError(err.message); setReceiptScanning(false); }
+        return;
+      }
+      const list = data.items || [];
+      if (!list.length) {
+        setReceiptError(lang === "es" ? "No se encontraron productos en el recibo." : "No items found on this receipt.");
+        setReceiptScanning(false);
+        return;
+      }
+      const rows = list.map(mapScanApiItemToPendingRow);
+      enqueuePendingRows(rows);
+      setReceiptScanning(false);
+      setReceiptError("");
+      queueMicrotask(() => setShowReceiptScanner(false));
+    } catch (err) {
+      setReceiptError(formatAiError(err.message, lang));
+      setReceiptScanning(false);
+    }
   };
 
   const handleBarcodeDetected = async (barcode) => {
@@ -1586,39 +1596,6 @@ export default function TrackFreshDashboard() {
     }));
   };
 
-  const handleQuickVoice = (field) => {
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      setQuickVoiceError("Voice not supported on this browser.");
-      return;
-    }
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SR();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    setQuickVoiceListening(field);
-    setQuickVoiceError("");
-    recognition.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      if (field === "qty") {
-        setQuickAddQty(transcript);
-        setQuickVoiceListening("");
-      } else {
-        const parsed = parseSpokenDate(transcript);
-        if (parsed) {
-          setQuickAddDate(parsed);
-          setQuickVoiceListening("");
-        } else {
-          setQuickVoiceError("Could not understand date. Try: February 20 2026");
-          setQuickVoiceListening("");
-        }
-      }
-    };
-    recognition.onerror = () => { setQuickVoiceError("Could not hear you. Please try again."); setQuickVoiceListening(""); };
-    recognition.onend = () => setQuickVoiceListening("");
-    recognition.start();
-  };
-
   const applyQuickAddFoodSelection = (f) => {
     if (!f) return;
     setQuickAddName(f.name);
@@ -1652,25 +1629,24 @@ export default function TrackFreshDashboard() {
     setLabelError("");
     setLabelItem(null);
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64 = e.target.result.split(",")[1];
-        const mediaType = file.type;
-        const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }) });
-        const data = await res.json();
-        if (data.error) { setLabelError(lang === "es" ? "Nuestra IA está un poco ocupada ahora. ¡Por favor intenta de nuevo en un momento! 🙏" : "Our AI is a little busy right now. Please try again in a moment! 🙏"); setLabelScanning(false); return; }
-        
-        const item = data.item;
-        setLabelItem(item);
-        
-        if (!item.dateFound) {
-          setLabelError("📅 No expiration date visible. Flip package over and scan the other side!");
-        }
-        
+      const { base64, mimeType } = await compressImageFile(file);
+      const res = await fetch("/api/scan-label", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageData: base64, mediaType }) });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setLabelError(formatAiError(data.error, lang));
         setLabelScanning(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) { setLabelError(err.message); setLabelScanning(false); }
+        return;
+      }
+      const item = data.item;
+      setLabelItem(item);
+      if (!item.dateFound) {
+        setLabelError("📅 No expiration date visible. Flip package over and scan the other side!");
+      }
+      setLabelScanning(false);
+    } catch (err) {
+      setLabelError(formatAiError(err.message, lang));
+      setLabelScanning(false);
+    }
   };
 
   const handleAddLabelItem = () => {
@@ -2247,9 +2223,10 @@ export default function TrackFreshDashboard() {
                 </div>
               )}
               {receiptScanning && (
-                <div className="flex flex-col items-center py-8">
-                  <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm" style={{color:"rgba(255,255,255,0.75)"}}>{t("readingReceipt")}</p>
+                <div className="flex flex-col items-center py-8 gap-3">
+                  <div className="text-3xl animate-spin">⏳</div>
+                  <p className="text-sm" style={{color:"rgba(255,255,255,0.75)",margin:0}}>{t("readingReceipt")}</p>
+                  <LoadingFoodFact lang={lang} />
                 </div>
               )}
               {receiptError && <p className="mt-2 text-sm" style={{color:"#fca5a5"}}>Error: {receiptError}</p>}
@@ -2535,9 +2512,10 @@ export default function TrackFreshDashboard() {
                 <BarcodeScanner key={barcodeScanKey} onDetected={handleBarcodeDetected} />
               )}
               {barcodeScanning && (
-                <div className="flex flex-col items-center py-4">
-                  <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{t("lookingUp")}</p>
+                <div className="flex flex-col items-center py-4 gap-3">
+                  <div className="text-3xl animate-spin">⏳</div>
+                  <p className="text-sm" style={{color:"rgba(255,255,255,0.72)",margin:0}}>{t("lookingUp")}</p>
+                  <LoadingFoodFact lang={lang} />
                 </div>
               )}
               {barcodeError && (
@@ -2654,13 +2632,7 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>📅 {lang === "es" ? "Fecha de Vencimiento" : "Set Expiry Date"}</label>
-                  <VoiceDateNextHint lang={lang} />
-                  <div className="flex gap-2">
-                    <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="flex-1 rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"2px solid #f97316"}} />
-                    <button type="button" onClick={() => handleQuickVoice("date")} className={`rounded px-3 py-2 text-sm font-semibold ${quickVoiceListening === "date" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>{quickVoiceListening === "date" ? "🎤 Listening..." : "🎤"}</button>
-                  </div>
-                  {quickVoiceListening === "date" && <p className="text-xs text-green-300 mt-1">{lang === "es" ? "Di la fecha ej. veinte de febrero" : "Say date e.g. February 20"}</p>}
-                  {quickVoiceError && <p className="text-xs text-red-400 mt-1">{quickVoiceError}</p>}
+                  <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"2px solid #f97316"}} />
                 </div>
                 <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"#22c55e",color:"#0a0a0a"}}>{lang === "es" ? "Agregar Artículo" : "Add Item"}</button>
                 <button type="button" onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded-xl py-2 text-sm tf-glass-primary-btn">{t("cancel")}</button>
@@ -2708,9 +2680,10 @@ export default function TrackFreshDashboard() {
                 </label>
               )}
               {labelScanning && (
-                <div className="flex flex-col items-center py-8">
-                  <div className="mb-3 text-3xl animate-spin">⏳</div>
-                  <p className="text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{t("readingLabel")}</p>
+                <div className="flex flex-col items-center py-8 gap-3">
+                  <div className="text-3xl animate-spin">⏳</div>
+                  <p className="text-sm" style={{color:"rgba(255,255,255,0.72)",margin:0}}>{t("readingLabel")}</p>
+                  <LoadingFoodFact lang={lang} />
                 </div>
               )}
               {labelError && <p className="mt-2 text-sm" style={{color:"#fca5a5"}}>{labelError}</p>}
@@ -3253,6 +3226,7 @@ export default function TrackFreshDashboard() {
               {lang === "es" ? "Combinado con lo que tienes en tu refrigerador, despensa y congelador. Prioriza lo que vence primero — puede sugerir 1-2 ingredientes extra para completar un platillo." : "Matched to what's in your fridge, pantry & freezer. Prioritizes what expires soonest — may suggest 1-2 extra ingredients to complete a dish."}
             </p>
             <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> {lang === "es" ? "Ideas de Recetas" : "AI Recipe Ideas"} <AiBadge style={{fontSize:"1.5em"}} /></>}</button>
+            {recipesLoading && <div className="mt-4 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("noMatches")}</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
@@ -3496,6 +3470,7 @@ export default function TrackFreshDashboard() {
                   {aiPlanLoading ? <><span className="animate-spin inline-block">🤖</span> <AiBadge /> {lang === "es" ? "planificando..." : "is planning..."}</> : <span>✨ <AiBadge /> {lang === "es" ? "Planificar Mi Semana" : "Plan My Week"}</span>}
                 </button>
               </div>
+              {aiPlanLoading && <div className="mb-3 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
               <p className="text-xs text-green-200 mb-4">{t("mealDesc")}</p>
               <div className="space-y-4">
                 {DAYS.map((day) => (

@@ -1,0 +1,23 @@
+/** Fun facts shown while AI scans / loads (EN + ES). */
+export const FOOD_FACTS = [
+  { en: "Honey never spoils — archaeologists have found edible honey in ancient tombs.", es: "La miel no se echa a perder — se ha encontrado miel comestible en tumbas antiguas." },
+  { en: "Bananas ripen faster when stored next to other fruit.", es: "Los plátanos maduran más rápido junto a otras frutas." },
+  { en: "Refrigerating bread actually makes it go stale faster — freeze it instead.", es: "Refrigerar el pan lo reseca más rápido — mejor congélalo." },
+  { en: "Apples float because about 25% of their volume is air.", es: "Las manzanas flotan porque cerca del 25% de su volumen es aire." },
+  { en: "Carrots were originally purple, not orange.", es: "Las zanahorias eran moradas originalmente, no naranjas." },
+  { en: "Tomatoes are botanically a fruit, not a vegetable.", es: "Los tomates son fruta botánicamente, no verdura." },
+  { en: "Peanuts aren't nuts — they're legumes, like beans.", es: "El maní no es nuez — es legumbre, como los frijoles." },
+  { en: "Lettuce is mostly water — about 96%.", es: "La lechuga es casi agua — alrededor del 96%." },
+  { en: "Freezing food pauses bacteria — it doesn't kill them.", es: "Congelar pausa las bacterias — no las mata." },
+  { en: "Opened ketchup lasts months in the fridge, not forever on the door.", es: "El ketchup abierto dura meses en el refrigerador, no para siempre en la puerta." },
+  { en: "The \"sell by\" date is for stores — \"use by\" is for you.", es: "La fecha de venta es para tiendas — \"consumir antes\" es para ti." },
+  { en: "Cooked rice left at room temperature can be risky after 2 hours.", es: "El arroz cocido a temperatura ambiente puede ser riesgoso después de 2 horas." },
+  { en: "Avocados ripen best on the counter, then move to the fridge.", es: "Los aguacates maduran mejor en la encimera; luego al refrigerador." },
+  { en: "Potatoes and onions should be stored apart — each speeds the other's spoilage.", es: "Papas y cebollas deben guardarse separadas — se aceleran el deterioro." },
+  { en: "Eggs stay fresher longer in the coldest part of the fridge, not the door.", es: "Los huevos duran más en la parte más fría del refrigerador, no en la puerta." },
+  { en: "Smell and sight matter as much as the date on the package.", es: "El olor y la vista importan tanto como la fecha del paquete." },
+  { en: "Washing berries right before eating helps them last longer.", es: "Lavar las bayas justo antes de comerlas ayuda a que duren más." },
+  { en: "Hard cheese lasts longer than soft cheese after opening.", es: "El queso duro dura más que el blando después de abrirlo." },
+  { en: "Your nose is one of the best tools for spotting spoiled food.", es: "Tu nariz es una de las mejores herramientas para detectar comida en mal estado." },
+  { en: "Tracking what you have is the easiest way to waste less food.", es: "Rastrear lo que tienes es la forma más fácil de desperdiciar menos comida." },
+];

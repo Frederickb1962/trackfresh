@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
+import { aiErrorPayload } from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -69,6 +70,7 @@ Reply ONLY with valid JSON, no markdown, no backticks:
     return NextResponse.json(data);
   } catch (e) {
     console.error("Recipe suggestion error:", e);
-    return NextResponse.json({ error: "AI busy" }, { status: 500 });
+    const { error: errMsg, status } = aiErrorPayload(e, "Recipe suggestion failed");
+    return NextResponse.json({ error: errMsg }, { status });
   }
 }
