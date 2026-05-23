@@ -2393,39 +2393,6 @@ export default function TrackFreshDashboard() {
             </div>
           );
         })()}
-        {showRecallsPanel && (
-        <div className="tf-premium-overlay" style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={() => setShowRecallsPanel(false)}>
-          <div className="tf-premium-sheet tf-modal-glass-surface" style={{borderRadius:"24px 24px 0 0",width:"100%",maxWidth:"500px",maxHeight:"85vh",overflow:"auto",padding:"1.5rem"}} onClick={e => e.stopPropagation()}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
-              <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{fontSize:"0.9rem",padding:"0.35rem 0.75rem",gap:"4px"}}><span style={{fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Atrás" : "Back"}</button>
-              <h2 className="tf-modal-accent-h" style={{fontSize:"0.95rem",margin:0,textAlign:"center",flex:1}}>{lang === "es" ? "🛡️ GUARDIÁN DE COCINA: ALERTAS ACTIVAS" : "🛡️ KITCHEN GUARD: ACTIVE ALERTS"}</h2>
-              <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{borderRadius:"50%",width:"32px",height:"32px",fontSize:"1.1rem",padding:0}}>&#10005;</button>
-            </div>
-            {fdaLoading && <p style={{textAlign:"center",color:"rgba(255,255,255,0.55)",padding:"2rem 0"}}>{t("fdaLoading")}</p>}
-            {fdaRecalls.length === 0 && !fdaLoading && <p style={{textAlign:"center",color:"rgba(255,255,255,0.55)",padding:"2rem 0"}}>{t("fdaError")}</p>}
-            <div style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
-              {fdaRecalls.map(recall => (
-                <div key={recall.id} style={{background:"rgba(255,255,255,0.05)",borderRadius:"12px",padding:"1rem",borderLeft:recall.severity === "high" ? "4px solid #fbbf24" : "4px solid rgba(255,255,255,0.3)"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem"}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontWeight:700,fontSize:"0.85rem",color:"#FFFFFF",lineHeight:1.3}}>{recall.product}</div>
-                      <div style={{fontSize:"0.75rem",color:"#fbbf24",marginTop:"3px"}}>Brand: {recall.brand}</div>
-                      <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.9)",marginTop:"0.3rem"}}>{recall.reason}</div>
-                      <div style={{fontSize:"0.65rem",color:"rgba(251,191,36,0.8)",marginTop:"4px"}}>{recall.date}</div>
-                    </div>
-                    <span style={{fontSize:"0.6rem",fontWeight:700,padding:"3px 8px",borderRadius:"999px",flexShrink:0,textTransform:"uppercase",background:recall.severity === "high" ? "#fee2e2" : recall.severity === "medium" ? "#ffedd5" : "#f3f4f6",color:recall.severity === "high" ? "#b91c1c" : recall.severity === "medium" ? "#c2410c" : "#374151"}}>{recall.severity === "high" ? t("fdaClassI") : recall.severity === "medium" ? t("fdaClassII") : t("fdaClassIII")}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{marginTop:"1rem",display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-              <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts","_blank")} style={{width:"100%",background:"linear-gradient(to bottom,#dc2626,#991b1b)",color:"white",border:"none",borderRadius:"10px",padding:"0.7rem",fontSize:"0.85rem",fontWeight:700,cursor:"pointer"}}>{t("fdaViewAll")} &#8594; FDA.gov</button>
-              <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{width:"100%",padding:"0.7rem",fontSize:"0.85rem"}}>{t("fdaClose")}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {showHelp && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
             <div className="w-full max-w-lg rounded-xl p-6 tf-modal-glass-surface">
@@ -4210,6 +4177,66 @@ export default function TrackFreshDashboard() {
 
       </div>
     </div>
+
+        {showRecallsPanel && (
+          <div
+            className="tf-premium-overlay"
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 10000,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              overflowY: "auto",
+              padding: "1rem",
+              paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.75rem)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)",
+            }}
+            onClick={() => setShowRecallsPanel(false)}
+          >
+            <div
+              className="w-full max-w-lg rounded-xl tf-modal-glass-surface"
+              style={{
+                maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 5.5rem)",
+                overflow: "auto",
+                padding: "1.25rem",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ fontSize: "0.9rem", padding: "0.35rem 0.75rem", gap: "4px" }}>
+                  <span style={{ fontSize: "1.1rem", fontWeight: "bold" }}>←</span> {lang === "es" ? "Atrás" : "Back"}
+                </button>
+                <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ borderRadius: "50%", width: "32px", height: "32px", fontSize: "1.1rem", padding: 0 }} aria-label={t("fdaClose")}>&#10005;</button>
+              </div>
+              <h2 className="tf-modal-accent-h" style={{ fontSize: "1.05rem", margin: "0 0 1rem", textAlign: "center", lineHeight: 1.35 }}>
+                {lang === "es" ? "🛡️ GUARDIÁN DE COCINA: ALERTAS ACTIVAS" : "🛡️ KITCHEN GUARD: ACTIVE ALERTS"}
+              </h2>
+              {fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "2rem 0" }}>{t("fdaLoading")}</p>}
+              {fdaRecalls.length === 0 && !fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "2rem 0" }}>{t("fdaError")}</p>}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {fdaRecalls.map((recall) => (
+                  <div key={recall.id} style={{ background: "rgba(255,255,255,0.05)", borderRadius: "12px", padding: "1rem", borderLeft: recall.severity === "high" ? "4px solid #fbbf24" : "4px solid rgba(255,255,255,0.3)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "#FFFFFF", lineHeight: 1.3 }}>{recall.product}</div>
+                        <div style={{ fontSize: "0.75rem", color: "#fbbf24", marginTop: "3px" }}>Brand: {recall.brand}</div>
+                        <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.9)", marginTop: "0.3rem" }}>{recall.reason}</div>
+                        <div style={{ fontSize: "0.65rem", color: "rgba(251,191,36,0.8)", marginTop: "4px" }}>{recall.date}</div>
+                      </div>
+                      <span style={{ fontSize: "0.6rem", fontWeight: 700, padding: "3px 8px", borderRadius: "999px", flexShrink: 0, textTransform: "uppercase", background: recall.severity === "high" ? "#fee2e2" : recall.severity === "medium" ? "#ffedd5" : "#f3f4f6", color: recall.severity === "high" ? "#b91c1c" : recall.severity === "medium" ? "#c2410c" : "#374151" }}>{recall.severity === "high" ? t("fdaClassI") : recall.severity === "medium" ? t("fdaClassII") : t("fdaClassIII")}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#dc2626,#991b1b)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewAll")} &#8594; FDA.gov</button>
+                <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ width: "100%", padding: "0.7rem", fontSize: "0.85rem" }}>{t("fdaClose")}</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showExpiryVoice && (
           <div className="tf-premium-overlay" style={{position:"fixed",inset:0,zIndex:10500,display:"flex",alignItems:"flex-end",justifyContent:"center",padding:"1rem"}}>
