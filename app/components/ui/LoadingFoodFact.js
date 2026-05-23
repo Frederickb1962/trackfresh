@@ -29,9 +29,11 @@ export function LoadingFoodFact({ lang, className = "", style }) {
         textAlign: "center",
         lineHeight: 1.5,
         fontStyle: "italic",
-        color: "rgba(255,255,255,0.72)",
+        color: "#F0C070",
         fontSize: "0.85rem",
+        fontWeight: 600,
         maxWidth: "22rem",
+        textShadow: "0 0 12px rgba(232, 166, 60, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4)",
         ...style,
       }}
     >
