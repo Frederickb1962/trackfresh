@@ -50,11 +50,11 @@ function VoiceQueueHint({ lang }) {
     <p className="tf-voice-date-hint" style={{ maxWidth: "100%", marginTop: "0.5rem", marginBottom: "0.85rem" }}>
       {lang === "es" ? (
         <>
-          Di la fecha y di <span className="tf-voice-date-hint__kw">NEXT</span>. Di <span className="tf-voice-date-hint__kw">DONE</span> cuando hayas terminado.
+          Toca <span className="tf-voice-date-hint__kw">Guardar</span> abajo, o di <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
         </>
       ) : (
         <>
-          Speak date and say <span className="tf-voice-date-hint__kw">NEXT</span>. Say <span className="tf-voice-date-hint__kw">DONE</span> when finished.
+          Tap <span className="tf-voice-date-hint__kw">Save</span> below, or say <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
         </>
       )}
     </p>

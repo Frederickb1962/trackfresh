@@ -192,6 +192,8 @@ noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or
   tapToPhoto: { en: "Tap to photograph label", es: "Toca para fotografiar la etiqueta" },
   tapOpenCamera: { en: "Tap to open camera", es: "Toca para abrir cámara" },
   doneWord: { en: "Done", es: "Listo" },
+  pendingSaveNext: { en: "Save & Next", es: "Guardar y Siguiente" },
+  pendingSaveFinish: { en: "Save & Finish", es: "Guardar y Terminar" },
   sayDateExample: { en: "Say date e.g. February 20, 2026", es: "Di la fecha ej. 20 de febrero de 2026" },
   freezeByLabel: { en: "Freeze By", es: "Congelar Antes De" },
   expDateLabel: { en: "Exp. Date", es: "Fecha de Venc." },
@@ -637,11 +639,11 @@ function VoiceDateNextHint({ lang }) {
     <p className="tf-voice-date-hint">
       {lang === "es" ? (
         <>
-          Di la fecha y di <span className="tf-voice-date-hint__kw">NEXT</span>. Di <span className="tf-voice-date-hint__kw">DONE</span> cuando hayas terminado.
+          Toca <span className="tf-voice-date-hint__kw">Guardar</span> abajo, o di <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
         </>
       ) : (
         <>
-          Speak date and say <span className="tf-voice-date-hint__kw">NEXT</span>. Say <span className="tf-voice-date-hint__kw">DONE</span> when finished.
+          Tap <span className="tf-voice-date-hint__kw">Save</span> below, or say <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
         </>
       )}
     </p>
@@ -1707,6 +1709,74 @@ export default function TrackFreshDashboard() {
     else { setPendingDateIndex(next); setPendingPickedDate(""); }
   };
 
+  const abortPendingVoiceRecognition = () => {
+    if (pendingVoiceRetryTimeoutRef.current) {
+      clearTimeout(pendingVoiceRetryTimeoutRef.current);
+      pendingVoiceRetryTimeoutRef.current = null;
+    }
+    if (pendingVoiceRecognitionRef.current) {
+      try {
+        pendingVoiceRecognitionRef.current.onend = null;
+        pendingVoiceRecognitionRef.current.abort();
+      } catch (e) {}
+      pendingVoiceRecognitionRef.current = null;
+    }
+    setPendingVoiceListening(false);
+    suppressNextEmptyPendingDateOnChangeRef.current = false;
+    ignoreNextPendingDateInputOnChangeRef.current = false;
+  };
+
+  const finishPendingQueueFromIndex = (dateStr, commitIdx) => {
+    setPendingAwaitNextOrDone(false);
+    abortPendingVoiceRecognition();
+    const itemsSnap = pendingDateItemsRef.current;
+    const cur = itemsSnap[commitIdx];
+    if (cur) {
+      setTrackedItems((prev) => [{ ...cur, useByDate: dateStr }, ...prev]);
+    }
+    const rest = itemsSnap.slice(commitIdx + 1);
+    if (rest.length) {
+      setTrackedItems((prev) => [...rest.map((it) => ({ ...it, useByDate: it.useByDate || "" })), ...prev]);
+    }
+    setPendingDateItems([]);
+    setPendingDateIndex(0);
+    setPendingPickedDate("");
+  };
+
+  const handlePendingSaveAndNext = () => {
+    const dateStr = pendingPickedDateRef.current || pendingPickedDate;
+    if (!isValidYYYYMMDD(dateStr)) {
+      setPendingVoiceError(lang === "es" ? "Elige una fecha en el calendario." : "Pick a date on the calendar first.");
+      return;
+    }
+    setPendingVoiceError("");
+    abortPendingVoiceRecognition();
+    const commitIdx = pendingDateIndexRef.current;
+    const nextIdx = commitIdx + 1;
+    const queueHasMore = nextIdx < pendingDateItemsRef.current.length;
+    if (queueHasMore) pendingVoiceRestartFromNextRef.current = true;
+    savePendingItemWithDate(dateStr, commitIdx);
+    playBeep(660, 120);
+    if (queueHasMore) {
+      setTimeout(() => {
+        startPendingVoice(nextIdx);
+      }, pendingVoiceResumeAfterNextMs());
+    }
+  };
+
+  const handlePendingSaveAndFinish = () => {
+    const dateStr = pendingPickedDateRef.current || pendingPickedDate;
+    if (!isValidYYYYMMDD(dateStr)) {
+      setPendingVoiceError(lang === "es" ? "Elige una fecha en el calendario." : "Pick a date on the calendar first.");
+      return;
+    }
+    setPendingVoiceError("");
+    finishPendingQueueFromIndex(dateStr, pendingDateIndexRef.current);
+    playBeep(880, 120);
+    setTimeout(() => playBeep(660, 150), 220);
+    setTimeout(() => playBeep(660, 150), 470);
+  };
+
   /** Normalize speech transcripts so commands match despite periods, spaces, smart quotes, etc. */
   const normalizePendingVoiceCommand = (s) => {
     if (!s || typeof s !== "string") return "";
@@ -1799,19 +1869,7 @@ export default function TrackFreshDashboard() {
           }, pendingVoiceResumeAfterNextMs());
         }
       } else {
-        const itemsSnap = pendingDateItemsRef.current;
-        const cur = itemsSnap[commitIdx];
-        if (cur) {
-          setTrackedItems((prev) => [{ ...cur, useByDate: dateStr }, ...prev]);
-        }
-        const rest = itemsSnap.slice(commitIdx + 1);
-        if (rest.length) {
-          setTrackedItems((prev) => [...rest.map((it) => ({ ...it, useByDate: it.useByDate || "" })), ...prev]);
-        }
-        setPendingAwaitNextOrDone(false);
-        setPendingDateItems([]);
-        setPendingDateIndex(0);
-        setPendingPickedDate("");
+        finishPendingQueueFromIndex(dateStr, commitIdx);
         playBeep(880, 120);
         setTimeout(() => playBeep(660, 150), 220);
         setTimeout(() => playBeep(660, 150), 470);
@@ -1949,19 +2007,7 @@ export default function TrackFreshDashboard() {
             }, pendingVoiceResumeAfterNextMs());
           }
         } else {
-          const itemsSnap = pendingDateItemsRef.current;
-          const cur = itemsSnap[commitIdx];
-          if (cur) {
-            setTrackedItems((prev) => [{ ...cur, useByDate: dateStr }, ...prev]);
-          }
-          const rest = itemsSnap.slice(commitIdx + 1);
-          if (rest.length) {
-            setTrackedItems((prev) => [...rest.map((it) => ({ ...it, useByDate: it.useByDate || "" })), ...prev]);
-          }
-          setPendingAwaitNextOrDone(false);
-          setPendingDateItems([]);
-          setPendingDateIndex(0);
-          setPendingPickedDate("");
+          finishPendingQueueFromIndex(dateStr, commitIdx);
           playBeep(880, 120);
           setTimeout(() => playBeep(660, 150), 220);
           setTimeout(() => playBeep(660, 150), 470);
@@ -2112,6 +2158,7 @@ export default function TrackFreshDashboard() {
     const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     pendingPickedDateRef.current = iso;
     setPendingPickedDate(iso);
+    setPendingAwaitNextOrDone(true);
   }, [pendingDateIndex, pendingDateItems, pendingPickedDate]);
 
   const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
@@ -2321,14 +2368,46 @@ export default function TrackFreshDashboard() {
                     }
                     pendingPickedDateRef.current = v;
                     setPendingPickedDate(v);
-                    if (!v) return;
+                    if (!v) {
+                      setPendingAwaitNextOrDone(false);
+                      return;
+                    }
                     setPendingAwaitNextOrDone(true);
-                    const commitIdx = pendingDateIndexRef.current;
-                    window.setTimeout(() => startPendingVoiceNextDone(commitIdx), 80);
+                    setPendingVoiceError("");
+                  }}
+                  onInput={(e) => {
+                    const v = e.target.value;
+                    if (!v || !isValidYYYYMMDD(v)) return;
+                    if (v === pendingPickedDateRef.current) return;
+                    pendingPickedDateRef.current = v;
+                    setPendingPickedDate(v);
+                    setPendingAwaitNextOrDone(true);
+                    setPendingVoiceError("");
                   }}
                   style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}}
                 />
               </div>
+              {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
+                  {pendingDateIndex + 1 < pendingDateItems.length ? (
+                    <button
+                      type="button"
+                      className="btn-green-3d w-full rounded-xl py-3 text-sm font-bold"
+                      onClick={handlePendingSaveAndNext}
+                    >
+                      ✅ {t("pendingSaveNext")}
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="tf-glass-primary-btn w-full rounded-xl py-3 text-sm font-bold"
+                    style={{ background: "rgba(16,185,129,0.4)" }}
+                    onClick={handlePendingSaveAndFinish}
+                  >
+                    ✅ {pendingDateIndex + 1 < pendingDateItems.length ? t("pendingSaveFinish") : t("save")}
+                  </button>
+                </div>
+              ) : null}
               <VoiceDateNextHint lang={lang} />
               <button
                 type="button"
@@ -3654,27 +3733,43 @@ export default function TrackFreshDashboard() {
                                 <button type="button" onClick={() => setEditingMember(null)} className="text-xs text-gray-400" style={{background:"none",border:"none",cursor:"pointer"}}>{t("cancel")}</button>
                               </div>
                             ) : (
-                              <button
-                                type="button"
-                                onClick={() => setExpandedMember(isExpanded ? null : i)}
-                                className="text-sm font-semibold text-white text-left truncate"
-                                style={{background:"none",border:"none",cursor:"pointer",padding:0,minWidth:0,flex:1}}
-                              >
+                              <span className="text-sm font-semibold text-white truncate" style={{minWidth: 0, flex: 1}}>
                                 {member.name}
-                              </button>
+                              </span>
                             )}
                           </div>
                           {!isEditing && (
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                            <div
+                              className="flex items-center flex-shrink-0"
+                              style={{ gap: "1.1rem", marginLeft: "0.65rem", paddingLeft: "0.35rem" }}
+                            >
                               <button
                                 type="button"
                                 onClick={() => { setEditingMember(i); setEditMemberName(member.name); }}
                                 className="text-xs font-semibold text-green-300"
-                                style={{background:"none",border:"none",cursor:"pointer",padding:"0.15rem 0.25rem"}}
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.15rem", display: "inline-flex", alignItems: "center", gap: "0.35rem", whiteSpace: "nowrap" }}
                               >
-                                {t("edit")}
+                                <span aria-hidden="true">✏️</span>
+                                <span>{t("edit")}</span>
                               </button>
-                              <button type="button" onClick={() => removeFamilyMember(i)} className="text-xs text-red-400" style={{background:"none",border:"none",cursor:"pointer"}} aria-label={lang === "es" ? "Eliminar" : "Remove"}>✕</button>
+                              <button
+                                type="button"
+                                onClick={() => setExpandedMember(isExpanded ? null : i)}
+                                className="text-sm text-white font-bold"
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.2rem", minWidth: "1.75rem" }}
+                                aria-label={isExpanded ? (lang === "es" ? "Contraer" : "Collapse") : (lang === "es" ? "Expandir" : "Expand")}
+                              >
+                                {isExpanded ? "▲" : "▼"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeFamilyMember(i)}
+                                className="text-sm text-red-400 font-bold"
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.2rem", minWidth: "1.75rem" }}
+                                aria-label={lang === "es" ? "Eliminar" : "Remove"}
+                              >
+                                ✕
+                              </button>
                             </div>
                           )}
                         </div>
