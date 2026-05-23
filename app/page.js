@@ -41,8 +41,8 @@ const T = {
   welcomeF7: { en: "Full English & Spanish language support", es: "Soporte completo en inglés y español" },
   welcomeLocal: { en: "Your data is stored locally on your device. No account required.", es: "Tus datos se guardan en tu dispositivo. No necesitas cuenta." },
   getStarted: { en: "\ud83d\ude80 Get Started", es: "\ud83d\ude80 Comenzar" },
-  welcomeNoticeData: { en: "\ud83d\udca1 Heads up: Your data lives on this device. It's stored locally in your browser, so avoid clearing your Safari history and website data \u2014 that would erase your items. Cloud backup is coming in Phase 2!", es: "\ud83d\udca1 Importante: Tus datos viven en este dispositivo. Se guardan localmente en tu navegador, as\u00ed que evita borrar el historial y los datos del sitio en Safari \u2014 eso borrar\u00eda tus productos. \u00a1La copia de seguridad en la nube llegar\u00e1 en la Fase 2!" },
-  welcomeNoticeExpiry: { en: "\u26a0\ufe0f About expiration dates: Dates can vary based on how food is stored. We use the best AI sources to give you accurate estimates, but always check the product label and trust your senses. TrackFresh can't be responsible for how this information is used \u2014 by continuing, you acknowledge that estimates may not be exact.", es: "\u26a0\ufe0f Sobre las fechas de vencimiento: Las fechas pueden variar seg\u00fan c\u00f3mo se almacenen los alimentos. Usamos las mejores fuentes de IA para darte estimaciones precisas, pero siempre revisa la etiqueta del producto y conf\u00eda en tus sentidos. TrackFresh no puede ser responsable de c\u00f3mo se use esta informaci\u00f3n \u2014 al continuar, reconoces que las estimaciones pueden no ser exactas." },
+  welcomeNoticeData: { en: "\ud83d\udca1 Your data stays on this device\u2014we don\u2019t keep copies on our servers. Need to tidy your browser? In Safari, Chrome, or others you can clear history, but don\u2019t clear this site\u2019s website data (cookies & site data) or you\u2019ll lose your items. Cloud backup in Phase 2!", es: "\ud83d\udca1 Tus datos quedan en este dispositivo\u2014no guardamos copias en nuestros servidores. \u00bfLimpiar el navegador? En Safari, Chrome u otros puedes borrar el historial, pero no los datos del sitio (cookies y datos) o perder\u00e1s tus productos. \u00a1Copia en la nube en la Fase 2!" },
+  welcomeNoticeExpiry: { en: "\u26a0\ufe0f Expiry dates vary by storage. We use AI for estimates \u2014 always check the label and trust your senses. By continuing, you accept estimates may not be exact.", es: "\u26a0\ufe0f Las fechas var\u00edan seg\u00fan el almacenamiento. Usamos IA para estimar \u2014 revisa la etiqueta y conf\u00eda en tus sentidos. Al continuar, aceptas que las fechas pueden no ser exactas." },
   welcomeAgree: { en: "I Understand & Agree", es: "Entiendo y acepto" },
   welcomeHeading: { en: "Welcome to TrackFresh!", es: "\u00a1Bienvenido a TrackFresh!" },
   welcomeLetsGo: { en: "Let's Go", es: "\u00a1Vamos!" },
@@ -68,6 +68,7 @@ const T = {
   labelDesc: { en: "AI extracts label details", es: "La IA extrae detalles de la etiqueta" },
   quickAdd: { en: "Quick Add", es: "Agregar" },
   quickAddDesc: { en: "Quick add with AI autocomplete", es: "Agrega r\u00e1pido con autocompletado IA" },
+  quickAddTrackerBar: { en: "Manually add food to your Tracker", es: "Agrega alimentos manualmente al Rastreador" },
   myItems: { en: "My Items", es: "Mis Productos" },
   myItemsDesc: { en: "Your AI-monitored inventory", es: "Tu inventario monitoreado por IA" },
   back: { en: "Back", es: "Atr\u00e1s" },
@@ -2985,7 +2986,10 @@ export default function TrackFreshDashboard() {
                     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.2rem",lineHeight:1}} aria-hidden>✨</span><span>{t("smartScanTitle")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Varios artículos, códigos y etiquetas":"Mult. items barcodes and labels"}</span>
                   </button>
-                  <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
+                  <button onClick={() => setShowQuickAdd(true)} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginTop:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.1rem",lineHeight:1}} aria-hidden>✏️</span><span>{t("quickAdd")}</span></div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("quickAddTrackerBar")}</span>
+                  </button>
                 </div>
               </div>
             ) : (
@@ -3033,7 +3037,10 @@ export default function TrackFreshDashboard() {
                     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.2rem",lineHeight:1}} aria-hidden>✨</span><span>{t("smartScanTitle")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{lang==="es"?"Varios artículos, códigos y etiquetas":"Mult. items barcodes and labels"}</span>
                   </button>
-                  <button onClick={() => setShowQuickAdd(true)} className="glass-scan-btn w-full" style={{marginTop:"0.5rem",padding:"0.75rem 0.5rem",fontSize:"0.875rem",flexDirection:"row",justifyContent:"center",gap:"0.4rem"}}><span style={{fontSize:"1.1rem"}}>✏️</span>{lang==="es"?"Agregar":"Quick Add"}</button>
+                  <button onClick={() => setShowQuickAdd(true)} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginTop:"0.5rem"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.1rem",lineHeight:1}} aria-hidden>✏️</span><span>{t("quickAdd")}</span></div>
+                    <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("quickAddTrackerBar")}</span>
+                  </button>
                 </div>
                 </div>
 

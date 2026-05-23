@@ -98,8 +98,9 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
               {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
             </p>
-            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem"}}>
-              {isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}
+            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",display:"flex",gap:"0.4rem",alignItems:"flex-start",justifyContent:"center"}}>
+              <span aria-hidden="true" style={{flexShrink:0,lineHeight:1.35}}>{cam}</span>
+              <span>{isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}</span>
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
               {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
@@ -109,8 +110,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
           {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; return (
             <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
-              <div style={{fontWeight:700,fontSize:"0.85rem",color:"#fff",marginBottom:"0.25rem"}}>{item.info}</div>
-              <div style={{fontSize:"0.72rem",color:"#86efac",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea esto por ti" : "TrackFresh tracks this for you!"}</div>
+              <div style={{fontWeight:700,fontSize:"0.85rem",color:"#86efac",marginBottom:"0.25rem"}}>{item.info}</div>
+              <div style={{fontSize:"0.72rem",color:"#fff",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}</div>
               <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
             </div>
           ); })()}
@@ -125,7 +126,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                   aria-label={item.label}
                 >
                   <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mustard" ? 2 : 3}`}>
-                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block",...(key==="mustard"?{mixBlendMode:"multiply",backgroundColor:"#141418"}:{})}} />
+                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block"}} />
                   </div>
                 </button>
               </div>
@@ -144,7 +145,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año." : "Consumers waste nearly 35 million tons of food each year."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año. = ¡$$$$$!" : "Consumers waste nearly 35 million tons of food each year. = $$$$$!"}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
           <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}><span style={{color:"#f59e0b"}}>TrackFresh</span>{isEs ? " supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : " outsmarts the labels so you can track freshness in the palm of your hand."}</p>
@@ -156,9 +157,10 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto o sube tu recibo de compras — nuestra IA identifica al instante cada artículo, categoría, vida útil y ventana tras apertura, luego rellena todo automáticamente y activa alarmas por ti." : "Snap or upload your grocery receipt — our AI instantly identifies every item, category, shelf life, and after-opening window, then autofills and sets alarms for you."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "Escanea uno o seis artículos a la vez y TrackFresh los identificará por código de barras y etiquetas en la misma foto y, por supuesto, rellenará el resto automáticamente." : "Scan one or scan six items at the same time and TrackFresh will identify by barcode and labels all in the same shot and of course autofill the rest."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "¿Sin recibo? Escanea hasta 6 artículos—códigos, etiquetas, autocompletado." : "No receipt? Scan up to 6 items—barcodes, labels, autofilled."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "La IA de TrackFresh genera recetas para ayudarte a usar lo que está por vencer." : "TrackFresh AI generates recipes to help you use expiring items."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></span></li>
         </ul>
         </section>
