@@ -829,6 +829,7 @@ export default function TrackFreshDashboard() {
   const toggleDietary = (key) => setDietaryRestrictions(p => { const next = {...p, [key]: !p[key]}; try { localStorage.setItem(DIETARY_KEY, JSON.stringify(next)); } catch(e) {} return next; });
   const [familyMembers, setFamilyMembers] = useState(() => { try { return JSON.parse(localStorage.getItem("tf_family") || "[]"); } catch(e) { return []; } });
   const [familyInput, setFamilyInput] = useState("");
+  const [householdRestrictionsOpen, setHouseholdRestrictionsOpen] = useState(false);
   const [expandedMember, setExpandedMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [editMemberName, setEditMemberName] = useState("");
@@ -3552,18 +3553,56 @@ export default function TrackFreshDashboard() {
         {activeTab === "dietary" && (
           <div className="space-y-4">
             <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span style={{fontSize:"1.4rem"}}>🏠</span>
-                <h2 className="text-base font-bold text-white">Household Restrictions</h2>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span style={{fontSize:"1.4rem", flexShrink: 0}}>🏠</span>
+                  <h2 className="text-base font-bold text-white" style={{margin: 0}}>
+                    {lang === "es" ? "Restricciones del Hogar" : "Household Restrictions"}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setHouseholdRestrictionsOpen((open) => !open)}
+                  className="text-xs font-semibold text-green-300 flex-shrink-0"
+                  style={{background:"none",border:"none",cursor:"pointer",padding:"0.15rem 0.25rem"}}
+                >
+                  {householdRestrictionsOpen ? (lang === "es" ? "Listo" : "Done") : t("edit")}
+                </button>
               </div>
-              <p className="text-xs text-green-200 mb-3">Tap to toggle any restriction that applies to your whole household.</p>
-              <div className="flex flex-wrap gap-2">
-                {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => (
-                  <button key={key} onClick={() => toggleDietary(key)} style={{background: dietaryRestrictions[key] ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.08)", border: dietaryRestrictions[key] ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.3rem 0.75rem", color: dietaryRestrictions[key] ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.75rem", fontWeight: dietaryRestrictions[key] ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.3rem"}}>
-                    <span>{icon}</span>{lang === "es" ? labelEs : labelEn}{dietaryRestrictions[key] && <span style={{color:"#ff6600"}}>✓</span>}
-                  </button>
-                ))}
-              </div>
+              {!householdRestrictionsOpen ? (
+                (() => {
+                  const activeHousehold = DIETARY_TAGS.filter(([key]) => dietaryRestrictions[key]);
+                  if (!activeHousehold.length) {
+                    return (
+                      <p className="text-xs text-green-200 opacity-80" style={{margin: 0}}>
+                        {lang === "es" ? "Sin restricciones del hogar aún." : "No household restrictions set yet."}
+                      </p>
+                    );
+                  }
+                  return (
+                    <div className="flex flex-wrap gap-1">
+                      {activeHousehold.map(([key, icon, labelEn, labelEs]) => (
+                        <span key={key} className="text-xs rounded-full px-2 py-0.5" style={{background:"rgba(255,102,0,0.2)",border:"1px solid rgba(255,102,0,0.4)",color:"#fed7aa"}}>
+                          {icon} {lang === "es" ? labelEs : labelEn}
+                        </span>
+                      ))}
+                    </div>
+                  );
+                })()
+              ) : (
+                <>
+                  <p className="text-xs text-green-200 mb-3">
+                    {lang === "es" ? "Toca para activar restricciones de todo el hogar." : "Tap to toggle any restriction that applies to your whole household."}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => (
+                      <button key={key} onClick={() => toggleDietary(key)} style={{background: dietaryRestrictions[key] ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.08)", border: dietaryRestrictions[key] ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.3rem 0.75rem", color: dietaryRestrictions[key] ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.75rem", fontWeight: dietaryRestrictions[key] ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.3rem"}}>
+                        <span>{icon}</span>{lang === "es" ? labelEs : labelEn}{dietaryRestrictions[key] && <span style={{color:"#ff6600"}}>✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </Card>
 
             {/* Family members */}
@@ -3599,10 +3638,10 @@ export default function TrackFreshDashboard() {
                       <div key={i} className="rounded-xl overflow-hidden" style={{border:"1px solid rgba(255,255,255,0.18)"}}>
                         {/* Member row */}
                         <div className="flex items-center justify-between px-3 py-2" style={{background:"rgba(255,255,255,0.1)"}}>
-                          <div className="flex items-center gap-2 flex-1">
-                            <span style={{fontSize:"1.1rem"}}>👤</span>
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span style={{fontSize:"1.1rem", flexShrink: 0}}>👤</span>
                             {isEditing ? (
-                              <div className="flex gap-2 flex-1">
+                              <div className="flex gap-2 flex-1 min-w-0">
                                 <input
                                   value={editMemberName}
                                   onChange={(e) => setEditMemberName(e.target.value)}
@@ -3611,18 +3650,31 @@ export default function TrackFreshDashboard() {
                                   className="flex-1 rounded px-2 py-1 text-sm text-gray-900"
                                   style={{background:"rgba(255,255,255,0.92)",minWidth:0}}
                                 />
-                                <button onClick={() => saveMemberName(i)} className="text-xs font-bold text-green-300" style={{background:"none",border:"none",cursor:"pointer"}}>Save</button>
-                                <button onClick={() => setEditingMember(null)} className="text-xs text-gray-400" style={{background:"none",border:"none",cursor:"pointer"}}>Cancel</button>
+                                <button type="button" onClick={() => saveMemberName(i)} className="text-xs font-bold text-green-300" style={{background:"none",border:"none",cursor:"pointer"}}>{t("save")}</button>
+                                <button type="button" onClick={() => setEditingMember(null)} className="text-xs text-gray-400" style={{background:"none",border:"none",cursor:"pointer"}}>{t("cancel")}</button>
                               </div>
                             ) : (
-                              <span className="text-sm font-semibold text-white">{member.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => setExpandedMember(isExpanded ? null : i)}
+                                className="text-sm font-semibold text-white text-left truncate"
+                                style={{background:"none",border:"none",cursor:"pointer",padding:0,minWidth:0,flex:1}}
+                              >
+                                {member.name}
+                              </button>
                             )}
                           </div>
                           {!isEditing && (
-                            <div className="flex items-center gap-3">
-                              <button onClick={() => { setEditingMember(i); setEditMemberName(member.name); }} className="text-xs text-green-300" style={{background:"none",border:"none",cursor:"pointer"}}>✏️ Edit</button>
-                              <button onClick={() => setExpandedMember(isExpanded ? null : i)} className="text-xs text-white font-bold" style={{background:"none",border:"none",cursor:"pointer"}}>{isExpanded ? "▲" : "▼"}</button>
-                              <button onClick={() => removeFamilyMember(i)} className="text-xs text-red-400" style={{background:"none",border:"none",cursor:"pointer"}}>✕</button>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => { setEditingMember(i); setEditMemberName(member.name); }}
+                                className="text-xs font-semibold text-green-300"
+                                style={{background:"none",border:"none",cursor:"pointer",padding:"0.15rem 0.25rem"}}
+                              >
+                                {t("edit")}
+                              </button>
+                              <button type="button" onClick={() => removeFamilyMember(i)} className="text-xs text-red-400" style={{background:"none",border:"none",cursor:"pointer"}} aria-label={lang === "es" ? "Eliminar" : "Remove"}>✕</button>
                             </div>
                           )}
                         </div>
