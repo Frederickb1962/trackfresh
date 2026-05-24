@@ -340,14 +340,62 @@ export const GLOBAL_STYLES = `
   }
   .mkt-section-card .mkt-hero { padding: 0.25rem 0 0; max-width: none; margin: 0; }
   .mkt-section-card--cta { text-align: center; }
-  .mkt-condiment-strip { margin-top: 0.75rem; padding-top: 0.5rem; }
+  .mkt-condiment-strip { margin-top: 0.75rem; padding-top: 0.5rem; overflow: visible; }
   .mkt-condiment-row {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.65rem;
-    align-items: stretch;
+    align-items: flex-end;
+  }
+  .mkt-condiment-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 6.5rem;
+    min-width: 6.5rem;
+    max-width: 7.25rem;
+  }
+  .mkt-condiment-popover {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    white-space: normal;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    min-width: 190px;
+    max-width: min(92vw, 280px);
+    text-align: center;
+    pointer-events: none;
+  }
+  .mkt-condiment-popover__info {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
+    margin-bottom: 0.25rem;
+    line-height: 1.45;
+  }
+  .mkt-condiment-popover__tag {
+    font-size: 0.72rem;
+    color: #fff;
+    font-weight: 600;
+  }
+  .mkt-condiment-popover__arrow {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #1a1a2e;
   }
   .mkt-condiment-btn {
     display: flex;
@@ -355,9 +403,8 @@ export const GLOBAL_STYLES = `
     align-items: center;
     justify-content: flex-end;
     gap: 0.35rem;
-    min-width: 6.5rem;
-    max-width: 7.25rem;
-    flex: 1 1 6.5rem;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.55rem 0.5rem 0.65rem;
     border-radius: 14px;
     border: 2px solid rgba(249, 115, 22, 0.65);

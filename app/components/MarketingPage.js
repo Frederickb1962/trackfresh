@@ -111,72 +111,36 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               {isEs ? "👇 Toca un botón — prueba con ketchup, mostaza o mayonesa" : "👇 Tap a button — try ketchup, mustard, or mayo"}
             </p>
             <div className="mkt-condiment-row">
-              {activeIcon && (() => {
-                const item = ICON_INFO[activeIcon];
-                const offset = activeIcon === "ketchup" ? "18%" : activeIcon === "mayo" ? "82%" : "50%";
-                const arrowOffset = offset;
-                return (
-                  <div
-                    role="status"
-                    style={{
-                      position: "absolute",
-                      bottom: "calc(100% + 10px)",
-                      left: offset,
-                      transform: "translateX(-50%)",
-                      background: "#1a1a2e",
-                      border: "1px solid rgba(255,255,255,0.15)",
-                      borderRadius: "12px",
-                      padding: "0.6rem 0.9rem",
-                      whiteSpace: "normal",
-                      zIndex: 100,
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-                      minWidth: "190px",
-                      maxWidth: "min(92vw, 280px)",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "#fff", marginBottom: "0.25rem", lineHeight: 1.45 }}>
-                      {item.info}
-                    </div>
-                    <div style={{ fontSize: "0.72rem", color: "#fff", fontWeight: 600 }}>
-                      ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
-                    </div>
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: "-6px",
-                        left: arrowOffset,
-                        transform: "translateX(-50%)",
-                        width: 0,
-                        height: 0,
-                        borderLeft: "6px solid transparent",
-                        borderRight: "6px solid transparent",
-                        borderTop: "6px solid #1a1a2e",
-                      }}
-                    />
-                  </div>
-                );
-              })()}
               {["ketchup", "mustard", "mayo"].map((key) => {
                 const item = ICON_INFO[key];
                 const isActive = activeIcon === key;
                 const tapHint = isEs ? "Toca" : "Tap";
                 return (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`mkt-condiment-btn${isActive ? " mkt-condiment-btn--active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleIconTap(key);
-                    }}
-                    aria-label={`${item.label}. ${item.info}`}
-                    aria-pressed={isActive}
-                  >
-                    <img src={`/${key}.png`} alt="" className="mkt-condiment-btn__img" />
-                    <span className="mkt-condiment-btn__label">{item.label}</span>
-                    <span className="mkt-condiment-btn__hint">{tapHint} →</span>
-                  </button>
+                  <div key={key} className="mkt-condiment-cell">
+                    {isActive ? (
+                      <div className="mkt-condiment-popover" role="status">
+                        <p className="mkt-condiment-popover__info">{item.info}</p>
+                        <p className="mkt-condiment-popover__tag">
+                          ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
+                        </p>
+                        <div className="mkt-condiment-popover__arrow" aria-hidden />
+                      </div>
+                    ) : null}
+                    <button
+                      type="button"
+                      className={`mkt-condiment-btn${isActive ? " mkt-condiment-btn--active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleIconTap(key);
+                      }}
+                      aria-label={`${item.label}. ${item.info}`}
+                      aria-pressed={isActive}
+                    >
+                      <img src={`/${key}.png`} alt="" className="mkt-condiment-btn__img" />
+                      <span className="mkt-condiment-btn__label">{item.label}</span>
+                      <span className="mkt-condiment-btn__hint">{tapHint} →</span>
+                    </button>
+                  </div>
                 );
               })}
             </div>
