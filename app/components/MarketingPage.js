@@ -56,7 +56,6 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const berry = B(0x1FAD0);
   const cheese = B(0x1F9C0);
   const pkg = B(0x1F4E6);
-  const cam = B(0x1F4F7);
   const cart = B(0x1F6D2);
   const chart = B(0x1F4CA);
   const snap = B(0x1F4F8);
@@ -98,11 +97,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
               {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
             </p>
-            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",display:"flex",gap:"0.4rem",alignItems:"flex-start",justifyContent:"center"}}>
-              <span aria-hidden="true" style={{flexShrink:0,lineHeight:1.35}}>{cam}</span>
-              <span>{isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}</span>
-            </p>
-            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
+            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"0.15rem"}}>
               {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
             </p>
           </div>
