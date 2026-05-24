@@ -47,8 +47,12 @@ const T = {
   welcomeLocal: { en: "Your data is stored locally on your device. No account required.", es: "Tus datos se guardan en tu dispositivo. No necesitas cuenta." },
   getStarted: { en: "\ud83d\ude80 Get Started", es: "\ud83d\ude80 Comenzar" },
   welcomeNoticeData: { en: "\ud83d\udca1 Your data stays on this device\u2014we don\u2019t keep copies on our servers. Need to tidy your browser? In Safari, Chrome, or others you can clear history, but don\u2019t clear this site\u2019s website data (cookies & site data) or you\u2019ll lose your items. Cloud backup in Phase 2!", es: "\ud83d\udca1 Tus datos quedan en este dispositivo\u2014no guardamos copias en nuestros servidores. \u00bfLimpiar el navegador? En Safari, Chrome u otros puedes borrar el historial, pero no los datos del sitio (cookies y datos) o perder\u00e1s tus productos. \u00a1Copia en la nube en la Fase 2!" },
-  welcomeNoticeExpiry: { en: "\u26a0\ufe0f Expiry dates vary by storage. We use AI for estimates \u2014 always check the label and trust your senses. By continuing, you accept estimates may not be exact.", es: "\u26a0\ufe0f Las fechas var\u00edan seg\u00fan el almacenamiento. Usamos IA para estimar \u2014 revisa la etiqueta y conf\u00eda en tus sentidos. Al continuar, aceptas que las fechas pueden no ser exactas." },
+  welcomeNoticeExpiry: {
+    en: "\u26a0\ufe0f Food Expiration Notice: Expiration dates can fluctuate based on how food is stored. We have sourced the best AI information to provide accurate expiry dates. Please always check product labels and follow storage suggestions. TrackFresh cannot be responsible for how you use this information. By continuing you agree to acknowledge the risks of any inaccuracies.",
+    es: "\u26a0\ufe0f Aviso sobre Fechas de Vencimiento: Las fechas de vencimiento pueden variar seg\u00fan c\u00f3mo se almacenen los alimentos. Hemos utilizado la mejor informaci\u00f3n de IA para proporcionar fechas de caducidad precisas. Siempre verifique las etiquetas del producto y siga las sugerencias de almacenamiento. TrackFresh no puede ser responsable de c\u00f3mo uses esta informaci\u00f3n. Al continuar, aceptas reconocer los riesgos de cualquier inexactitud.",
+  },
   welcomeAgree: { en: "I Understand & Agree", es: "Entiendo y acepto" },
+  disclaimerContinue: { en: "I Understand \u2014 Let\u2019s Go! \ud83e\udd66", es: "Entendido \u2014 \u00a1Vamos! \ud83e\udd66" },
   welcomeHeading: { en: "Welcome to TrackFresh!", es: "\u00a1Bienvenido a TrackFresh!" },
   welcomeLetsGo: { en: "Let's Go", es: "\u00a1Vamos!" },
   tracker: { en: "Tracker", es: "Rastreador" },
@@ -666,8 +670,25 @@ export default function TrackFreshDashboard() {
 
   
   const [showMarketing, setShowMarketing] = useState(true);
+  const [welcomeStep, setWelcomeStep] = useState(0);
   React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
-  const handleLaunchApp = () => { setShowMarketing(false); try { if (window.sessionStorage) sessionStorage.setItem("tf_mkt_seen", "1"); } catch(e) {} };
+  const queuePostMarketingOnboarding = () => {
+    try {
+      if (localStorage.getItem("tf_disclaimer_seen") !== "1") {
+        setWelcomeStep(1);
+        return;
+      }
+      if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
+      else setWelcomeStep(0);
+    } catch (e) {
+      setWelcomeStep(1);
+    }
+  };
+  const handleLaunchApp = () => {
+    setShowMarketing(false);
+    try { if (window.sessionStorage) sessionStorage.setItem("tf_mkt_seen", "1"); } catch (e) {}
+    queuePostMarketingOnboarding();
+  };
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
@@ -676,10 +697,21 @@ export default function TrackFreshDashboard() {
       setIsUnlocked(true); setPwError(false);
       try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {}
       if (pwInput === "fresh2026") setIsAdmin(true);
+      queuePostMarketingOnboarding();
     } else { setPwError(true); }
   };
   const [isAdmin, setIsAdmin] = useState(false);
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage) { if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true); if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true); } } catch(e) {} }, []);
+  React.useEffect(() => {
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage) {
+        if (sessionStorage.getItem("tf_ok") === "1") {
+          setIsUnlocked(true);
+          if (sessionStorage.getItem("tf_mkt_seen") === "1") queuePostMarketingOnboarding();
+        }
+        if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
+      }
+    } catch (e) {}
+  }, []);
   const [activeTab, setActiveTab] = useState("home");
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
@@ -973,8 +1005,6 @@ export default function TrackFreshDashboard() {
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
   const [receiptScanning, setReceiptScanning] = useState(false);
   const [receiptError, setReceiptError] = useState("");
-  const [welcomeStep, setWelcomeStep] = useState(0);
-  useEffect(() => { try { if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(1); } catch(e) {} }, []);
   useEffect(() => {
     if (trackedItems.length === 0) return;
     const urgent = trackedItems.filter(it => it.daysLeft !== null && it.daysLeft <= 2);
@@ -2179,8 +2209,64 @@ export default function TrackFreshDashboard() {
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
 
-      if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
+  const onboardingOverlays = showMarketing ? null : (
+    <>
+      {welcomeStep === 1 && (
+        <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
+          <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
+            <div className="text-5xl mb-3">🥦</div>
+            <h2 className="text-xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
+            <div className="space-y-4 text-left mb-6">
+              <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
+                <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeData")}</p>
+              </div>
+              <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(251,191,36,0.3)"}}>
+                <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeExpiry")}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch (e) {}
+                try {
+                  if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
+                  else setWelcomeStep(0);
+                } catch (e) {
+                  setWelcomeStep(2);
+                }
+              }}
+              className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d"
+            >
+              {t("disclaimerContinue")}
+            </button>
+          </div>
+        </div>
+      )}
+      {welcomeStep === 2 && (
+        <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
+          <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
+            <div className="text-5xl mb-3">🥦</div>
+            <h2 className="text-2xl font-extrabold text-white mb-6" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeHeading")}</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setWelcomeStep(0);
+                try { localStorage.setItem("trackfresh.welcomed", "true"); } catch (e) {}
+              }}
+              className="glass-scan-btn w-full py-3 text-base font-bold"
+            >
+              {t("welcomeLetsGo")}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
   if (isUnlocked === false) return (
+    <>
+    {onboardingOverlays}
     <div className="min-h-screen tf-premium-bg flex items-center justify-center p-4">
       <div style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px"}} className="shadow-2xl p-8 max-w-sm w-full text-center">
         <div className="text-5xl mb-3">🥦</div>
@@ -2200,36 +2286,12 @@ export default function TrackFreshDashboard() {
         <p className="text-xs text-green-300/60 mt-4">{t("contactFreddie")}</p>
       </div>
     </div>
+    </>
   );
 
     return (
-    <>{welcomeStep === 1 && (
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
-        <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
-          <div className="text-5xl mb-3">🥦</div>
-          <h2 className="text-xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
-          <div className="space-y-4 text-left mb-6">
-            <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeData")}</p>
-            </div>
-            <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(251,191,36,0.3)"}}>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeExpiry")}</p>
-            </div>
-          </div>
-          <button onClick={() => setWelcomeStep(2)} className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d">{t("welcomeAgree")}</button>
-        </div>
-      </div>
-    )}
-    {welcomeStep === 2 && (
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
-        <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
-          <div className="text-5xl mb-3">🥦</div>
-          <h2 className="text-2xl font-extrabold text-white mb-6" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeHeading")}</h2>
-          <button onClick={() => { setWelcomeStep(0); try { localStorage.setItem("trackfresh.welcomed", "true"); } catch(e) {} }} className="glass-scan-btn w-full py-3 text-base font-bold">{t("welcomeLetsGo")}</button>
-        </div>
-      </div>
-    )}
-
+    <>
+    {onboardingOverlays}
     <div className="min-h-screen app-bg"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       {/* Sticky header: logo + top nav */}
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(to bottom,#064e3b,#022c22)",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
