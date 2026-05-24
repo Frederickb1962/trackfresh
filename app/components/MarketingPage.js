@@ -4,6 +4,26 @@ import React from "react";
 import { GLOBAL_STYLES } from "../lib/styles";
 import { TrackFreshLogo } from "./ui/TrackFreshLogo";
 
+/** Wraps signature-amber outlined phrases: "After opening" / "Después de abrir". */
+function highlightAfterOpeningPhrase(text, isEs) {
+  const phrases = isEs
+    ? ["Después de abrir:", "¿Después de abrir?", "después de abrirlo", "tras abrir"]
+    : ["After opening:", "After opening?", "even after you open it", "after-opening"];
+  for (let i = 0; i < phrases.length; i += 1) {
+    const phrase = phrases[i];
+    const idx = text.indexOf(phrase);
+    if (idx === -1) continue;
+    return (
+      <>
+        {text.slice(0, idx)}
+        <span className="mkt-after-opening">{phrase}</span>
+        {text.slice(idx + phrase.length)}
+      </>
+    );
+  }
+  return text;
+}
+
 export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const isEs = lang === "es";
   const scrollFrameRef = React.useRef(null);
@@ -100,40 +120,86 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",display:"flex",gap:"0.4rem",alignItems:"flex-start",justifyContent:"center"}}>
               <span aria-hidden="true" style={{flexShrink:0,lineHeight:1.35}}>{cam}</span>
-              <span>{isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}</span>
+              <span>{highlightAfterOpeningPhrase(isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it.", isEs)}</span>
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
               {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
             </p>
           </div>
           <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)} role="presentation">
-        <div style={{position:"relative",display:"flex",justifyContent:"center",gap:"2rem",alignItems:"center"}}>
-          {activeIcon && (() => { const item = ICON_INFO[activeIcon]; const offset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; const arrowOffset = activeIcon === "ketchup" ? "calc(50% - 28px)" : activeIcon === "mayo" ? "calc(50% + 28px)" : "50%"; return (
-            <div style={{position:"absolute",bottom:"calc(100% + 12px)",left:offset,transform:"translateX(-50%)",background:"#1a1a2e",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"12px",padding:"0.6rem 0.9rem",whiteSpace:"nowrap",zIndex:100,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",minWidth:"190px",textAlign:"center"}}>
-              <div style={{fontWeight:700,fontSize:"0.85rem",color:"#86efac",marginBottom:"0.25rem"}}>{item.info}</div>
-              <div style={{fontSize:"0.72rem",color:"#fff",fontWeight:600}}>✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}</div>
-              <div style={{position:"absolute",bottom:"-6px",left:arrowOffset,transform:"translateX(-50%)",width:0,height:0,borderLeft:"6px solid transparent",borderRight:"6px solid transparent",borderTop:"6px solid #1a1a2e"}}/>
-            </div>
-          ); })()}
-          {["ketchup","mustard","mayo"].map(key => {
-            const item = ICON_INFO[key];
-            const isActive = activeIcon === key;
-            return (
-              <div key={key} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-                <button
-                  onClick={e => { e.stopPropagation(); handleIconTap(key); }}
-                  style={{background:"none",border:"none",cursor:"pointer",padding:"4px",lineHeight:1,transition:"transform 0.15s ease",transform:isActive?"scale(1.15)":"scale(1)",display:"inline-flex",alignItems:"flex-end",justifyContent:"center"}}
-                  aria-label={item.label}
-                >
-                  <div className={`icon-bounce-${key === "ketchup" ? 1 : key === "mustard" ? 2 : 3}`}>
-                    <img src={`/${key}.png`} alt={item.label} style={{height:"80px",width:"auto",display:"block"}} />
+            <p className="mkt-condiment-strip-lead">
+              {isEs ? "👇 Toca un botón — prueba con ketchup, mostaza o mayonesa" : "👇 Tap a button — try ketchup, mustard, or mayo"}
+            </p>
+            <div className="mkt-condiment-row">
+              {activeIcon && (() => {
+                const item = ICON_INFO[activeIcon];
+                const offset = activeIcon === "ketchup" ? "18%" : activeIcon === "mayo" ? "82%" : "50%";
+                const arrowOffset = offset;
+                return (
+                  <div
+                    role="status"
+                    style={{
+                      position: "absolute",
+                      bottom: "calc(100% + 10px)",
+                      left: offset,
+                      transform: "translateX(-50%)",
+                      background: "#1a1a2e",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      borderRadius: "12px",
+                      padding: "0.6rem 0.9rem",
+                      whiteSpace: "normal",
+                      zIndex: 100,
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                      minWidth: "190px",
+                      maxWidth: "min(92vw, 280px)",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "#fff", marginBottom: "0.25rem", lineHeight: 1.45 }}>
+                      {highlightAfterOpeningPhrase(item.info, isEs)}
+                    </div>
+                    <div style={{ fontSize: "0.72rem", color: "#fff", fontWeight: 600 }}>
+                      ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
+                    </div>
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "-6px",
+                        left: arrowOffset,
+                        transform: "translateX(-50%)",
+                        width: 0,
+                        height: 0,
+                        borderLeft: "6px solid transparent",
+                        borderRight: "6px solid transparent",
+                        borderTop: "6px solid #1a1a2e",
+                      }}
+                    />
                   </div>
-                </button>
-              </div>
-            );
-          })}
-        </div>
-            <p className="shimmer-text" style={{textAlign:"center",fontSize:"1.35rem",marginTop:"0.4rem",fontWeight:600,letterSpacing:"0.02em"}}>{isEs ? "✨ Toca para ver lo que hará TrackFresh" : "✨ Tap to see what TrackFresh will do."}</p>
+                );
+              })()}
+              {["ketchup", "mustard", "mayo"].map((key) => {
+                const item = ICON_INFO[key];
+                const isActive = activeIcon === key;
+                const tapHint = isEs ? "Toca" : "Tap";
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`mkt-condiment-btn${isActive ? " mkt-condiment-btn--active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleIconTap(key);
+                    }}
+                    aria-label={`${item.label}. ${item.info}`}
+                    aria-pressed={isActive}
+                  >
+                    <img src={`/${key}.png`} alt="" className="mkt-condiment-btn__img" />
+                    <span className="mkt-condiment-btn__label">{item.label}</span>
+                    <span className="mkt-condiment-btn__hint">{tapHint} →</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -144,7 +210,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{highlightAfterOpeningPhrase(isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you.", isEs)}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año. = ¡$$$$$!" : "Consumers waste nearly 35 million tons of food each year. = $$$$$!"}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
@@ -157,7 +223,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{highlightAfterOpeningPhrase(isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms.", isEs)}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "¿Sin recibo? Escanea hasta 6 artículos—códigos, etiquetas, autocompletado." : "No receipt? Scan up to 6 items—barcodes, labels, autofilled."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "La IA de TrackFresh genera recetas para ayudarte a usar lo que está por vencer." : "TrackFresh AI generates recipes to help you use expiring items."}</strong></span></li>
@@ -165,8 +231,89 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </ul>
         </section>
 
-        {/* Section 4 — headline + Track Your Food CTA */}
-        <section className="mkt-section-card mkt-section-card--cta mkt-animate mkt-animate-d4" aria-label={isEs ? "Empezar" : "Get started"}>
+        {/* Section 4 — TrackFresh Save (register discount + store inventory) */}
+        <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "TrackFresh Save" : "TrackFresh Save"}>
+          <div style={{ textAlign: "center", marginBottom: "0.65rem" }}>
+            <p style={{ color: "#f59e0b", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.13em", textTransform: "uppercase", margin: 0 }}>
+              {isEs ? "AHORRA EN CAJA" : "SAVE AT CHECKOUT"}
+            </p>
+          </div>
+          <div className="mkt-save-program">
+            <h2 style={{ margin: "0 0 0.35rem", fontSize: "1.2rem", fontWeight: 900, lineHeight: 1.25 }}>
+              {isEs ? "TrackFresh Save — todos ganan" : "TrackFresh Save — everyone wins"}
+            </h2>
+            <p style={{ margin: 0, fontSize: "0.92rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
+              {isEs
+                ? "Si un artículo vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
+                : "When an item expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
+            </p>
+            <p className="mkt-save-program__badge">20% OFF</p>
+            <div className="mkt-save-program__grid">
+              <div className="mkt-save-program__card">
+                <h3>{isEs ? "Para ti" : "For you"}</h3>
+                <p>
+                  {isEs
+                    ? "Ahorra dinero en productos que aún están buenos — no esperes al desperdicio."
+                    : "Save money on food that's still good — don't wait until it's waste."}
+                </p>
+              </div>
+              <div className="mkt-save-program__card">
+                <h3>{isEs ? "Para tiendas" : "For stores"}</h3>
+                <p>
+                  {isEs
+                    ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas."
+                    : "Better inventory control: sell through before expiry and cut shrink."}
+                </p>
+              </div>
+              <div className="mkt-save-program__card">
+                <h3>{isEs ? "Para TrackFresh" : "For TrackFresh"}</h3>
+                <p>
+                  {isEs
+                    ? "Más valor: frescura rastreada que se convierte en ahorro real en la caja."
+                    : "More value: tracked freshness that turns into real savings at checkout."}
+                </p>
+              </div>
+            </div>
+            <ol className="mkt-save-program__steps">
+              <li>
+                <span className="mkt-save-program__step-num">1</span>
+                <span>
+                  <strong>{isEs ? "Rastrea" : "Track"}</strong>{" "}
+                  {isEs ? "fechas en TrackFresh (recibo, escaneo o voz)." : "dates in TrackFresh (receipt, scan, or voice)."}
+                </span>
+              </li>
+              <li>
+                <span className="mkt-save-program__step-num">2</span>
+                <span>
+                  <strong>{isEs ? "Elegible:" : "Eligible:"}</strong>{" "}
+                  {highlightAfterOpeningPhrase(
+                    isEs
+                      ? "fecha de vencimiento o usar antes dentro de 2 días."
+                      : "expiry or use-by date within 2 days.",
+                    isEs
+                  )}
+                </span>
+              </li>
+              <li>
+                <span className="mkt-save-program__step-num">3</span>
+                <span>
+                  <strong>{isEs ? "En caja:" : "At register:"}</strong>{" "}
+                  {isEs
+                    ? "muestra la app; el cajero escanea el artículo y confirma la fecha — 20% de descuento."
+                    : "show the app; clerk scans the item and confirms the date — 20% off."}
+                </span>
+              </li>
+            </ol>
+            <p style={{ margin: "0.85rem 0 0", fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.45 }}>
+              {isEs
+                ? "Programa piloto en tiendas participantes. Busca el botón «20% en caja» en tu Rastreador."
+                : "Pilot at participating stores. Look for the «20% at register» button in your Tracker."}
+            </p>
+          </div>
+        </section>
+
+        {/* Section 5 — headline + Track Your Food CTA */}
+        <section className="mkt-section-card mkt-section-card--cta mkt-animate mkt-animate-d5" aria-label={isEs ? "Empezar" : "Get started"}>
           <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:"0 0 1rem",letterSpacing:"-0.01em",lineHeight:1.25}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
           <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.75rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
           <button type="button" ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem"}}>{isEs ? "Rastrea tu comida" : "Track Your Food"}</button>

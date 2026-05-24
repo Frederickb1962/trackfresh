@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "TrackFresh: Open Preview in Cursor",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/open-cursor-preview.sh",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "close": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

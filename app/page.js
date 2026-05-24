@@ -10,6 +10,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
 import { AiBadge, GreenDot, TrackFreshLogo } from "./components/ui/TrackFreshLogo";
 import MarketingPage from "./components/MarketingPage";
+import StoreDiscountModal from "./components/StoreDiscountModal";
+import { isRegisterDiscountEligible } from "./lib/storeDiscount";
 import GroceryScanModal from "./components/GroceryScanModal";
 import { FOOD_ES, FOOD_DB } from "./lib/foodData";
 import { CATEGORY_COLORS, LOCATION_COLORS, LOCATION_ICONS } from "./lib/uiConstants";
@@ -199,6 +201,12 @@ noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or
   expDateLabel: { en: "Exp. Date", es: "Fecha de Venc." },
   usesExpiring: { en: "uses expiring", es: "usa los que vencen" },
   storingWhere: { en: "Where are you storing this?", es: "¿Dónde vas a guardar esto?" },
+  storeDiscountBtn: { en: "20% at register", es: "20% en caja" },
+  storeDiscountBanner: {
+    en: "item(s) qualify for TrackFresh Save — 20% off at participating stores.",
+    es: "artículo(s) califican para TrackFresh Save — 20% en tiendas participantes.",
+  },
+  storeDiscountSee: { en: "View", es: "Ver" },
 };
 
 
@@ -780,6 +788,7 @@ export default function TrackFreshDashboard() {
   const [labelScanMode, setLabelScanMode] = useState(null);
   const [labelScanKey, setLabelScanKey] = useState(0);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [storeDiscountItem, setStoreDiscountItem] = useState(null);
   const [quickAddName, setQuickAddName] = useState("");
   const [quickAddDate, setQuickAddDate] = useState("");
   const [quickAddQty, setQuickAddQty] = useState("");
@@ -1094,6 +1103,11 @@ export default function TrackFreshDashboard() {
   const expiringSoon = useMemo(() => {
     return itemsWithCountdown.filter((it) => it.daysLeft !== null && it.daysLeft <= 7);
   }, [itemsWithCountdown]);
+
+  const registerDiscountItems = useMemo(
+    () => itemsWithCountdown.filter(isRegisterDiscountEligible),
+    [itemsWithCountdown]
+  );
 
   const handleAddItem = () => {
     const name = itemName.trim();
@@ -2158,7 +2172,6 @@ export default function TrackFreshDashboard() {
     const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     pendingPickedDateRef.current = iso;
     setPendingPickedDate(iso);
-    setPendingAwaitNextOrDone(true);
   }, [pendingDateIndex, pendingDateItems, pendingPickedDate]);
 
   const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
@@ -2368,46 +2381,14 @@ export default function TrackFreshDashboard() {
                     }
                     pendingPickedDateRef.current = v;
                     setPendingPickedDate(v);
-                    if (!v) {
-                      setPendingAwaitNextOrDone(false);
-                      return;
-                    }
+                    if (!v) return;
                     setPendingAwaitNextOrDone(true);
-                    setPendingVoiceError("");
-                  }}
-                  onInput={(e) => {
-                    const v = e.target.value;
-                    if (!v || !isValidYYYYMMDD(v)) return;
-                    if (v === pendingPickedDateRef.current) return;
-                    pendingPickedDateRef.current = v;
-                    setPendingPickedDate(v);
-                    setPendingAwaitNextOrDone(true);
-                    setPendingVoiceError("");
+                    const commitIdx = pendingDateIndexRef.current;
+                    window.setTimeout(() => startPendingVoiceNextDone(commitIdx), 80);
                   }}
                   style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}}
                 />
               </div>
-              {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%" }}>
-                  {pendingDateIndex + 1 < pendingDateItems.length ? (
-                    <button
-                      type="button"
-                      className="btn-green-3d w-full rounded-xl py-3 text-sm font-bold"
-                      onClick={handlePendingSaveAndNext}
-                    >
-                      ✅ {t("pendingSaveNext")}
-                    </button>
-                  ) : null}
-                  <button
-                    type="button"
-                    className="tf-glass-primary-btn w-full rounded-xl py-3 text-sm font-bold"
-                    style={{ background: "rgba(16,185,129,0.4)" }}
-                    onClick={handlePendingSaveAndFinish}
-                  >
-                    ✅ {pendingDateIndex + 1 < pendingDateItems.length ? t("pendingSaveFinish") : t("save")}
-                  </button>
-                </div>
-              ) : null}
               <VoiceDateNextHint lang={lang} />
               <button
                 type="button"
@@ -2628,6 +2609,14 @@ export default function TrackFreshDashboard() {
               <button type="button" onClick={handleDoneScanning} className="mt-3 w-full rounded-xl py-2.5 text-sm font-bold tf-glass-primary-btn" style={{background:"rgba(16,185,129,0.35)"}}>{multiScanCount > 0 ? (lang === "es" ? "✅ Listo (" + multiScanCount + " artículos)" : "✅ Done (" + multiScanCount + " items added)") : t("cancel")}</button>
             </div>
           </div>
+        )}
+
+        {storeDiscountItem && (
+          <StoreDiscountModal
+            item={storeDiscountItem}
+            lang={lang}
+            onClose={() => setStoreDiscountItem(null)}
+          />
         )}
 
         {showQuickAdd && (
@@ -3071,6 +3060,30 @@ export default function TrackFreshDashboard() {
                 </div>
                 </div>
 
+                {registerDiscountItems.length > 0 && (
+                  <div
+                    className="tf-glass-window"
+                    style={{
+                      marginBottom: "0.75rem",
+                      padding: "0.85rem 1rem",
+                      border: "2px solid rgba(245, 158, 11, 0.65)",
+                      background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
+                      boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
+                    }}
+                  >
+                    <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
+                      🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
+                      onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
+                    >
+                      {t("storeDiscountSee")} {t("storeDiscountBtn")} →
+                    </button>
+                  </div>
+                )}
+
                 {/* Items card */}
                 <div className="tf-glass-window">
                   <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Organize Tracked Items</p>
@@ -3138,6 +3151,24 @@ export default function TrackFreshDashboard() {
                                 <div className="tf-tracker-item-actions" style={{display:"flex",gap:"0.4rem",marginBottom:"0.5rem"}}>
                                   {it.daysLeft === null ? (
                                     <button onClick={() => handleEditItem(it.id)} className="animate-pulse" style={{flex:1,background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#fff",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>EXP Date</button>
+                                  ) : isRegisterDiscountEligible(it) ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => setStoreDiscountItem(it)}
+                                      className="btn-amber-3d"
+                                      style={{
+                                        flex: 1,
+                                        borderRadius: "10px",
+                                        padding: "0.3rem 0.35rem",
+                                        fontSize: "0.65rem",
+                                        fontWeight: 800,
+                                        border: "2px solid #f59e0b",
+                                        cursor: "pointer",
+                                        lineHeight: 1.25,
+                                      }}
+                                    >
+                                      {t("storeDiscountBtn")}
+                                    </button>
                                   ) : it.daysLeft <= 2 ? (
                                     <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>Expiring Soon</div>
                                   ) : (
