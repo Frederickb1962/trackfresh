@@ -4,26 +4,6 @@ import React from "react";
 import { GLOBAL_STYLES } from "../lib/styles";
 import { TrackFreshLogo } from "./ui/TrackFreshLogo";
 
-/** Wraps signature-amber outlined phrases: "After opening" / "Después de abrir". */
-function highlightAfterOpeningPhrase(text, isEs) {
-  const phrases = isEs
-    ? ["Después de abrir:", "¿Después de abrir?", "después de abrirlo", "tras abrir"]
-    : ["After opening:", "After opening?", "even after you open it", "after-opening"];
-  for (let i = 0; i < phrases.length; i += 1) {
-    const phrase = phrases[i];
-    const idx = text.indexOf(phrase);
-    if (idx === -1) continue;
-    return (
-      <>
-        {text.slice(0, idx)}
-        <span className="mkt-after-opening">{phrase}</span>
-        {text.slice(idx + phrase.length)}
-      </>
-    );
-  }
-  return text;
-}
-
 export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const isEs = lang === "es";
   const scrollFrameRef = React.useRef(null);
@@ -120,7 +100,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.65s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",display:"flex",gap:"0.4rem",alignItems:"flex-start",justifyContent:"center"}}>
               <span aria-hidden="true" style={{flexShrink:0,lineHeight:1.35}}>{cam}</span>
-              <span>{highlightAfterOpeningPhrase(isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it.", isEs)}</span>
+              <span>{isEs ? "Escanea un recibo. Rastrea cada frasco y sobrante — incluso después de abrirlo." : "Snap a receipt. Track every jar, bottle, and leftover — even after you open it."}</span>
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"-0.3rem"}}>
               {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
@@ -156,7 +136,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                     }}
                   >
                     <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "#fff", marginBottom: "0.25rem", lineHeight: 1.45 }}>
-                      {highlightAfterOpeningPhrase(item.info, isEs)}
+                      {item.info}
                     </div>
                     <div style={{ fontSize: "0.72rem", color: "#fff", fontWeight: 600 }}>
                       ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
@@ -210,7 +190,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{highlightAfterOpeningPhrase(isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you.", isEs)}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año. = ¡$$$$$!" : "Consumers waste nearly 35 million tons of food each year. = $$$$$!"}</strong></span></li>
         </ul>
         <div style={{height:"2rem"}} />
@@ -223,7 +203,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{highlightAfterOpeningPhrase(isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms.", isEs)}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "¿Sin recibo? Escanea hasta 6 artículos—códigos, etiquetas, autocompletado." : "No receipt? Scan up to 6 items—barcodes, labels, autofilled."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "La IA de TrackFresh genera recetas para ayudarte a usar lo que está por vencer." : "TrackFresh AI generates recipes to help you use expiring items."}</strong></span></li>
@@ -286,12 +266,9 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span className="mkt-save-program__step-num">2</span>
                 <span>
                   <strong>{isEs ? "Elegible:" : "Eligible:"}</strong>{" "}
-                  {highlightAfterOpeningPhrase(
-                    isEs
-                      ? "fecha de vencimiento o usar antes dentro de 2 días."
-                      : "expiry or use-by date within 2 days.",
-                    isEs
-                  )}
+                  {isEs
+                    ? "fecha de vencimiento o usar antes dentro de 2 días."
+                    : "expiry or use-by date within 2 days."}
                 </span>
               </li>
               <li>

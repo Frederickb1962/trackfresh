@@ -491,24 +491,6 @@ export const GLOBAL_STYLES = `
     background: linear-gradient(180deg, #fbbf24, #f59e0b);
     border: 1px solid rgba(255, 255, 255, 0.5);
   }
-  .mkt-after-opening {
-    display: inline;
-    padding: 0.08em 0.38em;
-    margin: 0 0.06em;
-    border-radius: 6px;
-    color: #fffbeb;
-    font-weight: 800;
-    border: 2px solid #f59e0b;
-    box-shadow:
-      0 0 0 1px rgba(234, 88, 12, 0.55),
-      0 0 14px rgba(249, 115, 22, 0.45),
-      inset 0 0 12px rgba(245, 158, 11, 0.22);
-    -webkit-text-stroke: 0.35px #ea580c;
-    text-shadow:
-      0 0 1px #7c2d12,
-      0 1px 0 rgba(0, 0, 0, 0.45),
-      0 0 10px rgba(251, 191, 36, 0.55);
-  }
   .mkt-nav-glass-btn {
     display: inline-flex;
     align-items: center;
