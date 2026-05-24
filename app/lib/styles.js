@@ -701,6 +701,87 @@ export const GLOBAL_STYLES = `
   .mkt-animate-d3 { animation-delay: 0.3s; }
   .mkt-animate-d4 { animation-delay: 0.4s; }
   .mkt-animate-d5 { animation-delay: 0.5s; }
+  .mkt-animate-d6 { animation-delay: 0.6s; }
+  .mkt-stores {
+    text-align: left;
+  }
+  .mkt-stores__lead {
+    margin: 0 0 0.85rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.88);
+    text-align: center;
+  }
+  .mkt-stores__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    margin: 0 0 0.85rem;
+  }
+  @media (min-width: 480px) {
+    .mkt-stores__grid { grid-template-columns: 1fr 1fr; }
+  }
+  .mkt-stores__benefit {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.65rem 0.75rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(134, 239, 172, 0.28);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .mkt-stores__benefit strong {
+    color: #fde68a;
+  }
+  .mkt-stores__register {
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.85rem;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.45);
+  }
+  .mkt-stores__register h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #fbbf24;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .mkt-stores__register ol {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.88);
+  }
+  .mkt-stores__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  .mkt-stores__contact a.mkt-stores__email {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-decoration: none;
+    background: linear-gradient(180deg, #fde68a 0%, #f59e0b 55%, #ea580c 100%);
+    border: 2px solid #fff;
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+  }
+  .mkt-stores__contact a.mkt-stores__email:hover {
+    transform: translateY(-1px);
+  }
   .icon-bounce-1 { }
   .icon-bounce-2 { }
   .icon-bounce-3 { }

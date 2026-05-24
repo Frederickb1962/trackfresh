@@ -98,7 +98,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"0.15rem"}}>
-              {isEs ? "Sabe qué está fresco, qué sigue, qué tirar." : "Know what's fresh, what's next, what to toss."}
+              {isEs ? "Sabe qué está fresco, qué sigue y qué tirar." : "Know what's fresh, what's next and what to toss."}
             </p>
           </div>
           <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)} role="presentation">
@@ -248,8 +248,96 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           </div>
         </section>
 
-        {/* Section 5 — headline + Track Your Food CTA */}
-        <section className="mkt-section-card mkt-section-card--cta mkt-animate mkt-animate-d5" aria-label={isEs ? "Empezar" : "Get started"}>
+        {/* Section 5 — Grocery stores & partners */}
+        <section className="mkt-section-card mkt-animate mkt-animate-d5" aria-label={isEs ? "Para tiendas" : "For grocery stores"}>
+          <div style={{ textAlign: "center", marginBottom: "0.65rem" }}>
+            <p style={{ color: "#f59e0b", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.13em", textTransform: "uppercase", margin: 0 }}>
+              {isEs ? "PARA TIENDAS DE COMESTIBLES" : "FOR GROCERY STORES"}
+            </p>
+          </div>
+          <div className="mkt-stores">
+            <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.15rem", fontWeight: 900, lineHeight: 1.3, textAlign: "center" }}>
+              {isEs ? "Asóciate con TrackFresh Save" : "Partner with TrackFresh Save"}
+            </h2>
+            <p className="mkt-stores__lead">
+              {isEs
+                ? "TrackFresh envía compradores con fechas reales en la app. Tu equipo confirma el artículo en caja — tú mueves inventario por vencer y reduces mermas."
+                : "TrackFresh sends shoppers with real dates in the app. Your team confirms the item at checkout — you move near-expiry inventory and cut shrink."}
+            </p>
+            <div className="mkt-stores__grid">
+              <div className="mkt-stores__benefit">
+                <span aria-hidden>📉</span>
+                <span>
+                  <strong>{isEs ? "Menos merma:" : "Less shrink:"}</strong>{" "}
+                  {isEs
+                    ? "vende productos aún buenos antes del vencimiento, no después."
+                    : "sell still-good product before expiry, not after."}
+                </span>
+              </div>
+              <div className="mkt-stores__benefit">
+                <span aria-hidden>🛒</span>
+                <span>
+                  <strong>{isEs ? "Más tráfico:" : "More traffic:"}</strong>{" "}
+                  {isEs
+                    ? "clientes con TrackFresh vienen a tu tienda por el 20% en caja."
+                    : "TrackFresh users come to your store for 20% at register."}
+                </span>
+              </div>
+              <div className="mkt-stores__benefit">
+                <span aria-hidden>✅</span>
+                <span>
+                  <strong>{isEs ? "Caja simple:" : "Simple checkout:"}</strong>{" "}
+                  {isEs
+                    ? "el cliente muestra la app; el cajero escanea el producto y confirma la fecha."
+                    : "customer shows the app; clerk scans the product and confirms the date."}
+                </span>
+              </div>
+              <div className="mkt-stores__benefit">
+                <span aria-hidden>🌱</span>
+                <span>
+                  <strong>{isEs ? "Historia verde:" : "Green story:"}</strong>{" "}
+                  {isEs
+                    ? "menos desperdicio — bueno para tu marca y tu comunidad."
+                    : "less waste — good for your brand and your community."}
+                </span>
+              </div>
+            </div>
+            <div className="mkt-stores__register">
+              <h3>{isEs ? "En caja (programa piloto)" : "At the register (pilot)"}</h3>
+              <ol>
+                <li>
+                  {isEs
+                    ? "El cliente abre TrackFresh y muestra el artículo elegible (vence en ≤ 2 días)."
+                    : "Customer opens TrackFresh and shows the eligible item (expires within 2 days)."}
+                </li>
+                <li>
+                  {isEs
+                    ? "El cajero escanea el mismo producto y verifica la fecha en pantalla."
+                    : "Clerk scans the same product and verifies the date on screen."}
+                </li>
+                <li>
+                  {isEs
+                    ? "Aplicas 20% de descuento — el cliente se lleva la compra; tú reduces inventario por vencer."
+                    : "Apply 20% off — customer takes the sale; you clear near-expiry stock."}
+                </li>
+              </ol>
+            </div>
+            <div className="mkt-stores__contact">
+              <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 600, color: "rgba(255,255,255,0.85)", lineHeight: 1.45 }}>
+                {isEs
+                  ? "¿Quieres ser tienda participante? Hablemos del piloto en tu cadena o ubicación."
+                  : "Want to be a participating store? Let's talk about a pilot at your chain or location."}
+              </p>
+              <a href="mailto:hello@trackfresh.ai?subject=TrackFresh%20Save%20Store%20Partner" className="mkt-stores__email">
+                ✉️ {isEs ? "Contactar para asociarse" : "Contact us to partner"}
+              </a>
+              <p style={{ margin: 0, fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>hello@trackfresh.ai</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 6 — headline + Track Your Food CTA */}
+        <section className="mkt-section-card mkt-section-card--cta mkt-animate mkt-animate-d6" aria-label={isEs ? "Empezar" : "Get started"}>
           <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:"0 0 1rem",letterSpacing:"-0.01em",lineHeight:1.25}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
           <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.75rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
           <button type="button" ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem"}}>{isEs ? "Rastrea tu comida" : "Track Your Food"}</button>
