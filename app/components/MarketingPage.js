@@ -227,7 +227,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                   <strong>{isEs ? "Elegible:" : "Eligible:"}</strong>{" "}
                   {isEs
                     ? "fecha de vencimiento o usar antes dentro de 2 días."
-                    : "expiry or use-by date within 2 days."}
+                    : "expiry date or use-by date within 2 days."}
                 </span>
               </li>
               <li>
