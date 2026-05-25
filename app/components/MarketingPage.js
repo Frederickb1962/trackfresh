@@ -218,7 +218,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span className="mkt-save-program__step-num">1</span>
                 <span>
                   <strong>{isEs ? "Rastrea" : "Track"}</strong>{" "}
-                  {isEs ? "fechas en TrackFresh (recibo, escaneo o voz)." : "dates in TrackFresh (receipt, scan, or voice)."}
+                  {isEs ? "fechas mientras recorres los pasillos." : "dates as you peruse the aisles."}
                 </span>
               </li>
               <li>
