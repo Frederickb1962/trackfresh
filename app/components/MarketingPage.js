@@ -98,7 +98,9 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"0.15rem"}}>
-              {isEs ? "Sabe qué está fresco, qué sigue y qué tirar." : "Know what's fresh, what's next and what to toss."}
+              {isEs
+                ? "Sabe qué está fresco, qué sigue y qué tirar. Refrigerador, congelador y despensa."
+                : "Know what's fresh, what's next and what to toss. Fridge, Freezer and Pantry."}
             </p>
           </div>
           <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)} role="presentation">
