@@ -87,7 +87,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <section className="mkt-section-card mkt-animate mkt-animate-d1" aria-label={isEs ? "Introducción" : "Introduction"}>
           <div className="mkt-hero">
             <span className="mkt-hero-eyebrow mkt-animate">
-              {isEs ? "Menos Desperdicio. Mejor Cocina." : "Waste Less. Eat Better."}
+              {isEs ? "Ahorra Dinero. Menos Desperdicio. Mejor Cocina." : "Save Money. Waste Less. Eat Better."}
             </span>
             <h1 className="mkt-hero-title">
               <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina. Tu Comida." : "Your Kitchen. Your Food."}</span>
