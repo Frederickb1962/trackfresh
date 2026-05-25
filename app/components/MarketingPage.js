@@ -235,8 +235,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span>
                   <strong>{isEs ? "En caja:" : "At register:"}</strong>{" "}
                   {isEs
-                    ? "muestra la app; el cajero escanea el artículo y confirma la fecha — 20% de descuento."
-                    : "show the app; clerk scans the item and confirms the date — 20% off."}
+                    ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el artículo y aplica el código de descuento."
+                    : "show the app; clerk verifies date, scans and tags the item, and applies the discount code."}
                 </span>
               </li>
             </ol>
@@ -288,8 +288,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span>
                   <strong>{isEs ? "Caja simple:" : "Simple checkout:"}</strong>{" "}
                   {isEs
-                    ? "el cliente muestra la app; el cajero escanea el producto y confirma la fecha."
-                    : "customer shows the app; clerk scans the product and confirms the date."}
+                    ? "el cliente abre TrackFresh, muestra su app y presenta los artículos por vencer; el cajero verifica la fecha, escanea, etiqueta y aplica el código de descuento."
+                    : "customer opens TrackFresh, shows their app, presents expiring items; clerk verifies date, scans, tags, and applies the discount code."}
                 </span>
               </div>
               <div className="mkt-stores__benefit">
@@ -307,18 +307,18 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               <ol>
                 <li>
                   {isEs
-                    ? "El cliente abre TrackFresh y muestra el artículo elegible (vence en ≤ 2 días)."
-                    : "Customer opens TrackFresh and shows the eligible item (expires within 2 days)."}
+                    ? "El cliente abre TrackFresh, muestra su app y presenta los artículos por vencer."
+                    : "Customer opens TrackFresh, shows their app, then presents the expiring items."}
                 </li>
                 <li>
                   {isEs
-                    ? "El cajero escanea el mismo producto y verifica la fecha en pantalla."
-                    : "Clerk scans the same product and verifies the date on screen."}
+                    ? "El cajero verifica la fecha. Escanea y etiqueta el artículo y aplica el código de descuento."
+                    : "Clerk verifies date. Scans and tags item and applies discount code."}
                 </li>
                 <li>
                   {isEs
-                    ? "Aplicas 20% de descuento — el cliente se lleva la compra; tú reduces inventario por vencer."
-                    : "Apply 20% off — customer takes the sale; you clear near-expiry stock."}
+                    ? "El cliente se lleva la compra; tú reduces inventario por vencer."
+                    : "Customer takes the sale; you clear near-expiry stock."}
                 </li>
               </ol>
             </div>

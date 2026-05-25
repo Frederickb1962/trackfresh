@@ -91,8 +91,8 @@ export default function StoreDiscountModal({ item, lang, onClose }) {
           <li>
             <strong>{isEs ? "Verificación:" : "Verification:"}</strong>{" "}
             {isEs
-              ? "El cajero escanea el producto y confirma la fecha en la app."
-              : "Clerk scans the product and confirms the date in the app."}
+              ? "El cajero verifica la fecha, escanea y etiqueta el artículo y aplica el código de descuento."
+              : "Clerk verifies date, scans and tags the item, and applies the discount code."}
           </li>
         </ol>
 
