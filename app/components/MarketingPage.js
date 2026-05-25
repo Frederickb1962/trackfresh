@@ -106,8 +106,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)} role="presentation">
             <p className="mkt-condiment-strip-lead">
               {isEs
-                ? "👇 Toca un botón. Uno de los grandes misterios de la vida, resuelto — estamos aquí para recordarte cuándo tirarlo."
-                : "👇 Tap a button. One of life's biggest mysteries solved and we're here to remind you when to toss it."}
+                ? "Toca un botón. Uno de los grandes misterios de la vida, resuelto — estamos aquí para recordarte cuándo tirarlo."
+                : "Tap a button. One of life's biggest mysteries solved and we're here to remind you when to toss it."}
             </p>
             <div className="mkt-condiment-row">
               {["ketchup", "mustard", "mayo"].map((key) => {
