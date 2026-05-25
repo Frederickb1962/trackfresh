@@ -174,7 +174,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "TrackFresh Save" : "TrackFresh Save"}>
           <div style={{ textAlign: "center", marginBottom: "0.65rem" }}>
             <p style={{ color: "#f59e0b", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.13em", textTransform: "uppercase", margin: 0 }}>
-              {isEs ? "AHORRA EN CAJA" : "SAVE AT CHECKOUT"}
+              {isEs ? "BUSCAR Y AHORRAR EN CAJA" : "SEARCH AND SAVE AT CHECKOUT"}
             </p>
           </div>
           <div className="mkt-save-program">
