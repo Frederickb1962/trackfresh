@@ -239,11 +239,17 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                     : "show the app; clerk verifies date, scans and tags the item, and applies the discount code."}
                 </span>
               </li>
+              <li>
+                <span className="mkt-save-program__step-num">4</span>
+                <span>
+                  {isEs ? "Mejora el vínculo con tus clientes." : "Enhance customer engagement."}
+                </span>
+              </li>
             </ol>
             <p style={{ margin: "0.85rem 0 0", fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.45 }}>
               {isEs
-                ? "Programa piloto en tiendas participantes. Busca el botón «20% en caja» en tu Rastreador."
-                : "Pilot at participating stores. Look for the «20% at register» button in your Tracker."}
+                ? "Programa piloto en tiendas participantes."
+                : "Pilot at participating stores."}
             </p>
           </div>
         </section>
