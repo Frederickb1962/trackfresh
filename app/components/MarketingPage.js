@@ -154,10 +154,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Prácticamente nadie te dice cuánto dura la comida en realidad. Y nadie te lo recuerda." : "After opening? Virtually no one tells you how long food actually lasts. And no one reminds you."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Los consumidores desperdician casi 35 millones de toneladas de comida al año. = ¡$$$$$!" : "Consumers waste nearly 35 million tons of food each year. = $$$$$!"}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Minoristas y consumidores desperdician más de 35 millones de toneladas de comida al año. =$$$$$" : "Grocers and Consumers waste more than 35 million tons of food a year.  =$$$$$"}</strong></span></li>
         </ul>
-        <div style={{height:"2rem"}} />
-          <p style={{textAlign:"center",fontWeight:900,fontSize:"1.1rem",margin:0,letterSpacing:"-0.01em"}}><span style={{color:"#f59e0b"}}>TrackFresh</span>{isEs ? " supera las etiquetas para que puedas rastrear la frescura en la palma de tu mano." : " outsmarts the labels so you can track freshness in the palm of your hand."}</p>
         </section>
 
         {/* Section 3 — The Solution (list only) */}
@@ -166,11 +164,12 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado y alarmas." : "Snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Con TrackFresh, foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado con alarmas e información." : "With TrackFresh snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms and insight."}</strong></span></li>
           <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "¿Sin recibo? Escanea hasta 10 o más artículos en una foto grupal—códigos, etiquetas, autocompletado." : "No receipt? Scan up to 10 or more items in a group shot—barcodes, labels, autofilled."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad cuando lo necesites." : "Voice recognition of expiration dates when needed."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "La IA de TrackFresh genera recetas para ayudarte a usar lo que está por vencer." : "TrackFresh AI generates recipes to help you use expiring items."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso de una semana para artículos por vencer." : "One week notice on expiring items."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad según sea necesario." : "Voice recognition of expiration dates as needed."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "Planificador de comidas semanal o diario con recetas según lo que tienes — se prioriza lo que está por vencer." : "Weekly or Daily Meal Planner with recipes from what you have — expiring items prioritized."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Aviso con mínimo una semana para artículos por vencer." : "One week minimum notice on expiring items."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💰</span><span><strong>{isEs ? "Incentivos especiales con tus supermercados favoritos — hasta 20% de descuento en artículos seleccionados." : "Very Special incentives with your favorite Grocers offering up to 20% on select items."}</strong></span></li>
         </ul>
         </section>
 
@@ -183,7 +182,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           </div>
           <div className="mkt-save-program">
             <h2 style={{ margin: "0 0 0.35rem", fontSize: "1.2rem", fontWeight: 900, lineHeight: 1.25 }}>
-              {isEs ? "TrackFresh Save — todos ganan" : "TrackFresh Save — everyone wins"}
+              {isEs ? "TrackFresh Save — todos ganan" : "With TrackFresh — everyone wins"}
             </h2>
             <p style={{ margin: 0, fontSize: "0.92rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
               {isEs
@@ -197,7 +196,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <p>
                   {isEs
                     ? "Ahorra dinero en productos que aún están buenos — no esperes al desperdicio."
-                    : "Save money on food that's still good — don't wait until it's waste."}
+                    : "'Search & Save' money on food that's still good — don't wait until it's waste."}
                 </p>
               </div>
               <div className="mkt-save-program__card">
@@ -239,8 +238,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span>
                   <strong>{isEs ? "En caja:" : "At register:"}</strong>{" "}
                   {isEs
-                    ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el artículo y aplica el código de descuento."
-                    : "show the app; clerk verifies date, scans and tags the item, and applies the discount code."}
+                    ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el/los artículo(s) y aplica el código de descuento."
+                    : "show the app; clerk verifies date, scans and tags the item(s), and applies the discount code."}
                 </span>
               </li>
               <li>
