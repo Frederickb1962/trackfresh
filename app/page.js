@@ -46,10 +46,10 @@ const T = {
   welcomeF7: { en: "Full English & Spanish language support", es: "Soporte completo en inglés y español" },
   welcomeLocal: { en: "Your data is stored locally on your device. No account required.", es: "Tus datos se guardan en tu dispositivo. No necesitas cuenta." },
   getStarted: { en: "\ud83d\ude80 Get Started", es: "\ud83d\ude80 Comenzar" },
-  welcomeNoticeData: { en: "\ud83d\udca1 Your data stays on this device\u2014we don\u2019t keep copies on our servers. Need to tidy your browser? In Safari, Chrome, or others you can clear history, but don\u2019t clear this site\u2019s website data (cookies & site data) or you\u2019ll lose your items. Cloud backup in Phase 2!", es: "\ud83d\udca1 Tus datos quedan en este dispositivo\u2014no guardamos copias en nuestros servidores. \u00bfLimpiar el navegador? En Safari, Chrome u otros puedes borrar el historial, pero no los datos del sitio (cookies y datos) o perder\u00e1s tus productos. \u00a1Copia en la nube en la Fase 2!" },
+  welcomeNoticeData: { en: "\ud83d\udca1 Your data stays on your device \u2014 not our servers. Clear browser history if you want, but don\u2019t clear this site\u2019s data or you\u2019ll lose everything. Cloud backup in Phase 2!", es: "\ud83d\udca1 Tus datos quedan en tu dispositivo \u2014 no en nuestros servidores. Puedes borrar el historial del navegador, pero no borres los datos de este sitio o perder\u00e1s todo. \u00a1Copia en la nube en la Fase 2!" },
   welcomeNoticeExpiry: {
-    en: "\u26a0\ufe0f Food Expiration Notice: Expiration dates can fluctuate based on how food is stored. We have sourced the best AI information to provide accurate expiry dates. Please always check product labels and follow storage suggestions. TrackFresh cannot be responsible for how you use this information. By continuing you agree to acknowledge the risks of any inaccuracies.",
-    es: "\u26a0\ufe0f Aviso sobre Fechas de Vencimiento: Las fechas de vencimiento pueden variar seg\u00fan c\u00f3mo se almacenen los alimentos. Hemos utilizado la mejor informaci\u00f3n de IA para proporcionar fechas de caducidad precisas. Siempre verifique las etiquetas del producto y siga las sugerencias de almacenamiento. TrackFresh no puede ser responsable de c\u00f3mo uses esta informaci\u00f3n. Al continuar, aceptas reconocer los riesgos de cualquier inexactitud.",
+    en: "\u26a0\ufe0f Storage affects expiry dates. AI helps, but labels and your senses come first. By continuing, you accept estimates may vary.",
+    es: "\u26a0\ufe0f El almacenamiento afecta las fechas de vencimiento. La IA ayuda, pero las etiquetas y tus sentidos van primero. Al continuar, aceptas que las estimaciones pueden variar.",
   },
   welcomeAgree: { en: "I Understand & Agree", es: "Entiendo y acepto" },
   disclaimerContinue: { en: "I Understand \u2014 Let\u2019s Go! \ud83e\udd66", es: "Entendido \u2014 \u00a1Vamos! \ud83e\udd66" },
@@ -170,7 +170,7 @@ noMatches: { en: "No matches found. Try adding more items like eggs, carrots, or
   howManyItems: { en: "How many items are you scanning?", es: "¿Cuántos productos vas a escanear?" },
   singleScan: { en: "Single Scan", es: "Escaneo Único" },
   multiScans: { en: "Mult. Scans", es: "Múlt. Escaneos" },
-  scanReceipts: { en: "Scan Receipt(s)", es: "Escanear Recibo(s)" },
+  scanReceipts: { en: "Scan or Upload Receipt(s)", es: "Escanear o Subir Recibo(s)" },
   scanLabels: { en: "Scan Label(s)", es: "Escanear Etiqueta(s)" },
   scanBarcodes: { en: "Scan Barcode(s)", es: "Escanear Código(s)" },
   pickAMeal: { en: "Pick a Meal", es: "Elegir una Comida" },
@@ -867,21 +867,7 @@ export default function TrackFreshDashboard() {
   const [aiPlanLoading, setAiPlanLoading] = useState(false);
   const [compExpanded, setCompExpanded] = useState({});
   const toggleComp = (key) => setCompExpanded(p => ({...p, [key]: !p[key]}));
-  const DIETARY_KEY = "tf_dietary";
-  const [dietaryRestrictions, setDietaryRestrictions] = useState(() => { try { return JSON.parse(localStorage.getItem(DIETARY_KEY) || "{}"); } catch(e) { return {}; } });
-  const toggleDietary = (key) => setDietaryRestrictions(p => { const next = {...p, [key]: !p[key]}; try { localStorage.setItem(DIETARY_KEY, JSON.stringify(next)); } catch(e) {} return next; });
-  const [familyMembers, setFamilyMembers] = useState(() => { try { return JSON.parse(localStorage.getItem("tf_family") || "[]"); } catch(e) { return []; } });
-  const [familyInput, setFamilyInput] = useState("");
-  const [householdRestrictionsOpen, setHouseholdRestrictionsOpen] = useState(false);
-  const [expandedMember, setExpandedMember] = useState(null);
-  const [editingMember, setEditingMember] = useState(null);
-  const [editMemberName, setEditMemberName] = useState("");
-  const DIETARY_TAGS = [["vegetarian","🥗","Vegetarian","Vegetariano"],["vegan","🌱","Vegan","Vegano"],["glutenFree","🌾","Gluten-Free","Sin Gluten"],["dairyFree","🥛","Dairy-Free","Sin Lácteos"],["nutFree","🥜","Nut-Free","Sin Nueces"],["keto","🥑","Keto","Keto"],["paleo","🍖","Paleo","Paleo"],["halal","☪️","Halal","Halal"],["kosher","✡️","Kosher","Kosher"],["pescatarian","🐟","Pescatarian","Pescetariano"],["lowSodium","🧂","Low-Sodium","Bajo en Sodio"],["lowSugar","🩺","Diabetic/Low Sugar","Diabético/Bajo Azúcar"],["lowFat","🫀","Low-Fat","Bajo en Grasa"],["eggFree","🥚","Egg-Free","Sin Huevo"],["soyFree","🫘","Soy-Free","Sin Soya"],["shellfishFree","🦐","Shellfish-Free","Sin Mariscos"],["whole30","🔄","Whole30","Whole30"],["mediterranean","🫒","Mediterranean","Mediterráneo"],["fodmap","🦠","FODMAP","FODMAP"],["intermittentFasting","⏱️","Intermittent Fasting","Ayuno Intermitente"]];
-  const saveMembersToStorage = (next) => { try { localStorage.setItem("tf_family", JSON.stringify(next)); } catch(e) {} };
-  const addFamilyMember = () => { if (!familyInput.trim()) return; const next = [...familyMembers, {name: familyInput.trim(), restrictions: {}}]; setFamilyMembers(next); saveMembersToStorage(next); setFamilyInput(""); };
-  const removeFamilyMember = (i) => { const next = familyMembers.filter((_,idx) => idx !== i); setFamilyMembers(next); saveMembersToStorage(next); if (expandedMember === i) setExpandedMember(null); };
-  const toggleMemberTag = (i, key) => { const next = familyMembers.map((m, idx) => idx === i ? {...m, restrictions: {...(m.restrictions||{}), [key]: !(m.restrictions||{})[key]}} : m); setFamilyMembers(next); saveMembersToStorage(next); };
-  const saveMemberName = (i) => { if (!editMemberName.trim()) return; const next = familyMembers.map((m, idx) => idx === i ? {...m, name: editMemberName.trim()} : m); setFamilyMembers(next); saveMembersToStorage(next); setEditingMember(null); setEditMemberName(""); };
+  const activeDietaryProfile = { household: [], members: [], combinedTags: [] };
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [scanMode, setScanMode] = useState(null);
   const [multiScanCount, setMultiScanCount] = useState(0);
@@ -1092,8 +1078,6 @@ export default function TrackFreshDashboard() {
   };
 
   // All known tag keys → human-readable labels (shared between household and per-member use)
-  const ALL_TAG_LABELS = {vegetarian:"Vegetarian",vegan:"Vegan",glutenFree:"Gluten-Free",dairyFree:"Dairy-Free",nutFree:"Nut-Free",lowSodium:"Low Sodium",highProtein:"High Protein",lowSugar:"Low Sugar",halal:"Halal",kosher:"Kosher",keto:"Keto"};
-
   const ALLERGEN_KEYWORDS = {
     "Nut-Free":    ["nut","peanut","almond","cashew","walnut","pecan","pistachio","hazelnut","macadamia"],
     "Dairy-Free":  ["milk","cheese","butter","cream","yogurt","dairy","whey","lactose","brie","cheddar","mozzarella","parmesan"],
@@ -1103,19 +1087,6 @@ export default function TrackFreshDashboard() {
     "Low Sodium":  ["salt","soy sauce","pickle","chip","pretzel","jerky","anchovy","capers"],
     "Low Sugar":   ["candy","sugar","syrup","soda","juice","cookie","cake","chocolate","jam","jelly"],
   };
-
-  // Derived dietary profile — merges household + all family member restrictions.
-  // Shape: { household: string[], members: {name, tags}[], combinedTags: string[] }
-  // combinedTags = union of all active restrictions across the household.
-  // This is the single object passed to the meal planner API.
-  const activeDietaryProfile = useMemo(() => {
-    const householdTags = Object.entries(dietaryRestrictions).filter(([,on]) => on).map(([key]) => ALL_TAG_LABELS[key] || key);
-    const memberProfiles = familyMembers
-      .map(m => ({ name: m.name, tags: Object.entries(m.restrictions || {}).filter(([,on]) => on).map(([key]) => ALL_TAG_LABELS[key] || key) }))
-      .filter(m => m.tags.length > 0);
-    const combinedTags = [...new Set([...householdTags, ...memberProfiles.flatMap(m => m.tags)])];
-    return { household: householdTags, members: memberProfiles, combinedTags };
-  }, [dietaryRestrictions, familyMembers]);
 
   const itemsWithCountdown = useMemo(() => trackedItems.map((it) => {
     const daysLeft = daysLeftFromUseByDate(it.useByDate);
@@ -2891,7 +2862,7 @@ export default function TrackFreshDashboard() {
                         {isEs ? "Tu Cocina Hoy cobrará vida a medida que construyas tu inventario." : "Your Kitchen Today will come to life as you build your inventory."}
                       </p>
                       <p style={{color:"rgba(255,255,255,0.92)",fontWeight:500,fontSize:"0.88rem",lineHeight:1.55,margin:"0 0 1.5rem"}}>
-                        {isEs ? "Empieza agregando artículos en Rastreador." : "Start by adding items in Tracker."}
+                        {isEs ? "Empieza agregando artículos en Rastreador. Orden recomendado: refrigerador primero, congelador segundo y despensa tercero." : "Start by adding items in Tracker. Recommended tracking order - Fridge first, Freezer second and Pantry third."}
                       </p>
                       <button onClick={handleGoToTracker} className="glass-scan-btn tf-home-go-tracker-btn" style={{fontSize:"0.88rem",padding:"0.7rem 1.75rem"}}>
                         {isEs ? "Ir al Rastreador →" : "Go to Tracker →"}
@@ -2981,7 +2952,7 @@ export default function TrackFreshDashboard() {
                 { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
                 { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
                 { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
-                { icon: "🥗",                           label: lang === "es" ? "Dieta" : "Dietary",         sub: lang === "es" ? "Necesidades" : "Dietary Needs",             action: () => setActiveTab("dietary") },
+                { icon: "💰",                           label: lang === "es" ? "Buscar y Ahorrar" : "Search & Save", sub: lang === "es" ? "20% en caja" : "20% at checkout",             action: () => setActiveTab("search-save") },
                 { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("suggestions") },
               ].map(({ icon, label, sub, action }) => {
                 const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
@@ -3722,199 +3693,51 @@ export default function TrackFreshDashboard() {
           </>
         )}
 
-        {activeTab === "dietary" && (
+        {activeTab === "search-save" && (
           <div className="space-y-4">
             <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span style={{fontSize:"1.4rem", flexShrink: 0}}>🏠</span>
-                  <h2 className="text-base font-bold text-white" style={{margin: 0}}>
-                    {lang === "es" ? "Restricciones del Hogar" : "Household Restrictions"}
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setHouseholdRestrictionsOpen((open) => !open)}
-                  className="text-xs font-semibold text-green-300 flex-shrink-0"
-                  style={{background:"none",border:"none",cursor:"pointer",padding:"0.15rem 0.25rem"}}
-                >
-                  {householdRestrictionsOpen ? (lang === "es" ? "Listo" : "Done") : t("edit")}
-                </button>
+              <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
+                <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.85rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>
+                  {lang === "es" ? "BUSCAR Y AHORRAR EN CAJA" : "SEARCH AND SAVE AT CHECKOUT"}
+                </p>
               </div>
-              {!householdRestrictionsOpen ? (
-                (() => {
-                  const activeHousehold = DIETARY_TAGS.filter(([key]) => dietaryRestrictions[key]);
-                  if (!activeHousehold.length) {
-                    return (
-                      <p className="text-xs text-green-200 opacity-80" style={{margin: 0}}>
-                        {lang === "es" ? "Sin restricciones del hogar aún." : "No household restrictions set yet."}
-                      </p>
-                    );
-                  }
-                  return (
-                    <div className="flex flex-wrap gap-1">
-                      {activeHousehold.map(([key, icon, labelEn, labelEs]) => (
-                        <span key={key} className="text-xs rounded-full px-2 py-0.5" style={{background:"rgba(255,102,0,0.2)",border:"1px solid rgba(255,102,0,0.4)",color:"#fed7aa"}}>
-                          {icon} {lang === "es" ? labelEs : labelEn}
-                        </span>
-                      ))}
-                    </div>
-                  );
-                })()
-              ) : (
-                <>
-                  <p className="text-xs text-green-200 mb-3">
-                    {lang === "es" ? "Toca para activar restricciones de todo el hogar." : "Tap to toggle any restriction that applies to your whole household."}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => (
-                      <button key={key} onClick={() => toggleDietary(key)} style={{background: dietaryRestrictions[key] ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.08)", border: dietaryRestrictions[key] ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.3rem 0.75rem", color: dietaryRestrictions[key] ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.75rem", fontWeight: dietaryRestrictions[key] ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.3rem"}}>
-                        <span>{icon}</span>{lang === "es" ? labelEs : labelEn}{dietaryRestrictions[key] && <span style={{color:"#ff6600"}}>✓</span>}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </Card>
-
-            {/* Family members */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span style={{fontSize:"1.4rem"}}>👨‍👩‍👧‍👦</span>
-                <h2 className="text-base font-bold text-white">Family Members</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-3">Add each person and set their individual dietary tags.</p>
-
-              {/* Add member input */}
-              <div className="flex gap-2 mb-4">
-                <input
-                  value={familyInput}
-                  onChange={(e) => setFamilyInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && addFamilyMember()}
-                  placeholder="Name (e.g. Emma, Dad)"
-                  className="flex-1 rounded-xl px-3 py-2 text-sm text-gray-900"
-                  style={{background:"rgba(255,255,255,0.92)"}}
-                />
-                <button onClick={addFamilyMember} className="glass-scan-btn px-4 py-2 text-sm" style={{flexDirection:"row",gap:"0.3rem",whiteSpace:"nowrap"}}>+ Add</button>
-              </div>
-
-              {familyMembers.length === 0 ? (
-                <p className="text-xs text-green-300 opacity-60 text-center py-3">No family members added yet. Add one above.</p>
-              ) : (
-                <div className="space-y-3">
-                  {familyMembers.map((member, i) => {
-                    const isExpanded = expandedMember === i;
-                    const isEditing = editingMember === i;
-                    const activeTags = DIETARY_TAGS.filter(([key]) => (member.restrictions||{})[key]);
-                    return (
-                      <div key={i} className="rounded-xl overflow-hidden" style={{border:"1px solid rgba(255,255,255,0.18)"}}>
-                        {/* Member row */}
-                        <div className="flex items-center justify-between px-3 py-2" style={{background:"rgba(255,255,255,0.1)"}}>
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <span style={{fontSize:"1.1rem", flexShrink: 0}}>👤</span>
-                            {isEditing ? (
-                              <div className="flex gap-2 flex-1 min-w-0">
-                                <input
-                                  value={editMemberName}
-                                  onChange={(e) => setEditMemberName(e.target.value)}
-                                  onKeyDown={(e) => e.key === "Enter" && saveMemberName(i)}
-                                  autoFocus
-                                  className="flex-1 rounded px-2 py-1 text-sm text-gray-900"
-                                  style={{background:"rgba(255,255,255,0.92)",minWidth:0}}
-                                />
-                                <button type="button" onClick={() => saveMemberName(i)} className="text-xs font-bold text-green-300" style={{background:"none",border:"none",cursor:"pointer"}}>{t("save")}</button>
-                                <button type="button" onClick={() => setEditingMember(null)} className="text-xs text-gray-400" style={{background:"none",border:"none",cursor:"pointer"}}>{t("cancel")}</button>
-                              </div>
-                            ) : (
-                              <span className="text-sm font-semibold text-white truncate" style={{minWidth: 0, flex: 1}}>
-                                {member.name}
-                              </span>
-                            )}
-                          </div>
-                          {!isEditing && (
-                            <div
-                              className="flex items-center flex-shrink-0"
-                              style={{ gap: "1.1rem", marginLeft: "0.65rem", paddingLeft: "0.35rem" }}
-                            >
-                              <button
-                                type="button"
-                                onClick={() => { setEditingMember(i); setEditMemberName(member.name); }}
-                                className="text-xs font-semibold text-green-300"
-                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.15rem", display: "inline-flex", alignItems: "center", gap: "0.35rem", whiteSpace: "nowrap" }}
-                              >
-                                <span aria-hidden="true">✏️</span>
-                                <span>{t("edit")}</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setExpandedMember(isExpanded ? null : i)}
-                                className="text-sm text-white font-bold"
-                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.2rem", minWidth: "1.75rem" }}
-                                aria-label={isExpanded ? (lang === "es" ? "Contraer" : "Collapse") : (lang === "es" ? "Expandir" : "Expand")}
-                              >
-                                {isExpanded ? "▲" : "▼"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => removeFamilyMember(i)}
-                                className="text-sm text-red-400 font-bold"
-                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0.35rem 0.2rem", minWidth: "1.75rem" }}
-                                aria-label={lang === "es" ? "Eliminar" : "Remove"}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Active tag summary (collapsed) */}
-                        {!isExpanded && activeTags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 px-3 py-2">
-                            {activeTags.map(([,icon,labelEn,labelEs]) => (
-                              <span key={labelEn} className="text-xs rounded-full px-2 py-0.5" style={{background:"rgba(255,102,0,0.2)",border:"1px solid rgba(255,102,0,0.4)",color:"#fed7aa"}}>{icon} {lang === "es" ? labelEs : labelEn}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Expanded tag editor */}
-                        {isExpanded && (
-                          <div className="px-3 py-3" style={{background:"rgba(0,0,0,0.15)"}}>
-                            <p className="text-xs text-green-300 mb-2 font-semibold">Tap to assign tags for {member.name}:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {DIETARY_TAGS.map(([key, icon, labelEn, labelEs]) => {
-                                const on = (member.restrictions||{})[key];
-                                return (
-                                  <button key={key} onClick={() => toggleMemberTag(i, key)} style={{background: on ? "rgba(255,102,0,0.25)" : "rgba(255,255,255,0.07)", border: on ? "2px solid #ff6600" : "1px solid rgba(255,255,255,0.2)", borderRadius:"999px", padding:"0.25rem 0.65rem", color: on ? "#fff" : "rgba(255,255,255,0.7)", fontSize:"0.72rem", fontWeight: on ? 700 : 400, cursor:"pointer", transition:"all 0.15s", display:"flex", alignItems:"center", gap:"0.25rem"}}>
-                                    {icon} {lang === "es" ? labelEs : labelEn}{on && <span style={{color:"#ff6600"}}>✓</span>}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </Card>
-
-            {/* Coming soon */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{fontSize:"1.4rem"}}>💡</span>
-                <h2 className="text-base font-bold text-white">Coming Soon</h2>
-              </div>
-              <div className="space-y-2">
-                {["Recipe suggestions filtered by household restrictions","Shopping list items flagged for allergens","Meal planner that respects every family member's needs"].map((item) => (
-                  <div key={item} className="flex gap-2 items-start">
-                    <span className="text-orange-400 font-bold text-xs mt-0.5">→</span>
-                    <p className="text-xs text-green-100">{item}</p>
+              <h2 className="text-base font-bold text-white" style={{margin:"0 0 0.35rem",textAlign:"center"}}>
+                {lang === "es" ? "Con TrackFresh — todos ganan" : "With TrackFresh — everyone wins"}
+              </h2>
+              <p className="text-xs text-green-200" style={{margin:"0 0 1rem",textAlign:"center",lineHeight:1.5}}>
+                {lang === "es"
+                  ? "Si un artículo vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
+                  : "When an item expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
+              </p>
+              <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",color:"#f59e0b",margin:"0 0 1rem"}}>20% OFF</p>
+              <div className="space-y-3 mb-4">
+                {[
+                  [lang === "es" ? "Para ti" : "For you", lang === "es" ? "Ahorra con 'Buscar y Ahorrar' en productos que aún están buenos — no esperes al desperdicio." : "'Search & Save' money on food that's still good — don't wait until it's waste."],
+                  [lang === "es" ? "Para tiendas" : "For stores", lang === "es" ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas." : "Better inventory control: sell through before expiry and cut shrink."],
+                  [lang === "es" ? "Para TrackFresh" : "For TrackFresh", lang === "es" ? "Más valor: frescura rastreada que se convierte en ahorro real en la caja." : "More value: tracked freshness that turns into real savings at checkout."],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
+                    <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.35rem"}}>{title}</h3>
+                    <p className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</p>
                   </div>
                 ))}
               </div>
+              <ol className="space-y-3" style={{margin:0,padding:0,listStyle:"none"}}>
+                {[
+                  [lang === "es" ? "Rastrea" : "Track", lang === "es" ? "fechas mientras recorres los pasillos." : "dates as you peruse the aisles."],
+                  [lang === "es" ? "Elegible:" : "Eligible:", lang === "es" ? "fecha de vencimiento o usar antes dentro de 2 días." : "expiry date or use-by date within 2 days."],
+                  [lang === "es" ? "En caja:" : "At register:", lang === "es" ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el/los artículo(s) y luego aplica el código de descuento." : "show the app; clerk verifies date, scans and tags the item(s) then applies the discount code."],
+                ].map(([label, text], i) => (
+                  <li key={label} className="flex items-start gap-3">
+                    <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"1.5rem",height:"1.5rem",borderRadius:"999px",background:"rgba(245,158,11,0.25)",color:"#f59e0b",fontSize:"0.75rem",fontWeight:800,flexShrink:0}}>{i + 1}</span>
+                    <span className="text-xs text-green-100" style={{lineHeight:1.45}}><strong className="text-white">{label}</strong> {text}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-xs text-green-300 opacity-80" style={{margin:"0.85rem 0 0",textAlign:"center"}}>
+                {lang === "es" ? "Programa piloto en tiendas participantes." : "Pilot at participating stores."}
+              </p>
             </Card>
-
           </div>
         )}
 

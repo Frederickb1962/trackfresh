@@ -238,14 +238,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span>
                   <strong>{isEs ? "En caja:" : "At register:"}</strong>{" "}
                   {isEs
-                    ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el/los artículo(s) y aplica el código de descuento."
-                    : "show the app; clerk verifies date, scans and tags the item(s), and applies the discount code."}
-                </span>
-              </li>
-              <li>
-                <span className="mkt-save-program__step-num">4</span>
-                <span>
-                  {isEs ? "Mejora el vínculo con tus clientes." : "Enhance customer engagement."}
+                    ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el/los artículo(s) y luego aplica el código de descuento."
+                    : "show the app; clerk verifies date, scans and tags the item(s) then applies the discount code."}
                 </span>
               </li>
             </ol>
@@ -271,7 +265,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             <p className="mkt-stores__lead">
               {isEs
                 ? "TrackFresh envía compradores con fechas reales en la app. Tu equipo confirma el artículo en caja — tú mueves inventario por vencer y reduces mermas."
-                : "TrackFresh sends shoppers with real dates in the app. Your team confirms the item at checkout — you move near-expiry inventory and cut shrink."}
+                : "TrackFresh incentifies shoppers to check your inventory. Your team confirms the item at checkout — you move near-expiry inventory and cut shrink."}
             </p>
             <div className="mkt-stores__grid">
               <div className="mkt-stores__benefit">
