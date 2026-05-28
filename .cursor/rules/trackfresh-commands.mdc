@@ -1,0 +1,30 @@
+---
+description: Run build, git, and deploy for TrackFresh without asking; confirm destructive ops first
+alwaysApply: true
+---
+
+# TrackFresh — commands & deploy
+
+For this project, **run these yourself** without stopping to ask in chat:
+
+- `npm run build`, `npm run dev`, and other routine npm scripts
+- Git read/write: `git status`, `git diff`, `git log`, `git add`, `git commit`, `git push`
+- Deploy steps: push to `main` (Vercel deploys from GitHub), and `gh` for PRs/checks when needed
+
+When the user says **commit and deploy**, do the full flow: status → diff → commit → push.
+
+## Ask first (destructive or risky)
+
+Stop and confirm with the user before:
+
+- `git push --force` / force push to `main` or `master`
+- `git reset --hard`, `git clean -fd`, or other history/working-tree destructive git
+- Deleting files, branches, or Vercel projects
+- Amending commits that were already pushed
+- Skipping hooks (`--no-verify`) unless the user explicitly requested it
+- Committing `.env`, credentials, or other secret files
+
+## Defaults
+
+- Working repo: `trackfresh-fresh` (deploys to trackfresh.ai from `main`)
+- Prefer minimal, focused diffs; match existing project conventions

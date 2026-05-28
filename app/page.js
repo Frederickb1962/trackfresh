@@ -21,8 +21,21 @@ import { formatAiError } from "./lib/formatAiError";
 import { MealSearchInput, FoodAutocomplete, CommunityStewAnim } from "./components/ui/MealComponents";
 import { LoadingFoodFact } from "./components/ui/LoadingFoodFact";
 import LanguagePicker from "./components/LanguagePicker";
+import GuidedFlowWizard from "./components/GuidedFlowWizard";
+import CoachTipCard from "./components/CoachTipCard";
 import { pick, speechLocale } from "./lib/i18n";
 import { T } from "./lib/translations";
+import {
+  FLOW_KEY,
+  GUIDED_DONE_KEY,
+  COACH_DONE_KEY,
+  FLOWS,
+  readFlowFromUrl,
+  applyFlowResetIfRequested,
+  getCoachTip,
+  flowLabel,
+  COACH_STEP_KEY,
+} from "./lib/onboardingFlows";
 
 
 const LANG_KEY = "trackfresh.lang";
@@ -486,11 +499,40 @@ export default function TrackFreshDashboard() {
   
   const [showMarketing, setShowMarketing] = useState(true);
   const [welcomeStep, setWelcomeStep] = useState(0);
+  const [onboardingFlow, setOnboardingFlow] = useState(FLOWS.default);
+  const [guidedStep, setGuidedStep] = useState(0);
+  const [guidedComplete, setGuidedComplete] = useState(false);
+  const [coachDismissed, setCoachDismissed] = useState(false);
+  const [coachStep, setCoachStep] = useState(0);
+  const [guidedPaused, setGuidedPaused] = useState(false);
   React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
+  React.useEffect(() => {
+    applyFlowResetIfRequested();
+    try {
+      const urlFlow = readFlowFromUrl();
+      const savedFlow = localStorage.getItem(FLOW_KEY);
+      const flow = urlFlow || savedFlow || FLOWS.default;
+      if (urlFlow) localStorage.setItem(FLOW_KEY, urlFlow);
+      setOnboardingFlow(flow);
+      setGuidedComplete(localStorage.getItem(GUIDED_DONE_KEY) === "1");
+      setCoachDismissed(localStorage.getItem(COACH_DONE_KEY) === "1");
+      const savedCoachStep = parseInt(localStorage.getItem(COACH_STEP_KEY) || "0", 10);
+      if (!Number.isNaN(savedCoachStep)) setCoachStep(savedCoachStep);
+    } catch (e) {}
+  }, []);
+  const finishWelcomeForFlow = () => {
+    try { localStorage.setItem("trackfresh.welcomed", "true"); } catch (e) {}
+    setWelcomeStep(0);
+  };
   const queuePostMarketingOnboarding = () => {
     try {
       if (localStorage.getItem("tf_disclaimer_seen") !== "1") {
         setWelcomeStep(1);
+        return;
+      }
+      const flow = localStorage.getItem(FLOW_KEY) || FLOWS.default;
+      if (flow === FLOWS.guided || flow === FLOWS.coach) {
+        finishWelcomeForFlow();
         return;
       }
       if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
@@ -498,6 +540,19 @@ export default function TrackFreshDashboard() {
     } catch (e) {
       setWelcomeStep(1);
     }
+  };
+  const completeGuidedFlow = () => {
+    setGuidedComplete(true);
+    setGuidedPaused(false);
+    try { localStorage.setItem(GUIDED_DONE_KEY, "1"); } catch (e) {}
+  };
+  const dismissCoachFlow = () => {
+    setCoachDismissed(true);
+    try { localStorage.setItem(COACH_DONE_KEY, "1"); } catch (e) {}
+  };
+  const advanceCoachStep = (next) => {
+    setCoachStep(next);
+    try { localStorage.setItem(COACH_STEP_KEY, String(next)); } catch (e) {}
   };
   const handleLaunchApp = () => {
     setShowMarketing(false);
@@ -841,6 +896,43 @@ export default function TrackFreshDashboard() {
   useEffect(() => { try { localStorage.setItem("tf_favorite_recipes", JSON.stringify(favoriteRecipes)); } catch(e) {} }, [favoriteRecipes]);
   useEffect(() => { try { localStorage.setItem(RECIPE_MODE_KEY, recipeMode); } catch(e) {} }, [recipeMode]);
   useEffect(() => { try { window.scrollTo(0, 0); } catch(e) {} }, [activeTab]);
+
+  const openReceiptFromOnboarding = () => {
+    setGuidedPaused(true);
+    setActiveTab("tracker");
+    setShowReceiptScanner(true);
+  };
+  const coachTip = onboardingFlow === FLOWS.coach && !coachDismissed
+    ? getCoachTip(lang, { trackedCount: trackedItems.length, pendingDates: pendingDateItems.length, coachStep })
+    : null;
+  const handleCoachAction = () => {
+    if (!coachTip) return;
+    if (coachTip.id === "receipt") openReceiptFromOnboarding();
+    else if (coachTip.id === "dates") {
+      if (pendingDateItems.length === 0) openReceiptFromOnboarding();
+    } else if (coachTip.id === "kitchen") {
+      advanceCoachStep(3);
+      setActiveTab("home");
+      try { homeTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) {}
+    } else if (coachTip.id === "recipes") {
+      advanceCoachStep(4);
+      setActiveTab("recipes");
+    } else if (coachTip.id === "done") dismissCoachFlow();
+  };
+  useEffect(() => {
+    if (onboardingFlow !== FLOWS.coach || coachDismissed) return;
+    if (pendingDateItems.length === 0 && coachStep === 1 && trackedItems.length > 0) {
+      advanceCoachStep(2);
+    }
+  }, [pendingDateItems.length, trackedItems.length, coachStep, onboardingFlow, coachDismissed]);
+  const showGuidedWizard = onboardingFlow === FLOWS.guided && !guidedComplete && !guidedPaused && isUnlocked && welcomeStep === 0;
+  useEffect(() => {
+    if (showReceiptScanner || !guidedPaused || onboardingFlow !== FLOWS.guided || guidedComplete) return;
+    setGuidedPaused(false);
+    if (pendingDateItems.length > 0 || trackedItems.length > 0) {
+      setGuidedStep((s) => Math.max(s, 2));
+    }
+  }, [showReceiptScanner, guidedPaused, onboardingFlow, guidedComplete, pendingDateItems.length, trackedItems.length]);
 
   const handleSetMeal = (day, slot, meal) => {
     setMeals((prev) => ({ ...prev, [`${day}-${slot}`]: meal }));
@@ -2015,7 +2107,10 @@ export default function TrackFreshDashboard() {
               onClick={() => {
                 try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch (e) {}
                 try {
-                  if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
+                  const flow = localStorage.getItem(FLOW_KEY) || FLOWS.default;
+                  if (flow === FLOWS.guided || flow === FLOWS.coach) {
+                    finishWelcomeForFlow();
+                  } else if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
                   else setWelcomeStep(0);
                 } catch (e) {
                   setWelcomeStep(2);
@@ -2058,6 +2153,11 @@ export default function TrackFreshDashboard() {
         <div className="text-5xl mb-3">🥦</div>
         <h1 className="text-3xl font-extrabold text-white mb-0" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h1>
         <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-1 mt-1">{t("betaTesting")}</p>
+        {(onboardingFlow === FLOWS.guided || onboardingFlow === FLOWS.coach) && (
+          <p className="text-xs font-semibold text-green-300 mb-2 px-3 py-1.5 rounded-lg" style={{ background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.35)" }}>
+            🧪 {flowLabel(onboardingFlow, lang)}
+          </p>
+        )}
         <p className="text-sm text-green-200 mb-5">{t("enterAccessCode")}</p>
         <div className="mb-5">
           <p className="text-xs font-bold text-green-300 mb-2 uppercase tracking-wider">🌐 Language / Idioma</p>
@@ -2078,6 +2178,17 @@ export default function TrackFreshDashboard() {
     return (
     <>
     {onboardingOverlays}
+    {showGuidedWizard && (
+      <GuidedFlowWizard
+        lang={lang}
+        step={guidedStep}
+        onStepChange={setGuidedStep}
+        onScanReceipt={openReceiptFromOnboarding}
+        onGoHome={() => setActiveTab("home")}
+        onComplete={completeGuidedFlow}
+        onSkipReceipt={() => {}}
+      />
+    )}
     <div className="min-h-screen app-bg"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
       {/* Sticky header: logo + top nav */}
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(to bottom,#064e3b,#022c22)",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
@@ -2631,6 +2742,14 @@ export default function TrackFreshDashboard() {
             >
               {lang === "es" ? "Escanea para llevar la cuenta de la frescura" : "Scan to Track Freshness"}
             </p>
+            {coachTip && (
+              <CoachTipCard
+                lang={lang}
+                tip={coachTip}
+                onAction={handleCoachAction}
+                onDismiss={dismissCoachFlow}
+              />
+            )}
             {/* ── Your Kitchen Today panel ── always visible ── */}
             {(() => {
               const isEs = lang === "es";
