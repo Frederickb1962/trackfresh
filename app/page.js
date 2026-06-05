@@ -474,18 +474,13 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
 
 
 /** Instruction between date tap / entry and mic — copy only; no voice logic. */
-function VoiceDateNextHint({ lang }) {
+function VoiceDateNextHint({ lang, text }) {
+  const fallback = lang === "es"
+    ? "Di la fecha, luego toca Guardar abajo o di NEXT / DONE cuando termines."
+    : "Speak the date, then tap Save below or say NEXT / DONE when finished.";
   return (
     <p className="tf-voice-date-hint">
-      {lang === "es" ? (
-        <>
-          Toca <span className="tf-voice-date-hint__kw">Guardar</span> abajo, o di <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
-        </>
-      ) : (
-        <>
-          Tap <span className="tf-voice-date-hint__kw">Save</span> below, or say <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
-        </>
-      )}
+      {text || fallback}
     </p>
   );
 }
@@ -696,6 +691,7 @@ export default function TrackFreshDashboard() {
   const [quickAddQty, setQuickAddQty] = useState("");
   const [pendingDateItems, setPendingDateItems] = useState([]);
   const [pendingDateIndex, setPendingDateIndex] = useState(0);
+  const [showPendingDateIntro, setShowPendingDateIntro] = useState(false);
   const pendingDateIndexRef = React.useRef(pendingDateIndex);
   const pendingDateItemsRef = React.useRef(pendingDateItems);
   pendingDateIndexRef.current = pendingDateIndex;
@@ -850,10 +846,34 @@ export default function TrackFreshDashboard() {
           setPendingDateIndex(0);
           setPendingPickedDate("");
           setPendingAwaitNextOrDone(false);
+          setShowPendingDateIntro(true);
         }, 0);
       }
       return [...prev, ...newRows];
     });
+  };
+
+  const speakPendingIntro = (text, onDone) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      if (onDone) setTimeout(onDone, 300);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = speechLocale(lang);
+    u.rate = 0.95;
+    u.pitch = 1.0;
+    const ms = Math.max(2000, (text.split(" ").length / 2) * 1000 + 900);
+    let fired = false;
+    const fire = () => { if (!fired) { fired = true; if (onDone) onDone(); } };
+    u.onend = fire;
+    setTimeout(fire, ms);
+    window.speechSynthesis.speak(u);
+  };
+
+  const dismissPendingDateIntro = () => {
+    setShowPendingDateIntro(false);
+    try { window.speechSynthesis?.cancel(); } catch (e) {}
   };
 
   const [voiceListening, setVoiceListening] = useState("");
@@ -2031,6 +2051,14 @@ export default function TrackFreshDashboard() {
   };
 
   useEffect(() => {
+    if (!showPendingDateIntro) return;
+    const text = t("pendingDateIntro");
+    speakPendingIntro(text);
+    return () => { try { window.speechSynthesis?.cancel(); } catch (e) {} };
+  }, [showPendingDateIntro, lang]);
+
+  useEffect(() => {
+    if (showPendingDateIntro) return;
     if (pendingDateItems.length === 0 || pendingDateIndex >= pendingDateItems.length) return;
     if (typeof window === "undefined") return;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2059,7 +2087,7 @@ export default function TrackFreshDashboard() {
         pendingVoiceRecognitionRef.current = null;
       }
     };
-  }, [pendingDateItems, pendingDateIndex]);
+  }, [pendingDateItems, pendingDateIndex, showPendingDateIntro]);
 
   useEffect(() => {
     if (pendingDateItems.length === 0) pendingProduceDefaultedRef.current.clear();
@@ -2250,13 +2278,50 @@ export default function TrackFreshDashboard() {
                 </div>
               )}
               {receiptError && <p className="mt-2 text-sm" style={{color:"#fca5a5"}}>Error: {receiptError}</p>}
-              <p className="mt-2 text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{lang === "es" ? "Después de leer el recibo, se abrirá la cola de fechas por voz (Next / Done)." : "After the receipt is read, the voice date queue opens (Next / Done)."}</p>
+              <p className="mt-2 text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{t("pendingDateIntro")}</p>
               <button type="button" onClick={() => { setShowReceiptScanner(false); setReceiptError(""); }} className="mt-3 w-full rounded-xl py-2 text-sm tf-glass-primary-btn">{t("cancel")}</button>
             </div>
           </div>
         )}
 
-        {pendingDateItems.length > 0 && pendingDateIndex < pendingDateItems.length && (() => {
+        {pendingDateItems.length > 0 && showPendingDateIntro && (
+          <div className="fixed inset-0 z-[10055] flex flex-col items-center justify-center tf-premium-bg" style={{ padding: "2rem 1.25rem" }}>
+            <div
+              className="w-full max-w-md text-center animate-[fadeIn_0.35s_ease]"
+              style={{
+                background: "rgba(0,0,0,0.4)",
+                border: "2px solid rgba(250,204,21,0.55)",
+                backdropFilter: "blur(14px)",
+                borderRadius: "24px",
+                padding: "2rem 1.5rem",
+              }}
+            >
+              <div style={{ fontSize: "3.5rem", lineHeight: 1, marginBottom: "0.75rem" }}>🎤</div>
+              <p className="tf-modal-accent-h" style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>
+                📅 {t("pendingDateIntroTitle")}
+              </p>
+              <p
+                style={{
+                  color: "#fff",
+                  fontSize: "1.15rem",
+                  fontWeight: 700,
+                  lineHeight: 1.55,
+                  margin: "0 0 1.5rem",
+                }}
+              >
+                {t("pendingDateIntro")}
+              </p>
+              <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", margin: "0 0 1.25rem" }}>
+                {pendingDateItems.length} {lang === "es" ? "artículos por fechar" : "items to date"}
+              </p>
+              <button type="button" onClick={dismissPendingDateIntro} className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d">
+                {t("pendingDateIntroContinue")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {pendingDateItems.length > 0 && !showPendingDateIntro && pendingDateIndex < pendingDateItems.length && (() => {
           const item = pendingDateItems[pendingDateIndex];
           const isEs = lang === "es";
           let formattedPick = "";
@@ -2348,7 +2413,7 @@ export default function TrackFreshDashboard() {
                   style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}}
                 />
               </div>
-              <VoiceDateNextHint lang={lang} />
+              <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
               <button
                 type="button"
                 className={`tf-glass-scan${pendingVoiceListening ? " tf-pending-mic-listening" : ""}`}
@@ -2538,7 +2603,7 @@ export default function TrackFreshDashboard() {
                     <div className="space-y-2">
                       <div>
                         <p className="text-sm font-bold mb-2" style={{color:"rgba(255,255,255,0.92)"}}>📅 {barcodeLocation === "Freezer" ? t("freezeByLabel") + " Date" : t("expDateLabel")} {barcodeUseBy && <span style={{color:"#86efac"}}>✓ {barcodeUseBy}</span>}</p>
-                        <VoiceDateNextHint lang={lang} />
+                        <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                         <div className="grid grid-cols-2 gap-2 mb-2">
                           <button type="button" onClick={() => handleVoiceDate("useBy")} className={`rounded-xl py-3 text-sm font-bold ${voiceListening === "useBy" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>🎤 {voiceListening === "useBy" ? "Listening..." : "Speak Date"}</button>
                           <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
@@ -2549,7 +2614,7 @@ export default function TrackFreshDashboard() {
                       {barcodeLocation === "Fridge" && barcodeItem.category === "Meat" && (
                         <div>
                           <label className="mb-1 block text-sm font-medium" style={{color:"rgba(255,255,255,0.85)"}}>{t("freezeByLabel")} Date <span className="text-xs" style={{color:"rgba(255,255,255,0.45)"}}>(optional - we will remind you)</span></label>
-                          <VoiceDateNextHint lang={lang} />
+                          <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                           <div className="flex gap-2">
                             <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm" style={{background:"rgba(0,0,0,0.25)",borderColor:"rgba(255,255,255,0.25)",color:"#fff"}} />
                             <button type="button" onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
@@ -2690,7 +2755,7 @@ export default function TrackFreshDashboard() {
                     <p className="text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{labelItem.category} · {labelItem.location}</p>
                     <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.75)"}}>{labelItem.dateType}: {labelItem.date || "Not found"}</p>
                     <p className="text-sm font-bold mt-2 mb-1" style={{color:"rgba(255,255,255,0.92)"}}>📅 {t("expDateLabel")} {labelItem.date && <span className="text-xs font-normal" style={{color:"#86efac"}}>✓ auto-detected</span>}</p>
-                    <VoiceDateNextHint lang={lang} />
+                    <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <button type="button" onClick={() => handleVoiceDate("labelDate")} className={`rounded-xl py-3 text-sm font-bold ${voiceListening === "labelDate" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>🎤 {voiceListening === "labelDate" ? "Listening..." : "Speak Date"}</button>
                       <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={labelItem.date||""} onChange={(e) => setLabelItem(prev=>({...prev,date:e.target.value,dateFound:true}))} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
@@ -4269,7 +4334,7 @@ export default function TrackFreshDashboard() {
                       e.g. <em>"Milk, <strong>March 20 2026</strong>"</em> &nbsp;·&nbsp; <em>"Chicken <strong>Apr 5</strong>"</em>
                     </p>
                     <p style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.5)",textAlign:"center"}}>Say <strong>"no"</strong>, <strong>"skip"</strong>, or <strong>"done"</strong> to exit</p>
-                    <VoiceDateNextHint lang={lang} />
+                    <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                   </div>
                 )}
 
