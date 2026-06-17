@@ -32,7 +32,7 @@ export default function CoachTipCard({ lang, tip, onAction, onDismiss }) {
             <h3 className="text-base font-extrabold text-white mb-1" style={{ margin: 0 }}>
               {pick(lang, tip.title)}
             </h3>
-            <p className="text-sm leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.85)", margin: 0 }}>
+            <p className="text-sm leading-relaxed mb-3 tf-instruction-hint--inline tf-instruction-hint--left" style={{ margin: "0 0 0.75rem" }}>
               {pick(lang, tip.body)}
             </p>
             <div className="flex gap-2 flex-wrap">

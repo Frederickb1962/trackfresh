@@ -491,15 +491,22 @@ if (readerRef.current) { readerRef.current.reset(); readerRef.current = null; }
 
 
 
+/** Gold instruction banner — same style as recipe expand hint. */
+function InstructionHint({ children, className = "", style = {} }) {
+  return (
+    <p className={`tf-instruction-hint${className ? ` ${className}` : ""}`} style={style}>
+      {children}
+    </p>
+  );
+}
+
 /** Instruction between date tap / entry and mic — copy only; no voice logic. */
 function VoiceDateNextHint({ lang, text }) {
   const fallback = lang === "es"
     ? "Di la fecha, luego toca Guardar abajo o di NEXT / DONE cuando termines."
     : "Speak the date, then tap Save below or say NEXT / DONE when finished.";
   return (
-    <p className="tf-voice-date-hint">
-      {text || fallback}
-    </p>
+    <InstructionHint>{text || fallback}</InstructionHint>
   );
 }
 
@@ -2536,7 +2543,7 @@ export default function TrackFreshDashboard() {
           <div className="fixed inset-0 z-[9999] flex items-start justify-center tf-premium-overlay p-4 overflow-y-auto" style={{paddingTop:"calc(env(safe-area-inset-top, 0px) + 3rem)"}}>
             <div className="w-full max-w-lg rounded-xl p-6 shadow-lg tf-modal-glass-surface">
               <h2 className="mb-2 text-lg tf-modal-accent-h--mint">{t("scanReceiptTitle")}</h2>
-              <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.75)"}}>{t("scanReceiptDesc")}</p>
+              <InstructionHint className="mb-4">{t("scanReceiptDesc")}</InstructionHint>
               {!receiptScanning && (
                 <div className="grid grid-cols-2 gap-3">
                   <label className="glass-scan-btn" style={{cursor:"pointer"}}>
@@ -2559,7 +2566,7 @@ export default function TrackFreshDashboard() {
                 </div>
               )}
               {receiptError && <p className="mt-2 text-sm" style={{color:"#fca5a5"}}>Error: {receiptError}</p>}
-              <p className="mt-2 text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{t("pendingDateIntro")}</p>
+              <InstructionHint className="mt-2" style={{ fontSize: "0.8125rem" }}>{t("pendingDateIntro")}</InstructionHint>
               <button type="button" onClick={() => { setShowReceiptScanner(false); setReceiptError(""); }} className="mt-3 w-full rounded-xl py-2 text-sm tf-glass-primary-btn">{t("cancel")}</button>
             </div>
           </div>
@@ -2581,17 +2588,7 @@ export default function TrackFreshDashboard() {
               <p className="tf-modal-accent-h" style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>
                 📅 {t("pendingDateIntroTitle")}
               </p>
-              <p
-                style={{
-                  color: "#fff",
-                  fontSize: "1.15rem",
-                  fontWeight: 700,
-                  lineHeight: 1.55,
-                  margin: "0 0 1.5rem",
-                }}
-              >
-                {t("pendingDateIntro")}
-              </p>
+              <InstructionHint style={{ marginBottom: "1.5rem" }}>{t("pendingDateIntro")}</InstructionHint>
               <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", margin: "0 0 1.25rem" }}>
                 {pendingDateItems.length} {lang === "es" ? "artículos por fechar" : "items to date"}
               </p>
@@ -2639,15 +2636,7 @@ export default function TrackFreshDashboard() {
                   {item.name}
                 </p>
                 {item.category === "Produce" && formatInGeneralInstruction(item, lang) ? (
-                  <p
-                    style={{
-                      margin: "0.45rem 0.5rem 0",
-                      fontSize: "0.82rem",
-                      fontWeight: 600,
-                      color: "rgba(255,200,120,0.92)",
-                      lineHeight: 1.45,
-                    }}
-                  >
+                  <p className="tf-instruction-hint--inline" style={{ margin: "0.45rem 0.5rem 0", textAlign: "center" }}>
                     {formatInGeneralInstruction(item, lang)}
                   </p>
                 ) : null}
@@ -2657,7 +2646,7 @@ export default function TrackFreshDashboard() {
                 style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", padding: "0.35rem 0.5rem 0.5rem" }}
               >
                 {!pendingPickedDate ? (
-                  <p style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>
+                  <p className="tf-instruction-hint--inline" style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem" }}>
                     {isEs ? "📅 Toca abajo para abrir el calendario" : "📅 Tap below to open calendar"}
                   </p>
                 ) : null}
@@ -2791,7 +2780,7 @@ export default function TrackFreshDashboard() {
           <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
             <div className="w-full max-w-lg rounded-xl p-6 tf-modal-glass-surface">
               <h2 className="mb-3 text-lg tf-modal-accent-h--mint">{lang === "es" ? "Cómo Usar " : "How to Use "}<TrackFreshLogo showBroc={false} style={{fontSize:"0.95em"}} /></h2>
-              <ul className="space-y-3 text-sm" style={{color:"rgba(255,255,255,0.88)"}}>
+              <ul className="space-y-3 text-sm tf-instruction-hint--inline tf-instruction-hint--left" style={{ fontSize: "0.875rem", lineHeight: 1.55 }}>
                 <li className="flex gap-2"><span>\ud83e\udd66</span><span><strong>Tracker:</strong> {lang === "es" ? "La IA escanea un n\u00famero infinito de productos. Categor\u00eda y ubicaci\u00f3n se llenan autom\u00e1ticamente." : "AI scans an infinite number of items. Category and location auto-fill intelligently."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udcf8</span><span><strong>{lang === "es" ? "Esc\u00e1ner" : "Scanners"}:</strong> {lang === "es" ? "Usa Recibo, Etiqueta, C\u00f3digo de Barras o Agregar R\u00e1pido para a\u00f1adir productos." : "Use Receipt, Label, Barcode, or Quick Add to add items."}</span></li>
                 <li className="flex gap-2"><span>\ud83d\udd0d</span><span><strong>Filter:</strong> {lang === "es" ? "Filtra por ubicaci\u00f3n (Refrigerador, Congelador, Despensa) o categor\u00eda (L\u00e1cteos, Carne, etc.)." : "Filter by location (Fridge, Freezer, Pantry) or category (Dairy, Meat, Produce, etc.)."}</span></li>
@@ -2837,7 +2826,7 @@ export default function TrackFreshDashboard() {
                   ))}
                 </div>
               ) : <p className="text-sm mb-4" style={{color:"rgba(255,255,255,0.88)"}}><span className="font-semibold">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
-              <p className="text-xs mb-3" style={{color:"rgba(255,255,255,0.55)"}}>{t("useItemsSoon")}</p>
+              <InstructionHint className="text-xs mb-3" style={{ fontSize: "0.75rem", marginBottom: "0.75rem" }}>{t("useItemsSoon")}</InstructionHint>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setShowAlert(false)} className="flex-1 rounded-lg py-2 text-sm tf-glass-primary-btn" style={{background:"rgba(220,38,38,0.35)"}}>{t("gotIt")}</button>
                 <button type="button" onClick={() => { setShowAlert(false); setActiveTab("recipes"); }} className="flex-1 rounded-lg py-2 text-sm tf-glass-primary-btn">{t("findRecipes")}</button>
@@ -2868,7 +2857,7 @@ export default function TrackFreshDashboard() {
               )}
               {scanMode !== null && <>
               {multiScanLastItem && <div className="mb-3 rounded-lg px-3 py-2 text-sm font-semibold animate-pulse" style={{border:"1px solid rgba(134,239,172,0.45)",background:"rgba(6,78,59,0.45)",color:"#bbf7d0"}}>✅ Added: {multiScanLastItem} — Ready for next scan!</div>}
-              <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{t("scanBarcodeDesc")}</p>
+              <InstructionHint className="mb-4">{t("scanBarcodeDesc")}</InstructionHint>
               {!barcodeItem && (
                 <BarcodeScanner key={barcodeScanKey} onDetected={handleBarcodeDetected} />
               )}
@@ -2891,7 +2880,7 @@ export default function TrackFreshDashboard() {
                     <p className="text-xs font-semibold mb-1" style={{color:"#86efac"}}>✅ Product found!</p>
                     <p className="font-bold" style={{color:"#fff"}}>{barcodeItem.name}</p>
                     <p className="text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{barcodeItem.category}</p>
-                    {barcodeItem.storageTip && <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.75)"}}>💡 {barcodeItem.storageTip}</p>}
+                    {barcodeItem.storageTip && <p className="tf-instruction-hint--inline tf-instruction-hint--left" style={{ marginTop: "0.25rem" }}>💡 {barcodeItem.storageTip}</p>}
                     {isProduceCategory(barcodeItem.category) && formatInGeneralInstruction(barcodeItem, lang) ? (
                       <p className="text-xs text-blue-600 mt-1">🥬 {formatInGeneralInstruction(barcodeItem, lang)}</p>
                     ) : null}
@@ -2956,7 +2945,7 @@ export default function TrackFreshDashboard() {
           <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
             <div className="w-full max-w-lg rounded-xl p-6 tf-modal-glass-surface">
               <h2 className="mb-2 text-lg tf-modal-accent-h--mint">✏️ Quick Add</h2>
-              <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("quickAddTitleDesc")}</p>
+              <InstructionHint className="mb-4">{t("quickAddTitleDesc")}</InstructionHint>
               <div className="space-y-3">
                 <div>
                   <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>{t("foodItem")}</label>
@@ -3044,7 +3033,7 @@ export default function TrackFreshDashboard() {
                 <label key={labelScanKey} className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8" style={{borderColor:"rgba(134,239,172,0.45)",background:"rgba(6,78,59,0.25)"}}>
                   <span className="text-3xl mb-2">📷</span>
                   <span className="text-sm font-semibold" style={{color:"#86efac"}}>{labelScanMode === "multi" ? t("tapToScanNext") : t("tapToPhoto")}</span>
-                  <span className="text-xs mt-1" style={{color:"rgba(255,255,255,0.55)"}}>{t("tapOpenCamera")}</span>
+                  <span className="tf-instruction-hint--inline" style={{ display: "block", marginTop: "0.25rem", textAlign: "center" }}>{t("tapOpenCamera")}</span>
                   <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { setLabelError(""); if(e.target.files[0]) handleScanLabel(e.target.files[0]); e.target.value=""; }} />
                 </label>
               )}
@@ -3070,7 +3059,7 @@ export default function TrackFreshDashboard() {
                       <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={labelItem.date||""} onChange={(e) => setLabelItem(prev=>({...prev,date:e.target.value,dateFound:true}))} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
                     </div>
                     {(voiceListening === "labelDate" || labelItem.date) && <p className="text-xs mt-1" style={{color: labelItem.date ? "#86efac" : "#fca5a5"}}>{voiceListening === "labelDate" ? "🎤 Listening... say e.g. March 20 2026" : "✓ " + labelItem.date}</p>}
-                    {labelItem.storageTip && <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.75)"}}>💡 {labelItem.storageTip}</p>}
+                    {labelItem.storageTip && <p className="tf-instruction-hint--inline tf-instruction-hint--left" style={{ marginTop: "0.25rem" }}>💡 {labelItem.storageTip}</p>}
                     {isProduceCategory(labelItem.category) && formatInGeneralInstruction(labelItem, lang) ? (
                       <p className="text-xs text-blue-600 mt-1">🥬 {formatInGeneralInstruction(labelItem, lang)}</p>
                     ) : null}
@@ -3329,7 +3318,7 @@ export default function TrackFreshDashboard() {
                   <p style={{color:"rgba(255,255,255,0.9)",fontWeight:700,fontSize:"1rem",marginBottom:"0.35rem",lineHeight:1.4}}>
                     {lang === "es" ? "Empieza agregando artículos en Rastreador." : "Start by adding items below."}
                   </p>
-                  <p style={{color:"rgba(255,255,255,0.75)",fontWeight:500,fontSize:"0.8rem",lineHeight:1.5,margin:0}}>
+                  <p className="tf-instruction-hint--inline" style={{ fontWeight: 500, fontSize: "0.8rem", lineHeight: 1.5, margin: 0, textAlign: "center" }}>
                     {lang === "es" ? "Aquí es donde llevarás un registro de todo lo que tienes." : "This is where you'll keep track of everything you have."}
                   </p>
                 </div>
@@ -3409,9 +3398,7 @@ export default function TrackFreshDashboard() {
                       </p>
                     </>
                   ) : (
-                    <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.45 }}>
-                      {t("savingsReceiptHint")}
-                    </p>
+                    <InstructionHint style={{ margin: 0, fontSize: "0.8rem" }}>{t("savingsReceiptHint")}</InstructionHint>
                   )}
                 </div>
 
@@ -3619,7 +3606,7 @@ export default function TrackFreshDashboard() {
             {recipeSubTab === "favorites" && (
               <div>
                 {favoriteRecipes.length === 0 ? (
-                  <p className="text-sm py-4 text-center" style={{color:"rgba(255,255,255,0.55)"}}>{lang === "es" ? "Sin favoritos aún — ¡genera recetas y guarda las que te gusten!" : "No favorites yet — generate recipes and save ones you love!"}</p>
+                  <p className="text-sm py-4 text-center tf-instruction-hint--inline" style={{ fontSize: "0.875rem" }}>{lang === "es" ? "Sin favoritos aún — ¡genera recetas y guarda las que te gusten!" : "No favorites yet — generate recipes and save ones you love!"}</p>
                 ) : (
                   <div className="space-y-3">
                     {favoriteRecipes.map((r, i) => (
@@ -3647,20 +3634,15 @@ export default function TrackFreshDashboard() {
               </div>
             )}
             {recipeSubTab === "ai" && <>
-            <p className="mb-4 text-sm" style={{color:"rgba(255,255,255,0.8)",lineHeight:1.55}}>
+            <InstructionHint className="mb-4">
               {lang === "es" ? "Combinado con lo que tienes en tu refrigerador, despensa y congelador. Prioriza lo que vence primero — puede sugerir 1-2 ingredientes extra para completar un platillo." : "Matched to what's in your fridge, pantry & freezer. Prioritizes what expires soonest — may suggest 1-2 extra ingredients to complete a dish."}
-            </p>
+            </InstructionHint>
             <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> {lang === "es" ? "Ideas de Recetas" : "AI Recipe Ideas"} <AiBadge style={{fontSize:"1.5em"}} /></>}</button>
             {recipesLoading && <div className="mt-4 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
-            {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("noMatches")}</p>}
+            {recipesGenerated && recipeSuggestions.length === 0 && <InstructionHint className="mt-4">{t("noMatches")}</InstructionHint>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
-                <p
-                  className="rounded-xl px-3 py-2.5 text-sm font-semibold text-center"
-                  style={{ color: "rgba(253,224,71,0.95)", background: "rgba(250,204,21,0.1)", border: "1px solid rgba(250,204,21,0.35)", lineHeight: 1.5 }}
-                >
-                  {t("recipeExpandHint")}
-                </p>
+                <InstructionHint className="mt-4">{t("recipeExpandHint")}</InstructionHint>
                 {recipeSuggestions.map((r, i) => (
                   <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
                     <button
@@ -3676,7 +3658,7 @@ export default function TrackFreshDashboard() {
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-bold text-white">{r.name}</h3>
-                          <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.85)"}}>
+                          <p className="text-xs mt-0.5 tf-instruction-hint--inline">
                             {expandedRecipe === i ? t("recipeTapToHide") : t("recipeTapForDetails")}
                           </p>
                         </div>
@@ -3776,7 +3758,11 @@ export default function TrackFreshDashboard() {
                 ))}
               </div>
             )}
-            {!recipesGenerated && <div className="mt-4 rounded-xl p-4 text-sm" style={{background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.6)"}}>You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}</div>}
+            {!recipesGenerated && (
+              <InstructionHint className="mt-4">
+                You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}
+              </InstructionHint>
+            )}
             </>}
           </Card>
           </>
@@ -3942,7 +3928,7 @@ export default function TrackFreshDashboard() {
                 </button>
               </div>
               {aiPlanLoading && <div className="mb-3 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
-              <p className="text-xs text-green-200 mb-4">{t("mealDesc")}</p>
+              <InstructionHint className="mb-4" style={{ fontSize: "0.75rem" }}>{t("mealDesc")}</InstructionHint>
               <div className="space-y-4">
                 {DAYS.map((day) => (
                   <div key={day} className="rounded-lg overflow-hidden" style={{border:"1px solid rgba(255,255,255,0.15)"}}>
@@ -4288,7 +4274,7 @@ export default function TrackFreshDashboard() {
                 <span className="text-2xl">🏪</span>
                 <h2 className="text-lg font-bold text-white">{t("shopOnline")}</h2>
               </div>
-              <p className="text-sm text-green-100 mb-4">{t("shopOnlineDesc")}</p>
+              <InstructionHint className="mb-4">{t("shopOnlineDesc")}</InstructionHint>
 
               <div className="grid grid-cols-2 gap-3">
                 <a href="https://www.amazon.com/alm/storefront?almBrandId=QW1hem9uIEZyZXNo" target="_blank" rel="noopener noreferrer" className="btn-green-3d rounded-2xl px-3 py-4 flex flex-col items-center justify-center gap-2 text-center">

@@ -42,19 +42,19 @@ function useIsDesktop() {
 }
 
 /**
- * Matches parent VoiceDateNextHint — only `tf-voice-date-hint` / `tf-voice-date-hint__kw` (globals.css).
+ * Matches parent VoiceDateNextHint — `tf-instruction-hint` / `tf-instruction-hint__kw` (globals.css).
  * English string is fixed copy for downstream voice queue parity.
  */
 function VoiceQueueHint({ lang }) {
   return (
-    <p className="tf-voice-date-hint" style={{ maxWidth: "100%", marginTop: "0.5rem", marginBottom: "0.85rem" }}>
+    <p className="tf-instruction-hint" style={{ maxWidth: "100%", marginTop: "0.5rem", marginBottom: "0.85rem" }}>
       {lang === "es" ? (
         <>
-          Toca <span className="tf-voice-date-hint__kw">Guardar</span> abajo, o di <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
+          Toca <span className="tf-instruction-hint__kw">Guardar</span> abajo, o di <span className="tf-instruction-hint__kw">NEXT</span> / <span className="tf-instruction-hint__kw">DONE</span>.
         </>
       ) : (
         <>
-          Tap <span className="tf-voice-date-hint__kw">Save</span> below, or say <span className="tf-voice-date-hint__kw">NEXT</span> / <span className="tf-voice-date-hint__kw">DONE</span>.
+          Tap <span className="tf-instruction-hint__kw">Save</span> below, or say <span className="tf-instruction-hint__kw">NEXT</span> / <span className="tf-instruction-hint__kw">DONE</span>.
         </>
       )}
     </p>
@@ -630,7 +630,7 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
                             </span>
                           </div>
                           {inGeneralLine ? (
-                            <div style={{ marginTop: "0.35rem", fontSize: "0.75rem", fontWeight: 600, color: "rgba(255,200,120,0.95)" }}>🥬 {inGeneralLine}</div>
+                            <div className="tf-instruction-hint--inline" style={{ marginTop: "0.35rem", textAlign: "left" }}>🥬 {inGeneralLine}</div>
                           ) : nonProduceOpened ? (
                             <div style={{ marginTop: "0.35rem", fontSize: "0.74rem", fontWeight: 600, color: "rgba(254,215,170,0.95)" }}>📂 {nonProduceOpened}</div>
                           ) : null}
