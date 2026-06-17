@@ -3655,18 +3655,40 @@ export default function TrackFreshDashboard() {
             {recipesGenerated && recipeSuggestions.length === 0 && <p className="mt-4 text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{t("noMatches")}</p>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
+                <p
+                  className="rounded-xl px-3 py-2.5 text-sm font-semibold text-center"
+                  style={{ color: "rgba(253,224,71,0.95)", background: "rgba(250,204,21,0.1)", border: "1px solid rgba(250,204,21,0.35)", lineHeight: 1.5 }}
+                >
+                  {t("recipeExpandHint")}
+                </p>
                 {recipeSuggestions.map((r, i) => (
                   <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
-                    <button onClick={() => setExpandedRecipe(expandedRecipe === i ? null : i)} className="w-full p-4 text-left" style={{borderRadius:"inherit",transition:"background 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.06)"} onMouseLeave={e=>e.currentTarget.style.background=""}>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRecipe(expandedRecipe === i ? null : i)}
+                      aria-expanded={expandedRecipe === i}
+                      aria-label={expandedRecipe === i ? `${r.name} — ${t("recipeTapToHide")}` : `${r.name} — ${t("recipeTapForDetails")}`}
+                      className="w-full p-4 text-left"
+                      style={{borderRadius:"inherit",transition:"background 0.15s"}}
+                      onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.06)"}
+                      onMouseLeave={e=>e.currentTarget.style.background=""}
+                    >
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-bold text-white">{r.name}</h3>
-                          <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{lang === "es" ? "Incluye ingredientes y pasos" : "Includes ingredients & steps"}</p>
+                          <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.85)"}}>
+                            {expandedRecipe === i ? t("recipeTapToHide") : t("recipeTapForDetails")}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-2 ml-2 shrink-0">
+                        <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
                           <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
-                          {expandedRecipe !== i && <span style={{color:"rgba(255,255,255,0.45)",fontWeight:700,fontSize:"1rem"}}>→</span>}
-                          <span className={expandedRecipe === i ? "arrow-up" : "arrow-down"}>{expandedRecipe === i ? "▲" : "▼"}</span>
+                          <span
+                            className={expandedRecipe === i ? "arrow-up" : "arrow-down"}
+                            style={{ color: "rgba(253,224,71,0.9)", fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}
+                            aria-hidden
+                          >
+                            {expandedRecipe === i ? "▲" : "▼"}
+                          </span>
                         </div>
                       </div>
                       <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
@@ -3682,27 +3704,51 @@ export default function TrackFreshDashboard() {
                         {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mb-2 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-3 space-y-1">{r.ingredients.map((ing, j) => {
                               const isNeed = ing.includes("(need)");
                               const ingKey = `${i}-${j}`;
-                              const wasAdded = addedIngredients[ingKey];
+                              const addStatus = addedIngredients[ingKey];
                               return (
-                                <li key={j} className="text-sm flex items-center gap-1" style={{color: isNeed ? "#F97316" : "rgba(255,255,255,0.8)"}}>
+                                <li key={j} className="text-sm flex items-center flex-wrap gap-1" style={{color: isNeed ? "#F97316" : "rgba(255,255,255,0.8)"}}>
                                   <span style={{color:"#4ade80"}}>•</span>
                                   {ing}
                                   {isNeed && (
-                                    <button
-                                      onClick={() => {
-                                        const name = ing.replace(" (need)", "").trim();
-                                        setShoppingItems((prev) => {
-                                          const exists = prev.some((s) => s.name.toLowerCase() === name.toLowerCase());
-                                          if (exists) return prev;
-                                          return [...prev, { id: crypto.randomUUID(), name, checked: false }];
-                                        });
-                                        setAddedIngredients((prev) => ({ ...prev, [ingKey]: true }));
-                                        setTimeout(() => setAddedIngredients((prev) => { const next = { ...prev }; delete next[ingKey]; return next; }), 2000);
-                                      }}
-                                      style={{marginLeft:"4px",width:"18px",height:"18px",borderRadius:"50%",background:"#F97316",color:"#fff",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"bold",lineHeight:"18px",textAlign:"center",flexShrink:0,padding:0}}
-                                    >
-                                      {wasAdded ? <span style={{fontSize:"10px"}}>✓</span> : "+"}
-                                    </button>
+                                    addStatus ? (
+                                      <span
+                                        className="recipe-shop-added-msg"
+                                        style={{
+                                          marginLeft: "6px",
+                                          fontSize: "0.72rem",
+                                          fontWeight: 700,
+                                          color: addStatus === "exists" ? "rgba(253,224,71,0.95)" : "#86efac",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {addStatus === "exists" ? t("alreadyOnShoppingList") : t("addedToShoppingList")}
+                                      </span>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        aria-label={t("addedToShoppingList")}
+                                        onClick={() => {
+                                          const name = ing.replace(" (need)", "").trim();
+                                          const exists = shoppingItems.some((s) => s.name.toLowerCase() === name.toLowerCase());
+                                          if (exists) {
+                                            setAddedIngredients((prev) => ({ ...prev, [ingKey]: "exists" }));
+                                          } else {
+                                            setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, checked: false }]);
+                                            setAddedIngredients((prev) => ({ ...prev, [ingKey]: "added" }));
+                                          }
+                                          setTimeout(() => {
+                                            setAddedIngredients((prev) => {
+                                              const next = { ...prev };
+                                              delete next[ingKey];
+                                              return next;
+                                            });
+                                          }, 2200);
+                                        }}
+                                        style={{marginLeft:"4px",width:"18px",height:"18px",borderRadius:"50%",background:"#F97316",color:"#fff",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"bold",lineHeight:"18px",textAlign:"center",flexShrink:0,padding:0}}
+                                      >
+                                        +
+                                      </button>
+                                    )
                                   )}
                                 </li>
                               );
