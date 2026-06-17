@@ -424,6 +424,37 @@
   animation: tf-pending-date-glow 2.4s ease-in-out infinite;
 }
 
+.tf-pending-date-native {
+  display: block;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.85rem 0.75rem;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  color-scheme: dark;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.tf-pending-date-native:focus {
+  outline: none;
+}
+.tf-pending-date-native::-webkit-date-and-time-value {
+  text-align: center;
+}
+.tf-pending-date-native::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.85;
+  filter: invert(1);
+  padding: 0.35rem;
+}
+
 .tf-pending-skip-btn {
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }

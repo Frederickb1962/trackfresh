@@ -1,7 +1,17 @@
 /** Turn API / scan errors into a short user-facing message (EN/ES). */
 export function formatAiError(error, lang) {
   const isEs = lang === "es";
-  const msg = String(error || "").trim();
+  let msg = String(error || "").trim();
+  const jsonStart = msg.search(/\{[\s\S]*"error"/);
+  if (jsonStart !== -1) {
+    try {
+      const parsed = JSON.parse(msg.slice(jsonStart));
+      if (parsed?.error?.message) msg = parsed.error.message;
+    } catch {
+      /* keep msg */
+    }
+  }
+  msg = msg.replace(/^\d{3}\s+/, "").trim();
   if (!msg) {
     return isEs ? "Algo salió mal. Intenta de nuevo." : "Something went wrong. Please try again.";
   }
@@ -14,6 +24,11 @@ export function formatAiError(error, lang) {
     return isEs
       ? "La IA está un poco ocupada. Intenta de nuevo en un momento. 🙏"
       : "Our AI is a little busy right now. Please try again in a moment! 🙏";
+  }
+  if (/internal server error|api_error|temporarily unavailable/i.test(msg)) {
+    return isEs
+      ? "El servicio de IA tuvo un problema. Espera un momento e intenta de nuevo."
+      : "AI service had a hiccup. Wait a moment and try again.";
   }
   if (/max_tokens|truncated|too long/i.test(msg)) {
     return isEs

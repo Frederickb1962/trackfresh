@@ -26,6 +26,21 @@ import CoachTipCard from "./components/CoachTipCard";
 import { pick, speechLocale } from "./lib/i18n";
 import { T } from "./lib/translations";
 import {
+  SAVINGS_EVENTS_KEY,
+  appendSavingsEvent,
+  computeMonthStats,
+  createSavingsEvent,
+  currentMonthKey,
+  formatUSD,
+  itemPrice,
+  loadSavingsEvents,
+  parseItemPrice,
+  splitPortionAmounts,
+  saveSavingsEvents,
+  USED_PORTION_FRACTIONS,
+  usedPortionButtonLabel,
+} from "./lib/savings";
+import {
   FLOW_KEY,
   GUIDED_DONE_KEY,
   COACH_DONE_KEY,
@@ -268,6 +283,9 @@ function loadItems(key = STORAGE_KEY) {
       inGeneralDaysMax: it.inGeneralDaysMax ?? null,
       daysSealed:       it.daysSealed       ?? null,
       freezeBy:         it.freezeBy         ?? "",
+      unitPrice:        parseItemPrice(it),
+      purchaseDate:     it.purchaseDate     ?? "",
+      wasteLogged:      !!it.wasteLogged,
     }));
   } catch (e) { return []; }
 }
@@ -610,6 +628,7 @@ export default function TrackFreshDashboard() {
     }, 550);
   };
   const [trackedItems, setTrackedItems] = useState([]);
+  const [savingsEvents, setSavingsEvents] = useState([]);
   const [justAddedFirst, setJustAddedFirst] = useState(false);
   const prevItemCount = React.useRef(0);
   const [itemName, setItemName] = useState("");
@@ -712,8 +731,17 @@ export default function TrackFreshDashboard() {
   const pendingVoiceRetryTimeoutRef = React.useRef(null);
   /** Safari: auto-start failed — first tap on date or mic must start recognition (user gesture). */
   const pendingMicNeedsGestureRef = React.useRef(false);
+  /** User saved/skipped or overlay unmounted — stop onend restart loops. */
+  const pendingVoiceUserStopRef = React.useRef(false);
+  /** Debounced restart after recognition session ends (Safari/Chrome often stop after a beat). */
+  const pendingVoiceOnEndRestartTimeoutRef = React.useRef(null);
+  const MAX_PENDING_VOICE_NETWORK_RETRIES = 3;
+  const MAX_PENDING_VOICE_END_RESTARTS = 15;
   /** Pending overlay: date chosen (voice/calendar); waiting for Next/Done via voice. */
   const [pendingAwaitNextOrDone, setPendingAwaitNextOrDone] = useState(false);
+  const [pendingTypedDate, setPendingTypedDate] = useState("");
+  const pendingDateInputRef = React.useRef(null);
+  const pendingVoiceListenUiTimeoutRef = React.useRef(null);
   /** Pending queue: item ids we already applied conservative Produce default date for (cleared when queue empties). */
   const pendingProduceDefaultedRef = React.useRef(new Set());
   const [quickAddCategory, setQuickAddCategory] = useState("Other");
@@ -768,6 +796,7 @@ export default function TrackFreshDashboard() {
   const [showOpenedModal, setShowOpenedModal] = useState(false);
   const [openedSearch, setOpenedSearch] = useState("");
   const [openedConfirm, setOpenedConfirm] = useState(null);
+  const [usedPortionItem, setUsedPortionItem] = useState(null);
   const [openedFlashId, setOpenedFlashId] = useState(null);
   const [showOpenedDateEdit, setShowOpenedDateEdit] = useState(false);
   const [openedEditDate, setOpenedEditDate] = useState("");
@@ -834,6 +863,12 @@ export default function TrackFreshDashboard() {
       daysSealed: fin.daysSealed ?? null,
       inGeneralDaysMin: fin.inGeneralDaysMin ?? null,
       inGeneralDaysMax: fin.inGeneralDaysMax ?? null,
+      unitPrice: parseItemPrice(it),
+      purchaseDate: (() => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      })(),
+      wasteLogged: false,
     };
   };
 
@@ -902,6 +937,7 @@ export default function TrackFreshDashboard() {
 
   useEffect(() => {
     setTrackedItems(loadItems());
+    setSavingsEvents(loadSavingsEvents());
     setCommunity(loadCommunity());
     setShoppingItems(loadShopping());
     setMeals(loadMeals());
@@ -909,6 +945,7 @@ export default function TrackFreshDashboard() {
     if (savedName) setUsername(savedName);
   }, []);
   useEffect(() => { saveItems(trackedItems); }, [trackedItems]);
+  useEffect(() => { saveSavingsEvents(savingsEvents); }, [savingsEvents]);
   useEffect(() => { saveCommunity(community); }, [community]);
   useEffect(() => { saveShopping(shoppingItems); }, [shoppingItems]);
   useEffect(() => { saveMeals(meals); }, [meals]);
@@ -1032,6 +1069,36 @@ export default function TrackFreshDashboard() {
     return itemsWithCountdown.filter((it) => it.daysLeft !== null && it.daysLeft <= 7);
   }, [itemsWithCountdown]);
 
+  const monthSavings = useMemo(
+    () => computeMonthStats(savingsEvents, currentMonthKey()),
+    [savingsEvents]
+  );
+
+  useEffect(() => {
+    const expiredWithPrice = trackedItems.filter((item) => {
+      if (!item.useByDate || item.wasteLogged) return false;
+      if (!itemIsPastDate({ ...item, daysLeft: daysLeftFromUseByDate(item.useByDate) })) return false;
+      return !!itemPrice(item);
+    });
+    if (!expiredWithPrice.length) return;
+    setSavingsEvents((prev) =>
+      expiredWithPrice.reduce((acc, item) => {
+        const event = createSavingsEvent({
+          itemId: item.id,
+          itemName: item.name,
+          type: "wasted",
+          amount: itemPrice(item),
+        });
+        return appendSavingsEvent(acc, event);
+      }, prev)
+    );
+    setTrackedItems((prev) =>
+      prev.map((it) =>
+        expiredWithPrice.some((e) => e.id === it.id) ? { ...it, wasteLogged: true } : it
+      )
+    );
+  }, [trackedItems]);
+
   const registerDiscountItems = useMemo(
     () => itemsWithCountdown.filter(isRegisterDiscountEligible),
     [itemsWithCountdown]
@@ -1080,10 +1147,56 @@ export default function TrackFreshDashboard() {
     setShowOpenedDateEdit(false);
   };
 
+  const finalizeUseTodayItem = (item, fraction) => {
+    if (!item) return;
+    const price = itemPrice(item);
+    const past = itemIsPastDate({ ...item, daysLeft: daysLeftFromUseByDate(item.useByDate) });
+    if (price && !past && fraction > 0) {
+      const { used, wasted } = splitPortionAmounts(price, fraction);
+      setSavingsEvents((prev) => {
+        let next = prev;
+        if (used > 0) {
+          next = appendSavingsEvent(
+            next,
+            createSavingsEvent({
+              itemId: item.id,
+              itemName: item.name,
+              type: "used",
+              amount: used,
+              portionUsed: fraction,
+            })
+          );
+        }
+        if (wasted > 0 && fraction < 1) {
+          next = appendSavingsEvent(
+            next,
+            createSavingsEvent({
+              itemId: item.id,
+              itemName: item.name,
+              type: "wasted",
+              amount: wasted,
+              portionWasted: 1 - fraction,
+            })
+          );
+        }
+        return next;
+      });
+    }
+    addToShoppingIfMissing(item, "used");
+    setTrackedItems((prev) => prev.filter((it) => it.id !== item.id));
+    setUsedPortionItem(null);
+  };
+
   const handleUseTodayItem = (id) => {
     const item = trackedItems.find((it) => it.id === id);
-    if (item) addToShoppingIfMissing(item, "used");
-    setTrackedItems((prev) => prev.filter((it) => it.id !== id));
+    if (!item) return;
+    const price = itemPrice(item);
+    const past = itemIsPastDate({ ...item, daysLeft: daysLeftFromUseByDate(item.useByDate) });
+    if (price && !past) {
+      setUsedPortionItem(item);
+      return;
+    }
+    finalizeUseTodayItem(item, 1);
   };
 
   const triggerVoiceCommand = () => {
@@ -1652,6 +1765,11 @@ export default function TrackFreshDashboard() {
   };
 
   const abortPendingVoiceRecognition = () => {
+    pendingVoiceUserStopRef.current = true;
+    if (pendingVoiceOnEndRestartTimeoutRef.current) {
+      clearTimeout(pendingVoiceOnEndRestartTimeoutRef.current);
+      pendingVoiceOnEndRestartTimeoutRef.current = null;
+    }
     if (pendingVoiceRetryTimeoutRef.current) {
       clearTimeout(pendingVoiceRetryTimeoutRef.current);
       pendingVoiceRetryTimeoutRef.current = null;
@@ -1664,8 +1782,57 @@ export default function TrackFreshDashboard() {
       pendingVoiceRecognitionRef.current = null;
     }
     setPendingVoiceListening(false);
+    if (pendingVoiceListenUiTimeoutRef.current) {
+      clearTimeout(pendingVoiceListenUiTimeoutRef.current);
+      pendingVoiceListenUiTimeoutRef.current = null;
+    }
     suppressNextEmptyPendingDateOnChangeRef.current = false;
     ignoreNextPendingDateInputOnChangeRef.current = false;
+  };
+
+  const clearPendingVoiceListenUi = () => {
+    if (pendingVoiceListenUiTimeoutRef.current) {
+      clearTimeout(pendingVoiceListenUiTimeoutRef.current);
+      pendingVoiceListenUiTimeoutRef.current = null;
+    }
+    setPendingVoiceListening(false);
+  };
+
+  const showPendingVoiceListeningNow = () => {
+    if (pendingVoiceListenUiTimeoutRef.current) {
+      clearTimeout(pendingVoiceListenUiTimeoutRef.current);
+      pendingVoiceListenUiTimeoutRef.current = null;
+    }
+    setPendingVoiceListening(true);
+  };
+
+  /** Avoid "Listening" flash when the browser kills the session immediately (Safari / network). */
+  const markPendingVoiceListening = () => {
+    if (pendingVoiceListenUiTimeoutRef.current) {
+      clearTimeout(pendingVoiceListenUiTimeoutRef.current);
+    }
+    pendingVoiceListenUiTimeoutRef.current = window.setTimeout(() => {
+      pendingVoiceListenUiTimeoutRef.current = null;
+      if (pendingVoiceRecognitionRef.current) setPendingVoiceListening(true);
+    }, 750);
+  };
+
+  const applyPendingDateValue = (v) => {
+    if (!v && suppressNextEmptyPendingDateOnChangeRef.current) {
+      suppressNextEmptyPendingDateOnChangeRef.current = false;
+      return;
+    }
+    suppressNextEmptyPendingDateOnChangeRef.current = false;
+    if (v && !isValidYYYYMMDD(v)) return;
+    if (ignoreNextPendingDateInputOnChangeRef.current) {
+      ignoreNextPendingDateInputOnChangeRef.current = false;
+      if (v === pendingPickedDateRef.current) return;
+    }
+    pendingPickedDateRef.current = v;
+    setPendingPickedDate(v);
+    if (!v) return;
+    setPendingAwaitNextOrDone(true);
+    setPendingVoiceError("");
   };
 
   const finishPendingQueueFromIndex = (dateStr, commitIdx) => {
@@ -1694,16 +1861,8 @@ export default function TrackFreshDashboard() {
     setPendingVoiceError("");
     abortPendingVoiceRecognition();
     const commitIdx = pendingDateIndexRef.current;
-    const nextIdx = commitIdx + 1;
-    const queueHasMore = nextIdx < pendingDateItemsRef.current.length;
-    if (queueHasMore) pendingVoiceRestartFromNextRef.current = true;
     savePendingItemWithDate(dateStr, commitIdx);
     playBeep(660, 120);
-    if (queueHasMore) {
-      setTimeout(() => {
-        startPendingVoice(nextIdx);
-      }, pendingVoiceResumeAfterNextMs());
-    }
   };
 
   const handlePendingSaveAndFinish = () => {
@@ -1717,6 +1876,20 @@ export default function TrackFreshDashboard() {
     playBeep(880, 120);
     setTimeout(() => playBeep(660, 150), 220);
     setTimeout(() => playBeep(660, 150), 470);
+  };
+
+  const handlePendingApplyTypedDate = () => {
+    const parsed = parseSpokenDate(pendingTypedDate.trim());
+    if (!parsed) {
+      setPendingVoiceError(t("pendingDateTypeInvalid"));
+      return;
+    }
+    setPendingVoiceError("");
+    abortPendingVoiceRecognition();
+    pendingPickedDateRef.current = parsed;
+    setPendingPickedDate(parsed);
+    setPendingAwaitNextOrDone(true);
+    playBeep(880, 120);
   };
 
   /** Normalize speech transcripts so commands match despite periods, spaces, smart quotes, etc. */
@@ -1759,7 +1932,51 @@ export default function TrackFreshDashboard() {
     /WebKit/i.test(navigator.userAgent) &&
     !/(CriOS|FxiOS|EdgiOS|OPiOS)/i.test(navigator.userAgent);
 
+  const isLocalDevHost = () => {
+    if (typeof window === "undefined") return false;
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "[::1]";
+  };
+
+  const pendingVoiceNetworkErrorMsg = () =>
+    isLocalDevHost() ? t("pendingVoiceLocalhost") : t("pendingVoiceNetwork");
+
   const pendingVoiceResumeAfterNextMs = () => (isIOSWebKitBrowser() ? 480 : 100);
+
+  const schedulePendingVoiceOnEndRestart = (recog, session, currentIdx, tryStart) => {
+    if (session.fatalError || pendingVoiceUserStopRef.current) {
+      clearPendingVoiceListenUi();
+      return;
+    }
+    session.endRestarts += 1;
+    if (session.endRestarts > MAX_PENDING_VOICE_END_RESTARTS) {
+      session.fatalError = true;
+      setPendingVoiceError(pendingVoiceNetworkErrorMsg());
+      clearPendingVoiceListenUi();
+      return;
+    }
+    if (pendingVoiceOnEndRestartTimeoutRef.current) clearTimeout(pendingVoiceOnEndRestartTimeoutRef.current);
+    pendingVoiceOnEndRestartTimeoutRef.current = window.setTimeout(() => {
+      pendingVoiceOnEndRestartTimeoutRef.current = null;
+      if (pendingVoiceUserStopRef.current || session.fatalError) return;
+      if (pendingDateIndexRef.current !== currentIdx) return;
+      if (pendingVoiceRecognitionRef.current && pendingVoiceRecognitionRef.current !== recog) return;
+      tryStart(0);
+    }, isIOSWebKitBrowser() ? 280 : 150);
+  };
+
+  const pendingVoiceNetworkRetry = (recog, session, tryStart) => {
+    session.networkRetries += 1;
+    if (session.networkRetries >= MAX_PENDING_VOICE_NETWORK_RETRIES) return false;
+    if (pendingVoiceRetryTimeoutRef.current) clearTimeout(pendingVoiceRetryTimeoutRef.current);
+    pendingVoiceRetryTimeoutRef.current = window.setTimeout(() => {
+      pendingVoiceRetryTimeoutRef.current = null;
+      if (pendingVoiceUserStopRef.current || session.fatalError) return;
+      if (pendingVoiceRecognitionRef.current !== recog) return;
+      tryStart(0);
+    }, 350 + session.networkRetries * 450);
+    return true;
+  };
 
   /** After a date is set (voice or calendar), listen only for Next/Done without an extra tap (critical on iPhone). */
   const startPendingVoiceNextDone = (idx) => {
@@ -1768,8 +1985,14 @@ export default function TrackFreshDashboard() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
 
+    pendingVoiceUserStopRef.current = false;
+    try { window.speechSynthesis?.cancel(); } catch (e) {}
     setPendingVoiceError("");
     setPendingAwaitNextOrDone(true);
+    if (pendingVoiceOnEndRestartTimeoutRef.current) {
+      clearTimeout(pendingVoiceOnEndRestartTimeoutRef.current);
+      pendingVoiceOnEndRestartTimeoutRef.current = null;
+    }
     if (pendingVoiceRetryTimeoutRef.current) {
       clearTimeout(pendingVoiceRetryTimeoutRef.current);
       pendingVoiceRetryTimeoutRef.current = null;
@@ -1785,16 +2008,17 @@ export default function TrackFreshDashboard() {
     const recog = new SR();
     recog.lang = lang === "es" ? "es-MX" : "en-US";
     recog.interimResults = true;
-    recog.continuous = true;
+    recog.continuous = !isIOSWebKitBrowser();
     recog.maxAlternatives = 1;
     pendingVoiceRecognitionRef.current = recog;
+    const session = { fatalError: false, endRestarts: 0, networkRetries: 0 };
     let handled = false;
 
     const runNextDone = (isNextCmd, isDoneCmd) => {
       if (handled) return;
       handled = true;
       try { recog.stop(); } catch (err) {}
-      setPendingVoiceListening(false);
+      clearPendingVoiceListenUi();
       suppressNextEmptyPendingDateOnChangeRef.current = false;
       ignoreNextPendingDateInputOnChangeRef.current = false;
       const commitIdx = currentIdx;
@@ -1825,6 +2049,7 @@ export default function TrackFreshDashboard() {
         fullRaw += e.results[i][0].transcript;
       }
       const raw = fullRaw.trim();
+      if (raw) showPendingVoiceListeningNow();
       const normCmd = normalizePendingVoiceCommand(raw);
       const isN = pendingVoiceIsNextCommand(normCmd);
       const isD = pendingVoiceIsDoneCommand(normCmd);
@@ -1835,38 +2060,55 @@ export default function TrackFreshDashboard() {
       const code = ev && ev.error ? ev.error : "";
       if (code === "aborted") return;
       if (!handled) {
-        try { recog.stop(); } catch (e) {}
-        if (code === "not-allowed" || code === "audio-capture") pendingMicNeedsGestureRef.current = true;
-        setPendingVoiceError(
-          code === "no-speech"
-            ? (lang === "es" ? "Di «Next» o «Done»." : 'Say "Next" or "Done".')
-            : (lang === "es" ? "Toca el mic o la fecha para reintentar (Safari)." : "Tap the mic or date field to try again (Safari).")
-        );
-        setPendingVoiceListening(false);
+        if (code === "network") {
+          if (isLocalDevHost()) {
+            session.fatalError = true;
+            setPendingVoiceError(pendingVoiceNetworkErrorMsg());
+            clearPendingVoiceListenUi();
+            return;
+          }
+          if (pendingVoiceNetworkRetry(recog, session, tryStart)) return;
+          session.fatalError = true;
+        } else if (code === "not-allowed" || code === "audio-capture") {
+          pendingMicNeedsGestureRef.current = true;
+          session.fatalError = true;
+        } else if (code !== "no-speech") {
+          session.fatalError = true;
+        }
+        if (session.fatalError) {
+          const msg =
+            code === "not-allowed"
+              ? (lang === "es" ? "Permite el micrófono para este sitio (icono de candado)." : "Allow microphone access for this site (lock icon in the address bar).")
+              : code === "audio-capture"
+                ? (lang === "es" ? "No se detectó micrófono. Conecta uno o revisa permisos." : "No microphone found. Plug one in or check permissions.")
+                : code === "network"
+                  ? pendingVoiceNetworkErrorMsg()
+                  : code === "no-speech"
+                    ? (lang === "es" ? "Di «Next» o «Done»." : 'Say "Next" or "Done".')
+                    : (lang === "es" ? "Toca el mic o la fecha para reintentar (Safari)." : "Tap the mic or date field to try again (Safari).");
+          setPendingVoiceError(msg);
+          clearPendingVoiceListenUi();
+        }
       }
     };
 
     recog.onstart = () => {
       pendingMicNeedsGestureRef.current = false;
-      setPendingVoiceListening(true);
+      markPendingVoiceListening();
       setPendingVoiceError("");
     };
 
     recog.onend = () => {
       if (pendingVoiceRecognitionRef.current === recog) pendingVoiceRecognitionRef.current = null;
-      if (handled) return;
-      setPendingVoiceListening(false);
-      const idxSnap = currentIdx;
-      window.setTimeout(() => {
-        if (pendingDateItemsRef.current.length === 0) return;
-        if (pendingDateIndexRef.current !== idxSnap) return;
-        if (!pendingPickedDateRef.current) return;
-        if (pendingMicNeedsGestureRef.current) return;
-        startPendingVoiceNextDone(idxSnap);
-      }, 400);
+      if (handled || session.fatalError || pendingVoiceUserStopRef.current) {
+        if (!handled) clearPendingVoiceListenUi();
+        return;
+      }
+      schedulePendingVoiceOnEndRestart(recog, session, currentIdx, tryStart);
     };
 
     const tryStart = (attempt) => {
+      pendingVoiceRecognitionRef.current = recog;
       try {
         recog.start();
       } catch (err) {
@@ -1880,7 +2122,7 @@ export default function TrackFreshDashboard() {
           }, 40 + attempt * 50);
           return;
         }
-        setPendingVoiceListening(false);
+        clearPendingVoiceListenUi();
         pendingMicNeedsGestureRef.current = true;
         setPendingVoiceError(
           lang === "es"
@@ -1895,14 +2137,19 @@ export default function TrackFreshDashboard() {
   const startPendingVoice = (idx) => {
     const currentIdx = typeof idx === "number" ? idx : pendingDateIndexRef.current;
     const scheduleNextDoneAfterStop = { current: false };
+    pendingVoiceUserStopRef.current = false;
+    try { window.speechSynthesis?.cancel(); } catch (e) {}
     setPendingVoiceError("");
-    setPendingVoiceListening(false);
+    if (pendingVoiceOnEndRestartTimeoutRef.current) {
+      clearTimeout(pendingVoiceOnEndRestartTimeoutRef.current);
+      pendingVoiceOnEndRestartTimeoutRef.current = null;
+    }
     if (pendingVoiceRetryTimeoutRef.current) {
       clearTimeout(pendingVoiceRetryTimeoutRef.current);
       pendingVoiceRetryTimeoutRef.current = null;
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setPendingVoiceError(lang === "es" ? "Voz no disponible en este dispositivo." : "Voice not supported on this device."); setPendingVoiceListening(false); return; }
+    if (!SR) { setPendingVoiceError(lang === "es" ? "Voz no disponible en este dispositivo." : "Voice not supported on this device."); clearPendingVoiceListenUi(); return; }
     if (pendingVoiceRecognitionRef.current) {
       try { pendingVoiceRecognitionRef.current.onend = null; pendingVoiceRecognitionRef.current.abort(); } catch (e) {}
       pendingVoiceRecognitionRef.current = null;
@@ -1910,9 +2157,10 @@ export default function TrackFreshDashboard() {
     const recog = new SR();
     recog.lang = lang === "es" ? "es-MX" : "en-US";
     recog.interimResults = true;
-    recog.continuous = true;
+    recog.continuous = !isIOSWebKitBrowser();
     recog.maxAlternatives = 1;
     pendingVoiceRecognitionRef.current = recog;
+    const session = { fatalError: false, endRestarts: 0, networkRetries: 0 };
     let dateParsed = false;
     let pendingVoiceHandled = false;
     recog.onresult = (e) => {
@@ -1922,6 +2170,7 @@ export default function TrackFreshDashboard() {
         fullRaw += e.results[i][0].transcript;
       }
       const raw = fullRaw.trim();
+      if (raw) showPendingVoiceListeningNow();
       const lastSeg = e.results[e.results.length - 1];
       const utteranceFinal = lastSeg && lastSeg.isFinal;
       const normCmd = normalizePendingVoiceCommand(raw);
@@ -1932,7 +2181,7 @@ export default function TrackFreshDashboard() {
         pendingVoiceHandled = true;
         dateParsed = true;
         try { recog.stop(); } catch (err) {}
-        setPendingVoiceListening(false);
+        clearPendingVoiceListenUi();
         suppressNextEmptyPendingDateOnChangeRef.current = false;
         ignoreNextPendingDateInputOnChangeRef.current = false;
         const commitIdx = currentIdx;
@@ -1965,7 +2214,7 @@ export default function TrackFreshDashboard() {
         dateParsed = true;
         scheduleNextDoneAfterStop.current = true;
         try { recog.stop(); } catch (err) {}
-        setPendingVoiceListening(false);
+        clearPendingVoiceListenUi();
         suppressNextEmptyPendingDateOnChangeRef.current = true;
         ignoreNextPendingDateInputOnChangeRef.current = true;
         pendingPickedDateRef.current = parsed;
@@ -1975,32 +2224,51 @@ export default function TrackFreshDashboard() {
       } else {
         try { recog.stop(); } catch (e) {}
         setPendingVoiceError(lang === "es" ? "No entendí. Di una fecha, o \"Next\" / \"Done\"." : "Could not understand. Try a date, or say Next / Done.");
-        setPendingVoiceListening(false);
+        clearPendingVoiceListenUi();
       }
     };
     recog.onerror = (ev) => {
       const code = ev && ev.error ? ev.error : "";
       if (code === "aborted") return;
       if (!dateParsed) {
-        try { recog.stop(); } catch (e) {}
-        const msg =
-          code === "not-allowed"
-            ? (lang === "es" ? "Permite el micrófono para este sitio (icono de candado)." : "Allow microphone access for this site (lock icon in the address bar).")
-            : code === "audio-capture"
-              ? (lang === "es" ? "No se detectó micrófono. Conecta uno o revisa permisos." : "No microphone found. Plug one in or check permissions.")
-              : code === "network"
-                ? (lang === "es" ? "Error de red para el reconocimiento de voz. Reintenta." : "Voice recognition network error. Try again.")
-                : code === "no-speech"
-                  ? (lang === "es" ? "No se oyó habla. Toca el mic o habla más cerca." : "No speech heard. Tap the mic or speak closer.")
-                  : (lang === "es" ? "No se pudo iniciar el mic. Toca el botón del mic otra vez." : "Could not start the mic. Tap the mic button again.");
-        if (code === "not-allowed" || code === "audio-capture") pendingMicNeedsGestureRef.current = true;
-        setPendingVoiceError(msg);
-        setPendingVoiceListening(false);
+        if (code === "network") {
+          if (isLocalDevHost()) {
+            session.fatalError = true;
+            setPendingVoiceError(pendingVoiceNetworkErrorMsg());
+            clearPendingVoiceListenUi();
+            return;
+          }
+          if (pendingVoiceNetworkRetry(recog, session, tryStart)) return;
+          session.fatalError = true;
+        } else {
+          try { recog.stop(); } catch (e) {}
+        }
+        if (code === "not-allowed" || code === "audio-capture") {
+          pendingMicNeedsGestureRef.current = true;
+          session.fatalError = true;
+        } else if (code !== "network" && code !== "no-speech") {
+          session.fatalError = true;
+        }
+        if (session.fatalError) {
+          const msg =
+            code === "not-allowed"
+              ? (lang === "es" ? "Permite el micrófono para este sitio (icono de candado)." : "Allow microphone access for this site (lock icon in the address bar).")
+              : code === "audio-capture"
+                ? (lang === "es" ? "No se detectó micrófono. Conecta uno o revisa permisos." : "No microphone found. Plug one in or check permissions.")
+                : code === "network"
+                  ? pendingVoiceNetworkErrorMsg()
+                  : code === "no-speech"
+                    ? (lang === "es" ? "No se oyó habla. Toca el mic o habla más cerca." : "No speech heard. Tap the mic or speak closer.")
+                    : (lang === "es" ? "No se pudo iniciar el mic. Toca el botón del mic otra vez." : "Could not start the mic. Tap the mic button again.");
+          setPendingVoiceError(msg);
+          clearPendingVoiceListenUi();
+        }
       }
     };
     recog.onstart = () => {
       pendingMicNeedsGestureRef.current = false;
-      setPendingVoiceListening(true);
+      markPendingVoiceListening();
+      setPendingVoiceError("");
     };
     recog.onend = () => {
       if (pendingVoiceRecognitionRef.current === recog) pendingVoiceRecognitionRef.current = null;
@@ -2010,9 +2278,14 @@ export default function TrackFreshDashboard() {
         window.setTimeout(() => startPendingVoiceNextDone(i), 120);
         return;
       }
-      if (!dateParsed) setPendingVoiceListening(false);
+      if (dateParsed || pendingVoiceHandled || session.fatalError || pendingVoiceUserStopRef.current) {
+        if (!dateParsed && !pendingVoiceHandled) clearPendingVoiceListenUi();
+        return;
+      }
+      schedulePendingVoiceOnEndRestart(recog, session, currentIdx, tryStart);
     };
     const tryStart = (attempt) => {
+      pendingVoiceRecognitionRef.current = recog;
       try {
         recog.start();
       } catch (err) {
@@ -2026,27 +2299,31 @@ export default function TrackFreshDashboard() {
           }, 40 + attempt * 50);
           return;
         }
-        setPendingVoiceListening(false);
+        clearPendingVoiceListenUi();
         pendingMicNeedsGestureRef.current = true;
         setPendingVoiceError(
           lang === "es"
-            ? "Toca la fecha o el micrófono para permitir el audio (Safari)."
-            : "Tap the date field or mic button to allow audio (Safari)."
+            ? "Toca el micrófono para permitir el audio (Safari)."
+            : "Tap the mic button to allow audio (Safari)."
         );
       }
     };
     tryStart(0);
   };
 
-  const unlockPendingMicFromUserGesture = () => {
-    if (!pendingMicNeedsGestureRef.current) return;
+  const handlePendingMicPress = () => {
+    clearPendingVoiceListenUi();
+    if (typeof window !== "undefined" && isLocalDevHost()) {
+      setPendingVoiceError(pendingVoiceNetworkErrorMsg());
+      return;
+    }
+    pendingVoiceUserStopRef.current = false;
     pendingMicNeedsGestureRef.current = false;
     setPendingVoiceError("");
-    const i = pendingDateIndexRef.current;
-    if (pendingPickedDateRef.current) {
-      startPendingVoiceNextDone(i);
+    if (pendingPickedDate && pendingAwaitNextOrDone) {
+      startPendingVoiceNextDone(pendingDateIndex);
     } else {
-      startPendingVoice(i);
+      startPendingVoice(pendingDateIndex);
     }
   };
 
@@ -2060,24 +2337,12 @@ export default function TrackFreshDashboard() {
   useEffect(() => {
     if (showPendingDateIntro) return;
     if (pendingDateItems.length === 0 || pendingDateIndex >= pendingDateItems.length) return;
-    if (typeof window === "undefined") return;
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    const skipEffectVoiceStart = pendingVoiceRestartFromNextRef.current;
-    pendingVoiceRestartFromNextRef.current = false;
-    let t0 = 0;
-    const runStart = () => {
-      const idx = pendingDateIndexRef.current;
-      startPendingVoice(idx);
-    };
-    if (skipEffectVoiceStart) {
-      /* "Next" path already scheduled startPendingVoice; avoid double-start. */
-    } else {
-      /* Next macrotask: overlay is committed; prior effect cleanup has run; start() is less likely to throw InvalidStateError. */
-      t0 = window.setTimeout(runStart, 0);
-    }
     return () => {
-      if (t0) clearTimeout(t0);
+      pendingVoiceUserStopRef.current = true;
+      if (pendingVoiceOnEndRestartTimeoutRef.current) {
+        clearTimeout(pendingVoiceOnEndRestartTimeoutRef.current);
+        pendingVoiceOnEndRestartTimeoutRef.current = null;
+      }
       if (pendingVoiceRetryTimeoutRef.current) {
         clearTimeout(pendingVoiceRetryTimeoutRef.current);
         pendingVoiceRetryTimeoutRef.current = null;
@@ -2086,8 +2351,17 @@ export default function TrackFreshDashboard() {
         try { pendingVoiceRecognitionRef.current.onend = null; pendingVoiceRecognitionRef.current.abort(); } catch (e) {}
         pendingVoiceRecognitionRef.current = null;
       }
+      if (pendingVoiceListenUiTimeoutRef.current) {
+        clearTimeout(pendingVoiceListenUiTimeoutRef.current);
+        pendingVoiceListenUiTimeoutRef.current = null;
+      }
+      setPendingVoiceListening(false);
     };
   }, [pendingDateItems, pendingDateIndex, showPendingDateIntro]);
+
+  useEffect(() => {
+    setPendingTypedDate("");
+  }, [pendingDateIndex]);
 
   useEffect(() => {
     if (pendingDateItems.length === 0) pendingProduceDefaultedRef.current.clear();
@@ -2108,6 +2382,7 @@ export default function TrackFreshDashboard() {
     const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     pendingPickedDateRef.current = iso;
     setPendingPickedDate(iso);
+    setPendingAwaitNextOrDone(true);
   }, [pendingDateIndex, pendingDateItems, pendingPickedDate]);
 
   const handleSetUsername = () => { const n = usernameInput.trim(); if (!n) return; setUsername(n); try { localStorage.setItem(USERNAME_KEY, n); } catch(e) {} setUsernameInput(""); };
@@ -2144,7 +2419,8 @@ export default function TrackFreshDashboard() {
                   setWelcomeStep(2);
                 }
               }}
-              className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d"
+              className="tf-onboarding-cta w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d"
+              style={{ color: "#ffffff" }}
             >
               {t("disclaimerContinue")}
             </button>
@@ -2162,7 +2438,8 @@ export default function TrackFreshDashboard() {
                 setWelcomeStep(0);
                 try { localStorage.setItem("trackfresh.welcomed", "true"); } catch (e) {}
               }}
-              className="glass-scan-btn w-full py-3 text-base font-bold"
+              className="tf-onboarding-cta w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d"
+              style={{ color: "#ffffff" }}
             >
               {t("welcomeLetsGo")}
             </button>
@@ -2197,7 +2474,11 @@ export default function TrackFreshDashboard() {
         <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl px-4 py-3 text-center text-lg mb-3 focus:outline-none" style={{background:"rgba(255,255,255,0.1)",border:"2px solid rgba(255,102,0,0.4)",color:"#fff",caretColor:"#ff6600"}} />
         {pwError && <p className="text-red-400 text-sm mb-3">{t("invalidCode")}</p>}
         <button onClick={handlePwSubmit} style={{width:"100%",padding:"0.95rem 1.5rem",borderRadius:"16px",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#1a0a00",fontWeight:800,fontSize:"1.05rem",border:"none",cursor:"pointer",boxShadow:"0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45)",letterSpacing:"0.01em"}}>{t("enterBeta")}</button>
-        <p className="text-xs text-green-300/60 mt-4">{t("contactFreddie")}</p>
+        <p className="text-xs text-green-300/60 mt-4">
+          {t("contactAccessBefore")}
+          <a href="mailto:hello@trackfresh.com" className="underline hover:text-green-200">hello@trackfresh.com</a>
+          {t("contactAccessAfter")}
+        </p>
       </div>
     </div>
     </>
@@ -2324,14 +2605,6 @@ export default function TrackFreshDashboard() {
         {pendingDateItems.length > 0 && !showPendingDateIntro && pendingDateIndex < pendingDateItems.length && (() => {
           const item = pendingDateItems[pendingDateIndex];
           const isEs = lang === "es";
-          let formattedPick = "";
-          if (pendingPickedDate) {
-            try {
-              formattedPick = new Date(pendingPickedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-            } catch (e) {
-              formattedPick = pendingPickedDate;
-            }
-          }
           const micLblListen = isEs ? "🎤 Escuchando…" : "🎤 Listening…";
           const micLblNext = isEs ? "🎤 Di «Next» o «Done»" : '🎤 Say "Next" or "Done"';
           const micLblIdle = isEs ? "🎤 Voz" : "🎤 Voice";
@@ -2380,56 +2653,69 @@ export default function TrackFreshDashboard() {
                 ) : null}
               </div>
               <div
-                className={formattedPick ? "" : "tf-pending-date-empty"}
-                style={{position:"relative",borderRadius:"14px",border:"2px solid #facc15",background:"#1a1a1a",overflow:"hidden"}}
-                onPointerDownCapture={() => unlockPendingMicFromUserGesture()}
+                className={pendingPickedDate ? "" : "tf-pending-date-empty"}
+                style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", padding: "0.35rem 0.5rem 0.5rem" }}
               >
-                <div style={{width:"100%",padding:"1rem",fontSize:formattedPick?"1.15rem":"0.95rem",fontWeight:700,color:formattedPick?"#fff":"rgba(255,255,255,0.45)",textAlign:"center",boxSizing:"border-box",lineHeight:1.4,pointerEvents:"none"}}>
-                  {formattedPick || (isEs ? "📅 Toca para seleccionar fecha de vencimiento" : "📅 Tap to select expiration date")}
-                </div>
+                {!pendingPickedDate ? (
+                  <p style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>
+                    {isEs ? "📅 Toca abajo para abrir el calendario" : "📅 Tap below to open calendar"}
+                  </p>
+                ) : null}
                 <input
+                  ref={pendingDateInputRef}
                   type="date"
+                  className="tf-pending-date-native"
                   value={pendingPickedDate}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    if (!v && suppressNextEmptyPendingDateOnChangeRef.current) {
-                      suppressNextEmptyPendingDateOnChangeRef.current = false;
-                      return;
-                    }
-                    suppressNextEmptyPendingDateOnChangeRef.current = false;
-                    // Non-empty but not YYYY-MM-DD: never clear queue/index — ignore (native date input should only emit valid '' or yyyy-mm-dd).
-                    if (v && !isValidYYYYMMDD(v)) return;
-                    if (ignoreNextPendingDateInputOnChangeRef.current) {
-                      ignoreNextPendingDateInputOnChangeRef.current = false;
-                      if (v === pendingPickedDateRef.current) return;
-                    }
-                    pendingPickedDateRef.current = v;
-                    setPendingPickedDate(v);
-                    if (!v) return;
-                    setPendingAwaitNextOrDone(true);
-                    const commitIdx = pendingDateIndexRef.current;
-                    window.setTimeout(() => startPendingVoiceNextDone(commitIdx), 80);
+                  onChange={(e) => applyPendingDateValue(e.target.value)}
+                  onFocus={() => {
+                    abortPendingVoiceRecognition();
+                    pendingVoiceUserStopRef.current = false;
+                    setPendingVoiceError("");
                   }}
-                  style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:0,cursor:"pointer",zIndex:1}}
+                  aria-label={isEs ? "Fecha de vencimiento" : "Expiration date"}
                 />
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "stretch" }}>
+                <input
+                  type="text"
+                  value={pendingTypedDate}
+                  onChange={(e) => setPendingTypedDate(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handlePendingApplyTypedDate(); }}
+                  placeholder={t("sayDateExample")}
+                  aria-label={t("sayDateExample")}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    padding: "0.75rem 0.85rem",
+                    borderRadius: "12px",
+                    border: "2px solid rgba(250,204,21,0.45)",
+                    background: "rgba(0,0,0,0.35)",
+                    color: "#fff",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handlePendingApplyTypedDate}
+                  className="tf-glass-primary-btn"
+                  style={{
+                    flexShrink: 0,
+                    padding: "0.75rem 1rem",
+                    borderRadius: "12px",
+                    fontWeight: 700,
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  {t("pendingDateTypeApply")}
+                </button>
               </div>
               <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
               <button
                 type="button"
                 className={`tf-glass-scan${pendingVoiceListening ? " tf-pending-mic-listening" : ""}`}
                 aria-label={micAria}
-                onClick={() => {
-                  setPendingVoiceError("");
-                  if (pendingMicNeedsGestureRef.current) {
-                    unlockPendingMicFromUserGesture();
-                    return;
-                  }
-                  if (pendingPickedDate && pendingAwaitNextOrDone) {
-                    startPendingVoiceNextDone(pendingDateIndex);
-                  } else {
-                    startPendingVoice(pendingDateIndex);
-                  }
-                }}
+                onClick={handlePendingMicPress}
                 style={{
                   position: "relative",
                   width: "100%",
@@ -2460,6 +2746,29 @@ export default function TrackFreshDashboard() {
                   </p>
                 )}
               </div>
+
+              {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.65rem" }}>
+                  {pendingDateIndex < pendingDateItems.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={handlePendingSaveAndNext}
+                      className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
+                      style={{ color: "#ffffff" }}
+                    >
+                      {t("pendingSaveNext")}
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={handlePendingSaveAndFinish}
+                    className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
+                    style={{ color: "#ffffff" }}
+                  >
+                    {t("pendingSaveFinish")}
+                  </button>
+                </div>
+              )}
 
               <button
                 type="button"
@@ -3072,6 +3381,40 @@ export default function TrackFreshDashboard() {
                   );
                 })()}
 
+                <div
+                  style={{
+                    marginTop: "0.65rem",
+                    padding: "0.75rem 0.9rem",
+                    borderRadius: "12px",
+                    background: "rgba(250,204,21,0.08)",
+                    border: "1px solid rgba(250,204,21,0.28)",
+                  }}
+                >
+                  <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.06em", color: "#fde68a", textTransform: "uppercase" }}>
+                    💰 {t("savingsMonthTitle")}
+                  </p>
+                  {monthSavings.totalUSD > 0 ? (
+                    <>
+                      <p style={{ margin: "0 0 0.25rem", fontSize: "0.95rem", fontWeight: 800, color: "#fff", lineHeight: 1.35 }}>
+                        <span style={{ color: "#86efac" }}>{formatUSD(monthSavings.savedUSD)}</span>
+                        {" "}{t("savingsSaved")}
+                        {" · "}
+                        <span style={{ color: "#fca5a5" }}>{formatUSD(monthSavings.wastedUSD)}</span>
+                        {" "}{t("savingsWasted")}
+                      </p>
+                      <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.45 }}>
+                        {t("savingsUsedPct")
+                          .replace("{pct}", String(monthSavings.savedPct))
+                          .replace("{waste}", String(monthSavings.wastePct))}
+                      </p>
+                    </>
+                  ) : (
+                    <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.45 }}>
+                      {t("savingsReceiptHint")}
+                    </p>
+                  )}
+                </div>
+
                 {/* Track Your Food + scan actions */}
                 <div>
                   <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
@@ -3164,6 +3507,9 @@ export default function TrackFreshDashboard() {
                                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
                                   <div>
                                     <span style={{color:"#fff",fontWeight:700,fontSize:"1rem"}}>{it.brand ? `${it.brand} ${it.name}` : it.name}</span>
+                                    {itemPrice(it) != null && (
+                                      <span className="text-xs ml-2" style={{ color: "#fde68a", fontWeight: 700 }}>{formatUSD(itemPrice(it))}</span>
+                                    )}
                                     {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                   </div>
                                   <div style={{marginLeft:"0.5rem",flexShrink:0,textAlign:"center"}}>
@@ -3705,15 +4051,15 @@ export default function TrackFreshDashboard() {
               </h2>
               <p className="text-xs text-green-200" style={{margin:"0 0 1rem",textAlign:"center",lineHeight:1.5}}>
                 {lang === "es"
-                  ? "Si un artículo vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
-                  : "When an item expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
+                  ? "Cuando encuentras un artículo que vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
+                  : "When you find an item that expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
               </p>
               <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",color:"#f59e0b",margin:"0 0 1rem"}}>20% OFF</p>
               <div className="space-y-3 mb-4">
                 {[
-                  [lang === "es" ? "Para ti" : "For you", lang === "es" ? "Ahorra con 'Buscar y Ahorrar' en productos que aún están buenos — no esperes al desperdicio." : "'Search & Save' money on food that's still good — don't wait until it's waste."],
-                  [lang === "es" ? "Para tiendas" : "For stores", lang === "es" ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas." : "Better inventory control: sell through before expiry and cut shrink."],
-                  [lang === "es" ? "Para TrackFresh" : "For TrackFresh", lang === "es" ? "Más valor: frescura rastreada que se convierte en ahorro real en la caja." : "More value: tracked freshness that turns into real savings at checkout."],
+                  [lang === "es" ? "Para consumidores" : "For consumers", lang === "es" ? "Ahorra con 'Buscar y Ahorrar' en productos que aún están buenos — no esperes al desperdicio." : "'Search & Save' money on food that's still good — don't wait until it's waste."],
+                  [lang === "es" ? "Para tiendas" : "For stores", lang === "es" ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas." : "Better inventory control: sell through before expiry and cut shrinkage."],
+                  [lang === "es" ? "Para TrackFresh" : "For TrackFresh", lang === "es" ? "Valor añadido: engagement del usuario/ mayores ganancias para proveedores/ la app de referencia — menos desperdicio de alimentos, todo rastreado." : "Added value: User engagement/ Vendor increased profits/ The 'go to' App less food waste fully tracked."],
                 ].map(([title, text]) => (
                   <div key={title} className="rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
                     <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.35rem"}}>{title}</h3>
@@ -4378,6 +4724,65 @@ export default function TrackFreshDashboard() {
             </div>
           </div>
         )}
+
+        {usedPortionItem && (() => {
+          const price = itemPrice(usedPortionItem) || 0;
+          const portions = USED_PORTION_FRACTIONS.map((fraction) => ({
+            fraction,
+            label: usedPortionButtonLabel(fraction),
+          }));
+          return (
+            <div className="fixed inset-0 z-[10060] flex items-center justify-center p-4 tf-premium-overlay">
+              <div
+                className="w-full max-w-sm tf-modal-glass-surface"
+                style={{ borderRadius: "20px", padding: "1.25rem 1.25rem 1rem" }}
+                role="dialog"
+                aria-labelledby="used-portion-title"
+              >
+                <h3 id="used-portion-title" className="tf-modal-accent-h" style={{ fontSize: "1.05rem", margin: "0 0 0.35rem", textAlign: "center" }}>
+                  {t("usedPortionTitle")}
+                </h3>
+                <p style={{ margin: "0 0 0.75rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.75)", textAlign: "center", lineHeight: 1.45 }}>
+                  {usedPortionItem.brand ? `${usedPortionItem.brand} ` : ""}{usedPortionItem.name}
+                  {price > 0 ? ` · ${formatUSD(price)}` : ""}
+                </p>
+                <p style={{ margin: "0 0 1rem", fontSize: "0.75rem", color: "rgba(255,255,255,0.55)", textAlign: "center", lineHeight: 1.4 }}>
+                  {t("usedPortionHint")}
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                  {portions.map(({ fraction, label }) => {
+                    const { used, wasted } = splitPortionAmounts(price, fraction);
+                    return (
+                      <button
+                        key={fraction}
+                        type="button"
+                        onClick={() => finalizeUseTodayItem(usedPortionItem, fraction)}
+                        className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
+                        style={{ color: "#ffffff", fontSize: "0.9rem" }}
+                      >
+                        {label}
+                        {price > 0 && (
+                          <span style={{ display: "block", fontSize: "0.72rem", fontWeight: 600, opacity: 0.9, marginTop: "0.15rem" }}>
+                            {formatUSD(used)} {t("usedPortionSaved")}
+                            {fraction < 1 && wasted > 0 ? ` · ${formatUSD(wasted)} ${t("savingsWasted")}` : ""}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setUsedPortionItem(null)}
+                  className="w-full mt-3 py-2 rounded-xl tf-glass-primary-btn"
+                  style={{ fontSize: "0.85rem" }}
+                >
+                  {t("cancel")}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
         {showOpenedModal && (() => {
           const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`;

@@ -101,6 +101,18 @@ export const GLOBAL_STYLES = `
     transform: translateY(4px);
     transition-duration: 0.08s;
   }
+  .tf-onboarding-cta,
+  .tf-onboarding-cta.btn-amber-3d,
+  .tf-onboarding-cta.glass-scan-btn {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+  }
+  .tf-onboarding-cta:hover,
+  .tf-onboarding-cta.btn-amber-3d:hover,
+  .tf-onboarding-cta.glass-scan-btn:hover {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+  }
   .bubble-blue {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e3a8a 100%);
     color: #ffffff;
@@ -463,6 +475,30 @@ export const GLOBAL_STYLES = `
     letter-spacing: 0.02em;
   }
   /* Signature amber — "After opening" callout */
+  .mkt-speculative {
+    text-align: center;
+    margin: 0 0 1rem;
+    padding: 0.85rem 0.75rem 0.7rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+  }
+  .mkt-speculative__headline {
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.05rem, 3.8vw, 1.35rem);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fde68a;
+  }
+  .mkt-speculative__disclaimer {
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.02em;
+  }
   .mkt-save-program {
     text-align: center;
   }

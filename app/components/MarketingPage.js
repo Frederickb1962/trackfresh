@@ -180,6 +180,18 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
 
         {/* Section 4 — TrackFresh Save (register discount + store inventory) */}
         <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "TrackFresh Save" : "TrackFresh Save"}>
+          <div className="mkt-speculative">
+            <p className="mkt-speculative__headline">
+              {isEs
+                ? "Oportunidad especulativa — para consumidores y proveedores"
+                : "Speculative Opportunity — for Consumers and Vendors"}
+            </p>
+            <p className="mkt-speculative__disclaimer">
+              {isEs
+                ? "No se han firmado contratos ni acuerdos a la fecha, ya que esta es una aplicación Beta."
+                : "No contracts nor agreements have been signed as of this date, as this is a Beta App."}
+            </p>
+          </div>
           <div style={{ textAlign: "center", marginBottom: "0.65rem" }}>
             <p style={{ color: "#f59e0b", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.13em", textTransform: "uppercase", margin: 0 }}>
               {isEs ? "BUSCAR Y AHORRAR EN CAJA" : "SEARCH AND SAVE AT CHECKOUT"}
@@ -191,13 +203,13 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
             </h2>
             <p style={{ margin: 0, fontSize: "0.92rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
               {isEs
-                ? "Si un artículo vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
-                : "When an item expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
+                ? "Cuando encuentras un artículo que vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
+                : "When you find an item that expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
             </p>
             <p className="mkt-save-program__badge">20% OFF</p>
             <div className="mkt-save-program__grid">
               <div className="mkt-save-program__card">
-                <h3>{isEs ? "Para ti" : "For you"}</h3>
+                <h3>{isEs ? "Para consumidores" : "For consumers"}</h3>
                 <p>
                   {isEs
                     ? "Ahorra dinero en productos que aún están buenos — no esperes al desperdicio."
@@ -209,15 +221,15 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <p>
                   {isEs
                     ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas."
-                    : "Better inventory control: sell through before expiry and cut shrink."}
+                    : "Better inventory control: sell through before expiry and cut shrinkage."}
                 </p>
               </div>
               <div className="mkt-save-program__card">
                 <h3>{isEs ? "Para TrackFresh" : "For TrackFresh"}</h3>
                 <p>
                   {isEs
-                    ? "Más valor: frescura rastreada que se convierte en ahorro real en la caja."
-                    : "More value: tracked freshness that turns into real savings at checkout."}
+                    ? "Valor añadido: engagement del usuario/ mayores ganancias para proveedores/ la app de referencia — menos desperdicio de alimentos, todo rastreado."
+                    : "Added value: User engagement/ Vendor increased profits/ The 'go to' App less food waste fully tracked."}
                 </p>
               </div>
             </div>
@@ -287,8 +299,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 <span>
                   <strong>{isEs ? "Más tráfico:" : "More traffic:"}</strong>{" "}
                   {isEs
-                    ? "clientes con TrackFresh vienen a tu tienda por el 20% en caja."
-                    : "TrackFresh users come to your store for 20% at register."}
+                    ? "alta participación y fidelidad del cliente. Los usuarios de TrackFresh vienen a tu tienda porque participas en TrackFresh."
+                    : "High Customer engagement and loyalty. TrackFresh users come to your store because you participate in TrackFresh."}
                 </span>
               </div>
               <div className="mkt-stores__benefit">
@@ -303,10 +315,10 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               <div className="mkt-stores__benefit">
                 <span aria-hidden>🌱</span>
                 <span>
-                  <strong>{isEs ? "Historia verde:" : "Green story:"}</strong>{" "}
+                  <strong>{isEs ? "Iniciativa verde:" : "Green initiative:"}</strong>{" "}
                   {isEs
-                    ? "menos desperdicio — bueno para tu marca y tu comunidad."
-                    : "less waste — good for your brand and your community."}
+                    ? "demuestra que te importa reducir el desperdicio — bueno para tu marca y tu comunidad."
+                    : "Shows that you care about less waste — good for your brand and community."}
                 </span>
               </div>
             </div>

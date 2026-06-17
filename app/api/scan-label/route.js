@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { finalizeProduceScannerItem } from "../../lib/aiProduceNormalize";
-import { aiErrorPayload } from "../../lib/apiAiError";
+import { ANTHROPIC_SCAN_MODEL, aiErrorPayload } from "../../lib/apiAiError";
 
 export async function POST(request) {
   try {
@@ -44,7 +44,7 @@ export async function POST(request) {
     const content = [{ type: "text", text: prompt }, ...imageContent];
 
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-5-20250929",
+      model: ANTHROPIC_SCAN_MODEL,
       max_tokens: 1024,
       messages: [{ role: "user", content: content }]
     });
