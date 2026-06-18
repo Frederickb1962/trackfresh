@@ -7,7 +7,7 @@ import { GLOBAL_STYLES } from "./lib/styles";
 
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Bell, PlusCircle, ChefHat, Users, ShoppingCart } from "lucide-react";
+import { Bell, PlusCircle, ChefHat, Users, ShoppingCart, Calendar } from "lucide-react";
 import { AiBadge, GreenDot, TrackFreshLogo } from "./components/ui/TrackFreshLogo";
 import MarketingPage from "./components/MarketingPage";
 import StoreDiscountModal from "./components/StoreDiscountModal";
@@ -2621,17 +2621,7 @@ export default function TrackFreshDashboard() {
               <div style={{textAlign:"center"}}>
                 <p style={{color:"rgba(255,255,255,0.45)",fontSize:"0.75rem",fontWeight:600,margin:"0 0 0.35rem"}}>{pendingDateIndex + 1} / {pendingDateItems.length}</p>
                 <p className="tf-modal-accent-h" style={{fontSize:"1.1rem",margin:0}}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
-                <p
-                  style={{
-                    margin: "0.65rem 0 0",
-                    fontSize: "1.35rem",
-                    fontWeight: 800,
-                    lineHeight: 1.25,
-                    letterSpacing: "-0.02em",
-                    color: "#bfe9a8",
-                    textShadow: "0 0 28px rgba(134, 239, 172, 0.35), 0 1px 0 rgba(0,0,0,0.35)",
-                  }}
-                >
+                <p className="tf-food-item-name tf-food-item-name--hero" style={{ margin: "0.65rem 0 0" }}>
                   {itemDisplayName(item)}
                 </p>
                 {item.category === "Produce" && formatInGeneralInstruction(item, lang) ? (
@@ -2795,8 +2785,11 @@ export default function TrackFreshDashboard() {
               <div className="space-y-3">
                 <div><label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>{t("nameWord")}</label><input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(183,214,58,0.5)"}} /></div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>📅 {lang === "es" ? "Agregar Fecha" : "Add Date"}</label>
-                  <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"2px solid #B7D63A"}} />
+                  <label className="mb-1 flex items-center gap-1.5 text-sm font-medium" style={{color:"#fff"}}>
+                    <Calendar className="h-4 w-4 shrink-0" style={{color:"var(--tf-instruction-text)"}} aria-hidden />
+                    {lang === "es" ? "Agregar Fecha" : "Add Date"}
+                  </label>
+                  <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="tf-date-calendar-input w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"2px solid #B7D63A"}} />
                 </div>
                 <div><label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(183,214,58,0.5)"}}><option style={{background:"#0d3d2e"}}>Fridge</option><option style={{background:"#0d3d2e"}}>Freezer</option><option style={{background:"#0d3d2e"}}>Pantry</option><option style={{background:"#0d3d2e"}}>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(183,214,58,0.5)"}}><option style={{background:"#0d3d2e"}}>Dairy</option><option style={{background:"#0d3d2e"}}>Meat</option><option style={{background:"#0d3d2e"}}>Produce</option><option style={{background:"#0d3d2e"}}>Bakery</option><option style={{background:"#0d3d2e"}}>Frozen</option><option style={{background:"#0d3d2e"}}>Pantry</option><option style={{background:"#0d3d2e"}}>Beverages</option><option style={{background:"#0d3d2e"}}>Condiments</option><option style={{background:"#0d3d2e"}}>Snacks</option><option style={{background:"#0d3d2e"}}>Other</option></select></div>
@@ -2813,12 +2806,12 @@ export default function TrackFreshDashboard() {
                 <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
                   {urgent.map(it => (
                     <div key={it.id} className="flex items-center justify-between rounded-lg px-3 py-2" style={{border:"1px solid rgba(248,113,113,0.45)",background:"rgba(127,29,29,0.25)"}}>
-                      <span className="text-sm font-semibold text-white">{it.name}</span>
+                      <span className="text-sm font-semibold tf-food-item-name">{it.name}</span>
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${it.daysLeft <= 0 ? "bg-red-600 text-white" : "bg-red-100 text-red-800"}`}>{it.daysLeft <= 0 ? "EXPIRED" : it.daysLeft + " day" + (it.daysLeft === 1 ? "" : "s") + " left"}</span>
                     </div>
                   ))}
                 </div>
-              ) : <p className="text-sm mb-4" style={{color:"rgba(255,255,255,0.88)"}}><span className="font-semibold">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
+              ) : <p className="text-sm mb-4" style={{color:"rgba(255,255,255,0.88)"}}><span className="font-semibold tf-food-item-name">{alertItem.name}</span> expires in <span className="font-semibold">{alertItem.daysLeft}</span> day{alertItem.daysLeft === 1 ? "" : "s"}.</p>; })()}
               <InstructionHint className="text-xs mb-3" style={{ fontSize: "0.75rem", marginBottom: "0.75rem" }}>{t("useItemsSoon")}</InstructionHint>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setShowAlert(false)} className="flex-1 rounded-lg py-2 text-sm tf-glass-primary-btn" style={{background:"rgba(220,38,38,0.35)"}}>{t("gotIt")}</button>
@@ -2871,7 +2864,7 @@ export default function TrackFreshDashboard() {
                 <div className="space-y-3">
                   <div className="rounded-lg border p-3" style={{background:"rgba(6,78,59,0.35)",borderColor:"rgba(134,239,172,0.35)"}}>
                     <p className="text-xs font-semibold mb-1" style={{color:"#86efac"}}>✅ Product found!</p>
-                    <p className="font-bold" style={{color:"#fff"}}>{barcodeItem.name}</p>
+                    <p className="font-bold tf-food-item-name">{barcodeItem.name}</p>
                     <p className="text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{barcodeItem.category}</p>
                     {barcodeItem.storageTip && <p className="tf-instruction-hint--inline tf-instruction-hint--left" style={{ marginTop: "0.25rem" }}>💡 {barcodeItem.storageTip}</p>}
                     {isProduceCategory(barcodeItem.category) && formatInGeneralInstruction(barcodeItem, lang) ? (
@@ -3042,7 +3035,7 @@ export default function TrackFreshDashboard() {
                 <div className="space-y-3">
                   <div className="rounded-lg border p-3" style={{background:"rgba(6,78,59,0.35)",borderColor:"rgba(134,239,172,0.35)"}}>
                     <p className="text-xs font-semibold mb-1" style={{color:"#86efac"}}>✅ Label read!</p>
-                    <p className="font-bold" style={{color:"#fff"}}>{labelItem.name}</p>
+                    <p className="font-bold tf-food-item-name">{labelItem.name}</p>
                     <p className="text-xs" style={{color:"rgba(255,255,255,0.55)"}}>{labelItem.category} · {labelItem.location}</p>
                     <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.75)"}}>{labelItem.dateType}: {labelItem.date || "Not found"}</p>
                     <p className="text-sm font-bold mt-2 mb-1" style={{color:"rgba(255,255,255,0.92)"}}>📅 {t("expDateLabel")} {labelItem.date && <span className="text-xs font-normal" style={{color:"#86efac"}}>✓ auto-detected</span>}</p>
@@ -3856,7 +3849,7 @@ export default function TrackFreshDashboard() {
                     <div key={it.id} className="flex items-center gap-2 rounded-lg px-3 py-2" style={{transition:"all 0.3s ease", background: it.checked ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.22)", border: it.checked ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.35)", opacity: it.checked ? 0.5 : 1}}>
                       <input type="checkbox" checked={it.checked} onChange={() => handleToggle(it)} className="h-4 w-4 rounded accent-white flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm" style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : "#fff", fontWeight: it.checked ? 400 : 600}}>{displayName}{it.qty ? " — " + it.qty : ""}</span>
+                        <span className={`text-sm${it.checked ? "" : " tf-food-item-name"}`} style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : undefined, fontWeight: it.checked ? 400 : 600}}>{displayName}{it.qty ? " — " + it.qty : ""}</span>
                         <div className="flex flex-wrap gap-1 mt-0.5">
                           {it.forMeal && <span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(183,214,58,0.3)"}}>📅 {it.forMeal}</span>}
                         </div>
@@ -4556,7 +4549,7 @@ export default function TrackFreshDashboard() {
                           {expiryVoiceLog.map((entry, i) => (
                             <div key={i} style={{display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.35rem 0.6rem",borderRadius:"8px",background:"rgba(16,185,129,0.2)",border:"0.5px solid rgba(134,239,172,0.4)",marginBottom:"0.25rem"}}>
                               <span style={{color:"#86efac",fontWeight:900,fontSize:"0.85rem"}}>✓</span>
-                              <span style={{flex:1,fontSize:"0.8rem",fontWeight:600,color:"#fff"}}>{entry.name}</span>
+                              <span className="tf-food-item-name" style={{flex:1,fontSize:"0.8rem",fontWeight:600}}>{entry.name}</span>
                               <span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.55)"}}>{entry.dateStr}</span>
                             </div>
                           ))}
@@ -4567,7 +4560,7 @@ export default function TrackFreshDashboard() {
                           <p style={{fontSize:"0.68rem",fontWeight:700,color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"0.35rem"}}>Still needed ({remaining.length}):</p>
                           <div style={{display:"flex",flexWrap:"wrap",gap:"0.3rem"}}>
                             {remaining.map((it, i) => (
-                              <span key={i} style={{background:"rgba(255,255,255,0.08)",border:"0.5px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.2rem 0.6rem",fontSize:"0.72rem",fontWeight:600,color:"rgba(255,255,255,0.85)"}}>{it.name}</span>
+                              <span key={i} className="tf-food-item-name" style={{background:"rgba(250,204,21,0.12)",border:"0.5px solid rgba(250,204,21,0.35)",borderRadius:"999px",padding:"0.2rem 0.6rem",fontSize:"0.72rem",fontWeight:600}}>{it.name}</span>
                             ))}
                           </div>
                         </div>
@@ -4658,7 +4651,7 @@ export default function TrackFreshDashboard() {
           const ItemRow = ({ item }) => (
             <button onClick={() => handleMarkOpened(item, today)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"10px",padding:"0.6rem 0.75rem",marginBottom:"0.35rem",cursor:"pointer",textAlign:"left"}}>
               <div>
-                <div style={{fontWeight:700,color:"#fff",fontSize:"0.875rem"}}>{item.name}</div>
+                <div className="tf-food-item-name" style={{fontWeight:700,fontSize:"0.875rem"}}>{item.name}</div>
                 <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.75)",marginTop:"0.1rem"}}>{item.location ?? "Fridge"}{item.useByDate ? " · " + (lang==="es"?"Vence":"Exp") + " " + item.useByDate : ""}</div>
               </div>
               {item.openDate && <span style={{fontSize:"0.65rem",background:"rgba(183,214,58,0.25)",color:"#B7D63A",border:"1px solid rgba(183,214,58,0.4)",borderRadius:"999px",padding:"0.1rem 0.45rem",fontWeight:700,whiteSpace:"nowrap"}}>📂 {lang==="es"?"Abierto":"Opened"}</span>}
@@ -4686,7 +4679,7 @@ export default function TrackFreshDashboard() {
                   /* Confirmation screen */
                   <div style={{textAlign:"center",padding:"0.5rem 0",flex:1,display:"flex",flexDirection:"column",justifyContent:"center"}}>
                     <div style={{fontSize:"3rem",marginBottom:"0.75rem"}}>✅</div>
-                    <h3 style={{color:"#fff",fontWeight:800,fontSize:"1.1rem",marginBottom:"0.35rem"}}>{openedConfirm.item.name}</h3>
+                    <h3 className="tf-food-item-name" style={{fontWeight:800,fontSize:"1.1rem",marginBottom:"0.35rem"}}>{openedConfirm.item.name}</h3>
                     <p style={{color:"rgba(255,255,255,0.92)",fontSize:"0.875rem",marginBottom:"0.25rem"}}>
                       {lang==="es"?"Marcado como abierto":"Marked as opened"} — {openedConfirm.openDate}
                     </p>

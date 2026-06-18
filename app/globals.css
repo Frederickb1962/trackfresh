@@ -158,7 +158,7 @@
 .tf-kitchen-urgent-item__name {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--tf-instruction-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -451,10 +451,11 @@
 .tf-pending-date-native::-webkit-date-and-time-value {
   text-align: center;
 }
-.tf-pending-date-native::-webkit-calendar-picker-indicator {
+.tf-pending-date-native::-webkit-calendar-picker-indicator,
+.tf-date-calendar-input::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.85;
-  filter: invert(1);
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(90%) sepia(58%) saturate(638%) hue-rotate(359deg) brightness(105%) contrast(96%);
   padding: 0.35rem;
 }
 
@@ -563,7 +564,7 @@
 .tf-pending-queue-name {
   font-size: 0.82rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--tf-instruction-text);
   flex: 1 1 100%;
 }
 
@@ -711,6 +712,19 @@ body {
 }
 .tf-modal-glass-surface input::placeholder {
   color: rgba(255, 255, 255, 0.45);
+}
+
+/* Food / product names — gold lettering (matches instruction accent) */
+.tf-food-item-name {
+  color: var(--tf-instruction-text);
+}
+
+.tf-food-item-name--hero {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 28px rgba(253, 224, 71, 0.35), 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 /* App-wide instruction / hint copy (recipe expand, scan flows, voice queue, etc.) */
