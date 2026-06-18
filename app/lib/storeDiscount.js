@@ -1,4 +1,4 @@
-/** TrackFresh Save — register discount for items expiring within 2 days (pilot program). */
+/** TrackFresh Search and Save — register discount for items expiring within 2 days (pilot program). */
 
 export const REGISTER_DISCOUNT_PERCENT = 20;
 export const REGISTER_DISCOUNT_MAX_DAYS_LEFT = 2;

@@ -283,10 +283,10 @@ export const T = {
   storingWhere: { en: "Where are you storing this?", es: "\u00bfD\u00f3nde vas a guardar esto?", fr: "O\u00f9 allez-vous stocker cela ?", it: "Dove lo stai conservando?" },
   storeDiscountBtn: { en: "20% at register", es: "20% en caja", fr: "20 % en caisse", it: "20% alla cassa" },
   storeDiscountBanner: {
-    en: "item(s) qualify for TrackFresh Save \u2014 20% off at participating stores.",
-    es: "art\u00edculo(s) califican para TrackFresh Save \u2014 20% en tiendas participantes.",
-    fr: "article(s) admissible(s) \u00e0 TrackFresh Save \u2014 20 % de r\u00e9duction dans les magasins participants.",
-    it: "articolo/i idoneo/i per TrackFresh Save \u2014 20% di sconto nei negozi aderenti.",
+    en: "item(s) qualify for TrackFresh Search and Save \u2014 20% off at participating stores.",
+    es: "art\u00edculo(s) califican para TrackFresh Buscar y Ahorrar \u2014 20% en tiendas participantes.",
+    fr: "article(s) admissible(s) \u00e0 TrackFresh Rechercher et \u00c9conomiser \u2014 20 % de r\u00e9duction dans les magasins participants.",
+    it: "articolo/i idoneo/i per TrackFresh Cerca e Risparmia \u2014 20% di sconto nei negozi aderenti.",
   },
   storeDiscountSee: { en: "View", es: "Ver", fr: "Voir", it: "Vedi" },
 };

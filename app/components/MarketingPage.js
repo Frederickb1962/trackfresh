@@ -178,8 +178,8 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         </ul>
         </section>
 
-        {/* Section 4 — TrackFresh Save (register discount + store inventory) */}
-        <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "TrackFresh Save" : "TrackFresh Save"}>
+        {/* Section 4 — TrackFresh Search and Save (register discount + store inventory) */}
+        <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "TrackFresh Buscar y Ahorrar" : "TrackFresh Search and Save"}>
           <div className="mkt-speculative">
             <p className="mkt-speculative__headline">
               {isEs
@@ -199,7 +199,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           </div>
           <div className="mkt-save-program">
             <h2 style={{ margin: "0 0 0.35rem", fontSize: "1.2rem", fontWeight: 900, lineHeight: 1.25 }}>
-              {isEs ? "TrackFresh Save — todos ganan" : "With TrackFresh — everyone wins"}
+              {isEs ? "TrackFresh Buscar y Ahorrar — todos ganan" : "TrackFresh Search and Save — everyone wins"}
             </h2>
             <p style={{ margin: 0, fontSize: "0.92rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.5 }}>
               {isEs
@@ -277,7 +277,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           </div>
           <div className="mkt-stores">
             <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.15rem", fontWeight: 900, lineHeight: 1.3, textAlign: "center" }}>
-              {isEs ? "Asóciate con TrackFresh Save" : "Partner with TrackFresh Save"}
+              {isEs ? "Asóciate con TrackFresh Buscar y Ahorrar" : "Partner with TrackFresh Search and Save"}
             </h2>
             <p className="mkt-stores__lead">
               {isEs
@@ -348,7 +348,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                   ? "¿Quieres ser tienda participante? Hablemos del piloto en tu cadena o ubicación."
                   : "Want to be a participating store? Let's talk about a pilot at your chain or location."}
               </p>
-              <a href="mailto:hello@trackfresh.ai?subject=TrackFresh%20Save%20Store%20Partner" className="mkt-stores__email">
+              <a href="mailto:hello@trackfresh.ai?subject=TrackFresh%20Search%20and%20Save%20Store%20Partner" className="mkt-stores__email">
                 ✉️ {isEs ? "Contactar para asociarse" : "Contact us to partner"}
               </a>
               <p style={{ margin: 0, fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>hello@trackfresh.ai</p>

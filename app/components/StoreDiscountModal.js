@@ -36,7 +36,7 @@ export default function StoreDiscountModal({ item, lang, onClose }) {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest m-0" style={{ color: "#f59e0b" }}>
-              {isEs ? "TrackFresh Save" : "TrackFresh Save"}
+              {isEs ? "TrackFresh Buscar y Ahorrar" : "TrackFresh Search and Save"}
             </p>
             <h2 id="store-discount-title" className="text-lg font-bold text-white m-0 mt-1">
               {isEs ? "20% de descuento en caja" : "20% off at register"}

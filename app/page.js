@@ -50,6 +50,11 @@ import {
   getCoachTip,
   flowLabel,
   COACH_STEP_KEY,
+  DISCLAIMER_KEY,
+  WELCOMED_KEY,
+  MKT_SEEN_KEY,
+  hasCompletedFirstTimeOnboarding,
+  resolveWelcomeStepAfterMarketing,
 } from "./lib/onboardingFlows";
 
 
@@ -525,7 +530,6 @@ export default function TrackFreshDashboard() {
   const [coachDismissed, setCoachDismissed] = useState(false);
   const [coachStep, setCoachStep] = useState(0);
   const [guidedPaused, setGuidedPaused] = useState(false);
-  React.useEffect(() => { try { if (typeof window !== "undefined" && window.sessionStorage && sessionStorage.getItem("tf_mkt_seen") === "1") setShowMarketing(false); } catch(e) {} }, []);
   React.useEffect(() => {
     applyFlowResetIfRequested();
     try {
@@ -538,28 +542,21 @@ export default function TrackFreshDashboard() {
       setCoachDismissed(localStorage.getItem(COACH_DONE_KEY) === "1");
       const savedCoachStep = parseInt(localStorage.getItem(COACH_STEP_KEY) || "0", 10);
       if (!Number.isNaN(savedCoachStep)) setCoachStep(savedCoachStep);
+
+      if (hasCompletedFirstTimeOnboarding()) {
+        setShowMarketing(false);
+      } else if (sessionStorage.getItem(MKT_SEEN_KEY) === "1") {
+        setShowMarketing(false);
+        setWelcomeStep(resolveWelcomeStepAfterMarketing());
+      }
     } catch (e) {}
   }, []);
   const finishWelcomeForFlow = () => {
-    try { localStorage.setItem("trackfresh.welcomed", "true"); } catch (e) {}
+    try { localStorage.setItem(WELCOMED_KEY, "true"); } catch (e) {}
     setWelcomeStep(0);
   };
   const queuePostMarketingOnboarding = () => {
-    try {
-      if (localStorage.getItem("tf_disclaimer_seen") !== "1") {
-        setWelcomeStep(1);
-        return;
-      }
-      const flow = localStorage.getItem(FLOW_KEY) || FLOWS.default;
-      if (flow === FLOWS.guided || flow === FLOWS.coach) {
-        finishWelcomeForFlow();
-        return;
-      }
-      if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
-      else setWelcomeStep(0);
-    } catch (e) {
-      setWelcomeStep(1);
-    }
+    setWelcomeStep(resolveWelcomeStepAfterMarketing());
   };
   const completeGuidedFlow = () => {
     setGuidedComplete(true);
@@ -576,7 +573,7 @@ export default function TrackFreshDashboard() {
   };
   const handleLaunchApp = () => {
     setShowMarketing(false);
-    try { if (window.sessionStorage) sessionStorage.setItem("tf_mkt_seen", "1"); } catch (e) {}
+    try { if (window.sessionStorage) sessionStorage.setItem(MKT_SEEN_KEY, "1"); } catch (e) {}
     queuePostMarketingOnboarding();
   };
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -596,7 +593,7 @@ export default function TrackFreshDashboard() {
       if (typeof window !== "undefined" && window.sessionStorage) {
         if (sessionStorage.getItem("tf_ok") === "1") {
           setIsUnlocked(true);
-          if (sessionStorage.getItem("tf_mkt_seen") === "1") queuePostMarketingOnboarding();
+          if (hasCompletedFirstTimeOnboarding()) queuePostMarketingOnboarding();
         }
         if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
       }
@@ -2395,7 +2392,7 @@ export default function TrackFreshDashboard() {
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
 
-  const onboardingOverlays = showMarketing ? null : (
+  const onboardingOverlays = (
     <>
       {welcomeStep === 1 && (
         <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
@@ -2413,12 +2410,12 @@ export default function TrackFreshDashboard() {
             <button
               type="button"
               onClick={() => {
-                try { localStorage.setItem("tf_disclaimer_seen", "1"); } catch (e) {}
+                try { localStorage.setItem(DISCLAIMER_KEY, "1"); } catch (e) {}
                 try {
                   const flow = localStorage.getItem(FLOW_KEY) || FLOWS.default;
                   if (flow === FLOWS.guided || flow === FLOWS.coach) {
                     finishWelcomeForFlow();
-                  } else if (!localStorage.getItem("trackfresh.welcomed")) setWelcomeStep(2);
+                  } else if (!localStorage.getItem(WELCOMED_KEY)) setWelcomeStep(2);
                   else setWelcomeStep(0);
                 } catch (e) {
                   setWelcomeStep(2);
@@ -2441,7 +2438,7 @@ export default function TrackFreshDashboard() {
               type="button"
               onClick={() => {
                 setWelcomeStep(0);
-                try { localStorage.setItem("trackfresh.welcomed", "true"); } catch (e) {}
+                try { localStorage.setItem(WELCOMED_KEY, "true"); } catch (e) {}
               }}
               className="tf-onboarding-cta w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d"
               style={{ color: "#ffffff" }}
@@ -2455,9 +2452,11 @@ export default function TrackFreshDashboard() {
   );
 
   if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
+  if (welcomeStep > 0) {
+    return <div className="min-h-screen tf-premium-bg">{onboardingOverlays}</div>;
+  }
   if (isUnlocked === false) return (
     <>
-    {onboardingOverlays}
     <div className="min-h-screen tf-premium-bg flex items-center justify-center p-4">
       <div style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px"}} className="shadow-2xl p-8 max-w-sm w-full text-center">
         <div className="text-5xl mb-3">🥦</div>
@@ -4074,7 +4073,7 @@ export default function TrackFreshDashboard() {
                 </p>
               </div>
               <h2 className="text-base font-bold text-white" style={{margin:"0 0 0.35rem",textAlign:"center"}}>
-                {lang === "es" ? "Con TrackFresh — todos ganan" : "With TrackFresh — everyone wins"}
+                {lang === "es" ? "TrackFresh Buscar y Ahorrar — todos ganan" : "TrackFresh Search and Save — everyone wins"}
               </h2>
               <p className="text-xs text-green-200" style={{margin:"0 0 1rem",textAlign:"center",lineHeight:1.5}}>
                 {lang === "es"

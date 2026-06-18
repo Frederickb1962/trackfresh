@@ -4,6 +4,28 @@ export const FLOW_KEY = "trackfresh.flow";
 export const GUIDED_DONE_KEY = "trackfresh.guided.done";
 export const COACH_DONE_KEY = "trackfresh.coach.done";
 export const COACH_STEP_KEY = "trackfresh.coach.step";
+export const DISCLAIMER_KEY = "tf_disclaimer_seen";
+export const WELCOMED_KEY = "trackfresh.welcomed";
+export const MKT_SEEN_KEY = "tf_mkt_seen";
+
+export function hasCompletedFirstTimeOnboarding() {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(DISCLAIMER_KEY) === "1" && localStorage.getItem(WELCOMED_KEY) === "1";
+  } catch (e) {
+    return false;
+  }
+}
+
+export function resolveWelcomeStepAfterMarketing() {
+  try {
+    if (localStorage.getItem(DISCLAIMER_KEY) !== "1") return 1;
+    if (localStorage.getItem(WELCOMED_KEY) !== "1") return 2;
+    return 0;
+  } catch (e) {
+    return 1;
+  }
+}
 
 export const FLOWS = {
   default: "default",
@@ -29,8 +51,9 @@ export function applyFlowResetIfRequested() {
     localStorage.removeItem(GUIDED_DONE_KEY);
     localStorage.removeItem(COACH_DONE_KEY);
     localStorage.removeItem(COACH_STEP_KEY);
-    localStorage.removeItem("trackfresh.welcomed");
-    localStorage.removeItem("tf_disclaimer_seen");
+    localStorage.removeItem(WELCOMED_KEY);
+    localStorage.removeItem(DISCLAIMER_KEY);
+    sessionStorage.removeItem(MKT_SEEN_KEY);
   } catch (e) {}
 }
 
