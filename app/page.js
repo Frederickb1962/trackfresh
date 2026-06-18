@@ -24,6 +24,7 @@ import LanguagePicker from "./components/LanguagePicker";
 import GuidedFlowWizard from "./components/GuidedFlowWizard";
 import CoachTipCard from "./components/CoachTipCard";
 import { pick, speechLocale } from "./lib/i18n";
+import { speakWithVoice, warmSpeechVoices } from "./lib/speechVoice";
 import { T } from "./lib/translations";
 import {
   SAVINGS_EVENTS_KEY,
@@ -519,6 +520,7 @@ export default function TrackFreshDashboard() {
   const [lang, setLang] = useState("en");
   const changeLang = (l) => { setLang(l); try { localStorage.setItem(LANG_KEY, l); } catch(e) {} };
   React.useEffect(() => { try { const saved = localStorage.getItem(LANG_KEY); if (saved) setLang(saved); } catch(e) {} }, []);
+  React.useEffect(() => { warmSpeechVoices(); }, []);
   const t = (key) => { const e = T[key]; return e ? (e[lang] || e.en || key) : key; };
 
   
@@ -695,6 +697,7 @@ export default function TrackFreshDashboard() {
   const [newChat, setNewChat] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterLocation, setFilterLocation] = useState("All");
+  const [trackerExpandedId, setTrackerExpandedId] = useState(null);
   const [shoppingItems, setShoppingItems] = useState([]);
   const [newShoppingItem, setNewShoppingItem] = useState("");
   const [newShoppingQty, setNewShoppingQty] = useState("count");
@@ -824,17 +827,7 @@ export default function TrackFreshDashboard() {
     } catch(e) {}
   };
 
-  const speak = (text) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.1;
-      u.pitch = 1;
-      window.speechSynthesis.speak(u);
-      return u;
-    }
-    return null;
-  };
+  const speak = (text) => speakWithVoice(text, { lang: speechLocale(lang) });
 
   const mapScanApiItemToPendingRow = (it) => {
     const locRaw = it.location;
@@ -891,26 +884,26 @@ export default function TrackFreshDashboard() {
   };
 
   const speakPendingIntro = (text, onDone) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      if (onDone) setTimeout(onDone, 300);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = speechLocale(lang);
-    u.rate = 0.95;
-    u.pitch = 1.0;
-    const ms = Math.max(2000, (text.split(" ").length / 2) * 1000 + 900);
-    let fired = false;
-    const fire = () => { if (!fired) { fired = true; if (onDone) onDone(); } };
-    u.onend = fire;
-    setTimeout(fire, ms);
-    window.speechSynthesis.speak(u);
+    speakWithVoice(text, { lang: speechLocale(lang), onDone, rate: 0.93 });
   };
 
   const dismissPendingDateIntro = () => {
     setShowPendingDateIntro(false);
     try { window.speechSynthesis?.cancel(); } catch (e) {}
+  };
+
+  const itemStorageTip = (item, isEs) =>
+    item.storageTip
+    || (item.location === "Freezer"
+      ? (isEs ? "Mantener congelado" : "Keep frozen")
+      : item.location === "Pantry"
+        ? (isEs ? "Lugar fresco y seco" : "Store in cool, dry place")
+        : (isEs ? "Mantener refrigerado" : "Keep refrigerated at all times"));
+
+  const itemDisplayName = (item) => (item.brand ? `${item.brand} ${item.name}` : item.name);
+
+  const toggleTrackerExpand = (id) => {
+    setTrackerExpandedId((prev) => (prev === id ? null : id));
   };
 
   const [voiceListening, setVoiceListening] = useState("");
@@ -1374,15 +1367,7 @@ export default function TrackFreshDashboard() {
 
   const expirySpeak = (text, onDone) => {
     setExpiryVoiceStatus("speaking");
-    if (!("speechSynthesis" in window)) { if (onDone) setTimeout(onDone, 300); return; }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.05; u.pitch = 1.0;
-    const ms = Math.max(1500, (text.split(" ").length / 2.2) * 1000 + 800);
-    let fired = false;
-    const fire = () => { if (!fired) { fired = true; if (onDone) onDone(); } };
-    u.onend = fire; setTimeout(fire, ms);
-    window.speechSynthesis.speak(u);
+    speakWithVoice(text, { lang: speechLocale(lang), onDone, rate: 0.93 });
   };
 
   const listenForExpiryDates = (items, attemptsLeft) => {
@@ -1748,10 +1733,16 @@ export default function TrackFreshDashboard() {
     const items = pendingDateItemsRef.current;
     const item = items[idx];
     if (!item) return;
-    setTrackedItems(prev => [{ ...item, useByDate: dateStr || "" }, ...prev]);
+    setTrackedItems((prev) => [{ ...item, useByDate: dateStr || "" }, ...prev]);
     const next = idx + 1;
-    if (next >= items.length) { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }
-    else { setPendingDateIndex(next); setPendingPickedDate(""); }
+    if (next >= items.length) {
+      setPendingDateItems([]);
+      setPendingDateIndex(0);
+      setPendingPickedDate("");
+    } else {
+      setPendingDateIndex(next);
+      setPendingPickedDate("");
+    }
   };
 
   const handlePendingSkipDate = () => {
@@ -1760,10 +1751,16 @@ export default function TrackFreshDashboard() {
     const items = pendingDateItemsRef.current;
     const item = items[idx];
     if (!item) return;
-    setTrackedItems(prev => [{ ...item, useByDate: "" }, ...prev]);
+    setTrackedItems((prev) => [{ ...item, useByDate: "" }, ...prev]);
     const next = idx + 1;
-    if (next >= items.length) { setPendingDateItems([]); setPendingDateIndex(0); setPendingPickedDate(""); }
-    else { setPendingDateIndex(next); setPendingPickedDate(""); }
+    if (next >= items.length) {
+      setPendingDateItems([]);
+      setPendingDateIndex(0);
+      setPendingPickedDate("");
+    } else {
+      setPendingDateIndex(next);
+      setPendingPickedDate("");
+    }
   };
 
   const abortPendingVoiceRecognition = () => {
@@ -2635,7 +2632,7 @@ export default function TrackFreshDashboard() {
                     textShadow: "0 0 28px rgba(134, 239, 172, 0.35), 0 1px 0 rgba(0,0,0,0.35)",
                   }}
                 >
-                  {item.name}
+                  {itemDisplayName(item)}
                 </p>
                 {item.category === "Produce" && formatInGeneralInstruction(item, lang) ? (
                   <p className="tf-instruction-hint--inline" style={{ margin: "0.45rem 0.5rem 0", textAlign: "center" }}>
@@ -2713,11 +2710,7 @@ export default function TrackFreshDashboard() {
                   minHeight: "4.5rem",
                   boxSizing: "border-box",
                   padding: 0,
-                  ...(!pendingVoiceListening
-                    ? {
-                        color: "#fde047",
-                      }
-                    : {}),
+                  ...(!pendingVoiceListening ? { color: "#fde047" } : {}),
                   fontWeight: 700,
                   fontSize: "1rem",
                   borderRadius: "16px",
@@ -2737,7 +2730,6 @@ export default function TrackFreshDashboard() {
                   </p>
                 )}
               </div>
-
               {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.65rem" }}>
                   {pendingDateIndex < pendingDateItems.length - 1 ? (
@@ -2760,7 +2752,6 @@ export default function TrackFreshDashboard() {
                   </button>
                 </div>
               )}
-
               <button
                 type="button"
                 className="tf-pending-skip-btn tf-glass-primary-btn"
@@ -3455,7 +3446,7 @@ export default function TrackFreshDashboard() {
                       </div>
                       <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
                     </div>
-                    <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>Tap to view by storage location</p>
+                    <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>{lang === "es" ? "Toca ▼ en cada artículo para ver detalles" : "Tap ▼ on each item to expand details"}</p>
                     <div className="mb-2 flex flex-wrap gap-1">
                       {["All", ...LOCATIONS].map((l) => {
                         const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
@@ -3485,16 +3476,42 @@ export default function TrackFreshDashboard() {
                               {locItems.length === 0 ? (
                                 <p className="tf-kitchen-col-empty text-xs text-white/50">{lang === "es" ? "Vacío" : "Empty"}</p>
                               ) : (
-                              <div className="tf-kitchen-col-items space-y-2">
+                              <ul className="tf-pending-queue-list">
                         {locItems.map((it) => {
+                          const isEs = lang === "es";
+                          const expanded = trackerExpandedId === it.id;
+                          const locKey = it.location ?? "Fridge";
+                          const catKey = it.category ?? "Other";
+                          const needsAttention = it.daysLeft === null || (it.daysLeft !== null && it.daysLeft <= 2);
+                          const boxShadow = it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none";
                           return (
-                            <div key={it.id} className="rounded-lg px-3 py-2" style={{background: "linear-gradient(160deg,#064e3b,#065f46)", border: "1px solid rgba(255,255,255,0.15)", boxShadow: it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none"}}>
+                            <li key={it.id} className={`tf-pending-queue-item${expanded ? " tf-pending-queue-item--open" : ""}`} style={{ boxShadow }}>
+                              <button type="button" className="tf-pending-queue-header" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
+                                <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
+                                <div className="tf-pending-queue-summary">
+                                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.35rem 0.45rem", width: "100%" }}>
+                                    {it.daysLeft === null ? <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">EXP</span> : null}
+                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[locKey]}`}>
+                                      {LOCATION_ICONS[locKey]} {locKey}
+                                    </span>
+                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[catKey]}`}>{catKey}</span>
+                                    <span className="tf-pending-queue-chip tf-pending-queue-chip--tip">{itemStorageTip(it, isEs)}</span>
+                                    {needsAttention ? (
+                                      <span className="tf-pending-status-blink">STATUS</span>
+                                    ) : it.daysLeft !== null ? (
+                                      <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
+                                    ) : null}
+                                  </div>
+                                  <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
+                                </div>
+                              </button>
+                              {expanded && (
+                              <div className="tf-pending-queue-body">
                               <div>
                                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
                                   <div>
-                                    <span style={{color:"#fff",fontWeight:700,fontSize:"1rem"}}>{it.brand ? `${it.brand} ${it.name}` : it.name}</span>
                                     {itemPrice(it) != null && (
-                                      <span className="text-xs ml-2" style={{ color: "#fde68a", fontWeight: 700 }}>{formatUSD(itemPrice(it))}</span>
+                                      <span className="text-xs" style={{ color: "#fde68a", fontWeight: 700 }}>{formatUSD(itemPrice(it))}</span>
                                     )}
                                     {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
                                   </div>
@@ -3502,7 +3519,7 @@ export default function TrackFreshDashboard() {
                                     {it.daysLeft !== null && (() => {
                                       const d = it.daysLeft;
                                       const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
-                                      const expiredLabel = lang === "es" ? "Vencido" : "Expired";
+                                      const expiredLabel = isEs ? "Vencido" : "Expired";
                                       return (
                                         <div>
                                           <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:d < 0 ? "0.72rem" : "0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d < 0 ? expiredLabel : d}</div>
@@ -3576,10 +3593,12 @@ export default function TrackFreshDashboard() {
                                   {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
                                 </div>
                               </div>
-                            </div>
+                              </div>
+                              )}
+                            </li>
                           );
                         })}
-                              </div>
+                              </ul>
                               )}
                             </section>
                           );

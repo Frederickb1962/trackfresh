@@ -471,6 +471,136 @@
   box-shadow: var(--tf-glass-scan-shadow);
 }
 
+.tf-pending-queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.tf-pending-queue-item {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(160deg, rgba(6, 78, 59, 0.92), rgba(6, 95, 70, 0.88));
+  overflow: hidden;
+}
+
+.tf-pending-queue-item--open {
+  border-color: rgba(250, 204, 21, 0.55);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.12);
+}
+
+.tf-pending-queue-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.tf-pending-queue-arrow {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fde047;
+  margin-top: 0.2rem;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+
+.tf-pending-queue-arrow--open {
+  transform: rotate(180deg);
+}
+
+.tf-pending-queue-summary {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  line-height: 1.35;
+}
+
+.tf-pending-queue-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tf-pending-queue-chip--exp {
+  background: #ef4444;
+  color: #fff;
+  border: 2px solid #ef4444;
+  animation: tf-pending-status-pulse 1.2s ease-in-out infinite;
+}
+
+.tf-pending-queue-chip--tip {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  text-transform: none;
+  font-weight: 600;
+  font-size: 0.68rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tf-pending-queue-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  flex: 1 1 100%;
+}
+
+.tf-pending-status-blink {
+  margin-left: auto;
+  animation: tf-pending-status-pulse 1.2s ease-in-out infinite;
+  color: #ef4444;
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.tf-pending-status-ready {
+  margin-left: auto;
+  color: #4ade80;
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+@keyframes tf-pending-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.tf-pending-queue-body {
+  padding: 0 0.85rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 /* ── Premium Glass: shared modal / overlay theme ── */
 html,
 body {
