@@ -766,8 +766,6 @@ export default function TrackFreshDashboard() {
   const [mealPickerSlot, setMealPickerSlot] = useState("");
   const [mealPickerSearch, setMealPickerSearch] = useState("");
   const [aiPlanLoading, setAiPlanLoading] = useState(false);
-  const [compExpanded, setCompExpanded] = useState({});
-  const toggleComp = (key) => setCompExpanded(p => ({...p, [key]: !p[key]}));
   const activeDietaryProfile = { household: [], members: [], combinedTags: [] };
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [scanMode, setScanMode] = useState(null);
@@ -3155,12 +3153,12 @@ export default function TrackFreshDashboard() {
                     </div>
                     <div className="tf-card-surface" style={{textAlign:"center",padding:"2.25rem 1.5rem 2rem",marginBottom:0}}>
                       <div style={{fontSize:"2.5rem",marginBottom:"0.85rem",lineHeight:1}}>🥦</div>
-                      <p style={{color:"rgba(255,255,255,0.92)",fontWeight:700,fontSize:"1.05rem",marginBottom:"0.55rem",lineHeight:1.4}}>
+                      <p className="tf-instruction-hint--inline" style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: "0.55rem", lineHeight: 1.4, textAlign: "center" }}>
                         {isEs ? "Tu Cocina Hoy cobrará vida a medida que construyas tu inventario." : "Your Kitchen Today will come to life as you build your inventory."}
                       </p>
-                      <p style={{color:"rgba(255,255,255,0.92)",fontWeight:500,fontSize:"0.88rem",lineHeight:1.55,margin:"0 0 1.5rem"}}>
-                        {isEs ? "Empieza agregando artículos en Rastreador. Orden recomendado: refrigerador primero, congelador segundo y despensa tercero." : "Start by adding items in Tracker. Recommended tracking order - Fridge first, Freezer second and Pantry third."}
-                      </p>
+                      <InstructionHint style={{ margin: "0 0 1.5rem" }}>
+                        {t("trackerStartOrderHint")}
+                      </InstructionHint>
                       <button onClick={handleGoToTracker} className="glass-scan-btn tf-home-go-tracker-btn" style={{fontSize:"0.88rem",padding:"0.7rem 1.75rem"}}>
                         {isEs ? "Ir al Rastreador →" : "Go to Tracker →"}
                       </button>
@@ -3315,12 +3313,9 @@ export default function TrackFreshDashboard() {
               <div className="tf-glass-window">
                 <div className="tf-card-surface" style={{textAlign:"center",padding:"1.25rem 1rem 1rem",marginBottom:"0.75rem"}}>
                   <div style={{fontSize:"2rem",marginBottom:"0.5rem",lineHeight:1}}>🥦</div>
-                  <p style={{color:"rgba(255,255,255,0.9)",fontWeight:700,fontSize:"1rem",marginBottom:"0.35rem",lineHeight:1.4}}>
-                    {lang === "es" ? "Empieza agregando artículos en Rastreador." : "Start by adding items below."}
-                  </p>
-                  <p className="tf-instruction-hint--inline" style={{ fontWeight: 500, fontSize: "0.8rem", lineHeight: 1.5, margin: 0, textAlign: "center" }}>
-                    {lang === "es" ? "Aquí es donde llevarás un registro de todo lo que tienes." : "This is where you'll keep track of everything you have."}
-                  </p>
+                  <InstructionHint style={{ margin: 0 }}>
+                    {t("trackerStartOrderHint")}
+                  </InstructionHint>
                 </div>
 
                 <div>
@@ -3665,8 +3660,8 @@ export default function TrackFreshDashboard() {
                         <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
                           <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
                           <span
-                            className={expandedRecipe === i ? "arrow-up" : "arrow-down"}
-                            style={{ color: "rgba(253,224,71,0.9)", fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}
+                            className={`tf-instruction-hint__kw ${expandedRecipe === i ? "arrow-up" : "arrow-down"}`}
+                            style={{ fontSize: "1.1rem", lineHeight: 1 }}
                             aria-hidden
                           >
                             {expandedRecipe === i ? "▲" : "▼"}
@@ -3699,7 +3694,7 @@ export default function TrackFreshDashboard() {
                                           marginLeft: "6px",
                                           fontSize: "0.72rem",
                                           fontWeight: 700,
-                                          color: addStatus === "exists" ? "rgba(253,224,71,0.95)" : "#86efac",
+                                          color: addStatus === "exists" ? "var(--tf-instruction-text)" : "#86efac",
                                           whiteSpace: "nowrap",
                                         }}
                                       >
@@ -4136,8 +4131,8 @@ export default function TrackFreshDashboard() {
               <h2 className="text-xl font-extrabold text-white mb-2">The TrackFresh.AI Ecosystem</h2>
               <p className="text-sm text-green-200 leading-relaxed">TrackFresh connects home cooks, grocery retailers, food brands, and sustainability partners — building a smarter, less wasteful food system together.</p>
               <p className="text-sm text-white font-semibold mt-3">One platform. One goal: waste less, eat better.</p>
-              <div className="grid grid-cols-4 gap-2 mt-4">
-                {[["🛒","Shoppers"],["🏪","Supermarkets"],["🏭","Brands"],["🌱","Composting"]].map(([icon, label]) => (
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {[["🛒","Shoppers"],["🏪","Supermarkets"],["🏭","Brands"]].map(([icon, label]) => (
                   <div key={label} className="rounded-xl py-2 px-1 text-center" style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)"}}>
                     <div style={{fontSize:"1.4rem"}}>{icon}</div>
                     <div style={{fontSize:"0.6rem",fontWeight:700,color:"#86efac",marginTop:"0.2rem"}}>{label}</div>
@@ -4195,32 +4190,6 @@ export default function TrackFreshDashboard() {
               <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>📩 Learn about placements →</a>
             </Card>
 
-            {/* Composting Partners */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{fontSize:"1.75rem"}}>🌱</span>
-                <h2 className="text-lg font-bold text-white">Composting Partners</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-3">Reach the most motivated composting audience on the internet — people already reducing food waste.</p>
-              <div className="space-y-2 mb-3">
-                {[
-                  ["🏷️","Offer a TrackFresh-exclusive coupon code — e.g. 10% off your product — trackable back to our platform"],
-                  ["📖","Get featured in the TrackFresh Composting guide alongside educational content"],
-                  ["📊","Every coupon redemption is tracked back to TrackFresh — you know exactly what drives your sales"],
-                  ["🌿","Align your brand with a sustainability platform trusted by eco-conscious households"],
-                ].map(([icon, text]) => (
-                  <div key={text} className="flex gap-2 items-start rounded-xl px-3 py-2" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-                    <span style={{fontSize:"1rem",flexShrink:0}}>{icon}</span>
-                    <p className="text-xs text-green-100 leading-relaxed">{text}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-xl px-3 py-2 mb-4" style={{background:"rgba(255,102,0,0.12)",border:"1px solid rgba(255,102,0,0.35)"}}>
-                <p className="text-xs text-orange-200 font-semibold">Example: A bokashi vendor offers code TRACKFRESH10 for 10% off. It appears in our Composting guide. Every redemption is reported back — you see real ROI from TrackFresh.</p>
-              </div>
-              <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>🌱 Offer a coupon →</a>
-            </Card>
-
             {/* Privacy Principle */}
             <Card style={{background:"linear-gradient(160deg,#1a0a00 0%,#2d1200 100%)",border:"2px solid rgba(255,102,0,0.5)"}}>
               <div className="flex items-center gap-2 mb-2">
@@ -4231,7 +4200,6 @@ export default function TrackFreshDashboard() {
               <div className="space-y-2">
                 {[
                   "Manufacturers see redemption counts — not customer names or contact details",
-                  "Composting partners receive coupon usage stats — not who redeemed them",
                   "Supermarkets manage their own customer relationships — TrackFresh supports but does not own that data",
                 ].map((point) => (
                   <div key={point} className="flex gap-2 items-start">
@@ -4246,9 +4214,8 @@ export default function TrackFreshDashboard() {
             <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",textAlign:"center",padding:"1.75rem 1.25rem"}}>
               <div style={{fontSize:"2rem",marginBottom:"0.5rem"}}>📬</div>
               <h2 className="text-lg font-bold text-white mb-2">Interested in Partnering?</h2>
-              <p className="text-sm text-green-200 mb-4">Whether you're a supermarket, food brand, or composting company — we'd love to hear from you.</p>
-              <a href="mailto:hello@trackfresh.ai" className="glass-scan-btn text-sm py-3 mb-2" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>✉️ hello@trackfresh.ai</a>
-              <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center",opacity:0.75}}>📋 Download Partner Deck →</a>
+              <p className="text-sm text-green-200 mb-4">Whether you&apos;re a supermarket or food brand — we&apos;d love to hear from you.</p>
+              <a href="mailto:hello@trackfresh.ai" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>✉️ hello@trackfresh.ai</a>
             </Card>
           </div>
         )}
@@ -4329,166 +4296,6 @@ export default function TrackFreshDashboard() {
           </div>
         )}          
 
-        {activeTab === "composting" && (
-          <>
-            <div className="mb-3">
-              <span className="app-section-label">{lang === "es" ? "Sostenibilidad" : "Sustainability"}</span>
-              <h2 className="app-section-h2">🌱 {lang === "es" ? "Compostaje" : "Composting"}</h2>
-            </div>
-            <p className="text-sm text-green-200 mb-4">{lang === "es" ? "Ya sea en interior o exterior, descompone y compostea los restos de comida fácilmente." : "Whether indoors or outdoors, quickly compost or break down leftover food."}</p>
-
-            {/* Card 1: Indoor Composting */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",marginBottom:"1rem"}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">🏠</span>
-                <h2 className="text-lg font-bold text-white">{lang === "es" ? "Compostaje Interior" : "Indoor Composting"}</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-4">{lang === "es" ? "Opciones compactas perfectas para apartamentos y espacios pequeños." : "Compact options perfect for apartments and small spaces."}</p>
-              <div className="space-y-3">
-                {/* Electric Indoor Food Recycler expandable */}
-                <div>
-                  <button onClick={() => toggleComp("electric-recycler")} className="glass-scan-btn w-full flex-row justify-between px-4 py-3 text-sm font-bold" style={{flexDirection:"row"}}>
-                    <span>⚡ {lang === "es" ? "Reciclador Eléctrico" : "Electric Food Recycler"}</span>
-                    <span>{compExpanded["electric-recycler"] ? "▲" : "▼"}</span>
-                  </button>
-                  {compExpanded["electric-recycler"] && (
-                    <div className="mt-2 rounded-xl px-4 py-3 text-sm text-green-100" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                      <p className="mb-2 font-semibold text-white">{lang === "es" ? "¿Qué es?" : "What is it?"}</p>
-                      <p className="text-xs leading-relaxed">{lang === "es" ? "Los recicladores eléctricos de alimentos deshidratan, trituran y reducen los restos de comida hasta un 90% de su volumen original. El resultado es un polvo seco que puedes añadir al jardín o al cubo de residuos sin malos olores. Sin lombrices, sin fermentación, sin espera." : "Electric food recyclers use heat and grinding to dehydrate and break down food scraps, reducing volume by up to 90%. The result is a dry, odour-free powder you can add to your garden or bin. No worms, no fermentation, no waiting."}</p>
-                      <ul className="mt-2 space-y-1 text-xs opacity-80">
-                        <li>✅ {lang === "es" ? "Listo en 4–8 horas" : "Done in 4–8 hours"}</li>
-                        <li>✅ {lang === "es" ? "Acepta carne, lácteos y cocidos" : "Accepts meat, dairy & cooked food"}</li>
-                        <li>✅ {lang === "es" ? "Sin olores, apto para apartamentos" : "Odour-free — perfect for apartments"}</li>
-                        <li>✅ {lang === "es" ? "Reduce el volumen hasta un 90%" : "Reduces volume by up to 90%"}</li>
-                        <li>⚠️ {lang === "es" ? "Consume electricidad" : "Uses electricity"}</li>
-                        <li>⚠️ {lang === "es" ? "Mayor inversión inicial" : "Higher upfront investment"}</li>
-                      </ul>
-                      <p className="mt-3 text-xs font-semibold text-green-200">{lang === "es" ? "Marcas populares:" : "Popular brands:"} <span className="font-normal opacity-80">Lomi, Mill, Reencle, Vitamix FoodCycler</span></p>
-                      <div className="mt-2 rounded-lg px-3 py-2 text-center" style={{background:"rgba(251,146,60,0.12)",border:"1px dashed rgba(251,146,60,0.4)"}}>
-                        <span style={{fontSize:"0.65rem",fontWeight:800,letterSpacing:"0.06em",color:"#fb923c"}}>🛒 {lang === "es" ? "Tienda — Próximamente" : "Shop — Coming Soon"}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Bokashi expandable */}
-                <div>
-                  <button onClick={() => toggleComp("indoor-bokashi")} className="glass-scan-btn w-full flex-row justify-between px-4 py-3 text-sm font-bold" style={{flexDirection:"row"}}>
-                    <span>🫙 {lang === "es" ? "Sistema Bokashi" : "Bokashi System"}</span>
-                    <span>{compExpanded["indoor-bokashi"] ? "▲" : "▼"}</span>
-                  </button>
-                  {compExpanded["indoor-bokashi"] && (
-                    <div className="mt-2 rounded-xl px-4 py-3 text-sm text-green-100" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                      <p className="mb-2 font-semibold text-white">{lang === "es" ? "¿Qué es?" : "What is it?"}</p>
-                      <p className="text-xs leading-relaxed">{lang === "es" ? "El sistema Bokashi fermenta los restos de comida usando microorganismos efectivos (EM). Funciona dentro de un cubo sellado, sin malos olores. Puede compostar carne, lácteos y sobras cocidas — cosas que los compostadores tradicionales no admiten." : "Bokashi ferments food scraps using effective microorganisms (EM). Works inside a sealed bucket with no bad smells. Can handle meat, dairy, and cooked leftovers — things traditional composters can't."}</p>
-                      <ul className="mt-2 space-y-1 text-xs opacity-80">
-                        <li>✅ {lang === "es" ? "Acepta todos los alimentos" : "Accepts all food types"}</li>
-                        <li>✅ {lang === "es" ? "Listo en 2–4 semanas" : "Ready in 2–4 weeks"}</li>
-                        <li>✅ {lang === "es" ? "Sin malos olores" : "No bad smells"}</li>
-                        <li>✅ {lang === "es" ? "Cabe bajo el fregadero" : "Fits under the sink"}</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                {/* Worm bin expandable */}
-                <div>
-                  <button onClick={() => toggleComp("indoor-worm")} className="glass-scan-btn w-full flex-row justify-between px-4 py-3 text-sm font-bold" style={{flexDirection:"row"}}>
-                    <span>🪱 {lang === "es" ? "Vermicompostaje" : "Worm Bin (Vermicomposting)"}</span>
-                    <span>{compExpanded["indoor-worm"] ? "▲" : "▼"}</span>
-                  </button>
-                  {compExpanded["indoor-worm"] && (
-                    <div className="mt-2 rounded-xl px-4 py-3 text-sm text-green-100" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                      <p className="mb-2 font-semibold text-white">{lang === "es" ? "¿Qué es?" : "What is it?"}</p>
-                      <p className="text-xs leading-relaxed">{lang === "es" ? "Las lombrices rojas descomponen los restos de comida en un humus rico para las plantas. Solo necesita vegetales, frutas y papel. Las lombrices trabajan silenciosamente y sin malos olores." : "Red wiggler worms break down food scraps into rich castings for plants. Just needs veggies, fruits, and paper. Worms work quietly with no odor when maintained properly."}</p>
-                      <ul className="mt-2 space-y-1 text-xs opacity-80">
-                        <li>✅ {lang === "es" ? "Produce humus excelente" : "Produces excellent castings"}</li>
-                        <li>✅ {lang === "es" ? "Sin electricidad" : "No electricity needed"}</li>
-                        <li>✅ {lang === "es" ? "Los niños lo adoran" : "Kids love it"}</li>
-                        <li>⚠️ {lang === "es" ? "No acepta carne ni lácteos" : "Avoid meat and dairy"}</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-center mt-3">
-                  <button onClick={() => setActiveTab("partners")} className="glass-scan-btn text-sm py-2 px-8 text-center">🛒 {lang === "es" ? "Tienda" : "Shop"}</button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Card 2: Outdoor Composting */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",marginBottom:"1rem"}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">🌿</span>
-                <h2 className="text-lg font-bold text-white">{lang === "es" ? "Compostaje Exterior" : "Outdoor Composting"}</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-4">{lang === "es" ? "Métodos para patios, jardines y espacios al aire libre." : "Methods for yards, gardens, and outdoor spaces."}</p>
-              <div className="space-y-3">
-                {/* Traditional bin expandable */}
-                <div>
-                  <button onClick={() => toggleComp("outdoor-bin")} className="glass-scan-btn w-full flex-row justify-between px-4 py-3 text-sm font-bold" style={{flexDirection:"row"}}>
-                    <span>🗑️ {lang === "es" ? "Cubo de Compost Tradicional" : "Traditional Compost Bin"}</span>
-                    <span>{compExpanded["outdoor-bin"] ? "▲" : "▼"}</span>
-                  </button>
-                  {compExpanded["outdoor-bin"] && (
-                    <div className="mt-2 rounded-xl px-4 py-3 text-sm text-green-100" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                      <p className="mb-2 font-semibold text-white">{lang === "es" ? "¿Qué es?" : "What is it?"}</p>
-                      <p className="text-xs leading-relaxed">{lang === "es" ? "Alterna capas de materiales verdes (restos de comida, hierba) y marrones (hojas, cartón). El compostaje tradicional es económico y produce un abono excelente en 2–6 meses." : "Alternate layers of green materials (food scraps, grass) and brown materials (leaves, cardboard). Traditional composting is inexpensive and produces excellent compost in 2–6 months."}</p>
-                      <ul className="mt-2 space-y-1 text-xs opacity-80">
-                        <li>✅ {lang === "es" ? "Muy económico" : "Very low cost"}</li>
-                        <li>✅ {lang === "es" ? "Gran capacidad" : "High capacity"}</li>
-                        <li>⚠️ {lang === "es" ? "Requiere voltear" : "Requires turning"}</li>
-                        <li>⚠️ {lang === "es" ? "2–6 meses" : "2–6 months to finish"}</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                {/* Tumbler expandable */}
-                <div>
-                  <button onClick={() => toggleComp("outdoor-tumbler")} className="glass-scan-btn w-full flex-row justify-between px-4 py-3 text-sm font-bold" style={{flexDirection:"row"}}>
-                    <span>⚙️ {lang === "es" ? "Compostador Rotatorio" : "Tumbler Composter"}</span>
-                    <span>{compExpanded["outdoor-tumbler"] ? "▲" : "▼"}</span>
-                  </button>
-                  {compExpanded["outdoor-tumbler"] && (
-                    <div className="mt-2 rounded-xl px-4 py-3 text-sm text-green-100" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                      <p className="mb-2 font-semibold text-white">{lang === "es" ? "¿Qué es?" : "What is it?"}</p>
-                      <p className="text-xs leading-relaxed">{lang === "es" ? "Un tambor cerrado que giras para mezclar el compost. La descomposición es mucho más rápida — a veces en 2–4 semanas — y está protegido de animales e insectos." : "A sealed drum you rotate to mix compost. Decomposition is much faster — sometimes 2–4 weeks — and it's protected from animals and pests."}</p>
-                      <ul className="mt-2 space-y-1 text-xs opacity-80">
-                        <li>✅ {lang === "es" ? "Listo en 2–4 semanas" : "Ready in 2–4 weeks"}</li>
-                        <li>✅ {lang === "es" ? "Protegido de animales" : "Pest and animal resistant"}</li>
-                        <li>✅ {lang === "es" ? "Sin voltear manualmente" : "Easy turning"}</li>
-                        <li>⚠️ {lang === "es" ? "Mayor coste inicial" : "Higher upfront cost"}</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-center mt-3">
-                  <button onClick={() => setActiveTab("partners")} className="glass-scan-btn text-sm py-2 px-8 text-center">🛒 {lang === "es" ? "Tienda" : "Shop"}</button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Card 3: Which is right for you? */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">❓</span>
-                <h2 className="text-lg font-bold text-white">{lang === "es" ? "¿Cuál es la mejor opción para ti?" : "Which option is right for you?"}</h2>
-              </div>
-              <div className="space-y-3">
-                <div className="rounded-xl px-4 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                  <p className="text-xs font-bold text-orange-300 mb-1">📐 {lang === "es" ? "Espacio" : "Space"}</p>
-                  <p className="text-xs text-green-100">{lang === "es" ? "¿Tienes patio o jardín? → Rotatorio o Tradicional. ¿Solo interior? → Bokashi o Lombrices." : "Have a yard or garden? → Tumbler or Traditional. Indoors only? → Bokashi or Worm Bin."}</p>
-                </div>
-                <div className="rounded-xl px-4 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                  <p className="text-xs font-bold text-orange-300 mb-1">⚡ {lang === "es" ? "Velocidad" : "Speed"}</p>
-                  <p className="text-xs text-green-100">{lang === "es" ? "¿Quieres resultados rápidos? → Reciclador Eléctrico (4–8 h) o Bokashi (2–4 sem). ¿No tienes prisa? → Cubo Tradicional o Lombrices." : "Want fast results? → Electric Recycler (4–8 hrs) or Bokashi (2–4 wks). No rush? → Traditional Bin or Worm Bin."}</p>
-                </div>
-                <div className="rounded-xl px-4 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                  <p className="text-xs font-bold text-orange-300 mb-1">💰 {lang === "es" ? "Presupuesto" : "Budget"}</p>
-                  <p className="text-xs text-green-100">{lang === "es" ? "Bajo coste: Cubo Tradicional o Lombrices. Inversión media: Bokashi. Mayor inversión: Rotatorio o Reciclador Eléctrico." : "Low cost: Traditional Bin or Worm Bin. Mid-range: Bokashi Kit. Higher investment: Tumbler or Electric Recycler."}</p>
-                </div>
-              </div>
-            </Card>
-          </>
-        )}
 
         {activeTab === "suggestions" && (
           <div className="space-y-6">

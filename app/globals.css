@@ -31,6 +31,9 @@
   --tf-glass-scan-hover-border: rgba(255, 255, 255, 0.78);
   --tf-accent-orange: #f97316;
   --tf-accent-orange-glow: rgba(249, 115, 22, 0.45);
+  --tf-instruction-text: #fde047;
+  --tf-instruction-bg: rgba(250, 204, 21, 0.1);
+  --tf-instruction-border: rgba(250, 204, 21, 0.35);
   --tf-charcoal-grad: linear-gradient(180deg, #141418 0%, #0a0a0c 52%, #000000 100%);
   --tf-charcoal-grad-overlay: linear-gradient(
     180deg,
@@ -590,9 +593,9 @@ body {
   font-weight: 600;
   line-height: 1.5;
   text-align: center;
-  color: rgba(253, 224, 71, 0.95);
-  background: rgba(250, 204, 21, 0.1);
-  border: 1px solid rgba(250, 204, 21, 0.35);
+  color: var(--tf-instruction-text) !important;
+  background: var(--tf-instruction-bg);
+  border: 1px solid var(--tf-instruction-border);
   box-sizing: border-box;
 }
 .tf-instruction-hint--left,
@@ -609,13 +612,21 @@ body {
   font-weight: 600;
   line-height: 1.45;
   text-align: inherit;
-  color: rgba(253, 224, 71, 0.95);
+  color: var(--tf-instruction-text) !important;
 }
 .tf-instruction-hint__kw,
 .tf-voice-date-hint__kw {
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #fde047;
+  color: var(--tf-instruction-text) !important;
+}
+.tf-card-surface .tf-instruction-hint,
+.tf-card-surface .tf-instruction-hint--inline,
+.tf-glass-window .tf-instruction-hint,
+.tf-glass-window .tf-instruction-hint--inline,
+.tf-modal-glass-surface .tf-instruction-hint,
+.tf-modal-glass-surface .tf-instruction-hint--inline {
+  color: var(--tf-instruction-text) !important;
 }
 
 /* Home dashboard — Tracker tile only (other dash-tiles unchanged) */

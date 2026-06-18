@@ -32,12 +32,6 @@ export const TUTORIALS = {
     { emoji: "✏️", title: "Edit Any Meal", body: "Tap ✕ on any slot to clear it, then tap the slot to pick a different meal. Add custom meal names or search the built-in recipe list. Changes save instantly." },
     { emoji: "🎯", title: "Tap to See the Recipe", body: "Tap ▼ on any AI-planned meal to expand the full recipe card — ingredients list and cooking instructions included." },
   ],
-  composting: [
-    { emoji: "🌱", title: "Close the Loop", body: "Food you can't eat doesn't have to be trash. Composting turns scraps into rich soil and keeps methane out of landfills." },
-    { emoji: "🪣", title: "Choose Your Method", body: "Tumbler, Worm Bin, Bokashi, Electric Recycler, or Traditional Bin — each section explains the pros, cons, setup, and what it accepts." },
-    { emoji: "🌍", title: "Real Impact", body: "The average family wastes 30% of the food they buy. Composting that waste meaningfully shrinks your carbon footprint every week." },
-    { emoji: "🛒", title: "Shop Composting Gear", body: "Tap the Shop button in any composting section to find quality gear from our sustainability partners." },
-  ],
   community: [
     { emoji: "👥", title: "Community Chat", body: "Connect with other TrackFresh users. Share what you cooked, ask food questions, and cheer each other on. A daily tip posts every morning to kick off the conversation." },
     { emoji: "🤖", title: "Ask AI by Text", body: "Type a food question and tap 'Ask AI Text' — TrackFresh AI answers in the chat. Storage, cooking, shelf life, and reducing waste are its specialties." },

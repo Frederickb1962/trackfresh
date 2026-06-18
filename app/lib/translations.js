@@ -56,6 +56,12 @@ export const T = {
   quickAdd: { en: "Quick Add", es: "Agregar", fr: "Ajout rapide", it: "Aggiunta rapida" },
   quickAddDesc: { en: "Quick add with AI autocomplete", es: "Agrega r\u00e1pido con autocompletado IA", fr: "Ajout rapide avec autocompl\u00e9tion IA", it: "Aggiunta rapida con completamento IA" },
   quickAddTrackerBar: { en: "Manually add food to your Tracker", es: "Agrega alimentos manualmente al Rastreador", fr: "Ajoutez manuellement un aliment \u00e0 votre suivi", it: "Aggiungi manualmente alimenti al tuo tracker" },
+  trackerStartOrderHint: {
+    en: "Start by adding items in Tracker. Recommended tracking order - Fridge first, Freezer second and Pantry third.",
+    es: "Empieza agregando art\u00edculos en Rastreador. Orden recomendado: refrigerador primero, congelador segundo y despensa tercero.",
+    fr: "Commencez par ajouter des articles dans Suivi. Ordre recommand\u00e9 : r\u00e9frig\u00e9rateur d\u2019abord, cong\u00e9lateur ensuite, garde-manger en dernier.",
+    it: "Inizia aggiungendo articoli in Tracker. Ordine consigliato: frigo prima, congelatore secondo e dispensa terzo.",
+  },
   myItems: { en: "My Items", es: "Mis Productos", fr: "Mes articles", it: "I miei articoli" },
   myItemsDesc: { en: "Your AI-monitored inventory", es: "Tu inventario monitoreado por IA", fr: "Votre inventaire suivi par l'IA", it: "Il tuo inventario monitorato dall'IA" },
   back: { en: "Back", es: "Atr\u00e1s", fr: "Retour", it: "Indietro" },
