@@ -2440,8 +2440,8 @@ export default function TrackFreshDashboard() {
                 setWelcomeStep(0);
                 try { localStorage.setItem(WELCOMED_KEY, "true"); } catch (e) {}
               }}
-              className="tf-onboarding-cta w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d"
-              style={{ color: "#ffffff" }}
+              className="tf-onboarding-cta w-full py-3.5 rounded-xl font-bold text-lg text-white btn-amber-3d"
+              style={{ color: "#ffffff", cursor: "pointer" }}
             >
               {t("welcomeLetsGo")}
             </button>
@@ -2453,7 +2453,12 @@ export default function TrackFreshDashboard() {
 
   if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
   if (welcomeStep > 0) {
-    return <div className="min-h-screen tf-premium-bg">{onboardingOverlays}</div>;
+    return (
+      <div className="min-h-screen tf-premium-bg">
+        <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
+        {onboardingOverlays}
+      </div>
+    );
   }
   if (isUnlocked === false) return (
     <>
