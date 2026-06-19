@@ -53,7 +53,7 @@ export const T = {
   barcodeDesc: { en: "AI identifies any product", es: "La IA identifica cualquier producto", fr: "L'IA identifie n'importe quel produit", it: "L'IA identifica qualsiasi prodotto" },
   label: { en: "Label", es: "Etiqueta", fr: "\u00c9tiquette", it: "Etichetta" },
   labelDesc: { en: "AI extracts label details", es: "La IA extrae detalles de la etiqueta", fr: "L'IA extrait les d\u00e9tails de l'\u00e9tiquette", it: "L'IA estrae i dettagli dell'etichetta" },
-  quickAdd: { en: "Type It In", es: "Escribir", fr: "Saisir", it: "Scrivi" },
+  quickAdd: { en: "Type to Add Items", es: "Escribir para Agregar", fr: "Saisir pour ajouter", it: "Scrivi per aggiungere" },
   quickAddDesc: { en: "Quick add with AI autocomplete", es: "Agrega r\u00e1pido con autocompletado IA", fr: "Ajout rapide avec autocompl\u00e9tion IA", it: "Aggiunta rapida con completamento IA" },
   quickAddTrackerBar: { en: "No photo needed", es: "Sin foto", fr: "Pas de photo", it: "Nessuna foto" },
   trackerStartOrderHint: {
@@ -120,7 +120,7 @@ export const T = {
   tapUpload: { en: "Tap to upload package photo", es: "Toca para subir foto del paquete", fr: "Touchez pour t\u00e9l\u00e9verser la photo du paquet", it: "Tocca per caricare la foto della confezione" },
   jpgPng: { en: "JPG, PNG supported", es: "Se aceptan JPG, PNG", fr: "JPG, PNG pris en charge", it: "Supportati JPG, PNG" },
   readingLabel: { en: "Claude is reading the label...", es: "Claude est\u00e1 leyendo la etiqueta...", fr: "Claude lit l'\u00e9tiquette...", it: "Claude sta leggendo l'etichetta..." },
-  quickAddTitle: { en: "\u270f\ufe0f Quick Add", es: "\u270f\ufe0f Agregar R\u00e1pido", fr: "\u270f\ufe0f Ajout rapide", it: "\u270f\ufe0f Aggiunta rapida" },
+  quickAddTitle: { en: "\u270f\ufe0f Type to Add Items", es: "\u270f\ufe0f Escribir para Agregar", fr: "\u270f\ufe0f Saisir pour ajouter", it: "\u270f\ufe0f Scrivi per aggiungere" },
   quickAddTitleDesc: { en: "Select a food from the list or type your own.", es: "Selecciona un alimento o escribe el tuyo.", fr: "S\u00e9lectionnez un aliment dans la liste ou saisissez le v\u00f4tre.", it: "Seleziona un alimento dall'elenco o scrivi il tuo." },
   foodItem: { en: "Food Item", es: "Alimento", fr: "Aliment", it: "Alimento" },
   recipeSugg: { en: "Recipe Suggestions", es: "Sugerencias de Recetas", fr: "Suggestions de recettes", it: "Suggerimenti ricette" },

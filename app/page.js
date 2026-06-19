@@ -2937,7 +2937,7 @@ export default function TrackFreshDashboard() {
         {showQuickAdd && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
             <div className="w-full max-w-lg rounded-xl p-6 tf-modal-glass-surface">
-              <h2 className="mb-2 text-lg tf-modal-accent-h--mint">✏️ Quick Add</h2>
+              <h2 className="mb-2 text-lg tf-modal-accent-h--mint">{t("quickAddTitle")}</h2>
               <InstructionHint className="mb-4">{t("quickAddTitleDesc")}</InstructionHint>
               <div className="space-y-3">
                 <div>
