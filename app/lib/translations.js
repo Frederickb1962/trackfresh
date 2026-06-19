@@ -192,6 +192,8 @@ export const T = {
   fdaClassII: { en: "Moderate", es: "Moderado", fr: "Mod\u00e9r\u00e9", it: "Moderato" },
   fdaClassIII: { en: "Low Risk", es: "Bajo Riesgo", fr: "Risque faible", it: "Rischio basso" },
   smartScanTitle: { en: "Smart Scan", es: "Escaneo Inteligente", fr: "Scan intelligent", it: "Scansione intelligente" },
+  smartScanChoosePhotos: { en: "Choose from Photos", es: "Elegir de Fotos", fr: "Choisir dans Photos", it: "Scegli da Foto" },
+  smartScanCapture: { en: "Capture & Scan All", es: "Capturar y Escanear Todo", fr: "Capturer et tout scanner", it: "Cattura e scansiona tutto" },
   howManyItems: { en: "How many items are you scanning?", es: "\u00bfCu\u00e1ntos productos vas a escanear?", fr: "Combien d'articles scannez-vous ?", it: "Quanti articoli stai scansionando?" },
   singleScan: { en: "Single Scan", es: "Escaneo \u00danico", fr: "Scan unique", it: "Scansione singola" },
   multiScans: { en: "Mult. Scans", es: "M\u00falt. Escaneos", fr: "Scans mult.", it: "Scans multipli" },

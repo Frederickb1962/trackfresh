@@ -86,7 +86,7 @@ function suggestedExpiryISO(item) {
 }
 
 /**
- * Smart Scan (grocery): camera (mobile) or drag‑drop/file (desktop) → POST /api/scan-smart → onEnqueue(items).
+ * Smart Scan (grocery): camera or gallery (mobile), drag‑drop/file (desktop) → POST /api/scan-smart → onEnqueue(items).
  */
 export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }) {
   const videoRef = useRef(null);
@@ -202,17 +202,26 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
     async (file) => {
       if (!file || !String(file.type || "").startsWith("image/")) {
         const msg = isEs ? "Elige una imagen (JPG, PNG, WEBP)." : "Please choose an image file (JPG, PNG, WEBP).";
-        setDesktopError(msg);
+        if (isDesktop) setDesktopError(msg);
+        else {
+          setErrorMsg(msg);
+          setScreen("error");
+        }
         return;
       }
       try {
         const { base64, mimeType } = await compressImageFile(file);
         runSmartScan(base64, mimeType);
       } catch {
-        setDesktopError(isEs ? "No se pudo procesar la imagen." : "Could not process image.");
+        const msg = isEs ? "No se pudo procesar la imagen." : "Could not process image.";
+        if (isDesktop) setDesktopError(msg);
+        else {
+          setErrorMsg(msg);
+          setScreen("error");
+        }
       }
     },
-    [isEs, runSmartScan]
+    [isDesktop, isEs, runSmartScan]
   );
 
   useEffect(() => {
@@ -357,7 +366,7 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
   /** ─── Desktop dashboard panel ─── */
   if (isDesktop) {
     const title = scanTitle ?? (isEs ? "Escaneo Inteligente" : "Smart Scan");
-    const dropLabel = isEs ? "Arrastra y suelta recibos/fotos o haz clic para buscar" : "Drag & Drop Receipts/Photos or Click to Browse";
+    const dropLabel = isEs ? "Arrastra y suelta o elige de Fotos" : "Drag & Drop or Choose from Photos";
     return (
       <div className="tf-premium-bg" style={{ position: "fixed", inset: 0, zIndex: 10001, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem", overflow: "auto" }}>
         <div
@@ -745,9 +754,30 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
           borderTop: "0.5px solid rgba(255,255,255,0.35)",
         }}
       >
-        <button type="button" onClick={capture} disabled={!!camError} className="tf-glass-scan" style={{ width: "100%", padding: "1.2rem", ...glassBtnLayout, fontSize: "1.2rem", fontWeight: 900, opacity: camError ? 0.45 : 1, cursor: camError ? "not-allowed" : "pointer" }}>
-          📷 {isEs ? "Capturar y Escanear Todo" : "Capture & Scan All"}
-        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) processImageFile(f);
+            e.target.value = "";
+          }}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+          <button type="button" onClick={capture} disabled={!!camError} className="tf-glass-scan" style={{ padding: "1rem 0.5rem", ...glassBtnLayout, fontSize: "0.82rem", fontWeight: 800, opacity: camError ? 0.45 : 1, cursor: camError ? "not-allowed" : "pointer", lineHeight: 1.25 }}>
+            📷 {isEs ? "Capturar y Escanear" : "Capture & Scan"}
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="tf-glass-scan"
+            style={{ padding: "1rem 0.5rem", ...glassBtnLayout, fontSize: "0.82rem", fontWeight: 800, lineHeight: 1.25 }}
+          >
+            🖼️ {isEs ? "Elegir de Fotos" : "Choose from Photos"}
+          </button>
+        </div>
         <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.7rem", textAlign: "center", margin: "0.5rem 0 0", fontWeight: 600 }}>
           {isEs ? "Los artículos van a la cola de voz (fecha → Next / Done)" : "Items go to the voice queue (date → Next / Done)"}
         </p>
