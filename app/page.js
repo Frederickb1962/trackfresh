@@ -28,6 +28,12 @@ import { speakWithVoice, warmSpeechVoices } from "./lib/speechVoice";
 import { openDatePicker } from "./lib/openDatePicker";
 import { T } from "./lib/translations";
 import {
+  applyBackupToLocalStorage,
+  buildBackupPayload,
+  downloadBackupFile,
+  parseBackupFile,
+} from "./lib/localBackup";
+import {
   SAVINGS_EVENTS_KEY,
   appendSavingsEvent,
   computeMonthStats,
@@ -673,6 +679,8 @@ export default function TrackFreshDashboard() {
   const [suggSubmitting, setSuggSubmitting] = useState(false);
   const [suggSubmitted, setSuggSubmitted] = useState(false);
   const [voteCounts, setVoteCounts] = useState({});
+  const [backupMessage, setBackupMessage] = useState("");
+  const backupInputRef = useRef(null);
 
   useEffect(() => {
     if (!showRecallsPanel) return;
@@ -939,6 +947,14 @@ export default function TrackFreshDashboard() {
     setMeals(loadMeals());
     let savedName = null; try { savedName = localStorage.getItem(USERNAME_KEY); } catch(e) {}
     if (savedName) setUsername(savedName);
+    try {
+      const sr = localStorage.getItem(SAVED_RECIPES_KEY);
+      if (sr) setSavedRecipes(JSON.parse(sr));
+    } catch (e) {}
+    try {
+      const rm = localStorage.getItem(RECIPE_MODE_KEY);
+      if (rm) setRecipeMode(rm);
+    } catch (e) {}
   }, []);
   useEffect(() => { saveItems(trackedItems); }, [trackedItems]);
   useEffect(() => { saveSavingsEvents(savingsEvents); }, [savingsEvents]);
@@ -2390,6 +2406,78 @@ export default function TrackFreshDashboard() {
   const handlePostTip = () => { if (!newTip.trim()) return; setCommunity((prev) => ({ ...prev, tips: [{ id: crypto.randomUUID(), author: username, text: newTip.trim(), date: new Date().toLocaleDateString() }, ...prev.tips] })); setNewTip(""); };
   const handlePostChat = () => { if (!newChat.trim()) return; setCommunity((prev) => ({ ...prev, chat: [...prev.chat, { id: crypto.randomUUID(), author: username, text: newChat.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }] })); setNewChat(""); };
 
+  const reloadAppStateFromStorage = () => {
+    setTrackedItems(loadItems());
+    setSavingsEvents(loadSavingsEvents());
+    setCommunity(loadCommunity());
+    setShoppingItems(loadShopping());
+    setMeals(loadMeals());
+    try {
+      const savedName = localStorage.getItem(USERNAME_KEY);
+      setUsername(savedName || "");
+    } catch (e) {}
+    try {
+      setSavedRecipes(JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY) || "[]"));
+    } catch (e) {
+      setSavedRecipes([]);
+    }
+    try {
+      setFavoriteRecipes(JSON.parse(localStorage.getItem("tf_favorite_recipes") || "[]"));
+    } catch (e) {
+      setFavoriteRecipes([]);
+    }
+    try {
+      const rm = localStorage.getItem(RECIPE_MODE_KEY);
+      if (rm) setRecipeMode(rm);
+    } catch (e) {}
+    try {
+      const savedLang = localStorage.getItem(LANG_KEY);
+      if (savedLang) setLang(savedLang);
+    } catch (e) {}
+  };
+
+  const handleExportBackup = () => {
+    try {
+      downloadBackupFile(buildBackupPayload());
+      setBackupMessage(t("backupExportOk"));
+    } catch (e) {
+      setBackupMessage(t("backupErrorInvalid"));
+    }
+  };
+
+  const handleImportBackup = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = parseBackupFile(String(reader.result || ""));
+      if (!result.ok) {
+        setBackupMessage(t("backupErrorInvalid"));
+        return;
+      }
+      if (!window.confirm(t("backupImportConfirm"))) return;
+      try {
+        applyBackupToLocalStorage(result.payload);
+        reloadAppStateFromStorage();
+        setBackupMessage(t("backupImportOk"));
+      } catch (err) {
+        setBackupMessage(t("backupErrorInvalid"));
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleSignOut = () => {
+    if (!window.confirm(t("signOutConfirm"))) return;
+    setIsUnlocked(false);
+    setIsAdmin(false);
+    try {
+      sessionStorage.removeItem("tf_ok");
+      sessionStorage.removeItem("tf_admin");
+    } catch (e) {}
+  };
+
   const onboardingOverlays = (
     <>
       {welcomeStep === 1 && (
@@ -2517,7 +2605,7 @@ export default function TrackFreshDashboard() {
             <button onClick={() => { setTourMode(true); setTourSection(null); setTourSlide(0); }} className="app-header-btn tut-pulse">✨ Tour</button>
             <button onClick={() => changeLang(lang === "en" ? "es" : "en")} className="app-header-btn">{lang === "en" ? "\ud83c\uddf2\ud83c\uddfd ES" : "\ud83c\uddfa\ud83c\uddf8 EN"}</button>
             {isAdmin && <button onClick={() => setActiveTab("admin")} className="app-header-btn" style={{color: activeTab === "admin" ? "#B7D63A" : "rgba(255,255,255,0.5)", fontSize:"1.1rem"}} title="Admin">⚙️</button>}
-            <button onClick={() => { setIsUnlocked(false); setIsAdmin(false); try { sessionStorage.removeItem("tf_ok"); sessionStorage.removeItem("tf_admin"); } catch(e) {} }} className="app-header-btn">{lang === "es" ? "Salir" : "Sign Out"}</button>
+            <button onClick={handleSignOut} className="app-header-btn">{t("signOut")}</button>
           </div>
         </div>
       </div>
@@ -4431,13 +4519,46 @@ export default function TrackFreshDashboard() {
               ))}
             </div>
 
+            {/* Device Backup */}
+            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(183,214,58,0.25)"}}>
+              <h3 className="font-bold text-white text-lg">📲 {t("backupTitle")}</h3>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.72)"}}>{t("backupDesc")}</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportBackup}
+                  className="flex-1 py-3 rounded-xl font-bold text-white glass-scan-btn"
+                >
+                  {t("backupExport")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => backupInputRef.current?.click()}
+                  className="flex-1 py-3 rounded-xl font-bold"
+                  style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)"}}
+                >
+                  {t("backupImport")}
+                </button>
+              </div>
+              <input
+                ref={backupInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleImportBackup}
+              />
+              {backupMessage && (
+                <p className="text-sm" style={{color:"rgba(183,214,58,0.95)"}}>{backupMessage}</p>
+              )}
+            </div>
+
             {/* Data & Privacy */}
             <div className="rounded-2xl p-4 space-y-2" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.12)"}}>
               <h3 className="font-bold text-white text-base">🔒 {lang === "es" ? "Datos y Privacidad" : "Data & Privacy"}</h3>
               <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.72)"}}>
                 {lang === "es"
-                  ? "📱 Tus datos permanecen en tu dispositivo. TrackFresh almacena todos tus artículos, listas de compras, planes de comidas y preferencias localmente en este dispositivo. Borrar el historial de Safari eliminará tus datos. No se requiere cuenta y nada se envía a servidores externos excepto al usar funciones de IA. La Fase 2 introducirá respaldo en la nube opcional."
-                  : "📱 Your Data stays on your device. TrackFresh stores all your food items, shopping lists, meal plans, and preferences locally on this device using browser storage. Clearing your Safari history or cache will erase your data. No account is required and nothing is sent to external servers except when using AI features (scanning, recipes, meal planning). Phase 2 will introduce optional cloud backup so your data follows you across devices."}
+                  ? "📱 Tus datos permanecen en tu dispositivo. TrackFresh almacena artículos, listas y planes localmente. Usa Guardar y Restaurar Respaldo arriba para mover tu cocina entre teléfono y PC. Borrar datos del navegador eliminará todo en este dispositivo. Nada se envía a servidores excepto al usar funciones de IA."
+                  : "📱 Your data stays on your device. TrackFresh stores items, lists, and meal plans locally. Use Save & Restore Backup above to move your kitchen between phone and PC. Clearing this site\u2019s browser data will erase everything on this device. Nothing is sent to our servers except when using AI features."}
               </p>
             </div>
 
