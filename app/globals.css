@@ -629,6 +629,7 @@ html,
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  margin: 0;
 }
 
 .tf-premium-bg {
@@ -820,6 +821,29 @@ body {
   color: rgba(255, 248, 220, 0.92) !important;
   font-weight: 700 !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.tf-dash-tile-link {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #86efac;
+  text-align: center;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tf-dash-tile-link--tracker {
+  color: rgba(255, 248, 220, 0.95) !important;
+}
+
+.tf-home-track-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.tf-home-track-link:hover {
+  color: #fde68a !important;
 }
 
 @keyframes tf-tracker-home-dash-pulse {

@@ -43,6 +43,7 @@ export const T = {
   welcomeLetsGo: { en: "Let's Go! \ud83e\udd66", es: "\u00a1Vamos! \ud83e\udd66", fr: "C'est parti ! \ud83e\udd66", it: "Andiamo! \ud83e\udd66" },
   tracker: { en: "Tracker", es: "Rastreador", fr: "Suivi", it: "Tracker" },
   trackerDesc: { en: "AI tracks your food & freshness", es: "IA rastrea tu comida y frescura", fr: "L'IA suit vos aliments et leur fra\u00eecheur", it: "L'IA monitora cibo e freschezza" },
+  trackYourFood: { en: "Track Your Food", es: "Rastrea tu Comida", fr: "Suivez vos aliments", it: "Monitora il tuo cibo" },
   recipes: { en: "Recipes", es: "Recetas", fr: "Recettes", it: "Ricette" },
   recipesDesc: { en: "AI recipes from your fridge", es: "Recetas con IA de tu refrigerador", fr: "Recettes IA \u00e0 partir de votre frigo", it: "Ricette IA dal tuo frigo" },
   shopping: { en: "Shopping", es: "Compras", fr: "Courses", it: "Spesa" },

@@ -67,8 +67,8 @@ import {
 
 
 const LANG_KEY = "trackfresh.lang";
-/** Main app column: phone-narrow, desktop-wide green cards / dashboard */
-const TF_APP_SHELL_MAX = "w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl";
+/** Main app column — centered on all screen sizes (phone-first on PC too) */
+const TF_APP_SHELL_MAX = "max-w-2xl";
 
 const STORAGE_KEY = "trackfresh.items";
 const COMMUNITY_KEY = "trackfresh.community";
@@ -2540,7 +2540,7 @@ export default function TrackFreshDashboard() {
   if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
   if (welcomeStep > 0) {
     return (
-      <div className="min-h-screen tf-premium-bg">
+      <div className="min-h-screen tf-premium-bg flex items-center justify-center">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
         {onboardingOverlays}
       </div>
@@ -2594,9 +2594,11 @@ export default function TrackFreshDashboard() {
       />
     )}
     <div className="min-h-screen app-bg"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+      {trackerLinkOverlay && <div className="tracker-link-overlay" aria-hidden="true" />}
+      <div className={`mx-auto w-full min-h-screen ${TF_APP_SHELL_MAX}`}>
       {/* Sticky header: logo + top nav */}
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(to bottom,#064e3b,#022c22)",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
-        <div className={`mx-auto px-4 pt-3 pb-2 flex items-center justify-between ${TF_APP_SHELL_MAX}`}>
+        <div className="px-4 pt-3 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {activeTab !== "home" && <button onClick={() => setActiveTab("home")} style={{background:"none",border:"none",cursor:"pointer",color:"#fff",fontSize:"1.2rem",fontWeight:"bold",padding:"0",lineHeight:1}}>←</button>}
             <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
@@ -2609,7 +2611,7 @@ export default function TrackFreshDashboard() {
           </div>
         </div>
       </div>
-      <div key={activeTab} className={`mx-auto space-y-4 px-4 pt-4 pb-8 tab-enter ${TF_APP_SHELL_MAX}`}>
+      <div key={activeTab} className="space-y-4 px-4 pt-4 pb-8 tab-enter">
 
 
 
@@ -3171,7 +3173,10 @@ export default function TrackFreshDashboard() {
               background: "transparent",
             }}
           >
-            <p
+            <button
+              type="button"
+              onClick={handleGoToTracker}
+              className="tf-home-track-link"
               style={{
                 fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
                 fontWeight: 600,
@@ -3182,10 +3187,16 @@ export default function TrackFreshDashboard() {
                 textAlign: "center",
                 margin: "0 0 1.25rem",
                 lineHeight: 1.5,
+                display: "block",
+                width: "100%",
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
               }}
             >
-              {lang === "es" ? "Escanea para llevar la cuenta de la frescura" : "Scan to Track Freshness"}
-            </p>
+              {t("trackYourFood")} →
+            </button>
             {coachTip && (
               <CoachTipCard
                 lang={lang}
@@ -3323,7 +3334,7 @@ export default function TrackFreshDashboard() {
             <div className="tf-glass-window tf-glass-window--flush">
             <div className="grid grid-cols-3 gap-3">
               {[
-                { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: lang === "es" ? "Rastrea tu Comida" : "Track Your Food",    action: () => setActiveTab("tracker") },
+                { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: t("trackYourFood"),    action: handleGoToTracker },
                 { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",       sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",  action: () => setActiveTab("recipes") },
                 { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Lista de Compras" : "Shopping List", sub: lang === "es" ? "Tu Lista" : "Build Your List",         action: () => setActiveTab("shopping") },
                 { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
@@ -3339,7 +3350,7 @@ export default function TrackFreshDashboard() {
                   <button key={label} onClick={action} className={`dash-tile${isTrackerTile ? " dash-tile--tracker-home" : ""}${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
                     <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
                     <span style={{fontSize:"0.7rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",textAlign:"center",lineHeight:1.2}}>{label}</span>
-                    {sub && <span style={{fontSize:"0.6rem",fontWeight:600,color:"#86efac",textAlign:"center",lineHeight:1.2}}>{sub}</span>}
+                    {sub && <span className={`tf-dash-tile-link${isTrackerTile ? " tf-dash-tile-link--tracker" : ""}`}>{sub} →</span>}
                   </button>
                 );
               })}
@@ -3387,7 +3398,7 @@ export default function TrackFreshDashboard() {
                   lineHeight: 1.35,
                 }}
               >
-                {lang === "es" ? "Escanea para llevar la cuenta de la frescura" : "Scan to Track Freshness"}
+                {t("trackYourFood")}
               </h2>
             </div>
 
@@ -3483,6 +3494,7 @@ export default function TrackFreshDashboard() {
                 {/* Track Your Food + scan actions */}
                 <div>
                   <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
+                  <h2 className="app-section-h2" style={{ marginBottom: "0.25rem" }}>{t("trackYourFood")}</h2>
                 </div>
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
@@ -4080,7 +4092,7 @@ export default function TrackFreshDashboard() {
 
         {activeTab === "community" && (
           <>
-            <button onClick={() => setActiveTab("more")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
+            <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold mb-3 app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem",display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
             
             <div className="stew-scene mb-4" style={{position: "relative", height: "220px", width: "100%", overflow: "hidden"}}>
               <div style={{position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 160, height: 90, background: "linear-gradient(to bottom, #6b7280, #4b5563)", borderRadius: "0 0 40% 40%", borderTop: "8px solid #374151", zIndex: 10}}></div>
@@ -4566,6 +4578,7 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
+      </div>
       </div>
     </div>
 
