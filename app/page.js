@@ -25,6 +25,7 @@ import GuidedFlowWizard from "./components/GuidedFlowWizard";
 import CoachTipCard from "./components/CoachTipCard";
 import { pick, speechLocale } from "./lib/i18n";
 import { speakWithVoice, warmSpeechVoices } from "./lib/speechVoice";
+import { openDatePicker } from "./lib/openDatePicker";
 import { T } from "./lib/translations";
 import {
   SAVINGS_EVENTS_KEY,
@@ -2631,11 +2632,16 @@ export default function TrackFreshDashboard() {
                 ) : null}
               </div>
               <div
-                className={pendingPickedDate ? "" : "tf-pending-date-empty"}
+                className={`tf-date-field-wrap${pendingPickedDate ? "" : " tf-pending-date-empty"}`}
                 style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", padding: "0.35rem 0.5rem 0.5rem" }}
+                onClick={() => openDatePicker(pendingDateInputRef.current)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDatePicker(pendingDateInputRef.current); } }}
+                role="button"
+                tabIndex={0}
+                aria-label={isEs ? "Abrir calendario de vencimiento" : "Open expiration calendar"}
               >
                 {!pendingPickedDate ? (
-                  <p className="tf-instruction-hint--inline" style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem" }}>
+                  <p className="tf-instruction-hint--inline" style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem", pointerEvents: "none" }}>
                     {isEs ? "📅 Toca abajo para abrir el calendario" : "📅 Tap below to open calendar"}
                   </p>
                 ) : null}
@@ -2645,6 +2651,7 @@ export default function TrackFreshDashboard() {
                   className="tf-pending-date-native"
                   value={pendingPickedDate}
                   onChange={(e) => applyPendingDateValue(e.target.value)}
+                  onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
                   onFocus={() => {
                     abortPendingVoiceRecognition();
                     pendingVoiceUserStopRef.current = false;
@@ -2789,7 +2796,7 @@ export default function TrackFreshDashboard() {
                     <Calendar className="h-4 w-4 shrink-0" style={{color:"var(--tf-instruction-text)"}} aria-hidden />
                     {lang === "es" ? "Agregar Fecha" : "Add Date"}
                   </label>
-                  <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} className="tf-date-calendar-input w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"2px solid #B7D63A"}} />
+                  <input id="editDateInput" type="date" value={editingItem.useByDate} onChange={(e) => setEditingItem({...editingItem, useByDate: e.target.value})} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"2px solid #B7D63A"}} />
                 </div>
                 <div><label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>Location</label><select value={editingItem.location || "Fridge"} onChange={(e) => setEditingItem({...editingItem, location: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(183,214,58,0.5)"}}><option style={{background:"#0d3d2e"}}>Fridge</option><option style={{background:"#0d3d2e"}}>Freezer</option><option style={{background:"#0d3d2e"}}>Pantry</option><option style={{background:"#0d3d2e"}}>Counter</option></select></div>
                 <div><label className="mb-1 block text-sm font-medium" style={{color:"#fff"}}>Category</label><select value={editingItem.category || "Other"} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(183,214,58,0.5)"}}><option style={{background:"#0d3d2e"}}>Dairy</option><option style={{background:"#0d3d2e"}}>Meat</option><option style={{background:"#0d3d2e"}}>Produce</option><option style={{background:"#0d3d2e"}}>Bakery</option><option style={{background:"#0d3d2e"}}>Frozen</option><option style={{background:"#0d3d2e"}}>Pantry</option><option style={{background:"#0d3d2e"}}>Beverages</option><option style={{background:"#0d3d2e"}}>Condiments</option><option style={{background:"#0d3d2e"}}>Snacks</option><option style={{background:"#0d3d2e"}}>Other</option></select></div>
@@ -2890,7 +2897,7 @@ export default function TrackFreshDashboard() {
                         <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                         <div className="grid grid-cols-2 gap-2 mb-2">
                           <button type="button" onClick={() => handleVoiceDate("useBy")} className={`rounded-xl py-3 text-sm font-bold ${voiceListening === "useBy" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>🎤 {voiceListening === "useBy" ? "Listening..." : "Speak Date"}</button>
-                          <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
+                          <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",position:"relative"}}>📅 Enter Date<input type="date" value={barcodeUseBy} onChange={(e) => setBarcodeUseBy(e.target.value)} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input" style={{position:"absolute",inset:0,opacity:0,width:"100%",height:"100%",cursor:"pointer",border:"none",margin:0,padding:0}} /></label>
                         </div>
                         {(voiceListening === "useBy" || barcodeUseBy) && <p className="text-xs mt-1" style={{color: barcodeUseBy ? "#86efac" : "#fca5a5"}}>{voiceListening === "useBy" ? "🎤 Listening... say e.g. March 20 2026" : "✓ " + barcodeUseBy}</p>}
                         {voiceListening === "useBy" && <p className="text-xs mt-1" style={{color:"#a7f3d0"}}>Say the date e.g. February 20 2026</p>}
@@ -2900,7 +2907,7 @@ export default function TrackFreshDashboard() {
                           <label className="mb-1 block text-sm font-medium" style={{color:"rgba(255,255,255,0.85)"}}>{t("freezeByLabel")} Date <span className="text-xs" style={{color:"rgba(255,255,255,0.45)"}}>(optional - we will remind you)</span></label>
                           <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                           <div className="flex gap-2">
-                            <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} className="flex-1 rounded border px-3 py-2 text-sm" style={{background:"rgba(0,0,0,0.25)",borderColor:"rgba(255,255,255,0.25)",color:"#fff"}} />
+                            <input type="date" value={barcodeFreezeBy} onChange={(e) => setBarcodeFreezeBy(e.target.value)} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input flex-1 rounded border px-3 py-2 text-sm" style={{background:"rgba(0,0,0,0.25)",borderColor:"rgba(255,255,255,0.25)",color:"#fff"}} />
                             <button type="button" onClick={() => handleVoiceDate("freezeBy")} className={`rounded px-3 py-2 text-sm font-semibold ${voiceListening === "freezeBy" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>{voiceListening === "freezeBy" ? "🎤 Listening..." : "🎤"}</button>
                           </div>
                           {voiceListening === "freezeBy" && <p className="text-xs mt-1" style={{color:"#a7f3d0"}}>Say the date e.g. February 25 2026</p>}
@@ -2976,7 +2983,7 @@ export default function TrackFreshDashboard() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium" style={{color:"#4ade80"}}>📅 {lang === "es" ? "Fecha de Vencimiento" : "Set Expiry Date"}</label>
-                  <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} className="w-full rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"2px solid #f97316"}} />
+                  <input type="date" value={quickAddDate} onChange={(e) => setQuickAddDate(e.target.value)} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input w-full rounded-xl px-3 py-2 text-sm" style={{background:"#1a1a1a",color:"#fff",border:"2px solid #f97316"}} />
                 </div>
                 <button onClick={handleQuickAdd} className="w-full rounded-xl py-2.5 text-sm font-bold" style={{background:"#22c55e",color:"#0a0a0a"}}>{lang === "es" ? "Agregar Artículo" : "Add Item"}</button>
                 <button type="button" onClick={() => { setShowQuickAdd(false); setQuickAddName(""); setQuickAddDate(""); setQuickAddQty(""); setQuickAddCategory("Other"); setQuickAddLocation("Fridge"); }} className="w-full rounded-xl py-2 text-sm tf-glass-primary-btn">{t("cancel")}</button>
@@ -3042,7 +3049,7 @@ export default function TrackFreshDashboard() {
                     <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <button type="button" onClick={() => handleVoiceDate("labelDate")} className={`rounded-xl py-3 text-sm font-bold ${voiceListening === "labelDate" ? "tf-voice-listening" : "tf-glass-primary-btn"}`}>🎤 {voiceListening === "labelDate" ? "Listening..." : "Speak Date"}</button>
-                      <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>📅 Enter Date<input type="date" value={labelItem.date||""} onChange={(e) => setLabelItem(prev=>({...prev,date:e.target.value,dateFound:true}))} style={{position:"absolute",opacity:0,width:"1px",height:"1px"}} /></label>
+                      <label className="rounded-xl py-3 text-sm font-bold tf-glass-primary-btn" style={{display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",position:"relative"}}>📅 Enter Date<input type="date" value={labelItem.date||""} onChange={(e) => setLabelItem(prev=>({...prev,date:e.target.value,dateFound:true}))} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input" style={{position:"absolute",inset:0,opacity:0,width:"100%",height:"100%",cursor:"pointer",border:"none",margin:0,padding:0}} /></label>
                     </div>
                     {(voiceListening === "labelDate" || labelItem.date) && <p className="text-xs mt-1" style={{color: labelItem.date ? "#86efac" : "#fca5a5"}}>{voiceListening === "labelDate" ? "🎤 Listening... say e.g. March 20 2026" : "✓ " + labelItem.date}</p>}
                     {labelItem.storageTip && <p className="tf-instruction-hint--inline tf-instruction-hint--left" style={{ marginTop: "0.25rem" }}>💡 {labelItem.storageTip}</p>}
@@ -4695,7 +4702,7 @@ export default function TrackFreshDashboard() {
 
                     {showOpenedDateEdit ? (
                       <div style={{marginTop:"0.75rem",display:"flex",gap:"0.5rem",alignItems:"center",justifyContent:"center",flexWrap:"wrap"}}>
-                        <input type="date" value={openedEditDate} onChange={e => setOpenedEditDate(e.target.value)} style={{borderRadius:"8px",padding:"0.5rem",border:"1.5px solid rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.875rem"}} />
+                        <input type="date" value={openedEditDate} onChange={e => setOpenedEditDate(e.target.value)} onClick={(e) => openDatePicker(e.currentTarget)} className="tf-date-calendar-input" style={{borderRadius:"8px",padding:"0.5rem",border:"1.5px solid rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"0.875rem",minWidth:"10rem"}} />
                         <button onClick={() => { if (openedEditDate) handleMarkOpened(openedConfirm.item, openedEditDate); setShowOpenedDateEdit(false); }} className="glass-scan-btn" style={{padding:"0.4rem 1rem",fontSize:"0.8rem"}}>{lang==="es"?"Guardar":"Save"}</button>
                         <button onClick={() => setShowOpenedDateEdit(false)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.75)",cursor:"pointer",fontSize:"0.8rem"}}>{lang==="es"?"Cancelar":"Cancel"}</button>
                       </div>
