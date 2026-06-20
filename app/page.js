@@ -4618,8 +4618,9 @@ export default function TrackFreshDashboard() {
                 {lang === "es" ? "🛡️ GUARDIÁN DE COCINA: ALERTAS ACTIVAS" : "🛡️ KITCHEN GUARD: ACTIVE ALERTS"}
               </h2>
               {fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "2rem 0" }}>{t("fdaLoading")}</p>}
-              {fdaRecalls.length === 0 && !fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "2rem 0" }}>{t("fdaError")}</p>}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {fdaRecalls.length === 0 && !fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "1rem 0" }}>{t("fdaError")}</p>}
+              {fdaRecalls.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1rem" }}>
                 {fdaRecalls.map((recall) => (
                   <div key={recall.id} style={{ background: "rgba(255,255,255,0.05)", borderRadius: "12px", padding: "1rem", borderLeft: recall.severity === "high" ? "4px solid #fbbf24" : "4px solid rgba(255,255,255,0.3)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
@@ -4633,6 +4634,46 @@ export default function TrackFreshDashboard() {
                     </div>
                   </div>
                 ))}
+              </div>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1rem" }}>
+                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(250,204,21,0.22)" }}>
+                  <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.35 }}>
+                    🛒 {t("fdaDeptsTitle")}
+                  </h3>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+                    {[
+                      { icon: "🥖", text: t("fdaDeptBakery") },
+                      { icon: "🥩", text: t("fdaDeptMeat") },
+                      { icon: "🥛", text: t("fdaDeptDairy") },
+                    ].map(({ icon, text }) => (
+                      <li key={text} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", fontSize: "0.78rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.45 }}>
+                        <span aria-hidden="true" style={{ flexShrink: 0 }}>{icon}</span>
+                        <span>{text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(134,239,172,0.22)" }}>
+                  <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#86efac", lineHeight: 1.35 }}>
+                    📅 {t("fdaDatesTitle")}
+                  </h3>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+                    {[t("fdaDateSellBy"), t("fdaDateBestBy"), t("fdaDateUseBy")].map((text) => {
+                      const colon = text.indexOf(":");
+                      const label = colon >= 0 ? text.slice(0, colon + 1) : text;
+                      const body = colon >= 0 ? text.slice(colon + 1).trim() : "";
+                      return (
+                        <li key={text} style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.45 }}>
+                          <span style={{ fontWeight: 800, color: "#bbf7d0" }}>{label} </span>
+                          {body && <span>{body}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
               <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#dc2626,#991b1b)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewAll")} &#8594; FDA.gov</button>
