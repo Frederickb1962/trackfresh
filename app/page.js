@@ -28,6 +28,12 @@ import { speakWithVoice, warmSpeechVoices } from "./lib/speechVoice";
 import { openDatePicker } from "./lib/openDatePicker";
 import { T } from "./lib/translations";
 import {
+  USDA_EST_SOURCE_URL,
+  USDA_FSIS_RECALLS_URL,
+  usdaAlertNoteForLang,
+  usdaFactsForLang,
+} from "./lib/usdaFoodFacts";
+import {
   applyBackupToLocalStorage,
   buildBackupPayload,
   downloadBackupFile,
@@ -3339,7 +3345,7 @@ export default function TrackFreshDashboard() {
                 { icon: String.fromCodePoint(0x1F6D2), label: lang === "es" ? "Lista de Compras" : "Shopping List", sub: lang === "es" ? "Tu Lista" : "Build Your List",         action: () => setActiveTab("shopping") },
                 { icon: String.fromCodePoint(0x1F4C5), label: lang === "es" ? "Comidas" : "Meals",         sub: lang === "es" ? "Tu Semana" : "Plan Your Week",              action: () => setActiveTab("meals") },
                 { icon: "🏪",                           label: lang === "es" ? "Tiendas" : "Stores",        sub: lang === "es" ? "Enlaza y Compra" : "Link And Shop",          action: () => setActiveTab("stores-page") },
-                { icon: "⚠️",                           label: lang === "es" ? "Alertas FDA" : "FDA Recalls", sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
+                { icon: "⚠️",                           label: t("fdaRecalls"), sub: lang === "es" ? "Revisa Diario" : "Check Daily",           action: () => setShowRecallsPanel(true) },
                 { icon: "🤝",                           label: lang === "es" ? "Socios" : "Partners",       sub: lang === "es" ? "Beneficios y Dar" : "Benefits & Giving Back", action: () => setActiveTab("partners") },
                 { icon: "💰",                           label: lang === "es" ? "Buscar y Ahorrar" : "Search & Save", sub: lang === "es" ? "20% en caja" : "20% at checkout",             action: () => setActiveTab("search-save") },
                 { icon: "💬",                           label: lang === "es" ? "Sugerencias" : "Suggestions", sub: lang === "es" ? "Tu Opinión" : "Share Feedback",           action: () => setActiveTab("suggestions") },
@@ -4614,9 +4620,12 @@ export default function TrackFreshDashboard() {
                 </button>
                 <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ borderRadius: "50%", width: "32px", height: "32px", fontSize: "1.1rem", padding: 0 }} aria-label={t("fdaClose")}>&#10005;</button>
               </div>
-              <h2 className="tf-modal-accent-h" style={{ fontSize: "1.05rem", margin: "0 0 1rem", textAlign: "center", lineHeight: 1.35 }}>
-                {lang === "es" ? "🛡️ GUARDIÁN DE COCINA: ALERTAS ACTIVAS" : "🛡️ KITCHEN GUARD: ACTIVE ALERTS"}
+              <h2 className="tf-modal-accent-h" style={{ fontSize: "1.05rem", margin: "0 0 0.35rem", textAlign: "center", lineHeight: 1.35 }}>
+                {t("fdaPanelTitle")}
               </h2>
+              <p style={{ textAlign: "center", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)", margin: "0 0 1rem", lineHeight: 1.45 }}>
+                {t("fdaRecallsBanner")}
+              </p>
               {fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "2rem 0" }}>{t("fdaLoading")}</p>}
               {fdaRecalls.length === 0 && !fdaLoading && <p style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", padding: "1rem 0" }}>{t("fdaError")}</p>}
               {fdaRecalls.length > 0 && (
@@ -4637,7 +4646,45 @@ export default function TrackFreshDashboard() {
               </div>
               )}
 
+              <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(239,68,68,0.25)", marginBottom: "0.85rem" }}>
+                <h3 style={{ margin: "0 0 0.5rem", fontSize: "0.82rem", fontWeight: 800, color: "#fca5a5", lineHeight: 1.35 }}>
+                  🥩 USDA FSIS Alerts
+                </h3>
+                <p style={{ margin: "0 0 0.65rem", fontSize: "0.76rem", color: "rgba(255,255,255,0.82)", lineHeight: 1.45 }}>
+                  {usdaAlertNoteForLang(lang)}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.open(USDA_FSIS_RECALLS_URL, "_blank")}
+                  style={{ width: "100%", background: "linear-gradient(to bottom,#b45309,#92400e)", color: "white", border: "none", borderRadius: "10px", padding: "0.65rem", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer" }}
+                >
+                  {t("fdaViewUsda")} &#8594;
+                </button>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1rem" }}>
+                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(96,165,250,0.28)" }}>
+                  <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#93c5fd", lineHeight: 1.35 }}>
+                    💡 {t("fdaFunFactsTitle")}
+                  </h3>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+                    {usdaFactsForLang(lang).map((fact) => (
+                      <li key={fact} style={{ display: "flex", gap: "0.45rem", alignItems: "flex-start", fontSize: "0.78rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.45 }}>
+                        <span aria-hidden="true" style={{ flexShrink: 0, color: "#93c5fd" }}>•</span>
+                        <span>{fact}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={USDA_EST_SOURCE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "inline-block", marginTop: "0.65rem", fontSize: "0.68rem", color: "rgba(147,197,253,0.85)", textDecoration: "underline" }}
+                  >
+                    {t("fdaFunFactsSource")} &#8594;
+                  </a>
+                </div>
+
                 <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(250,204,21,0.22)" }}>
                   <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.35 }}>
                     🛒 {t("fdaDeptsTitle")}
@@ -4676,7 +4723,8 @@ export default function TrackFreshDashboard() {
                 </div>
               </div>
               <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#dc2626,#991b1b)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewAll")} &#8594; FDA.gov</button>
+                <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#dc2626,#991b1b)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewAll")} &#8594;</button>
+                <button onClick={() => window.open(USDA_FSIS_RECALLS_URL, "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#b45309,#92400e)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewUsda")} &#8594;</button>
                 <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ width: "100%", padding: "0.7rem", fontSize: "0.85rem" }}>{t("fdaClose")}</button>
               </div>
             </div>

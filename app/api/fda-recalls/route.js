@@ -14,9 +14,19 @@ export async function GET() {
       classification: r.classification || "",
       status: r.status || "",
     }));
-    return Response.json({ recalls, updated: new Date().toISOString() });
+    return Response.json({
+      recalls,
+      updated: new Date().toISOString(),
+      usdaAlertsUrl: "https://www.fsis.usda.gov/recalls-public-health-alerts",
+      usdaFactsSource: "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/how-find-usda-establishment",
+    });
   } catch (error) {
     console.error("FDA fetch error:", error);
-    return Response.json({ recalls: [], error: error.message }, { status: 200 });
+    return Response.json({
+      recalls: [],
+      error: error.message,
+      usdaAlertsUrl: "https://www.fsis.usda.gov/recalls-public-health-alerts",
+      usdaFactsSource: "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/how-find-usda-establishment",
+    }, { status: 200 });
   }
 }
