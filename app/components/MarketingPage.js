@@ -4,7 +4,22 @@ import React from "react";
 import { GLOBAL_STYLES } from "../lib/styles";
 import { TrackFreshLogo } from "./ui/TrackFreshLogo";
 
-export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
+export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, onChangeLang }) {
+  const launchToTracker = onLaunchToTracker || (() => onLaunchApp?.("tracker"));
+  const handleLaunchClick = (e, targetTab = null) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    try { sessionStorage.setItem("tf_mkt_seen", "1"); } catch (err) {}
+    if (typeof onLaunchApp === "function") {
+      onLaunchApp(targetTab);
+      return;
+    }
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("enter", targetTab === "tracker" ? "tracker" : "1");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    } catch (err) {}
+    window.location.reload();
+  };
   const isEs = lang === "es";
   const scrollFrameRef = React.useRef(null);
   const bottomBtnRef = React.useRef(null);
@@ -34,7 +49,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
         const rect = bottomBtnRef.current.getBoundingClientRect();
         if (rect.top <= window.innerHeight * 0.55) {
           cancelAnimationFrame(scrollFrameRef.current);
-          onLaunchApp();
+          handleLaunchClick({ preventDefault: () => {} });
           return;
         }
       }
@@ -70,15 +85,18 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
   const mxFlag = B(0x1F1F2) + B(0x1F1FD);
   const usFlag = B(0x1F1FA) + B(0x1F1F8);
   return (
-    <div className="mkt-page">
+    <div className="app-bg">
       <style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
-
+      <div className="tf-app-shell">
+    <div className="mkt-page">
       {/* Nav */}
       <nav className="mkt-nav">
-        <div className="mkt-nav-logo"><TrackFreshLogo /></div>
-        <div style={{display:"flex",gap:"0.75rem",alignItems:"center"}}>
+        <div className="mkt-nav-side">
           <button type="button" onClick={() => onChangeLang(lang === "en" ? "es" : "en")} className="mkt-nav-glass-btn">{lang === "en" ? mxFlag + " ES" : usFlag + " EN"}</button>
-          <button type="button" onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem"}}>{isEs ? "Abrir" : "Launch"}</button>
+        </div>
+        <div className="mkt-nav-center mkt-nav-logo"><TrackFreshLogo /></div>
+        <div className="mkt-nav-side mkt-nav-side--end">
+          <button type="button" onClick={(e) => handleLaunchClick(e)} className="mkt-cta mkt-cta--nav" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Abrir" : "Launch"}</button>
         </div>
       </nav>
 
@@ -95,7 +113,7 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
               <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Todo Rastreado para Mayor Frescura." : "Fully Tracked for Freshness."}</span>
             </h1>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
-              {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
+              {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve y más." : "Your fridge door is a mystery. TrackFresh solves it and more!"}
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"0.15rem"}}>
               {isEs
@@ -103,11 +121,11 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 : "Know what's fresh, what's next and what to toss. Fridge, Freezer and Pantry."}
             </p>
           </div>
-          <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}} onClick={() => setActiveIcon(null)} role="presentation">
+          <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}}>
             <p className="mkt-condiment-strip-lead">
               {isEs
-                ? "Uno de los grandes misterios de la vida, resuelto — estamos aquí para recordarte cuándo tirarlo."
-                : "One of life's biggest mysteries solved and we're here to remind you when to toss it."}
+                ? "Uno de los grandes misterios de la vida, resuelto — TrackFresh está aquí para recordarte cuándo tirarlo."
+                : "One of life's biggest mysteries solved and TrackFresh is here to remind you when to toss it."}
             </p>
             <div className="mkt-condiment-row">
               {["ketchup", "mustard", "mayo"].map((key) => {
@@ -116,22 +134,10 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 const tapHint = isEs ? "Toca" : "Tap";
                 return (
                   <div key={key} className="mkt-condiment-cell">
-                    {isActive ? (
-                      <div className="mkt-condiment-popover" role="status">
-                        <p className="mkt-condiment-popover__info">{item.info}</p>
-                        <p className="mkt-condiment-popover__tag">
-                          ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
-                        </p>
-                        <div className="mkt-condiment-popover__arrow" aria-hidden />
-                      </div>
-                    ) : null}
                     <button
                       type="button"
                       className={`mkt-condiment-btn${isActive ? " mkt-condiment-btn--active" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleIconTap(key);
-                      }}
+                      onClick={() => handleIconTap(key)}
                       aria-label={`${item.label}. ${item.info}`}
                       aria-pressed={isActive}
                     >
@@ -143,6 +149,14 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
                 );
               })}
             </div>
+            {activeIcon && ICON_INFO[activeIcon] ? (
+              <div className="mkt-condiment-insight" role="status" aria-live="polite">
+                <p className="mkt-condiment-insight__info">{ICON_INFO[activeIcon].info}</p>
+                <p className="mkt-condiment-insight__tag">
+                  ✨ {isEs ? "TrackFresh rastrea y te recuerda" : "TrackFresh tracks & reminds you!"}
+                </p>
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -356,15 +370,37 @@ export default function MarketingPage({ onLaunchApp, lang, onChangeLang }) {
           </div>
         </section>
 
-        {/* Section 6 — headline + Track Your Food CTA */}
-        <section className="mkt-section-card mkt-section-card--cta mkt-animate mkt-animate-d6" aria-label={isEs ? "Empezar" : "Get started"}>
+        {/* Section 6 — Safety notice (shown before entering app) */}
+        <section className="mkt-section-card" aria-label={isEs ? "Aviso de seguridad" : "Safety notice"}>
+          <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.35, textAlign: "center" }}>
+            ⚠️ {isEs ? "Aviso de seguridad importante" : "Important Safety Notice"}
+          </h3>
+          <p style={{ margin: 0, fontSize: "0.76rem", color: "rgba(255,255,255,0.78)", lineHeight: 1.55 }}>
+            {isEs ? (
+              <>
+                <strong style={{ color: "rgba(255,255,255,0.92)" }}>Términos de uso y seguridad alimentaria.</strong>{" "}
+                TrackFresh se ofrece solo con fines informativos y de organización. Las fechas, estimaciones de vida útil, retiros, recetas y contenido generado por IA pueden estar incompletos o ser inexactos. Usted es el único responsable de verificar las fechas de caducidad, el almacenamiento y la inocuidad de los alimentos con el empaque del producto, el fabricante y profesionales cualificados antes de consumir o desechar alimentos. TrackFresh no proporciona asesoramiento médico, nutricional ni legal. El uso de la aplicación es bajo su propio riesgo. Siga siempre las recomendaciones de USDA, FDA y las autoridades sanitarias locales.
+              </>
+            ) : (
+              <>
+                <strong style={{ color: "rgba(255,255,255,0.92)" }}>Terms of Use &amp; Food Safety.</strong>{" "}
+                TrackFresh is provided for informational and organizational purposes only. Dates, shelf-life estimates, recalls, recipes, and AI-generated content may be incomplete or inaccurate. You are solely responsible for verifying expiration dates, storage guidance, and food safety using product packaging, manufacturers, and qualified professionals before consuming or discarding food. TrackFresh does not provide medical, nutritional, or legal advice. Use of the app is at your own risk. Always follow USDA, FDA, and local health authority guidance for food handling and storage.
+              </>
+            )}
+          </p>
+        </section>
+
+        {/* Section 7 — headline + Track Your Food CTA */}
+        <section className="mkt-section-card mkt-section-card--cta" aria-label={isEs ? "Empezar" : "Get started"}>
           <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:"0 0 1rem",letterSpacing:"-0.01em",lineHeight:1.25}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
           <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.75rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
-          <button type="button" ref={bottomBtnRef} onClick={onLaunchApp} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem"}}>{isEs ? "Rastrea tu comida" : "Track Your Food"}</button>
+          <button type="button" ref={bottomBtnRef} onClick={(e) => handleLaunchClick(e, "tracker")} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem",position:"relative",zIndex:2,border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Rastrea tu comida" : "Track Your Food"}</button>
         </section>
       </div>
 
       <div className="mkt-footer"><TrackFreshLogo /> © 2026 — {isEs ? "Ahorra Comida. Ahorra Dinero. Salva el Planeta." : "Save Food. Save Money. Save the Planet."}</div>
+    </div>
+      </div>
     </div>
   );
 }

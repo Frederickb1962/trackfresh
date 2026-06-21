@@ -7,6 +7,33 @@ export const COACH_STEP_KEY = "trackfresh.coach.step";
 export const DISCLAIMER_KEY = "tf_disclaimer_seen";
 export const WELCOMED_KEY = "trackfresh.welcomed";
 export const MKT_SEEN_KEY = "tf_mkt_seen";
+export const LAUNCH_TAB_KEY = "tf_launch_tab";
+export const ENTER_APP_PARAM = "enter";
+
+export function readLaunchGateFromBrowser() {
+  if (typeof window === "undefined") return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const enter = params.get(ENTER_APP_PARAM);
+    const forceEnter = enter === "1" || enter === "app" || enter === "tracker";
+    const mktSeen = sessionStorage.getItem(MKT_SEEN_KEY) === "1" || forceEnter;
+    const onboardingDone = hasCompletedFirstTimeOnboarding();
+    const unlocked = sessionStorage.getItem("tf_ok") === "1";
+    const launchTab = enter === "tracker" ? "tracker" : null;
+
+    return {
+      showMarketing: !(mktSeen || onboardingDone),
+      welcomeStep: mktSeen && !onboardingDone ? resolveWelcomeStepAfterMarketing() : 0,
+      isUnlocked: unlocked,
+      isAdmin: sessionStorage.getItem("tf_admin") === "1",
+      launchTab,
+      cleanUrl: forceEnter,
+      markMktSeen: forceEnter,
+    };
+  } catch (e) {
+    return null;
+  }
+}
 
 export function hasCompletedFirstTimeOnboarding() {
   if (typeof window === "undefined") return false;

@@ -4,6 +4,8 @@
     "private": true,
     "scripts": {
       "dev": "next dev",
+      "dev:clean": "bash scripts/dev-clean.sh",
+      "preview": "bash scripts/open-cursor-preview.sh",
       "build": "next build",
       "start": "next start"
     },

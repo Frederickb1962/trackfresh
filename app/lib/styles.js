@@ -323,8 +323,11 @@ export const GLOBAL_STYLES = `
   }
 
   /* === MARKETING PAGE (matches app home: charcoal + shiny glass) === */
-  .mkt-page { min-height: 100vh; background: linear-gradient(180deg, #052e1f 0%, #031910 38%, #010a08 68%, #000000 100%); background-attachment: fixed; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; overflow-x: hidden; }
-  .mkt-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; max-width: 900px; margin: 0 auto 0.5rem; }
+  .mkt-page { min-height: 100vh; background: linear-gradient(180deg, #052e1f 0%, #031910 38%, #010a08 68%, #000000 100%); background-attachment: fixed; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; overflow-x: clip; }
+  .mkt-nav { position: sticky; top: 0; z-index: 200; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 1.25rem 1rem 1rem; max-width: 900px; margin: 0 auto 0.5rem; background: linear-gradient(180deg, rgba(5, 46, 31, 0.97) 0%, rgba(5, 46, 31, 0.88) 70%, rgba(5, 46, 31, 0) 100%); }
+  .mkt-nav-center { justify-self: center; text-align: center; min-width: 0; }
+  .mkt-nav-side { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+  .mkt-nav-side--end { justify-self: end; justify-content: flex-end; }
   .mkt-nav-logo { font-size: 1.4rem; font-weight: 800; }
   .mkt-section-wrap { max-width: 800px; margin: 0 auto; padding: 0 1rem 1.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
   /* Frosted panels — dark base fading up to green + orange rim (app windows) */
@@ -350,6 +353,7 @@ export const GLOBAL_STYLES = `
     background: linear-gradient(180deg, rgba(24, 122, 88, 0.5) 0%, rgba(8, 48, 32, 0.52) 38%, rgba(0, 0, 0, 0.8) 100%);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(249, 115, 22, 0.16), 0 0 48px rgba(249, 115, 22, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -28px 64px rgba(0, 0, 0, 0.26);
   }
+  .mkt-section-wrap .mkt-section-card:first-child { overflow: visible; }
   .mkt-section-card .mkt-hero { padding: 0.25rem 0 0; max-width: none; margin: 0; }
   .mkt-section-card--cta { text-align: center; }
   .mkt-condiment-strip { margin-top: 0.75rem; padding-top: 0.5rem; overflow: visible; }
@@ -441,8 +445,31 @@ export const GLOBAL_STYLES = `
   .mkt-condiment-btn--active {
     border-color: #86efac;
     background: linear-gradient(180deg, rgba(134, 239, 172, 0.28) 0%, rgba(6, 78, 59, 0.55) 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 24px rgba(134, 239, 172, 0.35), 0 0 0 2px rgba(134, 239, 172, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 0 2px rgba(134, 239, 172, 0.35), 0 8px 22px rgba(34, 197, 94, 0.25), 0 0 24px rgba(134, 239, 172, 0.35);
     transform: scale(1.04);
+  }
+  .mkt-condiment-insight {
+    margin-top: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(134, 239, 172, 0.45);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    animation: mktFadeIn 0.25s ease-out both;
+  }
+  .mkt-condiment-insight__info {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+    margin: 0 0 0.35rem;
+    line-height: 1.45;
+  }
+  .mkt-condiment-insight__tag {
+    font-size: 0.75rem;
+    color: #86efac;
+    font-weight: 600;
+    margin: 0;
   }
   .mkt-condiment-btn__img {
     height: 4.5rem;
@@ -611,6 +638,8 @@ export const GLOBAL_STYLES = `
     align-items: center;
     justify-content: center;
     position: relative;
+    z-index: 2;
+    pointer-events: auto;
     background: linear-gradient(180deg, #fb923c 0%, #f97316 40%, #ea580c 100%);
     color: #fff;
     font-weight: 800;
@@ -869,7 +898,12 @@ export const GLOBAL_STYLES = `
   .mkt-store-card:active { transform: translateY(1px); transition-duration: 0.08s; }
 
   /* === APP INTERIOR THEME === */
-  .app-bg { background: linear-gradient(180deg, #052e1f 0%, #031910 38%, #010a08 68%, #000000 100%); background-attachment: fixed; }
+  .app-bg { width: 100%; min-height: 100vh; background: linear-gradient(180deg, #052e1f 0%, #031910 38%, #010a08 68%, #000000 100%); background-attachment: fixed; }
+  .tf-app-shell { width: 100%; max-width: 42rem; margin-left: auto; margin-right: auto; min-height: 100vh; }
+  .tf-app-shell .mkt-page { min-height: 100vh; }
+  .tf-app-shell .mkt-nav,
+  .tf-app-shell .mkt-section-wrap { max-width: none; margin-left: 0; margin-right: 0; }
+  .mkt-cta--nav { position: relative; z-index: 201; }
   .app-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: #86efac; font-weight: 700; display: block; margin-bottom: 0.2rem; }
   .app-section-h2 { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 0.75rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
   .glass-scan-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 16px; padding: 0.85rem 0.5rem; background: linear-gradient(180deg,rgba(255,255,255,0.32) 0%,rgba(255,255,255,0.16) 42%,rgba(255,255,255,0.07) 100%); border: 0.5px solid rgba(255,255,255,0.58); color: #fff; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); width: 100%; box-shadow: inset 0 1px 0 rgba(255,255,255,0.52), inset 0 -1px 0 rgba(0,0,0,0.14), inset 1px 0 0 rgba(255,255,255,0.18), inset -1px 0 0 rgba(255,255,255,0.08), 0 6px 22px rgba(0,0,0,0.28); -webkit-tap-highlight-color: transparent; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }

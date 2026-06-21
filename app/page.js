@@ -11,6 +11,7 @@ import { Bell, PlusCircle, ChefHat, Users, ShoppingCart, Calendar } from "lucide
 import { AiBadge, GreenDot, TrackFreshLogo } from "./components/ui/TrackFreshLogo";
 import MarketingPage from "./components/MarketingPage";
 import StoreDiscountModal from "./components/StoreDiscountModal";
+import SearchSaveDiscountCard from "./components/SearchSaveDiscountCard";
 import { isRegisterDiscountEligible } from "./lib/storeDiscount";
 import GroceryScanModal from "./components/GroceryScanModal";
 import { FOOD_ES, FOOD_DB } from "./lib/foodData";
@@ -68,18 +69,20 @@ import {
   WELCOMED_KEY,
   MKT_SEEN_KEY,
   hasCompletedFirstTimeOnboarding,
+  LAUNCH_TAB_KEY,
+  readLaunchGateFromBrowser,
   resolveWelcomeStepAfterMarketing,
 } from "./lib/onboardingFlows";
 
 
 const LANG_KEY = "trackfresh.lang";
 /** Main app column — centered on all screen sizes (phone-first on PC too) */
-const TF_APP_SHELL_MAX = "max-w-2xl";
 
 const STORAGE_KEY = "trackfresh.items";
 const COMMUNITY_KEY = "trackfresh.community";
 const USERNAME_KEY = "trackfresh.username";
 const SHOPPING_KEY = "trackfresh.shopping";
+const DELIVERY_SERVICE_KEY = "trackfresh.deliveryService";
 const MEAL_KEY = "trackfresh.meals";
 const SAVED_RECIPES_KEY = "trackfresh.savedRecipes";
 const RECIPE_MODE_KEY = "trackfresh.recipeMode";
@@ -340,6 +343,27 @@ function saveShopping(items, key = SHOPPING_KEY) {
   try { localStorage.setItem(key, JSON.stringify(items)); } catch (e) {}
 }
 
+const DELIVERY_SERVICES = [
+  { id: "instacart", label: "Instacart", url: "https://www.instacart.com" },
+  { id: "ubereats", label: "Uber Eats", url: "https://www.ubereats.com" },
+  { id: "seamless", label: "Seamless", url: "https://www.seamless.com" },
+];
+
+function loadDeliveryService(key = DELIVERY_SERVICE_KEY) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return DELIVERY_SERVICES.some((s) => s.id === raw) ? raw : null;
+  } catch (e) { return null; }
+}
+
+function saveDeliveryService(id, key = DELIVERY_SERVICE_KEY) {
+  try {
+    if (id) localStorage.setItem(key, id);
+    else localStorage.removeItem(key);
+  } catch (e) {}
+}
+
 function loadMeals(key = MEAL_KEY) {
   try {
     const raw = localStorage.getItem(key);
@@ -539,6 +563,9 @@ export default function TrackFreshDashboard() {
   
   const [showMarketing, setShowMarketing] = useState(true);
   const [welcomeStep, setWelcomeStep] = useState(0);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState("home");
   const [onboardingFlow, setOnboardingFlow] = useState(FLOWS.default);
   const [guidedStep, setGuidedStep] = useState(0);
   const [guidedComplete, setGuidedComplete] = useState(false);
@@ -558,7 +585,22 @@ export default function TrackFreshDashboard() {
       const savedCoachStep = parseInt(localStorage.getItem(COACH_STEP_KEY) || "0", 10);
       if (!Number.isNaN(savedCoachStep)) setCoachStep(savedCoachStep);
 
-      if (hasCompletedFirstTimeOnboarding()) {
+      const gate = readLaunchGateFromBrowser();
+      if (gate) {
+        if (gate.cleanUrl) {
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+        if (gate.markMktSeen) {
+          sessionStorage.setItem(MKT_SEEN_KEY, "1");
+        }
+        if (gate.launchTab) {
+          sessionStorage.setItem(LAUNCH_TAB_KEY, gate.launchTab);
+        }
+        if (!gate.showMarketing) setShowMarketing(false);
+        if (gate.welcomeStep > 0) setWelcomeStep(gate.welcomeStep);
+        if (gate.isUnlocked) setIsUnlocked(true);
+        if (gate.isAdmin) setIsAdmin(true);
+      } else if (hasCompletedFirstTimeOnboarding()) {
         setShowMarketing(false);
       } else if (sessionStorage.getItem(MKT_SEEN_KEY) === "1") {
         setShowMarketing(false);
@@ -586,12 +628,22 @@ export default function TrackFreshDashboard() {
     setCoachStep(next);
     try { localStorage.setItem(COACH_STEP_KEY, String(next)); } catch (e) {}
   };
-  const handleLaunchApp = () => {
+  const handleLaunchApp = (targetTab = null) => {
+    if (typeof targetTab === "string" && targetTab) {
+      try { sessionStorage.setItem(LAUNCH_TAB_KEY, targetTab); } catch (e) {}
+    } else {
+      try { sessionStorage.removeItem(LAUNCH_TAB_KEY); } catch (e) {}
+    }
+    try {
+      sessionStorage.setItem(MKT_SEEN_KEY, "1");
+      if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true);
+      if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
+    } catch (e) {}
     setShowMarketing(false);
-    try { if (window.sessionStorage) sessionStorage.setItem(MKT_SEEN_KEY, "1"); } catch (e) {}
-    queuePostMarketingOnboarding();
+    setWelcomeStep(resolveWelcomeStepAfterMarketing());
+    try { window.scrollTo(0, 0); } catch (e) {}
   };
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const handleLaunchToTracker = () => handleLaunchApp("tracker");
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
   const handlePwSubmit = () => {
@@ -602,7 +654,6 @@ export default function TrackFreshDashboard() {
       queuePostMarketingOnboarding();
     } else { setPwError(true); }
   };
-  const [isAdmin, setIsAdmin] = useState(false);
   React.useEffect(() => {
     try {
       if (typeof window !== "undefined" && window.sessionStorage) {
@@ -614,7 +665,16 @@ export default function TrackFreshDashboard() {
       }
     } catch (e) {}
   }, []);
-  const [activeTab, setActiveTab] = useState("home");
+  React.useEffect(() => {
+    if (showMarketing || welcomeStep > 0 || !isUnlocked) return;
+    try {
+      const tab = sessionStorage.getItem(LAUNCH_TAB_KEY);
+      if (!tab) return;
+      sessionStorage.removeItem(LAUNCH_TAB_KEY);
+      setActiveTab(tab);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (e) {}
+  }, [showMarketing, welcomeStep, isUnlocked]);
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
   const trackerTopRef = React.useRef(null);
@@ -630,13 +690,16 @@ export default function TrackFreshDashboard() {
   const handleGoToTracker = () => {
     setTrackerTileFlash(true);
     setTrackerLinkOverlay(true);
-    setTimeout(() => {
-      setTrackerEntryFlash(true);
-      setActiveTab("tracker");
-    }, 240);
+    setTrackerEntryFlash(true);
+    setActiveTab("tracker");
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      trackerTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
     setTimeout(() => {
       setTrackerTileFlash(false);
       setTrackerLinkOverlay(false);
+      setTrackerEntryFlash(false);
     }, 900);
   };
   const handleBubbleTap = (target) => {
@@ -713,7 +776,9 @@ export default function TrackFreshDashboard() {
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterLocation, setFilterLocation] = useState("All");
   const [trackerExpandedId, setTrackerExpandedId] = useState(null);
+  const [trackerScreen, setTrackerScreen] = useState("capture");
   const [shoppingItems, setShoppingItems] = useState([]);
+  const [deliveryService, setDeliveryService] = useState(null);
   const [newShoppingItem, setNewShoppingItem] = useState("");
   const [newShoppingQty, setNewShoppingQty] = useState("count");
   const [newShoppingQtyNum, setNewShoppingQtyNum] = useState("1");
@@ -921,6 +986,25 @@ export default function TrackFreshDashboard() {
     setTrackerExpandedId((prev) => (prev === id ? null : id));
   };
 
+  const openTrackerOrganize = () => {
+    setActiveTab("tracker");
+    setTrackerScreen("organize");
+    try { window.scrollTo(0, 0); } catch (e) {}
+  };
+
+  const openTrackerCapture = () => {
+    setTrackerScreen("capture");
+    try { window.scrollTo(0, 0); } catch (e) {}
+  };
+
+  const handleHeaderBack = () => {
+    if (activeTab === "tracker" && trackerScreen === "organize") {
+      openTrackerCapture();
+      return;
+    }
+    setActiveTab("home");
+  };
+
   const [voiceListening, setVoiceListening] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
@@ -950,6 +1034,7 @@ export default function TrackFreshDashboard() {
     setSavingsEvents(loadSavingsEvents());
     setCommunity(loadCommunity());
     setShoppingItems(loadShopping());
+    setDeliveryService(loadDeliveryService());
     setMeals(loadMeals());
     let savedName = null; try { savedName = localStorage.getItem(USERNAME_KEY); } catch(e) {}
     if (savedName) setUsername(savedName);
@@ -966,11 +1051,15 @@ export default function TrackFreshDashboard() {
   useEffect(() => { saveSavingsEvents(savingsEvents); }, [savingsEvents]);
   useEffect(() => { saveCommunity(community); }, [community]);
   useEffect(() => { saveShopping(shoppingItems); }, [shoppingItems]);
+  useEffect(() => { saveDeliveryService(deliveryService); }, [deliveryService]);
   useEffect(() => { saveMeals(meals); }, [meals]);
   useEffect(() => { try { localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(savedRecipes)); } catch(e) {} }, [savedRecipes]);
   useEffect(() => { try { localStorage.setItem("tf_favorite_recipes", JSON.stringify(favoriteRecipes)); } catch(e) {} }, [favoriteRecipes]);
   useEffect(() => { try { localStorage.setItem(RECIPE_MODE_KEY, recipeMode); } catch(e) {} }, [recipeMode]);
   useEffect(() => { try { window.scrollTo(0, 0); } catch(e) {} }, [activeTab]);
+  useEffect(() => {
+    if (activeTab !== "tracker") setTrackerScreen("capture");
+  }, [activeTab]);
 
   const openReceiptFromOnboarding = () => {
     setGuidedPaused(true);
@@ -1762,6 +1851,7 @@ export default function TrackFreshDashboard() {
       setPendingDateItems([]);
       setPendingDateIndex(0);
       setPendingPickedDate("");
+      openTrackerOrganize();
     } else {
       setPendingDateIndex(next);
       setPendingPickedDate("");
@@ -1780,6 +1870,7 @@ export default function TrackFreshDashboard() {
       setPendingDateItems([]);
       setPendingDateIndex(0);
       setPendingPickedDate("");
+      openTrackerOrganize();
     } else {
       setPendingDateIndex(next);
       setPendingPickedDate("");
@@ -1872,6 +1963,7 @@ export default function TrackFreshDashboard() {
     setPendingDateItems([]);
     setPendingDateIndex(0);
     setPendingPickedDate("");
+    openTrackerOrganize();
   };
 
   const handlePendingSaveAndNext = () => {
@@ -2417,6 +2509,7 @@ export default function TrackFreshDashboard() {
     setSavingsEvents(loadSavingsEvents());
     setCommunity(loadCommunity());
     setShoppingItems(loadShopping());
+    setDeliveryService(loadDeliveryService());
     setMeals(loadMeals());
     try {
       const savedName = localStorage.getItem(USERNAME_KEY);
@@ -2543,17 +2636,12 @@ export default function TrackFreshDashboard() {
     </>
   );
 
-  if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} lang={lang} onChangeLang={changeLang} />;
-  if (welcomeStep > 0) {
-    return (
-      <div className="min-h-screen tf-premium-bg flex items-center justify-center">
-        <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
-        {onboardingOverlays}
-      </div>
-    );
-  }
+  if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} onLaunchToTracker={handleLaunchToTracker} lang={lang} onChangeLang={changeLang} />;
   if (isUnlocked === false) return (
     <>
+    <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
+    {onboardingOverlays}
+    {welcomeStep === 0 && (
     <div className="min-h-screen tf-premium-bg flex items-center justify-center p-4">
       <div style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px"}} className="shadow-2xl p-8 max-w-sm w-full text-center">
         <div className="text-5xl mb-3">🥦</div>
@@ -2582,6 +2670,7 @@ export default function TrackFreshDashboard() {
         </p>
       </div>
     </div>
+    )}
     </>
   );
 
@@ -2599,14 +2688,15 @@ export default function TrackFreshDashboard() {
         onSkipReceipt={() => {}}
       />
     )}
-    <div className="min-h-screen app-bg"><style dangerouslySetInnerHTML={{__html: GLOBAL_STYLES}} />
+    <div className="app-bg">
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
       {trackerLinkOverlay && <div className="tracker-link-overlay" aria-hidden="true" />}
-      <div className={`mx-auto w-full min-h-screen ${TF_APP_SHELL_MAX}`}>
+      <div className="tf-app-shell">
       {/* Sticky header: logo + top nav */}
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(to bottom,#064e3b,#022c22)",boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>
         <div className="px-4 pt-3 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {activeTab !== "home" && <button onClick={() => setActiveTab("home")} style={{background:"none",border:"none",cursor:"pointer",color:"#fff",fontSize:"1.2rem",fontWeight:"bold",padding:"0",lineHeight:1}}>←</button>}
+            {activeTab !== "home" && <button onClick={handleHeaderBack} aria-label={activeTab === "tracker" && trackerScreen === "organize" ? t("backToTracker") : (lang === "es" ? "Inicio" : "Home")} style={{background:"none",border:"none",cursor:"pointer",color:"#fff",fontSize:"1.2rem",fontWeight:"bold",padding:"0",lineHeight:1}}>←</button>}
             <h1 className="text-2xl font-extrabold text-white" style={{textShadow:"0 2px 8px rgba(0,0,0,0.25)"}}><TrackFreshLogo /></h1>
           </div>
           <div className="flex items-center gap-2">
@@ -3278,7 +3368,7 @@ export default function TrackFreshDashboard() {
                         </p>
                       )}
                     </div>
-                    <button type="button" onClick={() => setActiveTab("tracker")} className="tf-glass-scan" style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
+                    <button type="button" onClick={() => { trackedItems.length > 0 ? openTrackerOrganize() : setActiveTab("tracker"); }} className="tf-glass-scan" style={{fontSize:"0.72rem",fontWeight:700,color:"#86efac",borderRadius:"999px",padding:"0.3rem 0.75rem",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,lineHeight:1.4,minHeight:"2rem",display:"flex",alignItems:"center"}}>
                       {isEs?"Ver Todo":"See All"} ›
                     </button>
                   </div>
@@ -3361,33 +3451,250 @@ export default function TrackFreshDashboard() {
                 );
               })}
             </div>
-            </div>
-
-            <div className="tf-glass-window tf-glass-window--legal" aria-label={lang === "es" ? "Aviso legal y seguridad alimentaria" : "Legal and food safety notice"}>
-              <h3 className="tf-home-legal-h" role="heading" aria-level={2}>
-                <span aria-hidden="true" style={{ marginRight: "0.35em" }}>⚠️</span>
-                {lang === "es" ? "Aviso de seguridad importante" : "Important Safety Notice"}
-              </h3>
-              <div className="tf-home-legal-body">
-                {lang === "es" ? (
-                  <>
-                    <p>
-                      <strong>Términos de uso y seguridad alimentaria.</strong> TrackFresh se ofrece solo con fines informativos y de organización. Las fechas, estimaciones de vida útil, retiros, recetas y contenido generado por IA pueden estar incompletos o ser inexactos. Usted es el único responsable de verificar las fechas de caducidad, el almacenamiento y la inocuidad de los alimentos con el empaque del producto, el fabricante y profesionales cualificados antes de consumir o desechar alimentos. TrackFresh no proporciona asesoramiento médico, nutricional ni legal. El uso de la aplicación es bajo su propio riesgo. Siga siempre las recomendaciones de USDA, FDA y las autoridades sanitarias locales para la manipulación y conservación de alimentos.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      <strong>Terms of Use &amp; Food Safety.</strong> TrackFresh is provided for informational and organizational purposes only. Dates, shelf-life estimates, recalls, recipes, and AI-generated content may be incomplete or inaccurate. You are solely responsible for verifying expiration dates, storage guidance, and food safety using product packaging, manufacturers, and qualified professionals before consuming or discarding food. TrackFresh does not provide medical, nutritional, or legal advice. Use of the app is at your own risk. Always follow USDA, FDA, and local health authority guidance for food handling and storage.
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
+          </div>
           </div>
         )}
 
-        {activeTab === "tracker" && (
+        {activeTab === "tracker" && trackerScreen === "organize" && (
+          <div ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+            <div className="mb-1">
+              <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
+              <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{t("organizeTrackedItems")}</h2>
+              <p className="text-xs" style={{color:"rgba(134,239,172,0.75)",margin:0,lineHeight:1.45}}>{t("organizeTrackedItemsHint")}</p>
+            </div>
+
+            <div
+              style={{
+                padding: "0.75rem 0.9rem",
+                borderRadius: "12px",
+                background: "rgba(250,204,21,0.08)",
+                border: "1px solid rgba(250,204,21,0.28)",
+              }}
+            >
+              <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.06em", color: "#fde68a", textTransform: "uppercase" }}>
+                💰 {t("savingsMonthTitle")}
+              </p>
+              {monthSavings.totalUSD > 0 ? (
+                <>
+                  <p style={{ margin: "0 0 0.25rem", fontSize: "0.95rem", fontWeight: 800, color: "#fff", lineHeight: 1.35 }}>
+                    <span style={{ color: "#86efac" }}>{formatUSD(monthSavings.savedUSD)}</span>
+                    {" "}{t("savingsSaved")}
+                    {" · "}
+                    <span style={{ color: "#fca5a5" }}>{formatUSD(monthSavings.wastedUSD)}</span>
+                    {" "}{t("savingsWasted")}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.45 }}>
+                    {t("savingsUsedPct")
+                      .replace("{pct}", String(monthSavings.savedPct))
+                      .replace("{waste}", String(monthSavings.wastePct))}
+                  </p>
+                </>
+              ) : (
+                <InstructionHint style={{ margin: 0, fontSize: "0.8rem" }}>{t("savingsReceiptHint")}</InstructionHint>
+              )}
+            </div>
+
+            {registerDiscountItems.length > 0 && (
+              <div
+                className="tf-glass-window"
+                style={{
+                  marginBottom: "0.75rem",
+                  padding: "0.85rem 1rem",
+                  border: "2px solid rgba(245, 158, 11, 0.65)",
+                  background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
+                  boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
+                }}
+              >
+                <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
+                  🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
+                </p>
+                <button
+                  type="button"
+                  className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
+                  onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
+                >
+                  {t("storeDiscountSee")} {t("storeDiscountBtn")} →
+                </button>
+              </div>
+            )}
+
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); openTrackerCapture(); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>
+                  </div>
+                  <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
+                </div>
+                <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>{lang === "es" ? "Toca ▼ en cada artículo para ver detalles" : "Tap ▼ on each item to expand details"}</p>
+                <div className="mb-2 flex flex-wrap gap-1">
+                  {["All", ...LOCATIONS].map((l) => {
+                    const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
+                    const label = lang === "es" ? LOC_ES[l] : l;
+                    return (
+                      <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
+                        {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {filteredItems.length === 0 ? (
+                  <p className="text-sm text-white/70">{t("noFilter")}</p>
+                ) : (
+                  <div className="tf-kitchen-grid">
+                    {(filterLocation === "All" ? LOCATIONS : [filterLocation]).map((loc) => {
+                      const locLabel = lang === "es"
+                        ? { Fridge: "Refrigerador", Freezer: "Congelador", Pantry: "Despensa" }[loc]
+                        : loc;
+                      const locItems = filteredItems.filter((it) => (it.location ?? "Fridge") === loc);
+                      return (
+                        <section key={loc} className="tf-kitchen-col" aria-labelledby={`kitchen-col-${loc}`}>
+                          <div id={`kitchen-col-${loc}`} className="tf-kitchen-col-header">
+                            <span>{LOCATION_ICONS[loc]} {locLabel}</span>
+                            <span className="tf-kitchen-col-count">{locItems.length}</span>
+                          </div>
+                          {locItems.length === 0 ? (
+                            <p className="tf-kitchen-col-empty text-xs text-white/50">{lang === "es" ? "Vacío" : "Empty"}</p>
+                          ) : (
+                          <ul className="tf-pending-queue-list">
+                    {locItems.map((it) => {
+                      const isEs = lang === "es";
+                      const expanded = trackerExpandedId === it.id;
+                      const locKey = it.location ?? "Fridge";
+                      const catKey = it.category ?? "Other";
+                      const needsAttention = it.daysLeft === null || (it.daysLeft !== null && it.daysLeft <= 2);
+                      const boxShadow = it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none";
+                      return (
+                        <li key={it.id} className={`tf-pending-queue-item${expanded ? " tf-pending-queue-item--open" : ""}`} style={{ boxShadow }}>
+                          <button type="button" className="tf-pending-queue-header" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
+                            <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
+                            <div className="tf-pending-queue-summary">
+                              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.35rem 0.45rem", width: "100%" }}>
+                                {it.daysLeft === null ? <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">EXP</span> : null}
+                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[locKey]}`}>
+                                  {LOCATION_ICONS[locKey]} {locKey}
+                                </span>
+                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[catKey]}`}>{catKey}</span>
+                                <span className="tf-pending-queue-chip tf-pending-queue-chip--tip">{itemStorageTip(it, isEs)}</span>
+                                {needsAttention ? (
+                                  <span className="tf-pending-status-blink">STATUS</span>
+                                ) : it.daysLeft !== null ? (
+                                  <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
+                                ) : null}
+                              </div>
+                              <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
+                            </div>
+                          </button>
+                          {expanded && (
+                          <div className="tf-pending-queue-body">
+                          <div>
+                            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
+                              <div>
+                                {itemPrice(it) != null && (
+                                  <span className="text-xs" style={{ color: "#fde68a", fontWeight: 700 }}>{formatUSD(itemPrice(it))}</span>
+                                )}
+                                {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
+                              </div>
+                              <div style={{marginLeft:"0.5rem",flexShrink:0,textAlign:"center"}}>
+                                {it.daysLeft !== null && (() => {
+                                  const d = it.daysLeft;
+                                  const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
+                                  const expiredLabel = isEs ? "Vencido" : "Expired";
+                                  return (
+                                    <div>
+                                      <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:d < 0 ? "0.72rem" : "0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d < 0 ? expiredLabel : d}</div>
+                                      <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{d < 0 ? "" : t("days")}</div>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                            <div className="tf-tracker-item-actions" style={{display:"flex",gap:"0.4rem",marginBottom:"0.5rem"}}>
+                              {it.daysLeft === null ? (
+                                <button onClick={() => handleEditItem(it.id)} className="animate-pulse" style={{flex:1,background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#fff",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>EXP Date</button>
+                              ) : isRegisterDiscountEligible(it) ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setStoreDiscountItem(it)}
+                                  className="btn-amber-3d"
+                                  style={{
+                                    flex: 1,
+                                    borderRadius: "10px",
+                                    padding: "0.3rem 0.35rem",
+                                    fontSize: "0.65rem",
+                                    fontWeight: 800,
+                                    border: "2px solid #f59e0b",
+                                    cursor: "pointer",
+                                    lineHeight: 1.25,
+                                  }}
+                                >
+                                  {t("storeDiscountBtn")}
+                                </button>
+                              ) : it.daysLeft <= 2 ? (
+                                <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>Expiring Soon</div>
+                              ) : (
+                                <div style={{flex:1}} />
+                              )}
+                              <button onClick={() => { setTrackedItems(prev => prev.map(x => { if (x.id !== it.id) return x; if (x.openDate) return { ...x, openDate: "", openUseBy: null }; const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = x.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; return { ...x, openDate: today, useByDate: useBy }; })); }} className="rounded-lg px-2 py-1 text-xs font-bold shadow-md" style={{flex:1,background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.88)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)", cursor:"pointer"}}>{it.openDate ? (lang === "es" ? "¡Abierto!" : "Opened!") : (lang === "es" ? "¿Abierto?" : "Opened?")}</button>
+                              <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-2 py-1 text-xs font-bold text-white shadow-md" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
+                              {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-2 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
+                              )}
+                              <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-2 py-1 text-xs font-bold text-white btn-3d" style={{flex:1}}>{t("edit")}</button>
+                            </div>
+                            <div className="flex flex-wrap gap-1 mb-1">
+                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
+                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
+                            </div>
+                            {(it.openDate || it.useByDate) && (
+                              <div className="text-xs mb-1">
+                                {it.openDate ? (
+                                  <span style={{color:"#4ade80",fontWeight:700}}>
+                                    📂 Opened {fmtDate(it.openDate)}
+                                    {it.openUseBy && it.daysLeft !== null
+                                      ? ` · Use within ${it.daysLeft} day${it.daysLeft === 1 ? "" : "s"}`
+                                      : ""}
+                                  </span>
+                                ) : it.useByDate ? (
+                                  <span style={{color:"rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
+                                ) : null}
+                              </div>
+                            )}
+                            <div className="flex flex-col gap-1 mt-1">
+                              <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
+                              {(() => {
+                                if (it.category === "Produce") {
+                                  const ig = formatInGeneralInstruction(it, lang);
+                                  return ig ? <TipPill type="blue">🥬 {ig}</TipPill> : null;
+                                }
+                                const label = afterOpeningLabel(it) || (it.location === "Freezer" ? null : it.category === "Dairy" ? "Keep refrigerated, use within 7 days" : it.category === "Meat" ? "Cook or freeze within 2–3 days" : it.category === "Beverages" ? "Refrigerate after opening" : it.category === "Bread" ? "Use within 5 days or freeze" : "Check package for timing after opening");
+                                return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null;
+                              })()}
+                              {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
+                            </div>
+                          </div>
+                          </div>
+                          )}
+                        </li>
+                      );
+                    })}
+                          </ul>
+                          )}
+                        </section>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            </div>
+
+            <button type="button" onClick={openTrackerCapture} className="glass-scan-btn w-full py-3 text-sm" style={{marginTop:"0.25rem"}}>
+              ← {t("backToTracker")}
+            </button>
+          </div>
+        )}
+
+        {activeTab === "tracker" && trackerScreen === "capture" && (
           <div ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
 
             {/* Header — always visible */}
@@ -3465,44 +3772,7 @@ export default function TrackFreshDashboard() {
                   );
                 })()}
 
-                <div
-                  style={{
-                    marginTop: "0.65rem",
-                    padding: "0.75rem 0.9rem",
-                    borderRadius: "12px",
-                    background: "rgba(250,204,21,0.08)",
-                    border: "1px solid rgba(250,204,21,0.28)",
-                  }}
-                >
-                  <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.06em", color: "#fde68a", textTransform: "uppercase" }}>
-                    💰 {t("savingsMonthTitle")}
-                  </p>
-                  {monthSavings.totalUSD > 0 ? (
-                    <>
-                      <p style={{ margin: "0 0 0.25rem", fontSize: "0.95rem", fontWeight: 800, color: "#fff", lineHeight: 1.35 }}>
-                        <span style={{ color: "#86efac" }}>{formatUSD(monthSavings.savedUSD)}</span>
-                        {" "}{t("savingsSaved")}
-                        {" · "}
-                        <span style={{ color: "#fca5a5" }}>{formatUSD(monthSavings.wastedUSD)}</span>
-                        {" "}{t("savingsWasted")}
-                      </p>
-                      <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.45 }}>
-                        {t("savingsUsedPct")
-                          .replace("{pct}", String(monthSavings.savedPct))
-                          .replace("{waste}", String(monthSavings.wastePct))}
-                      </p>
-                    </>
-                  ) : (
-                    <InstructionHint style={{ margin: 0, fontSize: "0.8rem" }}>{t("savingsReceiptHint")}</InstructionHint>
-                  )}
-                </div>
-
-                {/* Track Your Food + scan actions */}
-                <div>
-                  <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
-                  <h2 className="app-section-h2" style={{ marginBottom: "0.25rem" }}>{t("trackYourFood")}</h2>
-                </div>
-                <div>
+                <div style={{marginTop:"0.65rem"}}>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.25rem",lineHeight:1}} aria-hidden>🖼️</span><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
@@ -3518,201 +3788,9 @@ export default function TrackFreshDashboard() {
                 </div>
                 </div>
 
-                {registerDiscountItems.length > 0 && (
-                  <div
-                    className="tf-glass-window"
-                    style={{
-                      marginBottom: "0.75rem",
-                      padding: "0.85rem 1rem",
-                      border: "2px solid rgba(245, 158, 11, 0.65)",
-                      background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
-                      boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
-                    }}
-                  >
-                    <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
-                      🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
-                    </p>
-                    <button
-                      type="button"
-                      className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
-                      onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
-                    >
-                      {t("storeDiscountSee")} {t("storeDiscountBtn")} →
-                    </button>
-                  </div>
-                )}
-
-                {/* Items card */}
-                <div className="tf-glass-window">
-                  <p style={{color:"rgba(255,255,255,0.9)",fontSize:"0.7rem",fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"0.4rem",textAlign:"center"}}>Organize Tracked Items</p>
-                  <Card className="tracker-items-card">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>
-                      </div>
-                      <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
-                    </div>
-                    <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>{lang === "es" ? "Toca ▼ en cada artículo para ver detalles" : "Tap ▼ on each item to expand details"}</p>
-                    <div className="mb-2 flex flex-wrap gap-1">
-                      {["All", ...LOCATIONS].map((l) => {
-                        const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
-                        const label = lang === "es" ? LOC_ES[l] : l;
-                        return (
-                          <button key={l} onClick={() => setFilterLocation(l)} className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${filterLocation === l ? "bg-green-700 text-white" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200 pill-3d"}`}>
-                            {l !== "All" ? LOCATION_ICONS[l] + " " : ""}{label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {filteredItems.length === 0 ? (
-                      <p className="text-sm text-white/70">{t("noFilter")}</p>
-                    ) : (
-                      <div className="tf-kitchen-grid">
-                        {(filterLocation === "All" ? LOCATIONS : [filterLocation]).map((loc) => {
-                          const locLabel = lang === "es"
-                            ? { Fridge: "Refrigerador", Freezer: "Congelador", Pantry: "Despensa" }[loc]
-                            : loc;
-                          const locItems = filteredItems.filter((it) => (it.location ?? "Fridge") === loc);
-                          return (
-                            <section key={loc} className="tf-kitchen-col" aria-labelledby={`kitchen-col-${loc}`}>
-                              <div id={`kitchen-col-${loc}`} className="tf-kitchen-col-header">
-                                <span>{LOCATION_ICONS[loc]} {locLabel}</span>
-                                <span className="tf-kitchen-col-count">{locItems.length}</span>
-                              </div>
-                              {locItems.length === 0 ? (
-                                <p className="tf-kitchen-col-empty text-xs text-white/50">{lang === "es" ? "Vacío" : "Empty"}</p>
-                              ) : (
-                              <ul className="tf-pending-queue-list">
-                        {locItems.map((it) => {
-                          const isEs = lang === "es";
-                          const expanded = trackerExpandedId === it.id;
-                          const locKey = it.location ?? "Fridge";
-                          const catKey = it.category ?? "Other";
-                          const needsAttention = it.daysLeft === null || (it.daysLeft !== null && it.daysLeft <= 2);
-                          const boxShadow = it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none";
-                          return (
-                            <li key={it.id} className={`tf-pending-queue-item${expanded ? " tf-pending-queue-item--open" : ""}`} style={{ boxShadow }}>
-                              <button type="button" className="tf-pending-queue-header" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
-                                <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
-                                <div className="tf-pending-queue-summary">
-                                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.35rem 0.45rem", width: "100%" }}>
-                                    {it.daysLeft === null ? <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">EXP</span> : null}
-                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[locKey]}`}>
-                                      {LOCATION_ICONS[locKey]} {locKey}
-                                    </span>
-                                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[catKey]}`}>{catKey}</span>
-                                    <span className="tf-pending-queue-chip tf-pending-queue-chip--tip">{itemStorageTip(it, isEs)}</span>
-                                    {needsAttention ? (
-                                      <span className="tf-pending-status-blink">STATUS</span>
-                                    ) : it.daysLeft !== null ? (
-                                      <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
-                                    ) : null}
-                                  </div>
-                                  <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
-                                </div>
-                              </button>
-                              {expanded && (
-                              <div className="tf-pending-queue-body">
-                              <div>
-                                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"0.5rem"}}>
-                                  <div>
-                                    {itemPrice(it) != null && (
-                                      <span className="text-xs" style={{ color: "#fde68a", fontWeight: 700 }}>{formatUSD(itemPrice(it))}</span>
-                                    )}
-                                    {it.quantity && <span className="text-xs ml-2" style={{color:"rgba(255,255,255,0.5)"}}>{it.quantity}</span>}
-                                  </div>
-                                  <div style={{marginLeft:"0.5rem",flexShrink:0,textAlign:"center"}}>
-                                    {it.daysLeft !== null && (() => {
-                                      const d = it.daysLeft;
-                                      const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
-                                      const expiredLabel = isEs ? "Vencido" : "Expired";
-                                      return (
-                                        <div>
-                                          <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:d < 0 ? "0.72rem" : "0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d < 0 ? expiredLabel : d}</div>
-                                          <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{d < 0 ? "" : t("days")}</div>
-                                        </div>
-                                      );
-                                    })()}
-                                  </div>
-                                </div>
-                                <div className="tf-tracker-item-actions" style={{display:"flex",gap:"0.4rem",marginBottom:"0.5rem"}}>
-                                  {it.daysLeft === null ? (
-                                    <button onClick={() => handleEditItem(it.id)} className="animate-pulse" style={{flex:1,background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#fff",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>EXP Date</button>
-                                  ) : isRegisterDiscountEligible(it) ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => setStoreDiscountItem(it)}
-                                      className="btn-amber-3d"
-                                      style={{
-                                        flex: 1,
-                                        borderRadius: "10px",
-                                        padding: "0.3rem 0.35rem",
-                                        fontSize: "0.65rem",
-                                        fontWeight: 800,
-                                        border: "2px solid #f59e0b",
-                                        cursor: "pointer",
-                                        lineHeight: 1.25,
-                                      }}
-                                    >
-                                      {t("storeDiscountBtn")}
-                                    </button>
-                                  ) : it.daysLeft <= 2 ? (
-                                    <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>Expiring Soon</div>
-                                  ) : (
-                                    <div style={{flex:1}} />
-                                  )}
-                                  <button onClick={() => { setTrackedItems(prev => prev.map(x => { if (x.id !== it.id) return x; if (x.openDate) return { ...x, openDate: "", openUseBy: null }; const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = x.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; return { ...x, openDate: today, useByDate: useBy }; })); }} className="rounded-lg px-2 py-1 text-xs font-bold shadow-md" style={{flex:1,background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.88)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)", cursor:"pointer"}}>{it.openDate ? (lang === "es" ? "¡Abierto!" : "Opened!") : (lang === "es" ? "¿Abierto?" : "Opened?")}</button>
-                                  <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-2 py-1 text-xs font-bold text-white shadow-md" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
-                                  {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                    <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-2 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
-                                  )}
-                                  <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-2 py-1 text-xs font-bold text-white btn-3d" style={{flex:1}}>{t("edit")}</button>
-                                </div>
-                                <div className="flex flex-wrap gap-1 mb-1">
-                                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[it.location ?? "Fridge"]}`}>{LOCATION_ICONS[it.location ?? "Fridge"]} {it.location ?? "Fridge"}</span>
-                                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[it.category ?? "Other"]}`}>{it.category ?? "Other"}</span>
-                                </div>
-                                {(it.openDate || it.useByDate) && (
-                                  <div className="text-xs mb-1">
-                                    {it.openDate ? (
-                                      <span style={{color:"#4ade80",fontWeight:700}}>
-                                        📂 Opened {fmtDate(it.openDate)}
-                                        {it.openUseBy && it.daysLeft !== null
-                                          ? ` · Use within ${it.daysLeft} day${it.daysLeft === 1 ? "" : "s"}`
-                                          : ""}
-                                      </span>
-                                    ) : it.useByDate ? (
-                                      <span style={{color:"rgba(255,255,255,0.8)"}}>Use by {fmtDate(it.useByDate)}</span>
-                                    ) : null}
-                                  </div>
-                                )}
-                                <div className="flex flex-col gap-1 mt-1">
-                                  <TipPill type="gray">💡 {it.storageTip || (it.location === "Freezer" ? "Keep frozen" : it.location === "Pantry" ? "Store in cool, dry place" : "Keep refrigerated at all times")}</TipPill>
-                                  {(() => {
-                                    if (it.category === "Produce") {
-                                      const ig = formatInGeneralInstruction(it, lang);
-                                      return ig ? <TipPill type="blue">🥬 {ig}</TipPill> : null;
-                                    }
-                                    const label = afterOpeningLabel(it) || (it.location === "Freezer" ? null : it.category === "Dairy" ? "Keep refrigerated, use within 7 days" : it.category === "Meat" ? "Cook or freeze within 2–3 days" : it.category === "Beverages" ? "Refrigerate after opening" : it.category === "Bread" ? "Use within 5 days or freeze" : "Check package for timing after opening");
-                                    return label ? <TipPill type="blue">📂 After opening: {label}</TipPill> : null;
-                                  })()}
-                                  {it.freezeBy && it.location === "Fridge" && <TipPill type="cyan">🧊 Freeze by: {it.freezeBy}</TipPill>}
-                                </div>
-                              </div>
-                              </div>
-                              )}
-                            </li>
-                          );
-                        })}
-                              </ul>
-                              )}
-                            </section>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </Card>
-                </div>
+                <button type="button" onClick={openTrackerOrganize} className="btn-amber-3d w-full rounded-xl py-3 text-sm font-bold">
+                  {t("organizeTrackedItemsBtn")} ({trackedItems.length}) →
+                </button>
               </>
             )}
           </div>
@@ -3906,7 +3984,7 @@ export default function TrackFreshDashboard() {
                   <button onClick={handleClearChecked} className="ml-auto rounded px-3 py-1 text-xs font-semibold text-red-200" style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,100,100,0.5)"}}>{t("clearChecked")}</button>
                 )}
               </div>
-              <p className="text-xs mb-3 -mt-1" style={{color:"rgba(134,239,172,0.75)"}}>{lang === "es" ? "Marca los artículos que hayas comprado." : "Check off items as you purchase them."}</p>
+              <p className="text-xs mb-3 -mt-1 tf-instruction-hint--inline" style={{marginBottom:"0.75rem",fontWeight:700}}>{lang === "es" ? "Marca los artículos que hayas comprado." : "Check off items as you purchase them."}</p>
               <div className="flex flex-col gap-2 mb-4 w-full">
                 <ShoppingAutocomplete
                   value={newShoppingItem}
@@ -3928,8 +4006,47 @@ export default function TrackFreshDashboard() {
                   </select>
                   <button onClick={handleAddShoppingItem} className="glass-scan-btn py-2 text-sm" style={{flex:"1"}}>{t("addBtn")}</button>
                 </div>
+                <div className="mb-1">
+                  <p className="text-xs font-bold mb-2" style={{color:"rgba(134,239,172,0.85)"}}>{t("deliveryServicePick")}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {DELIVERY_SERVICES.map((svc) => {
+                      const selected = deliveryService === svc.id;
+                      return (
+                        <button
+                          key={svc.id}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => setDeliveryService(selected ? null : svc.id)}
+                          className="rounded-xl px-3 py-2 text-xs font-bold transition-all"
+                          style={{
+                            background: selected ? "rgba(183,214,58,0.35)" : "rgba(4,47,38,0.9)",
+                            border: selected ? "2px solid rgba(183,214,58,0.85)" : "1px solid rgba(255,255,255,0.25)",
+                            color: selected ? "#ecfccb" : "#fff",
+                          }}
+                        >
+                          {svc.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
               {(() => {
+                const activeDelivery = DELIVERY_SERVICES.find((s) => s.id === deliveryService) || null;
+                const deliverySection = activeDelivery ? (
+                  <div className="mb-4 rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(183,214,58,0.45)"}}>
+                    <p className="text-xs font-bold mb-2" style={{color:"#fde68a"}}>🚚 {t("deliveryServiceTitle")}</p>
+                    <a
+                      href={activeDelivery.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="glass-scan-btn py-2 text-sm"
+                      style={{display:"flex",justifyContent:"center",textDecoration:"none"}}
+                    >
+                      {t("deliveryServiceOpen")} {activeDelivery.label} →
+                    </a>
+                  </div>
+                ) : null;
                 const expiringEntries = expiringSoon
                   .filter(it => !shoppingItems.some(s => s.name.toLowerCase() === it.name.toLowerCase()))
                   .map(it => ({ _type: "expiring", id: "exp_" + it.id, name: it.name, qty: "", checked: false, daysLeft: it.daysLeft, store: it.store || null, forMeal: null }));
@@ -3977,6 +4094,7 @@ export default function TrackFreshDashboard() {
                 const isEmpty = unchecked.length === 0 && checked.length === 0;
                 return (
                   <div>
+                    {deliverySection}
                     {isEmpty ? (
                       <p className="text-sm text-green-100">{t("emptyList")}</p>
                     ) : (
@@ -4210,6 +4328,29 @@ export default function TrackFreshDashboard() {
                   ? "Cuando encuentras un artículo que vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
                   : "When you find an item that expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
               </p>
+
+              <p className="tf-instruction-hint--inline text-xs mb-4" style={{ fontWeight: 700, lineHeight: 1.55 }}>
+                {t("searchSaveCheckoutIntro")}
+              </p>
+
+              <div className="space-y-3 mb-4">
+                {registerDiscountItems.length > 0 ? (
+                  registerDiscountItems.map((it) => (
+                    <SearchSaveDiscountCard
+                      key={it.id}
+                      item={it}
+                      lang={lang}
+                      compact
+                      onClick={() => setStoreDiscountItem(it)}
+                    />
+                  ))
+                ) : (
+                  <InstructionHint style={{ margin: 0, fontSize: "0.8125rem" }}>
+                    {t("searchSaveNoEligible")}
+                  </InstructionHint>
+                )}
+              </div>
+
               <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",color:"#f59e0b",margin:"0 0 1rem"}}>20% OFF</p>
               <div className="space-y-3 mb-4">
                 {[
@@ -4227,7 +4368,7 @@ export default function TrackFreshDashboard() {
                 {[
                   [lang === "es" ? "Rastrea" : "Track", lang === "es" ? "fechas mientras recorres los pasillos." : "dates as you peruse the aisles."],
                   [lang === "es" ? "Elegible:" : "Eligible:", lang === "es" ? "fecha de vencimiento o usar antes dentro de 2 días." : "expiry date or use-by date within 2 days."],
-                  [lang === "es" ? "En caja:" : "At register:", lang === "es" ? "muestra la app; el cajero verifica la fecha, escanea y etiqueta el/los artículo(s) y luego aplica el código de descuento." : "show the app; clerk verifies date, scans and tags the item(s) then applies the discount code."],
+                  [lang === "es" ? "En caja:" : "At checkout:", lang === "es" ? "presenta la app, muestra la fecha de vencimiento; el cajero verifica, escanea y etiqueta el artículo y aplica el código de descuento." : "present the app and show the expiry date; clerk verifies, scans and tags the item, then applies the discount code."],
                 ].map(([label, text], i) => (
                   <li key={label} className="flex items-start gap-3">
                     <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"1.5rem",height:"1.5rem",borderRadius:"999px",background:"rgba(245,158,11,0.25)",color:"#f59e0b",fontSize:"0.75rem",fontWeight:800,flexShrink:0}}>{i + 1}</span>
@@ -4235,6 +4376,23 @@ export default function TrackFreshDashboard() {
                   </li>
                 ))}
               </ol>
+              <div className="rounded-xl px-3 py-3 mt-4" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(250,204,21,0.28)"}}>
+                <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.65rem",color:"#fde68a"}}>
+                  🛒 {t("fdaDeptsTitle")}
+                </h3>
+                <ul style={{margin:0,padding:0,listStyle:"none",display:"flex",flexDirection:"column",gap:"0.55rem"}}>
+                  {[
+                    { icon: "🥖", text: t("fdaDeptBakery") },
+                    { icon: "🥩", text: t("fdaDeptMeat") },
+                    { icon: "🥛", text: t("fdaDeptDairy") },
+                  ].map(({ icon, text }) => (
+                    <li key={text} style={{display:"flex",gap:"0.5rem",alignItems:"flex-start"}}>
+                      <span aria-hidden="true" style={{flexShrink:0}}>{icon}</span>
+                      <span className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <p className="text-xs text-green-300 opacity-80" style={{margin:"0.85rem 0 0",textAlign:"center"}}>
                 {lang === "es" ? "Programa piloto en tiendas participantes." : "Pilot at participating stores."}
               </p>
@@ -4683,24 +4841,6 @@ export default function TrackFreshDashboard() {
                   >
                     {t("fdaFunFactsSource")} &#8594;
                   </a>
-                </div>
-
-                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(250,204,21,0.22)" }}>
-                  <h3 style={{ margin: "0 0 0.65rem", fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.35 }}>
-                    🛒 {t("fdaDeptsTitle")}
-                  </h3>
-                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.55rem" }}>
-                    {[
-                      { icon: "🥖", text: t("fdaDeptBakery") },
-                      { icon: "🥩", text: t("fdaDeptMeat") },
-                      { icon: "🥛", text: t("fdaDeptDairy") },
-                    ].map(({ icon, text }) => (
-                      <li key={text} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", fontSize: "0.78rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.45 }}>
-                        <span aria-hidden="true" style={{ flexShrink: 0 }}>{icon}</span>
-                        <span>{text}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
 
                 <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "1rem", border: "1px solid rgba(134,239,172,0.22)" }}>

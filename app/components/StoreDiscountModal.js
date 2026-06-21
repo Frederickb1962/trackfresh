@@ -1,25 +1,12 @@
 "use client";
 
 import React from "react";
-import {
-  REGISTER_DISCOUNT_PERCENT,
-  registerDiscountDaysLabel,
-  registerDiscountVerifyCode,
-} from "../lib/storeDiscount";
+import SearchSaveDiscountCard from "./SearchSaveDiscountCard";
 import { TrackFreshLogo } from "./ui/TrackFreshLogo";
-
-function fmtDate(dateString) {
-  if (!dateString) return "—";
-  const d = new Date(dateString + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
 
 export default function StoreDiscountModal({ item, lang, onClose }) {
   const isEs = lang === "es";
   if (!item) return null;
-
-  const code = registerDiscountVerifyCode(item.id, item.useByDate);
-  const name = item.brand ? `${item.brand} ${item.name}` : item.name;
 
   return (
     <div
@@ -53,68 +40,33 @@ export default function StoreDiscountModal({ item, lang, onClose }) {
           </button>
         </div>
 
-        <div
-          className="rounded-xl p-4 mb-4 text-center"
-          style={{
-            border: "2px solid #f59e0b",
-            background: "linear-gradient(180deg, rgba(245,158,11,0.22) 0%, rgba(0,0,0,0.35) 100%)",
-            boxShadow: "0 0 24px rgba(249,115,22,0.35)",
-          }}
-        >
-          <p className="text-4xl font-black m-0" style={{ color: "#fde68a" }}>
-            {REGISTER_DISCOUNT_PERCENT}% OFF
-          </p>
-          <p className="text-sm font-bold m-0 mt-1" style={{ color: "#fff" }}>
-            {name}
-          </p>
-          <p className="text-xs m-0 mt-2" style={{ color: "rgba(255,255,255,0.85)" }}>
-            {isEs ? "Usar antes de:" : "Use by:"}{" "}
-            <strong>{fmtDate(item.useByDate)}</strong>
-            {" · "}
-            {registerDiscountDaysLabel(item.daysLeft, lang)}
-          </p>
-        </div>
+        <p className="tf-instruction-hint--inline text-xs mb-4" style={{ fontWeight: 700, lineHeight: 1.5 }}>
+          {isEs
+            ? "Lleva tu app TrackFresh a una tienda participante. Preséntala en caja y muestra la fecha de vencimiento."
+            : "Take your TrackFresh app with you to a participating store. Present this at checkout and show the expiry date."}
+        </p>
 
-        <ol className="text-sm space-y-2 m-0 mb-4 pl-4" style={{ color: "rgba(255,255,255,0.9)" }}>
+        <SearchSaveDiscountCard item={item} lang={lang} />
+
+        <ol className="text-sm space-y-2 m-0 mt-4 mb-3 pl-4" style={{ color: "rgba(255,255,255,0.9)" }}>
           <li>
-            <strong>{isEs ? "En la tienda:" : "At the store:"}</strong>{" "}
+            <strong>{isEs ? "En caja:" : "At checkout:"}</strong>{" "}
             {isEs
-              ? "Lleva este artículo a caja en una tienda participante."
-              : "Bring this same item to checkout at a participating store."}
-          </li>
-          <li>
-            <strong>{isEs ? "Muestra TrackFresh:" : "Show TrackFresh:"}</strong>{" "}
-            {isEs
-              ? "Presenta esta pantalla al cajero."
-              : "Show this screen to the clerk."}
+              ? "Presenta esta pantalla al cajero con el artículo."
+              : "Present this screen to the clerk with the item."}
           </li>
           <li>
             <strong>{isEs ? "Verificación:" : "Verification:"}</strong>{" "}
             {isEs
               ? "El cajero verifica la fecha, escanea y etiqueta el artículo y aplica el código de descuento."
-              : "Clerk verifies date, scans and tags the item, and applies the discount code."}
+              : "Clerk verifies the expiry date, scans and tags the item, and applies the discount code."}
           </li>
         </ol>
 
-        <div
-          className="rounded-lg px-3 py-2 mb-3 text-center"
-          style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.12)" }}
-        >
-          <p className="text-xs m-0 mb-1" style={{ color: "rgba(255,255,255,0.65)" }}>
-            {isEs ? "Código de verificación" : "Verification code"}
-          </p>
-          <p
-            className="text-xl font-mono font-bold m-0 tracking-wider"
-            style={{ color: "#86efac", letterSpacing: "0.12em" }}
-          >
-            {code}
-          </p>
-        </div>
-
         <p className="text-xs text-center m-0 mb-3" style={{ color: "rgba(255,255,255,0.55)", lineHeight: 1.45 }}>
           {isEs
-            ? "Programa piloto — tiendas asociadas. Ayuda a reducir desperdicio y mejora el inventario."
-            : "Pilot program — participating stores. Cuts waste and helps stores move inventory."}
+            ? "Programa piloto — tiendas participantes."
+            : "Pilot program — participating stores."}
         </p>
 
         <div className="flex justify-center opacity-80">
