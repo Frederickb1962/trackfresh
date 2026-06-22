@@ -3494,30 +3494,6 @@ export default function TrackFreshDashboard() {
               )}
             </div>
 
-            {registerDiscountItems.length > 0 && (
-              <div
-                className="tf-glass-window"
-                style={{
-                  marginBottom: "0.75rem",
-                  padding: "0.85rem 1rem",
-                  border: "2px solid rgba(245, 158, 11, 0.65)",
-                  background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
-                  boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
-                }}
-              >
-                <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
-                  🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
-                </p>
-                <button
-                  type="button"
-                  className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
-                  onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
-                >
-                  {t("storeDiscountSee")} {t("storeDiscountBtn")} →
-                </button>
-              </div>
-            )}
-
             <div className="tf-glass-window">
               <Card className="tracker-items-card">
                 <div className="mb-3 flex items-center justify-between">
@@ -4333,6 +4309,30 @@ export default function TrackFreshDashboard() {
                 {t("searchSaveCheckoutIntro")}
               </p>
 
+              {registerDiscountItems.length > 0 && (
+                <div
+                  className="tf-glass-window"
+                  style={{
+                    marginBottom: "1rem",
+                    padding: "0.85rem 1rem",
+                    border: "2px solid rgba(245, 158, 11, 0.65)",
+                    background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
+                    boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
+                  }}
+                >
+                  <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
+                    🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
+                  </p>
+                  <button
+                    type="button"
+                    className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
+                    onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
+                  >
+                    {t("storeDiscountSee")} {t("storeDiscountBtn")} →
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-3 mb-4">
                 {registerDiscountItems.length > 0 ? (
                   registerDiscountItems.map((it) => (
@@ -4349,6 +4349,24 @@ export default function TrackFreshDashboard() {
                     {t("searchSaveNoEligible")}
                   </InstructionHint>
                 )}
+              </div>
+
+              <div className="rounded-xl px-3 py-3 mb-4" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(250,204,21,0.28)"}}>
+                <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.65rem",color:"#fde68a"}}>
+                  🛒 {t("fdaDeptsTitle")}
+                </h3>
+                <ul style={{margin:0,padding:0,listStyle:"none",display:"flex",flexDirection:"column",gap:"0.55rem"}}>
+                  {[
+                    { icon: "🥖", text: t("fdaDeptBakery") },
+                    { icon: "🥩", text: t("fdaDeptMeat") },
+                    { icon: "🥛", text: t("fdaDeptDairy") },
+                  ].map(({ icon, text }) => (
+                    <li key={text} style={{display:"flex",gap:"0.5rem",alignItems:"flex-start"}}>
+                      <span aria-hidden="true" style={{flexShrink:0}}>{icon}</span>
+                      <span className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",color:"#f59e0b",margin:"0 0 1rem"}}>20% OFF</p>
@@ -4376,23 +4394,6 @@ export default function TrackFreshDashboard() {
                   </li>
                 ))}
               </ol>
-              <div className="rounded-xl px-3 py-3 mt-4" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(250,204,21,0.28)"}}>
-                <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.65rem",color:"#fde68a"}}>
-                  🛒 {t("fdaDeptsTitle")}
-                </h3>
-                <ul style={{margin:0,padding:0,listStyle:"none",display:"flex",flexDirection:"column",gap:"0.55rem"}}>
-                  {[
-                    { icon: "🥖", text: t("fdaDeptBakery") },
-                    { icon: "🥩", text: t("fdaDeptMeat") },
-                    { icon: "🥛", text: t("fdaDeptDairy") },
-                  ].map(({ icon, text }) => (
-                    <li key={text} style={{display:"flex",gap:"0.5rem",alignItems:"flex-start"}}>
-                      <span aria-hidden="true" style={{flexShrink:0}}>{icon}</span>
-                      <span className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
               <p className="text-xs text-green-300 opacity-80" style={{margin:"0.85rem 0 0",textAlign:"center"}}>
                 {lang === "es" ? "Programa piloto en tiendas participantes." : "Pilot at participating stores."}
               </p>
