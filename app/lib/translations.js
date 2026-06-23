@@ -102,7 +102,7 @@ export const T = {
   useItemsSoon: { en: "Use these items soon, freeze them, or check for recipes!", es: "\u00a1Usa estos productos pronto, cong\u00e9lalos o busca recetas!", fr: "Utilisez ces articles bient\u00f4t, congelez-les ou cherchez des recettes !", it: "Usa presto questi articoli, congelali o cerca ricette!" },
   gotIt: { en: "Got it", es: "Entendido", fr: "Compris", it: "Capito" },
   findRecipes: { en: "Find Recipes", es: "Buscar Recetas", fr: "Trouver des recettes", it: "Trova ricette" },
-  scanReceiptTitle: { en: "\ud83d\udcf7 Mult. or Single Items Snapshot", es: "\ud83d\udcf7 Escanear Uno o Varios", fr: "\ud83d\udcf7 Scan un ou plusieurs articles", it: "\ud83d\udcf7 Scansione singola o multipla" },
+  scanReceiptTitle: { en: "Mult. or Single Items \ud83d\udcf7 Snapshot", es: "\ud83d\udcf7 Escanear Uno o Varios", fr: "\ud83d\udcf7 Scan un ou plusieurs articles", it: "\ud83d\udcf7 Scansione singola o multipla" },
   scanReceiptDesc: {
     en: "Take or upload one photo. Receipts, groceries, in cabinets, or on fridge doors — AI adds everything for you.",
     es: "Toma o sube una foto. Recibos, compras, dentro de gabinetes o en la puerta del refrigerador — la IA agrega todo.",
