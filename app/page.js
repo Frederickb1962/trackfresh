@@ -5193,6 +5193,12 @@ export default function TrackFreshDashboard() {
                 </div>
                 {/* Slide card */}
                 <div style={{background:"rgba(255,255,255,0.1)",borderRadius:"1.5rem",padding:"2.25rem 1.5rem",textAlign:"center",flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",border:"1.5px solid rgba(255,255,255,0.15)"}}>
+                  {slide.window && (
+                    <div style={{display:"inline-flex",alignItems:"center",gap:"0.4rem",alignSelf:"center",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"999px",padding:"0.3rem 0.85rem",marginBottom:"1.5rem",fontSize:"0.7rem",fontWeight:800,letterSpacing:"0.06em",textTransform:"uppercase",color:"#fff"}}>
+                      <span aria-hidden style={{fontSize:"1rem",lineHeight:1}}>{slide.window.icon}</span>
+                      <span>{lang === "es" ? slide.window.es : slide.window.en}</span>
+                    </div>
+                  )}
                   {slide.visual.type === "emoji"
                     ? <div style={{fontSize:"6rem",lineHeight:1,marginBottom:"1.5rem"}}>{slide.visual.value}</div>
                     : <img src={slide.visual.src} alt="" style={{maxHeight:"240px",maxWidth:"100%",borderRadius:"12px",objectFit:"contain",marginBottom:"1.5rem"}} />
@@ -5206,8 +5212,9 @@ export default function TrackFreshDashboard() {
                 {tourSlide === 5 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); }}>{lang === "es" ? "Ir al Rastreador" : "Go to Tracker"}</button>}
                 {tourSlide === 7 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("recipes"); }}>{lang === "es" ? "Explorar Recetas" : "Explore Recipes"}</button>}
                 {tourSlide === 10 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("stores-page"); }}>{lang === "es" ? "Conectar Tiendas" : "Connect Stores"}</button>}
-                {tourSlide === 11 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("meals"); }}>{lang === "es" ? "Planificar mi Semana" : "Plan Your Week"}</button>}
-                {tourSlide === 12 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowRecallsPanel(true); }}>{lang === "es" ? "Ver Alertas FDA" : "Check FDA Recalls"}</button>}
+                {tourSlide === 11 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("search-save"); }}>{lang === "es" ? "Abrir Buscar y Ahorrar" : "Open Search & Save"}</button>}
+                {tourSlide === 12 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("meals"); }}>{lang === "es" ? "Planificar mi Semana" : "Plan Your Week"}</button>}
+                {tourSlide === 13 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowRecallsPanel(true); }}>{lang === "es" ? "Ver Alertas FDA" : "Check FDA Recalls"}</button>}
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
                   {tourSlide > 0 && (
