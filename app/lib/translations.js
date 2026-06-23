@@ -219,7 +219,7 @@ export const T = {
   fdaDateSellBy: { en: "Sell-By: Tells the store how long to display the product. You have about 3 to 7 days past this date to consume milk and dairy, and longer for properly frozen meats.", es: "Sell-By (Vender antes de): indica a la tienda cu\u00e1nto tiempo exhibir el producto. Tienes unos 3 a 7 d\u00edas despu\u00e9s para consumir leche y l\u00e1cteos, y m\u00e1s tiempo para carnes congeladas correctamente.", fr: "Sell-By\u00a0: indique au magasin combien de temps exposer le produit. Comptez 3 \u00e0 7 jours apr\u00e8s pour lait et produits laitiers, plus longtemps pour viandes bien congel\u00e9es.", it: "Sell-By: indica al negozio quanto esporre il prodotto. Hai circa 3\u20137 giorni oltre la data per latte e latticini, e pi\u00f9 tempo per carni congelate correttamente." },
   fdaDateBestBy: { en: "Best By / Best Before: Refers to peak quality, not safety. Foods are perfectly fine to eat past this date.", es: "Best By / Best Before (Mejor antes de): se refiere a calidad m\u00e1xima, no seguridad. Los alimentos siguen siendo aptos despu\u00e9s de esta fecha.", fr: "Best By / Best Before\u00a0: qualit\u00e9 optimale, pas s\u00e9curit\u00e9. Les aliments restent consommables apr\u00e8s cette date.", it: "Best By / Best Before: indica qualit\u00e0 ottimale, non sicurezza. Gli alimenti restano commestibili oltre questa data." },
   fdaDateUseBy: { en: "Use-By: The last date recommended for peak quality. Found on highly perishable deli meats or unpasteurized items.", es: "Use-By (Usar antes de): \u00faltima fecha recomendada para m\u00e1xima calidad. Com\u00fan en carnes fr\u00edas muy perecederas o productos no pasteurizados.", fr: "Use-By\u00a0: derni\u00e8re date recommand\u00e9e pour une qualit\u00e9 optimale. Courant sur charcuteries tr\u00e8s p\u00e9rissables ou produits non pasteuris\u00e9s.", it: "Use-By: ultima data consigliata per qualit\u00e0 ottimale. Si trova su salumi molto deperibili o prodotti non pastorizzati." },
-  smartScanTitle: { en: "Scan with Camera", es: "Escanear con C\u00e1mara", fr: "Scanner avec la cam\u00e9ra", it: "Scansiona con fotocamera" },
+  smartScanTitle: { en: "Snap with Camera", es: "Escanear con C\u00e1mara", fr: "Scanner avec la cam\u00e9ra", it: "Scansiona con fotocamera" },
   smartScanTrackerBar: {
     en: "Barcodes, labels & products",
     es: "C\u00f3digos, etiquetas y productos",
@@ -231,7 +231,7 @@ export const T = {
   howManyItems: { en: "How many items are you scanning?", es: "\u00bfCu\u00e1ntos productos vas a escanear?", fr: "Combien d'articles scannez-vous ?", it: "Quanti articoli stai scansionando?" },
   singleScan: { en: "Single Scan", es: "Escaneo \u00danico", fr: "Scan unique", it: "Scansione singola" },
   multiScans: { en: "Mult. Scans", es: "M\u00falt. Escaneos", fr: "Scans mult.", it: "Scans multipli" },
-  scanReceipts: { en: "Mult. or Single Items Snapshot", es: "Escanear Uno o Varios", fr: "Scan un ou plusieurs", it: "Scansione singola o multipla" },
+  scanReceipts: { en: "Mult. or Single Items \ud83d\udcf7 Snapshot", es: "Escanear Uno o Varios", fr: "Scan un ou plusieurs", it: "Scansione singola o multipla" },
   scanReceiptsBar: {
     en: "Receipts, Groceries, In Cabinets or On Fridge Doors",
     es: "Recibos, compras, en gabinetes o puerta del refri",

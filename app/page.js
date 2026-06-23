@@ -3703,7 +3703,7 @@ export default function TrackFreshDashboard() {
 
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.25rem",lineHeight:1}} aria-hidden>🖼️</span><span>{t("scanReceipts")}</span></div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
                   </button>
                   <button onClick={() => setShowGroceryScan(true)} className="w-full tf-glass-scan tf-glass-scan--accent" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginBottom:"0.5rem"}}>
@@ -3750,7 +3750,7 @@ export default function TrackFreshDashboard() {
 
                 <div style={{marginTop:"0.65rem"}}>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.25rem",lineHeight:1}} aria-hidden>🖼️</span><span>{t("scanReceipts")}</span></div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
                   </button>
                   <button onClick={() => setShowGroceryScan(true)} className="w-full tf-glass-scan tf-glass-scan--accent" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginBottom:"0.5rem"}}>
