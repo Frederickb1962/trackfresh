@@ -101,18 +101,18 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
               </div>
               <div className="mkt-nav-center mkt-nav-logo"><TrackFreshLogo /></div>
               <div className="mkt-nav-side mkt-nav-side--end">
-                <button type="button" onClick={(e) => handleLaunchClick(e)} className="mkt-cta mkt-cta--nav" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Abrir" : "Launch"}</button>
+                <button type="button" onClick={(e) => handleLaunchClick(e)} className="mkt-cta mkt-cta--nav" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Empezar" : "Get started"}</button>
               </div>
             </nav>
 
             <div className="mkt-section-wrap">
-              {/* Speculative banner */}
-              <section className="mkt-section-card mkt-animate mkt-animate-d1" aria-label={isEs ? "Oportunidad especulativa" : "Speculative Opportunity"}>
+              {/* Search & Save detail */}
+              <section className="mkt-section-card mkt-animate mkt-animate-d1" aria-label={isEs ? "Buscar y Ahorrar (piloto)" : "Search & Save (pilot)"}>
                 <div className="mkt-speculative">
                   <p className="mkt-speculative__headline">
                     {isEs
-                      ? "Oportunidad especulativa — para consumidores y proveedores"
-                      : "Speculative Opportunity — for Consumers and Vendors"}
+                      ? "Buscar y Ahorrar (piloto)"
+                      : "Search & Save (pilot)"}
                   </p>
                   <p className="mkt-speculative__disclaimer">
                     {isEs
@@ -154,14 +154,6 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
                         {isEs
                           ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas."
                           : "Better inventory control: sell through before expiry and cut shrinkage."}
-                      </p>
-                    </div>
-                    <div className="mkt-save-program__card">
-                      <h3>{isEs ? "Para TrackFresh" : "For TrackFresh"}</h3>
-                      <p>
-                        {isEs
-                          ? "Valor añadido: engagement del usuario/ mayores ganancias para proveedores/ la app de referencia — menos desperdicio de alimentos, todo rastreado."
-                          : "Added value: User engagement/ Vendor increased profits/ The 'go to' App less food waste fully tracked."}
                       </p>
                     </div>
                   </div>
@@ -214,7 +206,7 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
                   <p className="mkt-stores__lead">
                     {isEs
                       ? "TrackFresh envía compradores con fechas reales en la app. Tu equipo confirma el artículo en caja — tú mueves inventario por vencer y reduces mermas."
-                      : "TrackFresh incentifies shoppers to check your inventory. Your team confirms the item at checkout — you move near-expiry inventory and cut shrink."}
+                      : "TrackFresh encourages shoppers to check your inventory. Your team confirms the item at checkout — you move near-expiry inventory and cut shrink."}
                   </p>
                   <div className="mkt-stores__grid">
                     <div className="mkt-stores__benefit">
@@ -313,12 +305,12 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
         </div>
         <div className="mkt-nav-center mkt-nav-logo"><TrackFreshLogo /></div>
         <div className="mkt-nav-side mkt-nav-side--end">
-          <button type="button" onClick={(e) => handleLaunchClick(e)} className="mkt-cta mkt-cta--nav" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Abrir" : "Launch"}</button>
+          <button type="button" onClick={(e) => handleLaunchClick(e)} className="mkt-cta mkt-cta--nav" style={{fontSize:"0.8rem",padding:"0.4rem 1.1rem",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Empezar" : "Get started"}</button>
         </div>
       </nav>
 
       <div className="mkt-section-wrap">
-        {/* Section 1 — Waste Less / hero + condiments */}
+        {/* Section 1 — Hero + condiments */}
         <section className="mkt-section-card mkt-animate mkt-animate-d1" aria-label={isEs ? "Introducción" : "Introduction"}>
           <div className="mkt-hero">
             <span className="mkt-hero-eyebrow mkt-animate">
@@ -327,22 +319,27 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
             <h1 className="mkt-hero-title">
               <span className="hero-slide-left" style={{animationDelay:"0.1s"}}>{isEs ? "Tu Cocina. Tu Comida." : "Your Kitchen. Your Food."}</span>
               <br />
-              <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Todo Rastreado para Mayor Frescura." : "Fully Tracked for Freshness."}</span>
+              <span className="hero-slide-right" style={{animationDelay:"0.28s"}}>{isEs ? "Sabe qué está fresco, qué sigue y qué usar." : "Know what's fresh, what's next, what to use."}</span>
             </h1>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.55s",color:"#ffffff"}}>
-              {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve y más." : "Your fridge door is a mystery. TrackFresh solves it and more!"}
+              {isEs ? "Tu puerta del refrigerador es un misterio. TrackFresh lo resuelve." : "Your fridge door is a mystery. TrackFresh solves it."}
             </p>
             <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.72s",color:"rgba(255,255,255,0.85)",fontSize:"0.9rem",marginTop:"0.15rem"}}>
               {isEs
-                ? "Sabe qué está fresco, qué sigue y qué tirar. Refrigerador, congelador y despensa."
-                : "Know what's fresh, what's next and what to toss. Fridge, Freezer and Pantry."}
+                ? "Refrigerador, congelador y despensa — todo en un solo lugar."
+                : "Fridge, freezer, and pantry — all in one place."}
+            </p>
+            <p className="mkt-hero-sub mkt-animate" style={{animationDelay:"0.85s",color:"rgba(167,243,208,0.95)",fontSize:"0.85rem",marginTop:"0.35rem"}}>
+              {isEs
+                ? "Tus datos se guardan en tu dispositivo. No necesitas cuenta."
+                : "Your data stays on your device. No account required."}
             </p>
           </div>
           <div className="mkt-condiment-strip mkt-animate" style={{animationDelay:"0.65s"}}>
             <p className="mkt-condiment-strip-lead">
               {isEs
-                ? "Uno de los grandes misterios de la vida, resuelto — TrackFresh está aquí para recordarte cuándo tirarlo."
-                : "One of life's biggest mysteries solved and TrackFresh is here to remind you when to toss it."}
+                ? "Toca un condimento — mira cuánto dura después de abrir."
+                : "Tap a condiment — see how long it lasts after opening."}
             </p>
             <div className="mkt-condiment-row">
               {["ketchup", "mustard", "mayo"].map((key) => {
@@ -377,50 +374,42 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
           </div>
         </section>
 
-        {/* Section 2 — The Issue */}
+        {/* Section 2 — The Issue (top 3) */}
         <section className="mkt-section-card mkt-animate mkt-animate-d2" aria-label={isEs ? "El problema" : "The Issue"}>
         <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
           <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "EL PROBLEMA" : "The Issue"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "¿Fechas de caducidad? Confusas por diseño — si es que las encuentras." : "Expiration dates? Confusing by design — if you can even find them."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🔓</span><span><strong>{isEs ? "¿Después de abrir? Nadie te dice cuánto dura realmente — y nadie te lo recuerda." : "After opening? No one tells you how long food really lasts — and no one reminds you."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>💸</span><span><strong>{isEs ? "Minoristas y consumidores desperdician más de 35 millones de toneladas de comida al año. =$$$$$" : "Grocers and Consumers waste more than 35 million tons of food a year.  =$$$$$"}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📋</span><span><strong>{isEs ? "¿Listas de compras? En papel, en tu cabeza o perdidas — recompras lo que ya tienes y olvidas lo que necesitas." : "Shopping lists? On paper, in your head, or lost — you rebuy what you have and forget what you need."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍽️</span><span><strong>{isEs ? "¿Plan de comidas? \"¿Qué hay para cenar?\" mientras la comida buena caduca en el fondo del refrigerador." : "Meal planning? \"What's for dinner?\" while good food quietly expires in the back of the fridge."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⚠️</span><span><strong>{isEs ? "¿Retiros de la FDA? Alertas importantes se pierden — fácil no verlas a tiempo." : "FDA recalls? Important alerts get buried — easy to miss until it's too late."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🛒</span><span><strong>{isEs ? "¿En la tienda? Pagas precio completo mientras artículos por vencer se quedan — la tienda pierde, tú pierdes." : "At the store? You pay full price while near-expiry items sit — stores lose, you lose."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🏷️</span><span><strong>{isEs ? "Las fechas de caducidad confunden — y después de abrir, nadie te recuerda cuánto dura." : "Expiration dates are confusing — and after opening, no one reminds you how long food lasts."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍽️</span><span><strong>{isEs ? "La comida buena caduca en el fondo del refrigerador mientras preguntas \"¿qué hay para cenar?\"" : "Good food expires in the back of the fridge while you wonder what's for dinner."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📋</span><span><strong>{isEs ? "Las listas se pierden — recompras lo que ya tienes y olvidas lo que necesitas." : "Shopping lists get lost — you rebuy what you have and forget what you need."}</strong></span></li>
         </ul>
         </section>
 
-        {/* Section 3 — The Solution (list only) */}
-        <section className="mkt-section-card mkt-animate mkt-animate-d3" aria-label={isEs ? "La solución" : "The Solution"}>
+        {/* Section 3 — How it works (3 steps) */}
+        <section className="mkt-section-card mkt-animate mkt-animate-d3" aria-label={isEs ? "Cómo funciona" : "How it works"}>
         <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
-          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "LA SOLUCIÓN" : "The Solution"}</p>
+          <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.95rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>{isEs ? "CÓMO FUNCIONA" : "How It Works"}</p>
         </div>
         <ul style={{listStyle:"none",padding:0,margin:"0 0 1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Con TrackFresh, foto o sube un recibo—artículos, vida útil, tras abrir, autocompletado con alarmas e información." : "With TrackFresh snap or upload a receipt—items, shelf life, after-opening, autofilled with alarms and insight."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>📷</span><span><strong>{isEs ? "¿Sin recibo? Escanea hasta 10 o más artículos en una foto grupal—códigos, etiquetas, autocompletado." : "No receipt? Scan up to 10 or more items in a group shot—barcodes, labels, autofilled."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🎤</span><span><strong>{isEs ? "Reconocimiento de voz para fechas de caducidad según sea necesario." : "Voice recognition of expiration dates as needed."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🛒</span><span><strong>{isEs ? "Lista de compras conectada a lo que rastreas — menos compras duplicadas, viajes más inteligentes." : "Build your shopping list from what you track — less duplicate buying, smarter trips."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍳</span><span><strong>{isEs ? "Planificador de comidas semanal o diario con recetas según lo que tienes — se prioriza lo que está por vencer." : "Weekly or Daily Meal Planner with recipes from what you have — expiring items prioritized."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🍲</span><span><strong>{isEs ? "Recetas con IA de TrackFresh según lo que tienes — lo que está por vencer primero." : "TrackFresh AI recipes from what's on hand — expiring items first."}</strong></span></li>
-          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⚠️</span><span><strong>{isEs ? "Alertas diarias de retiros de la FDA + Buscar y Ahorrar hasta 20% con nuestros supermercados asociados." : "Daily FDA recall alerts + Search & Save up to 20% with our partner grocers."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🧾</span><span><strong>{isEs ? "Toma una foto del recibo o de tus productos — TrackFresh agrega artículos y fechas." : "Snap a receipt or photo — TrackFresh adds your items and dates."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>⏰</span><span><strong>{isEs ? "Recibe recordatorios antes de que la comida caduque." : "Get reminders before food expires."}</strong></span></li>
+          <li style={{display:"flex",alignItems:"flex-start",gap:"0.5rem",fontSize:"0.97rem"}}><span>🛒</span><span><strong>{isEs ? "Compra y cocina más inteligente con lo que ya tienes." : "Shop and cook smarter from what you already have."}</strong></span></li>
         </ul>
         </section>
 
-        {/* Section 4 — Speculative Opportunity (links to dedicated page) */}
-        <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "Oportunidad especulativa" : "Speculative Opportunity"}>
+        {/* Section 4 — Search & Save pilot */}
+        <section className="mkt-section-card mkt-animate mkt-animate-d4" aria-label={isEs ? "Buscar y Ahorrar (piloto)" : "Search & Save (pilot)"}>
           <div className="mkt-speculative">
             <p className="mkt-speculative__headline">
               {isEs
-                ? "Oportunidad especulativa — para consumidores y proveedores"
-                : "Speculative Opportunity — for Consumers and Vendors"}
+                ? "Buscar y Ahorrar (piloto)"
+                : "Search & Save (pilot)"}
             </p>
             <p style={{ margin: "0 0 1rem", fontSize: "0.9rem", lineHeight: 1.5, color: "rgba(255,255,255,0.82)" }}>
               {isEs
-                ? "TrackFresh Buscar y Ahorrar: hasta 20% de descuento en artículos por vencer — todos ganan. Conoce cómo funciona para consumidores y tiendas."
-                : "TrackFresh Search and Save: up to 20% off near-expiry items — everyone wins. See how it works for consumers and stores."}
+                ? "Hasta 20% de descuento en artículos por vencer en tiendas participantes."
+                : "Save up to 20% on near-expiry items at participating stores."}
             </p>
             <button
               type="button"
@@ -428,7 +417,7 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
               className="mkt-cta"
               style={{ fontSize: "1.05rem", padding: "0.65rem 1.75rem", border: "none", cursor: "pointer", fontFamily: "inherit" }}
             >
-              {isEs ? "Ver la oportunidad →" : "View the opportunity →"}
+              {isEs ? "Cómo funciona →" : "How it works →"}
             </button>
             <p className="mkt-speculative__disclaimer" style={{ marginTop: "0.75rem" }}>
               {isEs
@@ -447,12 +436,12 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
             {isEs ? (
               <>
                 <strong style={{ color: "rgba(255,255,255,0.92)" }}>Términos de uso y seguridad alimentaria.</strong>{" "}
-                TrackFresh se ofrece solo con fines informativos y de organización. Las fechas, estimaciones de vida útil, retiros, recetas y contenido generado por IA pueden estar incompletos o ser inexactos. Usted es el único responsable de verificar las fechas de caducidad, el almacenamiento y la inocuidad de los alimentos con el empaque del producto, el fabricante y profesionales cualificados antes de consumir o desechar alimentos. TrackFresh no proporciona asesoramiento médico, nutricional ni legal. El uso de la aplicación es bajo su propio riesgo. Siga siempre las recomendaciones de USDA, FDA y las autoridades sanitarias locales.
+                TrackFresh es solo para organización — siempre verifica fechas y seguridad en el empaque del producto. Términos completos dentro de la app.
               </>
             ) : (
               <>
                 <strong style={{ color: "rgba(255,255,255,0.92)" }}>Terms of Use &amp; Food Safety.</strong>{" "}
-                TrackFresh is provided for informational and organizational purposes only. Dates, shelf-life estimates, recalls, recipes, and AI-generated content may be incomplete or inaccurate. You are solely responsible for verifying expiration dates, storage guidance, and food safety using product packaging, manufacturers, and qualified professionals before consuming or discarding food. TrackFresh does not provide medical, nutritional, or legal advice. Use of the app is at your own risk. Always follow USDA, FDA, and local health authority guidance for food handling and storage.
+                TrackFresh is for organization only — always verify dates and food safety on the package. Full terms inside the app.
               </>
             )}
           </p>
@@ -462,7 +451,7 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
         <section className="mkt-section-card mkt-section-card--cta" aria-label={isEs ? "Empezar" : "Get started"}>
           <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",margin:"0 0 1rem",letterSpacing:"-0.01em",lineHeight:1.25}}>{isEs ? "Siempre sabe lo que hay en tu refrigerador, congelador y despensa." : "Always know what's in your fridge, freezer, and pantry."}</p>
           <p style={{fontSize:"1.1rem",fontWeight:500,opacity:0.85,marginBottom:"0.75rem"}}>{isEs ? "¿Listo?" : "Ready?"}</p>
-          <button type="button" ref={bottomBtnRef} onClick={(e) => handleLaunchClick(e, "tracker")} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem",position:"relative",zIndex:2,border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Rastrea tu comida" : "Track Your Food"}</button>
+          <button type="button" ref={bottomBtnRef} onClick={(e) => handleLaunchClick(e, "tracker")} className="mkt-cta" style={{fontSize:"1.1rem",padding:"0.65rem 1.75rem",position:"relative",zIndex:2,border:"none",cursor:"pointer",fontFamily:"inherit"}}>{isEs ? "Rastrea mi comida" : "Track my food"}</button>
         </section>
       </div>
 

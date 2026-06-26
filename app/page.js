@@ -19,6 +19,7 @@ import { CATEGORY_COLORS, LOCATION_COLORS, LOCATION_ICONS } from "./lib/uiConsta
 import { conservativeProduceShelfDays, finalizeProduceScannerItem, formatInGeneralInstruction, isProduceCategory } from "./lib/aiProduceNormalize";
 import { compressImageFile } from "./lib/compressImage";
 import { formatAiError } from "./lib/formatAiError";
+import { fetchJsonSafe } from "./lib/fetchJson";
 import { MealSearchInput, FoodAutocomplete, CommunityStewAnim } from "./components/ui/MealComponents";
 import { LoadingFoodFact } from "./components/ui/LoadingFoodFact";
 import LanguagePicker from "./components/LanguagePicker";
@@ -546,8 +547,8 @@ function InstructionHint({ children, className = "", style = {} }) {
 /** Instruction between date tap / entry and mic — copy only; no voice logic. */
 function VoiceDateNextHint({ lang, text }) {
   const fallback = lang === "es"
-    ? "Di la fecha, luego toca Guardar abajo o di NEXT / DONE cuando termines."
-    : "Speak the date, then tap Save below or say NEXT / DONE when finished.";
+    ? "Toca 🎤 para decir la fecha o di Next o Done cuando termines."
+    : "Tap 🎤 to speak date or say Next or Done when finished.";
   return (
     <InstructionHint>{text || fallback}</InstructionHint>
   );
@@ -566,6 +567,7 @@ export default function TrackFreshDashboard() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
+  const [trackerScreen, setTrackerScreen] = useState("capture");
   const [onboardingFlow, setOnboardingFlow] = useState(FLOWS.default);
   const [guidedStep, setGuidedStep] = useState(0);
   const [guidedComplete, setGuidedComplete] = useState(false);
@@ -608,10 +610,37 @@ export default function TrackFreshDashboard() {
       }
     } catch (e) {}
   }, []);
-  const finishWelcomeForFlow = () => {
-    try { localStorage.setItem(WELCOMED_KEY, "true"); } catch (e) {}
+  const navigateToTracker = React.useCallback(() => {
+    setTrackerScreen("capture");
+    setActiveTab("tracker");
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {}
+  }, []);
+  const consumeLaunchTab = React.useCallback(() => {
+    if (typeof window === "undefined" || !window.sessionStorage) return false;
+    try {
+      const tab = sessionStorage.getItem(LAUNCH_TAB_KEY);
+      if (!tab) return false;
+      sessionStorage.removeItem(LAUNCH_TAB_KEY);
+      if (tab === "tracker") navigateToTracker();
+      else setActiveTab(tab);
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }, [navigateToTracker]);
+  const enterAppIfReady = React.useCallback(() => {
+    if (showMarketing || welcomeStep > 0 || !isUnlocked) return false;
+    return consumeLaunchTab();
+  }, [showMarketing, welcomeStep, isUnlocked, consumeLaunchTab]);
+  const finishWelcomeOnboarding = () => {
+    try {
+      localStorage.setItem(DISCLAIMER_KEY, "1");
+      localStorage.setItem(WELCOMED_KEY, "1");
+    } catch (e) {}
     setWelcomeStep(0);
   };
+  const finishWelcomeForFlow = () => finishWelcomeOnboarding();
   const queuePostMarketingOnboarding = () => {
     setWelcomeStep(resolveWelcomeStepAfterMarketing());
   };
@@ -634,13 +663,17 @@ export default function TrackFreshDashboard() {
     } else {
       try { sessionStorage.removeItem(LAUNCH_TAB_KEY); } catch (e) {}
     }
+    let unlocked = false;
     try {
       sessionStorage.setItem(MKT_SEEN_KEY, "1");
-      if (sessionStorage.getItem("tf_ok") === "1") setIsUnlocked(true);
+      unlocked = sessionStorage.getItem("tf_ok") === "1";
+      if (unlocked) setIsUnlocked(true);
       if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
     } catch (e) {}
+    const nextWelcome = resolveWelcomeStepAfterMarketing();
     setShowMarketing(false);
-    setWelcomeStep(resolveWelcomeStepAfterMarketing());
+    setWelcomeStep(nextWelcome);
+    if (targetTab === "tracker") navigateToTracker();
     try { window.scrollTo(0, 0); } catch (e) {}
   };
   const handleLaunchToTracker = () => handleLaunchApp("tracker");
@@ -651,7 +684,20 @@ export default function TrackFreshDashboard() {
       setIsUnlocked(true); setPwError(false);
       try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {}
       if (pwInput === "fresh2026") setIsAdmin(true);
-      queuePostMarketingOnboarding();
+      const nextWelcome = resolveWelcomeStepAfterMarketing();
+      setWelcomeStep(nextWelcome);
+      if (nextWelcome === 0) {
+        try {
+          const pending = sessionStorage.getItem(LAUNCH_TAB_KEY);
+          if (pending === "tracker") {
+            sessionStorage.removeItem(LAUNCH_TAB_KEY);
+            navigateToTracker();
+          } else if (pending) {
+            sessionStorage.removeItem(LAUNCH_TAB_KEY);
+            setActiveTab(pending);
+          }
+        } catch (e) {}
+      }
     } else { setPwError(true); }
   };
   React.useEffect(() => {
@@ -666,15 +712,17 @@ export default function TrackFreshDashboard() {
     } catch (e) {}
   }, []);
   React.useEffect(() => {
+    enterAppIfReady();
+  }, [enterAppIfReady]);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#tracker") return;
     if (showMarketing || welcomeStep > 0 || !isUnlocked) return;
+    navigateToTracker();
     try {
-      const tab = sessionStorage.getItem(LAUNCH_TAB_KEY);
-      if (!tab) return;
-      sessionStorage.removeItem(LAUNCH_TAB_KEY);
-      setActiveTab(tab);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
     } catch (e) {}
-  }, [showMarketing, welcomeStep, isUnlocked]);
+  }, [showMarketing, welcomeStep, isUnlocked, navigateToTracker]);
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
   const trackerTopRef = React.useRef(null);
@@ -687,11 +735,12 @@ export default function TrackFreshDashboard() {
       return () => clearTimeout(t);
     }
   }, [trackerEntryFlash]);
-  const handleGoToTracker = () => {
+  const handleGoToTracker = React.useCallback(() => {
+    try { sessionStorage.removeItem(LAUNCH_TAB_KEY); } catch (e) {}
     setTrackerTileFlash(true);
     setTrackerLinkOverlay(true);
     setTrackerEntryFlash(true);
-    setActiveTab("tracker");
+    navigateToTracker();
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       trackerTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -701,7 +750,7 @@ export default function TrackFreshDashboard() {
       setTrackerLinkOverlay(false);
       setTrackerEntryFlash(false);
     }, 900);
-  };
+  }, [navigateToTracker]);
   const handleBubbleTap = (target) => {
     setBurstingBubble(target);
     setTimeout(() => {
@@ -776,7 +825,6 @@ export default function TrackFreshDashboard() {
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterLocation, setFilterLocation] = useState("All");
   const [trackerExpandedId, setTrackerExpandedId] = useState(null);
-  const [trackerScreen, setTrackerScreen] = useState("capture");
   const [shoppingItems, setShoppingItems] = useState([]);
   const [deliveryService, setDeliveryService] = useState(null);
   const [newShoppingItem, setNewShoppingItem] = useState("");
@@ -1244,6 +1292,10 @@ export default function TrackFreshDashboard() {
   };
 
   const handleEditItem = (id) => { const item = trackedItems.find(it => it.id === id); if (item) setEditingItem({ ...item }); };
+  const handleOrganizeQuickDate = (id, useByDate) => {
+    if (!useByDate) return;
+    setTrackedItems((prev) => prev.map((it) => (it.id === id ? { ...it, useByDate } : it)));
+  };
   const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
 
   const handleMarkOpened = (item, dateStr) => {
@@ -1548,7 +1600,7 @@ export default function TrackFreshDashboard() {
 
   const [recipesLoading, setRecipesLoading] = useState(false);
   const handleSuggestRecipes = async () => {
-    if (trackedItems.length === 0) { window.alert("Add some food items first!"); return; }
+    if (trackedItems.length === 0) { window.alert(t("recipeNoTrackedItems")); return; }
     setRecipesLoading(true);
     setRecipesGenerated(false);
     setRecipeSuggestions([]);
@@ -1598,7 +1650,12 @@ export default function TrackFreshDashboard() {
     try {
       const { base64, mimeType } = await compressImageFile(file);
       const res = await fetch("/api/scan-receipt", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mimeType }) });
-      const data = await res.json();
+      const { data, parseError } = await fetchJsonSafe(res);
+      if (parseError) {
+        setReceiptError(formatAiError(parseError, lang));
+        setReceiptScanning(false);
+        return;
+      }
       if (!res.ok || data.error) {
         setReceiptError(formatAiError(data.error, lang));
         setReceiptScanning(false);
@@ -2583,52 +2640,24 @@ export default function TrackFreshDashboard() {
         <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
           <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
             <div className="text-5xl mb-3">🥦</div>
-            <h2 className="text-xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h2>
-            <div className="space-y-4 text-left mb-6">
-              <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-                <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeData")}</p>
-              </div>
-              <div className="rounded-xl p-4" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(251,191,36,0.3)"}}>
-                <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.85)"}}>{t("welcomeNoticeExpiry")}</p>
-              </div>
+            <h2 className="text-2xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeBeforeStart")}</h2>
+            <div
+              className="rounded-xl p-4 text-sm leading-relaxed text-left mb-6"
+              style={{
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                color: "rgba(255,255,255,0.85)",
+              }}
+            >
+              {t("welcomeNoticeBeta")}
             </div>
             <button
               type="button"
-              onClick={() => {
-                try { localStorage.setItem(DISCLAIMER_KEY, "1"); } catch (e) {}
-                try {
-                  const flow = localStorage.getItem(FLOW_KEY) || FLOWS.default;
-                  if (flow === FLOWS.guided || flow === FLOWS.coach) {
-                    finishWelcomeForFlow();
-                  } else if (!localStorage.getItem(WELCOMED_KEY)) setWelcomeStep(2);
-                  else setWelcomeStep(0);
-                } catch (e) {
-                  setWelcomeStep(2);
-                }
-              }}
-              className="tf-onboarding-cta w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d"
-              style={{ color: "#ffffff" }}
-            >
-              {t("disclaimerContinue")}
-            </button>
-          </div>
-        </div>
-      )}
-      {welcomeStep === 2 && (
-        <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 overflow-y-auto tf-premium-bg">
-          <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
-            <div className="text-5xl mb-3">🥦</div>
-            <h2 className="text-2xl font-extrabold text-white mb-6" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeHeading")}</h2>
-            <button
-              type="button"
-              onClick={() => {
-                setWelcomeStep(0);
-                try { localStorage.setItem(WELCOMED_KEY, "true"); } catch (e) {}
-              }}
+              onClick={finishWelcomeOnboarding}
               className="tf-onboarding-cta w-full py-3.5 rounded-xl font-bold text-lg text-white btn-amber-3d"
               style={{ color: "#ffffff", cursor: "pointer" }}
             >
-              {t("welcomeLetsGo")}
+              {t("disclaimerContinue")}
             </button>
           </div>
         </div>
@@ -2653,19 +2682,12 @@ export default function TrackFreshDashboard() {
           </p>
         )}
         <p className="text-sm text-green-200 mb-5">{t("enterAccessCode")}</p>
-        <div className="mb-5">
-          <p className="text-xs font-bold text-green-300 mb-2 uppercase tracking-wider">🌐 Language / Idioma</p>
-          <div className="flex justify-center gap-3">
-            <button onClick={() => changeLang("en")} className={`rounded-xl px-5 py-2.5 text-sm font-bold border-2 transition-all ${lang === "en" ? "border-orange-500 bg-orange-500/20 text-white" : "border-white/20 bg-white/10 text-white/70"}`}>🇺🇸 English</button>
-            <button onClick={() => changeLang("es")} className={`rounded-xl px-5 py-2.5 text-sm font-bold border-2 transition-all ${lang === "es" ? "border-orange-500 bg-orange-500/20 text-white" : "border-white/20 bg-white/10 text-white/70"}`}>🇲🇽 Español</button>
-          </div>
-        </div>
-        <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder="Access Code" className="w-full rounded-xl px-4 py-3 text-center text-lg mb-3 focus:outline-none" style={{background:"rgba(255,255,255,0.1)",border:"2px solid rgba(255,102,0,0.4)",color:"#fff",caretColor:"#ff6600"}} />
+        <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder={t("betaInvitePlaceholder")} className="w-full rounded-xl px-4 py-3 text-center text-lg mb-3 focus:outline-none" style={{background:"rgba(255,255,255,0.1)",border:"2px solid rgba(255,102,0,0.4)",color:"#fff",caretColor:"#ff6600"}} />
         {pwError && <p className="text-red-400 text-sm mb-3">{t("invalidCode")}</p>}
         <button onClick={handlePwSubmit} style={{width:"100%",padding:"0.95rem 1.5rem",borderRadius:"16px",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#1a0a00",fontWeight:800,fontSize:"1.05rem",border:"none",cursor:"pointer",boxShadow:"0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45)",letterSpacing:"0.01em"}}>{t("enterBeta")}</button>
         <p className="text-xs text-green-300/60 mt-4">
           {t("contactAccessBefore")}
-          <a href="mailto:hello@trackfresh.com" className="underline hover:text-green-200">hello@trackfresh.com</a>
+          <a href="mailto:hello@trackfresh.ai" className="underline hover:text-green-200">hello@trackfresh.ai</a>
           {t("contactAccessAfter")}
         </p>
       </div>
@@ -3261,11 +3283,10 @@ export default function TrackFreshDashboard() {
             style={{
               marginLeft: "-1rem",
               marginRight: "-1rem",
-              marginTop: "-1rem",
               paddingLeft: "1rem",
               paddingRight: "1rem",
-              paddingTop: "1.25rem",
-              paddingBottom: "2rem",
+              paddingTop: "0.5rem",
+              paddingBottom: "3rem",
               background: "transparent",
             }}
           >
@@ -3287,7 +3308,8 @@ export default function TrackFreshDashboard() {
                 width: "100%",
                 background: "none",
                 border: "none",
-                padding: 0,
+                padding: "0.35rem 0",
+                minHeight: "2.75rem",
                 cursor: "pointer",
               }}
             >
@@ -3427,8 +3449,8 @@ export default function TrackFreshDashboard() {
               );
             })()}
 
-            <div className="tf-glass-window tf-glass-window--flush">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="tf-glass-window" style={{ marginTop: "0.75rem" }}>
+            <div className="tf-home-explore-grid">
               {[
                 { icon: String.fromCodePoint(0x1F966), label: lang === "es" ? "Rastreador" : "Tracker",    sub: t("trackYourFood"),    action: handleGoToTracker },
                 { icon: String.fromCodePoint(0x1F373), label: lang === "es" ? "Recetas" : "Recipes",       sub: lang === "es" ? "Usa Lo Que Tienes" : "Use What You Have",  action: () => setActiveTab("recipes") },
@@ -3443,8 +3465,8 @@ export default function TrackFreshDashboard() {
                 const isTrackerTile = label === (lang === "es" ? "Rastreador" : "Tracker");
                 const isShoppingTile = label === (lang === "es" ? "Lista de Compras" : "Shopping List");
                 return (
-                  <button key={label} onClick={action} className={`dash-tile${isTrackerTile ? " dash-tile--tracker-home" : ""}${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
-                    <span style={{fontSize:"2rem",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)",display:"inline-block"} : {})}}>{icon}</span>
+                  <button type="button" key={label} onClick={action} className={`dash-tile${isTrackerTile ? " dash-tile--tracker-home" : ""}${isTrackerTile && trackerTileFlash ? " tracker-tile-active" : ""}`}>
+                    <span style={{fontSize:"2rem",lineHeight:1,textAlign:"center",...(isShoppingTile ? {filter:"drop-shadow(0 0 4px rgba(249,115,22,0.55)) brightness(1.13)"} : {})}}>{icon}</span>
                     <span style={{fontSize:"0.7rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em",textAlign:"center",lineHeight:1.2}}>{label}</span>
                     {sub && <span className={`tf-dash-tile-link${isTrackerTile ? " tf-dash-tile-link--tracker" : ""}`}>{sub} →</span>}
                   </button>
@@ -3458,40 +3480,21 @@ export default function TrackFreshDashboard() {
         {activeTab === "tracker" && trackerScreen === "organize" && (
           <div ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
             <div className="mb-1">
-              <span className="app-section-label">{String.fromCodePoint(0x1F966)} {t("tracker")}</span>
-              <h2 className="app-section-h2" style={{marginBottom:"0.25rem"}}>{t("organizeTrackedItems")}</h2>
-              <p className="text-xs" style={{color:"rgba(134,239,172,0.75)",margin:0,lineHeight:1.45}}>{t("organizeTrackedItemsHint")}</p>
-            </div>
-
-            <div
-              style={{
-                padding: "0.75rem 0.9rem",
-                borderRadius: "12px",
-                background: "rgba(250,204,21,0.08)",
-                border: "1px solid rgba(250,204,21,0.28)",
-              }}
-            >
-              <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.06em", color: "#fde68a", textTransform: "uppercase" }}>
-                💰 {t("savingsMonthTitle")}
-              </p>
-              {monthSavings.totalUSD > 0 ? (
-                <>
-                  <p style={{ margin: "0 0 0.25rem", fontSize: "0.95rem", fontWeight: 800, color: "#fff", lineHeight: 1.35 }}>
-                    <span style={{ color: "#86efac" }}>{formatUSD(monthSavings.savedUSD)}</span>
-                    {" "}{t("savingsSaved")}
-                    {" · "}
-                    <span style={{ color: "#fca5a5" }}>{formatUSD(monthSavings.wastedUSD)}</span>
-                    {" "}{t("savingsWasted")}
-                  </p>
-                  <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.45 }}>
-                    {t("savingsUsedPct")
-                      .replace("{pct}", String(monthSavings.savedPct))
-                      .replace("{waste}", String(monthSavings.wastePct))}
-                  </p>
-                </>
-              ) : (
-                <InstructionHint style={{ margin: 0, fontSize: "0.8rem" }}>{t("savingsReceiptHint")}</InstructionHint>
-              )}
+              <h2
+                className="text-xl font-semibold"
+                style={{
+                  margin: "0 0 0.35rem",
+                  color: "rgba(255,255,255,0.93)",
+                  letterSpacing: "0.06em",
+                  fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                  fontWeight: 600,
+                  fontSize: "1.05rem",
+                  lineHeight: 1.35,
+                }}
+              >
+                {t("organizeTrackedItems")}
+              </h2>
+              <p className="text-xs" style={{color:"rgba(255,255,255,0.72)",margin:0,lineHeight:1.45}}>{t("organizeTrackedItemsHint")}</p>
             </div>
 
             <div className="tf-glass-window">
@@ -3500,9 +3503,9 @@ export default function TrackFreshDashboard() {
                   <div className="flex items-center gap-2">
                     <button onClick={() => { if (window.confirm(t("clearAllConfirm"))) { setTrackedItems([]); openTrackerCapture(); } }} className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-600">{t("clearAll")}</button>
                   </div>
-                  <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}</span>
+                  <span style={{color:"rgba(255,255,255,0.75)",fontSize:"0.875rem",fontWeight:600}}>{filteredItems.length === 1 ? t("organizeItemCountOne") : t("organizeItemCount").replace("{n}", String(filteredItems.length))}</span>
                 </div>
-                <p style={{fontSize:"0.7rem",color:"#F59E0B",marginBottom:"0.35rem",fontWeight:500}}>{lang === "es" ? "Toca ▼ en cada artículo para ver detalles" : "Tap ▼ on each item to expand details"}</p>
+                <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("organizeExpandHint")}</p>
                 <div className="mb-2 flex flex-wrap gap-1">
                   {["All", ...LOCATIONS].map((l) => {
                     const LOC_ES = {All:"Todo",Fridge:"Refrigerador",Freezer:"Congelador",Pantry:"Despensa"};
@@ -3530,7 +3533,7 @@ export default function TrackFreshDashboard() {
                             <span className="tf-kitchen-col-count">{locItems.length}</span>
                           </div>
                           {locItems.length === 0 ? (
-                            <p className="tf-kitchen-col-empty text-xs text-white/50">{lang === "es" ? "Vacío" : "Empty"}</p>
+                            <p className="tf-kitchen-col-empty text-xs text-white/50">{t("organizeLocationEmpty")}</p>
                           ) : (
                           <ul className="tf-pending-queue-list">
                     {locItems.map((it) => {
@@ -3538,22 +3541,40 @@ export default function TrackFreshDashboard() {
                       const expanded = trackerExpandedId === it.id;
                       const locKey = it.location ?? "Fridge";
                       const catKey = it.category ?? "Other";
-                      const needsAttention = it.daysLeft === null || (it.daysLeft !== null && it.daysLeft <= 2);
                       const boxShadow = it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none";
                       return (
                         <li key={it.id} className={`tf-pending-queue-item${expanded ? " tf-pending-queue-item--open" : ""}`} style={{ boxShadow }}>
+                          <div className="tf-pending-queue-header-row">
+                          {it.daysLeft === null ? (
+                            <>
+                              <span className="tf-pending-queue-chip tf-pending-queue-chip--exp tf-organize-needs-date-chip">{t("organizeNeedsExpiryDate")}</span>
+                              <label
+                                className="tf-organize-inline-date-btn"
+                                title={t("organizeAddDateBtn")}
+                              >
+                                📅
+                                <input
+                                  type="date"
+                                  value={it.useByDate || ""}
+                                  className="tf-date-calendar-input"
+                                  onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
+                                  onChange={(e) => handleOrganizeQuickDate(it.id, e.target.value)}
+                                  aria-label={t("organizeAddDateBtn")}
+                                />
+                              </label>
+                            </>
+                          ) : null}
                           <button type="button" className="tf-pending-queue-header" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
                             <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
                             <div className="tf-pending-queue-summary">
                               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.35rem 0.45rem", width: "100%" }}>
-                                {it.daysLeft === null ? <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">EXP</span> : null}
                                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[locKey]}`}>
                                   {LOCATION_ICONS[locKey]} {locKey}
                                 </span>
                                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[catKey]}`}>{catKey}</span>
                                 <span className="tf-pending-queue-chip tf-pending-queue-chip--tip">{itemStorageTip(it, isEs)}</span>
-                                {needsAttention ? (
-                                  <span className="tf-pending-status-blink">STATUS</span>
+                                {it.daysLeft !== null && it.daysLeft <= 2 ? (
+                                  <span className="tf-pending-status-blink">{t("organizeUseSoonBadge")}</span>
                                 ) : it.daysLeft !== null ? (
                                   <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
                                 ) : null}
@@ -3561,6 +3582,7 @@ export default function TrackFreshDashboard() {
                               <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
                             </div>
                           </button>
+                          </div>
                           {expanded && (
                           <div className="tf-pending-queue-body">
                           <div>
@@ -3587,7 +3609,7 @@ export default function TrackFreshDashboard() {
                             </div>
                             <div className="tf-tracker-item-actions" style={{display:"flex",gap:"0.4rem",marginBottom:"0.5rem"}}>
                               {it.daysLeft === null ? (
-                                <button onClick={() => handleEditItem(it.id)} className="animate-pulse" style={{flex:1,background:"#ef4444",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#fff",cursor:"pointer",textAlign:"center",lineHeight:1.35,border:"2px solid #ef4444"}}>EXP Date</button>
+                                <div style={{flex:1}} />
                               ) : isRegisterDiscountEligible(it) ? (
                                 <button
                                   type="button"
@@ -3607,14 +3629,14 @@ export default function TrackFreshDashboard() {
                                   {t("storeDiscountBtn")}
                                 </button>
                               ) : it.daysLeft <= 2 ? (
-                                <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>Expiring Soon</div>
+                                <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>{t("organizeUseSoonBadge")}</div>
                               ) : (
                                 <div style={{flex:1}} />
                               )}
-                              <button onClick={() => { setTrackedItems(prev => prev.map(x => { if (x.id !== it.id) return x; if (x.openDate) return { ...x, openDate: "", openUseBy: null }; const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = x.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; return { ...x, openDate: today, useByDate: useBy }; })); }} className="rounded-lg px-2 py-1 text-xs font-bold shadow-md" style={{flex:1,background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.88)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)", cursor:"pointer"}}>{it.openDate ? (lang === "es" ? "¡Abierto!" : "Opened!") : (lang === "es" ? "¿Abierto?" : "Opened?")}</button>
+                              <button onClick={() => { setTrackedItems(prev => prev.map(x => { if (x.id !== it.id) return x; if (x.openDate) return { ...x, openDate: "", openUseBy: null }; const _td = new Date(); const today = `${_td.getFullYear()}-${String(_td.getMonth()+1).padStart(2,'0')}-${String(_td.getDate()).padStart(2,'0')}`; const days = x.daysAfterOpening || 5; const useBy = new Date(Date.now() + days * 86400000).toISOString().split("T")[0]; return { ...x, openDate: today, useByDate: useBy }; })); }} className="rounded-lg px-2 py-1 text-xs font-bold shadow-md" style={{flex:1,background: it.openDate ? "#6b7280" : "#f97316", color: it.openDate ? "rgba(255,255,255,0.88)" : "#fff", border:"none", textShadow:"0 1px 2px rgba(0,0,0,0.4)", cursor:"pointer"}}>{it.openDate ? t("organizeMarkedOpened") : t("organizeMarkOpened")}</button>
                               <button onClick={() => handleUseTodayItem(it.id)} className="rounded-lg bg-gradient-to-r from-green-600 to-emerald-800 px-2 py-1 text-xs font-bold text-white shadow-md" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>{t("used")}</button>
                               {it.category === "Meat" && it.location === "Fridge" && (() => { const fd = it.freezeBy ? daysUntil(it.freezeBy) : null; const ud = it.daysLeft; return (fd !== null && fd <= 2) || (ud !== null && ud <= 3); })() && (
-                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-2 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ Freeze!</button>
+                                <button onClick={() => handleFreezeItem(it.id)} className="rounded-lg bg-gradient-to-r from-cyan-600 to-blue-800 px-2 py-1 text-xs font-bold text-white shadow-md animate-pulse" style={{flex:1,textShadow:"0 1px 2px rgba(0,0,0,0.4)"}}>❄️ {t("organizeFreezeBtn")}</button>
                               )}
                               <button onClick={() => handleEditItem(it.id)} className="rounded-lg bg-emerald-700 px-2 py-1 text-xs font-bold text-white btn-3d" style={{flex:1}}>{t("edit")}</button>
                             </div>
@@ -3664,6 +3686,37 @@ export default function TrackFreshDashboard() {
               </Card>
             </div>
 
+            <div
+              style={{
+                padding: "0.75rem 0.9rem",
+                borderRadius: "12px",
+                background: "rgba(250,204,21,0.08)",
+                border: "1px solid rgba(250,204,21,0.28)",
+              }}
+            >
+              <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.06em", color: "#fde68a", textTransform: "uppercase" }}>
+                💰 {t("savingsMonthTitle")}
+              </p>
+              {monthSavings.totalUSD > 0 ? (
+                <>
+                  <p style={{ margin: "0 0 0.25rem", fontSize: "0.95rem", fontWeight: 800, color: "#fff", lineHeight: 1.35 }}>
+                    <span style={{ color: "#86efac" }}>{formatUSD(monthSavings.savedUSD)}</span>
+                    {" "}{t("savingsSaved")}
+                    {" · "}
+                    <span style={{ color: "#fca5a5" }}>{formatUSD(monthSavings.wastedUSD)}</span>
+                    {" "}{t("savingsWasted")}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.45 }}>
+                    {t("savingsUsedPct")
+                      .replace("{pct}", String(monthSavings.savedPct))
+                      .replace("{waste}", String(monthSavings.wastePct))}
+                  </p>
+                </>
+              ) : (
+                <InstructionHint style={{ margin: 0, fontSize: "0.8rem" }}>{t("savingsReceiptHint")}</InstructionHint>
+              )}
+            </div>
+
             <button type="button" onClick={openTrackerCapture} className="glass-scan-btn w-full py-3 text-sm" style={{marginTop:"0.25rem"}}>
               ← {t("backToTracker")}
             </button>
@@ -3671,7 +3724,7 @@ export default function TrackFreshDashboard() {
         )}
 
         {activeTab === "tracker" && trackerScreen === "capture" && (
-          <div ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+          <div id="tracker" ref={trackerTopRef} style={{display:"flex",flexDirection:"column",gap:"0.75rem"}}>
 
             {/* Header — always visible */}
             <div className={trackerEntryFlash ? "tracker-entry-flash" : ""} style={{marginBottom:"0.5rem",padding:trackerEntryFlash?"0.4rem 0.5rem":"0",transition:"padding 0s"}}>
@@ -3687,7 +3740,7 @@ export default function TrackFreshDashboard() {
                   lineHeight: 1.35,
                 }}
               >
-                {t("trackYourFood")}
+                {t("trackerCaptureHeading")}
               </h2>
             </div>
 
@@ -3697,10 +3750,11 @@ export default function TrackFreshDashboard() {
                 <div className="tf-card-surface" style={{textAlign:"center",padding:"1.25rem 1rem 1rem",marginBottom:"0.75rem"}}>
                   <div style={{fontSize:"2rem",marginBottom:"0.5rem",lineHeight:1}}>🥦</div>
                   <InstructionHint style={{ margin: 0 }}>
-                    {t("trackerStartOrderHint")}
+                    {t("trackerCaptureLead")}
                   </InstructionHint>
                 </div>
 
+                <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("trackerAddStepLabel")}</p>
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
@@ -3748,7 +3802,8 @@ export default function TrackFreshDashboard() {
                   );
                 })()}
 
-                <div style={{marginTop:"0.65rem"}}>
+                <p className="tracker-add-step-label" style={{ margin: "0.65rem 0 0.5rem", paddingLeft: "0.15rem" }}>{t("trackerAddStepLabel")}</p>
+                <div style={{marginTop:"0"}}>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
@@ -3774,17 +3829,34 @@ export default function TrackFreshDashboard() {
         {activeTab === "recipes" && (
           <>
           <div className="mb-3">
-            <span className="app-section-label"><AiBadge />-Powered</span>
-            <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
+            <h2
+              className="text-xl font-semibold"
+              style={{
+                margin: 0,
+                color: "rgba(255,255,255,0.93)",
+                letterSpacing: "0.06em",
+                fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                fontWeight: 600,
+                fontSize: "1.05rem",
+                lineHeight: 1.35,
+              }}
+            >
+              🍳 {t("recipeSugg")}
+            </h2>
+            <p className="text-xs" style={{color:"rgba(255,255,255,0.72)",margin:"0.35rem 0 0",lineHeight:1.45}}>{t("recipeIntro")}</p>
           </div>
           <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-            <div className="mb-3 flex justify-end">
-              <button onClick={() => setRecipeSubTab(recipeSubTab === "favorites" ? "ai" : "favorites")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={recipeSubTab === "favorites" ? {background:"rgba(255,102,0,0.3)",borderColor:"#ff6600",color:"#fff"} : {background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.6)"}}>❤️ {lang === "es" ? "Favoritos" : "Favorites"}</button>
+            <div className="mb-3 flex justify-end gap-2">
+              {recipeSubTab === "favorites" ? (
+                <button type="button" onClick={() => setRecipeSubTab("ai")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={{background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.75)"}}>← {t("recipeIdeasTab")}</button>
+              ) : (
+                <button type="button" onClick={() => setRecipeSubTab("favorites")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={{background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.75)"}}>❤️ {t("recipeFavorites")}</button>
+              )}
             </div>
             {recipeSubTab === "favorites" && (
               <div>
                 {favoriteRecipes.length === 0 ? (
-                  <p className="text-sm py-4 text-center tf-instruction-hint--inline" style={{ fontSize: "0.875rem" }}>{lang === "es" ? "Sin favoritos aún — ¡genera recetas y guarda las que te gusten!" : "No favorites yet — generate recipes and save ones you love!"}</p>
+                  <p className="text-sm py-4 text-center tf-instruction-hint--inline" style={{ fontSize: "0.875rem" }}>{t("recipeFavoritesEmpty")}</p>
                 ) : (
                   <div className="space-y-3">
                     {favoriteRecipes.map((r, i) => (
@@ -3793,7 +3865,7 @@ export default function TrackFreshDashboard() {
                           <div className="flex items-start justify-between">
                             <div>
                               <h3 className="font-bold text-white">{r.name}</h3>
-                              <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{lang === "es" ? "Guardado en favoritos" : "Saved to favorites"}</p>
+                              <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{t("recipeFavoritesSavedLabel")}</p>
                             </div>
                             <div className="flex items-center gap-2 ml-2 shrink-0">
                               <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
@@ -3812,15 +3884,12 @@ export default function TrackFreshDashboard() {
               </div>
             )}
             {recipeSubTab === "ai" && <>
-            <InstructionHint className="mb-4">
-              {lang === "es" ? "Combinado con lo que tienes en tu refrigerador, despensa y congelador. Prioriza lo que vence primero — puede sugerir 1-2 ingredientes extra para completar un platillo." : "Matched to what's in your fridge, pantry & freezer. Prioritizes what expires soonest — may suggest 1-2 extra ingredients to complete a dish."}
-            </InstructionHint>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{fontSize:"1.5em"}} /> is cooking...</> : <><ChefHat className="h-4 w-4" /> {lang === "es" ? "Ideas de Recetas" : "AI Recipe Ideas"} <AiBadge style={{fontSize:"1.5em"}} /></>}</button>
+            <button onClick={handleSuggestRecipes} disabled={recipesLoading || trackedItems.length === 0} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50 w-full justify-center">{recipesLoading ? <><span className="animate-spin">🤖</span> {t("recipeLoading")}</> : <><ChefHat className="h-4 w-4" /> {t("recipeGenerateBtn")}</>}</button>
             {recipesLoading && <div className="mt-4 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
             {recipesGenerated && recipeSuggestions.length === 0 && <InstructionHint className="mt-4">{t("noMatches")}</InstructionHint>}
             {recipeSuggestions.length > 0 && (
               <div className="mt-4 space-y-3">
-                <InstructionHint className="mt-4">{t("recipeExpandHint")}</InstructionHint>
+                <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("recipeExpandHint")}</p>
                 {recipeSuggestions.map((r, i) => (
                   <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
                     <button
@@ -3830,8 +3899,6 @@ export default function TrackFreshDashboard() {
                       aria-label={expandedRecipe === i ? `${r.name} — ${t("recipeTapToHide")}` : `${r.name} — ${t("recipeTapForDetails")}`}
                       className="w-full p-4 text-left"
                       style={{borderRadius:"inherit",transition:"background 0.15s"}}
-                      onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.06)"}
-                      onMouseLeave={e=>e.currentTarget.style.background=""}
                     >
                       <div className="flex items-start justify-between">
                         <div>
@@ -3842,13 +3909,7 @@ export default function TrackFreshDashboard() {
                         </div>
                         <div className="flex flex-col items-end gap-1 ml-2 shrink-0">
                           <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
-                          <span
-                            className={`tf-instruction-hint__kw ${expandedRecipe === i ? "arrow-up" : "arrow-down"}`}
-                            style={{ fontSize: "1.1rem", lineHeight: 1 }}
-                            aria-hidden
-                          >
-                            {expandedRecipe === i ? "▲" : "▼"}
-                          </span>
+                          <span className={`tf-instruction-hint__kw ${expandedRecipe === i ? "arrow-up" : "arrow-down"}`} style={{ fontSize: "1.1rem", lineHeight: 1 }} aria-hidden>{expandedRecipe === i ? "▲" : "▼"}</span>
                         </div>
                       </div>
                       <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
@@ -3871,43 +3932,20 @@ export default function TrackFreshDashboard() {
                                   {ing}
                                   {isNeed && (
                                     addStatus ? (
-                                      <span
-                                        className="recipe-shop-added-msg"
-                                        style={{
-                                          marginLeft: "6px",
-                                          fontSize: "0.72rem",
-                                          fontWeight: 700,
-                                          color: addStatus === "exists" ? "var(--tf-instruction-text)" : "#86efac",
-                                          whiteSpace: "nowrap",
-                                        }}
-                                      >
+                                      <span className="recipe-shop-added-msg" style={{ marginLeft: "6px", fontSize: "0.72rem", fontWeight: 700, color: addStatus === "exists" ? "var(--tf-instruction-text)" : "#86efac", whiteSpace: "nowrap" }}>
                                         {addStatus === "exists" ? t("alreadyOnShoppingList") : t("addedToShoppingList")}
                                       </span>
                                     ) : (
-                                      <button
-                                        type="button"
-                                        aria-label={t("addedToShoppingList")}
-                                        onClick={() => {
-                                          const name = ing.replace(" (need)", "").trim();
-                                          const exists = shoppingItems.some((s) => s.name.toLowerCase() === name.toLowerCase());
-                                          if (exists) {
-                                            setAddedIngredients((prev) => ({ ...prev, [ingKey]: "exists" }));
-                                          } else {
-                                            setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, checked: false }]);
-                                            setAddedIngredients((prev) => ({ ...prev, [ingKey]: "added" }));
-                                          }
-                                          setTimeout(() => {
-                                            setAddedIngredients((prev) => {
-                                              const next = { ...prev };
-                                              delete next[ingKey];
-                                              return next;
-                                            });
-                                          }, 2200);
-                                        }}
-                                        style={{marginLeft:"4px",width:"18px",height:"18px",borderRadius:"50%",background:"#F97316",color:"#fff",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"bold",lineHeight:"18px",textAlign:"center",flexShrink:0,padding:0}}
-                                      >
-                                        +
-                                      </button>
+                                      <button type="button" onClick={() => {
+                                        const name = ing.replace(" (need)", "").trim();
+                                        const exists = shoppingItems.some((s) => s.name.toLowerCase() === name.toLowerCase());
+                                        if (exists) setAddedIngredients((prev) => ({ ...prev, [ingKey]: "exists" }));
+                                        else {
+                                          setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, checked: false }]);
+                                          setAddedIngredients((prev) => ({ ...prev, [ingKey]: "added" }));
+                                        }
+                                        setTimeout(() => setAddedIngredients((prev) => { const next = { ...prev }; delete next[ingKey]; return next; }), 2200);
+                                      }} style={{marginLeft:"4px",width:"18px",height:"18px",borderRadius:"50%",background:"#F97316",color:"#fff",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"bold",lineHeight:"18px",textAlign:"center",flexShrink:0,padding:0}}>+</button>
                                     )
                                   )}
                                 </li>
@@ -3916,7 +3954,7 @@ export default function TrackFreshDashboard() {
                         <h4 className="mb-2 text-sm font-bold text-white">{t("instructionsWord")}</h4>
                         <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
                         <div className="mt-3 flex justify-end">
-                          <button onClick={() => {
+                          <button type="button" onClick={() => {
                             const alreadySaved = favoriteRecipes.some((f) => f.name === r.name);
                             if (alreadySaved) {
                               setFavoriteSavedMsg((prev) => ({ ...prev, [i]: "already" }));
@@ -3927,7 +3965,7 @@ export default function TrackFreshDashboard() {
                               setTimeout(() => setFavoriteSavedMsg((prev) => { const n = {...prev}; delete n[i]; return n; }), 2000);
                             }
                           }} className="glass-scan-btn px-2 py-0.5 text-xs">
-                            {favoriteSavedMsg[i] === "saved" ? "❤️ Saved to Favorites!" : favoriteSavedMsg[i] === "already" ? "Already in Favorites!" : (lang === "es" ? "Guardar en Favoritos" : "Save to Favorites")}
+                            {favoriteSavedMsg[i] === "saved" ? `❤️ ${t("recipeSavedFavorite")}` : favoriteSavedMsg[i] === "already" ? t("recipeAlreadyFavorite") : t("recipeSaveFavorite")}
                           </button>
                         </div>
                       </div>
@@ -3938,14 +3976,13 @@ export default function TrackFreshDashboard() {
             )}
             {!recipesGenerated && (
               <InstructionHint className="mt-4">
-                You have {trackedItems.length} tracked item{trackedItems.length === 1 ? "" : "s"}. Click the button to see recipe matches.{trackedItems.length === 0 && " Add items in the Tracker tab first."}
+                {trackedItems.length === 0 ? t("recipeEmptyHintNone") : t("recipeEmptyHint").replace("{n}", String(trackedItems.length))}
               </InstructionHint>
             )}
             </>}
           </Card>
           </>
         )}
-
         {activeTab === "shopping" && (
           <>
             <div className="mb-3">
@@ -4174,7 +4211,6 @@ export default function TrackFreshDashboard() {
                                     <button onClick={() => handleClearMeal(day, slot)} className="text-xs text-gray-400 hover:text-red-500">✕</button>
                                   </div>
                                 </div>
-
                               </div>
                             ) : (
                               <button onClick={() => { setMealPickerDay(day); setMealPickerSlot(slot); setShowMealPicker(true); }} className="glass-scan-btn flex-1 py-2 text-xs">{t("addMeal")}</button>

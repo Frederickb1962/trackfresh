@@ -38,7 +38,8 @@ export function readLaunchGateFromBrowser() {
 export function hasCompletedFirstTimeOnboarding() {
   if (typeof window === "undefined") return false;
   try {
-    return localStorage.getItem(DISCLAIMER_KEY) === "1" && localStorage.getItem(WELCOMED_KEY) === "1";
+    const welcomed = localStorage.getItem(WELCOMED_KEY);
+    return localStorage.getItem(DISCLAIMER_KEY) === "1" && (welcomed === "1" || welcomed === "true");
   } catch (e) {
     return false;
   }
@@ -46,9 +47,7 @@ export function hasCompletedFirstTimeOnboarding() {
 
 export function resolveWelcomeStepAfterMarketing() {
   try {
-    if (localStorage.getItem(DISCLAIMER_KEY) !== "1") return 1;
-    if (localStorage.getItem(WELCOMED_KEY) !== "1") return 2;
-    return 0;
+    return hasCompletedFirstTimeOnboarding() ? 0 : 1;
   } catch (e) {
     return 1;
   }
