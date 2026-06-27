@@ -4480,22 +4480,26 @@ export default function TrackFreshDashboard() {
               <button type="button" onClick={() => setActiveTab("more")} className="app-header-btn" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginBottom: "0.65rem" }} aria-label={lang === "es" ? "Volver" : "Back"}>
                 <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: "bold" }}>←</span> {lang === "es" ? "Atrás" : "Back"}
               </button>
-            </div>
-
-            <div className="tf-suggestions-hero">
-              <div className="tf-suggestions-hero__icon" aria-hidden>💬</div>
-              <h2 className="tf-suggestions-hero__title">{t("suggestionsTitle")}</h2>
-              <p className="tf-suggestions-hero__intro">{t("suggestionsIntro")}</p>
+              <span className="app-section-label">{t("suggestionsLabel")}</span>
+              <h2 className="app-section-h2" style={{ marginBottom: 0 }}>💬 {t("suggestionsTitle")}</h2>
             </div>
 
             <div className="tf-glass-window">
-              <div className="tf-suggestions-card">
-              <h3 className="tf-suggestions-card__title">{t("suggestionsLeaveTitle")}</h3>
+              <Card className="tracker-items-card tf-suggestions-hero" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-suggestions-hero__icon" aria-hidden>💬</div>
+                <p className="tf-suggestions-kicker">{t("suggestionsLabel")}</p>
+                <h3 className="tf-suggestions-headline">{t("suggestionsTitle")}</h3>
+                <p className="tf-suggestions-body">{t("suggestionsIntro")}</p>
+              </Card>
+            </div>
+
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-suggestions-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+              <p className="tracker-add-step-label tf-suggestions-step-label">{t("suggestionsLeaveTitle")}</p>
               <select
                 value={suggCategory}
                 onChange={e => setSuggCategory(e.target.value)}
-                className="w-full rounded-xl px-3 py-2 text-sm font-medium"
-                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)"}}
+                className="tf-suggestions-field"
               >
                 <option value="feature">{lang === "es" ? "Nueva Función" : "New Feature"}</option>
                 <option value="improvement">{lang === "es" ? "Mejora" : "Improvement"}</option>
@@ -4507,15 +4511,14 @@ export default function TrackFreshDashboard() {
                 onChange={e => setSuggMessage(e.target.value)}
                 placeholder={lang === "es" ? "Escribe tu sugerencia aquí..." : "Write your suggestion here..."}
                 rows={4}
-                className="w-full rounded-xl px-3 py-2 text-sm"
-                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)",resize:"none"}}
+                className="tf-suggestions-field"
+                style={{ resize: "none" }}
               />
               <input
                 value={suggName}
                 onChange={e => setSuggName(e.target.value)}
                 placeholder={lang === "es" ? "Tu nombre (opcional)" : "Your name (optional)"}
-                className="w-full rounded-xl px-3 py-2 text-sm"
-                style={{background:"rgba(255,255,255,0.12)",color:"white",border:"1px solid rgba(255,255,255,0.2)"}}
+                className="tf-suggestions-field"
               />
               <button
                 onClick={async () => {
@@ -4534,18 +4537,17 @@ export default function TrackFreshDashboard() {
                   setSuggSubmitting(false);
                 }}
                 disabled={suggSubmitting}
-                className="w-full py-3 rounded-xl font-bold text-white"
-                style={{background:"#B7D63A",color:"#1a3a2a"}}
+                className="tf-suggestions-send-btn"
               >
                 {suggSubmitting ? "..." : suggSubmitted ? (lang === "es" ? "✅ ¡Enviado!" : "✅ Sent! Thank you!") : (lang === "es" ? "Enviar Sugerencia" : "Send Suggestion")}
               </button>
-              {suggSubmitted && <p className="text-center text-sm" style={{color:"rgba(253,224,71,0.75)"}}>{lang === "es" ? "Leemos cada sugerencia. Las mejores ideas se construyen." : "We read every suggestion. Top ideas get built."}</p>}
-              </div>
+              {suggSubmitted && <p className="tf-suggestions-thanks">{lang === "es" ? "Leemos cada sugerencia. Las mejores ideas se construyen." : "We read every suggestion. Top ideas get built."}</p>}
+              </Card>
             </div>
 
             <div className="tf-glass-window">
-              <div className="tf-suggestions-card">
-              <h3 className="tf-suggestions-card__title">🗳️ {t("suggestionsVoteTitle")}</h3>
+              <Card className="tracker-items-card tf-suggestions-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+              <p className="tracker-add-step-label tf-suggestions-step-label">🗳️ {t("suggestionsVoteTitle")}</p>
               <p className="tf-suggestions-vote-hint">{t("suggestionsVoteHint")}</p>
               {[
                 { id: "alerts", key: "voteAlerts" },
@@ -4576,12 +4578,12 @@ export default function TrackFreshDashboard() {
                   </div>
                 );
               })}
-              </div>
+              </Card>
             </div>
 
             <div className="tf-glass-window">
-              <div className="tf-suggestions-card">
-              <h3 className="tf-suggestions-card__title">✅ {t("suggestionsAddedTitle")}</h3>
+              <Card className="tracker-items-card tf-suggestions-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+              <p className="tracker-add-step-label tf-suggestions-step-label">✅ {t("suggestionsAddedTitle")}</p>
               {[
                 {en:"Receipt scanning — scan your grocery receipt to add items instantly", es:"Escaneo de recibos — agrega artículos escaneando tu ticket"},
                 {en:"Bilingual support — full English & Spanish throughout the app", es:"Soporte bilingüe — inglés y español en toda la app"},
@@ -4592,13 +4594,13 @@ export default function TrackFreshDashboard() {
                   <span>{lang === "es" ? item.es : item.en}</span>
                 </div>
               ))}
-              </div>
+              </Card>
             </div>
 
             <div className="tf-glass-window">
-              <div className="tf-suggestions-card" style={{ borderColor: "rgba(253, 224, 71, 0.38)" }}>
-              <h3 className="tf-suggestions-card__title">📲 {t("backupTitle")}</h3>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(253,224,71,0.85)", fontWeight: 600}}>{t("backupDesc")}</p>
+              <Card className="tracker-items-card tf-suggestions-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+              <p className="tracker-add-step-label tf-suggestions-step-label">📲 {t("backupTitle")}</p>
+              <p className="tf-suggestions-body" style={{ marginBottom: "0.75rem" }}>{t("backupDesc")}</p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="button"
@@ -4610,8 +4612,7 @@ export default function TrackFreshDashboard() {
                 <button
                   type="button"
                   onClick={() => backupInputRef.current?.click()}
-                  className="flex-1 py-3 rounded-xl font-bold"
-                  style={{background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)"}}
+                  className="tf-suggestions-import-btn"
                 >
                   {t("backupImport")}
                 </button>
@@ -4624,19 +4625,20 @@ export default function TrackFreshDashboard() {
                 onChange={handleImportBackup}
               />
               {backupMessage && (
-                <p className="text-sm" style={{color:"rgba(253,224,71,0.9)"}}>{backupMessage}</p>
+                <p className="tf-suggestions-thanks">{backupMessage}</p>
               )}
-              </div>
+              </Card>
             </div>
 
-            {/* Data & Privacy */}
-            <div className="rounded-2xl p-4 space-y-2" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.12)"}}>
-              <h3 className="font-bold text-white text-base">🔒 {lang === "es" ? "Datos y Privacidad" : "Data & Privacy"}</h3>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.72)"}}>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-suggestions-privacy" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+              <h3 className="tf-suggestions-privacy__title">🔒 {lang === "es" ? "Datos y Privacidad" : "Data & Privacy"}</h3>
+              <p className="tf-suggestions-privacy__body">
                 {lang === "es"
                   ? "📱 Tus datos permanecen en tu dispositivo. TrackFresh almacena artículos, listas y planes localmente. Usa Guardar y Restaurar Respaldo arriba para mover tu cocina entre teléfono y PC. Borrar datos del navegador eliminará todo en este dispositivo. Nada se envía a servidores excepto al usar funciones de IA."
                   : "📱 Your data stays on your device. TrackFresh stores items, lists, and meal plans locally. Use Save & Restore Backup above to move your kitchen between phone and PC. Clearing this site\u2019s browser data will erase everything on this device. Nothing is sent to our servers except when using AI features."}
               </p>
+              </Card>
             </div>
 
             <button onClick={() => setActiveTab("home")} className="flex items-center gap-1 text-sm font-semibold app-header-btn" style={{borderRadius:"999px",paddingLeft:"0.75rem"}}><span style={{color:"#fff",fontSize:"1.1rem",fontWeight:"bold"}}>←</span> {lang === "es" ? "Inicio" : "Home"}</button>
@@ -5110,13 +5112,16 @@ export default function TrackFreshDashboard() {
                 </div>
                 {/* Amber action buttons — per slide */}
                 {tourSlide === 0 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); }}>{lang === "es" ? "Empezar a Usar TrackFresh" : "Start Using TrackFresh"}</button>}
-                {tourSlide === 2 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); }}>{lang === "es" ? `Probar ${t("smartScanTitle")}` : `Try ${t("smartScanTitle")}`}</button>}
-                {tourSlide === 5 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); }}>{lang === "es" ? "Ir al Rastreador" : "Go to Tracker"}</button>}
-                {tourSlide === 7 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("recipes"); }}>{lang === "es" ? "Explorar Recetas" : "Explore Recipes"}</button>}
-                {tourSlide === 10 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("stores-page"); }}>{lang === "es" ? "Conectar Tiendas" : "Connect Stores"}</button>}
-                {tourSlide === 11 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("search-save"); }}>{lang === "es" ? "Abrir Buscar y Ahorrar" : "Open Search & Save"}</button>}
-                {tourSlide === 12 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("meals"); }}>{lang === "es" ? "Planificar mi Semana" : "Plan Your Week"}</button>}
-                {tourSlide === 13 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowRecallsPanel(true); }}>{lang === "es" ? "Ver Alertas FDA" : "Check FDA Recalls"}</button>}
+                {tourSlide === 1 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); openTrackerCapture(); setShowReceiptScanner(true); }}>{lang === "es" ? "Foto del recibo" : "Snap a receipt"}</button>}
+                {tourSlide === 2 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("tracker"); openTrackerCapture(); setShowGroceryScan(true); }}>{lang === "es" ? t("smartScanTitle") : `Try ${t("smartScanTitle")}`}</button>}
+                {tourSlide === 5 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); openTrackerOrganize(); }}>{t("organizeTrackedItemsBtn")} →</button>}
+                {tourSlide === 7 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("recipes"); }}>{lang === "es" ? t("recipeIdeasTab") : `Explore ${t("recipeIdeasTab")}`}</button>}
+                {tourSlide === 10 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("stores-page"); }}>{t("shopOnline")} →</button>}
+                {tourSlide === 11 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("search-save"); }}>{t("searchSaveTitle")} →</button>}
+                {tourSlide === 12 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("partners"); }}>{t("partnersTitle")} →</button>}
+                {tourSlide === 13 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("meals"); }}>{lang === "es" ? "Planificar Mi Semana" : "Plan My Week"}</button>}
+                {tourSlide === 14 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setShowRecallsPanel(true); }}>{t("fdaRecalls")} →</button>}
+                {tourSlide === 16 && <button className="btn-amber-3d w-full" style={{marginTop:"1.25rem"}} onClick={() => { setTourMode(false); setTourSlide(0); setActiveTab("suggestions"); }}>{t("suggestionsTitle")} →</button>}
                 {/* Nav buttons */}
                 <div style={{display:"flex",gap:"0.75rem",marginTop:"1.25rem"}}>
                   {tourSlide > 0 && (

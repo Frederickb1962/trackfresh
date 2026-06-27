@@ -626,6 +626,7 @@ export const T = {
     fr: "Programme pilote dans les magasins participants.",
     it: "Programma pilota nei negozi aderenti.",
   },
+  suggestionsLabel: { en: "Feedback", es: "Opini\u00f3n", fr: "Retours", it: "Feedback" },
   suggestionsTitle: { en: "Your Ideas Matter", es: "Tus Ideas Importan", fr: "Vos id\u00e9es comptent", it: "Le tue idee contano" },
   suggestionsIntro: {
     en: "We\u2019re a small team with a big mission. Your feedback shapes what we build next.",
