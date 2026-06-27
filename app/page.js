@@ -7,7 +7,7 @@ import { GLOBAL_STYLES } from "./lib/styles";
 
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Bell, PlusCircle, ChefHat, Users, ShoppingCart, Calendar } from "lucide-react";
+import { Bell, PlusCircle, ChefHat, Users, Calendar } from "lucide-react";
 import { AiBadge, GreenDot, TrackFreshLogo } from "./components/ui/TrackFreshLogo";
 import MarketingPage from "./components/MarketingPage";
 import StoreDiscountModal from "./components/StoreDiscountModal";
@@ -346,8 +346,8 @@ function saveShopping(items, key = SHOPPING_KEY) {
 
 const DELIVERY_SERVICES = [
   { id: "instacart", label: "Instacart", url: "https://www.instacart.com" },
-  { id: "ubereats", label: "Uber Eats", url: "https://www.ubereats.com" },
-  { id: "seamless", label: "Seamless", url: "https://www.seamless.com" },
+  { id: "walmart", label: "Walmart", url: "https://www.walmart.com/cp/grocery/976789" },
+  { id: "amazon", label: "Amazon Fresh", url: "https://www.amazon.com/fresh" },
 ];
 
 function loadDeliveryService(key = DELIVERY_SERVICE_KEY) {
@@ -401,70 +401,10 @@ function BloomText({ text, duration = 8 }) {
 const PILL = {base:{display:"inline-flex",alignItems:"center",gap:"0.25rem",borderRadius:"6px",padding:"0.18rem 0.6rem",fontSize:"0.63rem",fontWeight:700,lineHeight:1.4,border:"1px solid rgba(0,0,0,0.3)"},gray:{background:"#f3f4f6",color:"#374151"},orange:{background:"#f5fad0",color:"#5a6e0a"},blue:{background:"#eff6ff",color:"#1d4ed8"},cyan:{background:"#ecfeff",color:"#0e7490"}};
 function TipPill({ type, children }) { return <span style={{...PILL.base,...PILL[type]}}>{children}</span>; }
 
-function ShoppingAutocomplete({ value, onChange, onSelect, onAddItem, lang }) {
-  const fn = (name) => (lang === "es" && FOOD_ES[name]) ? FOOD_ES[name] : name;
-  const [open, setOpen] = useState(false);
-  const [highlighted, setHighlighted] = useState(0);
-  const ref = useRef(null);
-
-  const matches = useMemo(() => {
-    if (!value || value.length < 1) return [];
-    const q = value.toLowerCase();
-    return FOOD_DB.filter((f) => f.name.toLowerCase().includes(q) || (FOOD_ES[f.name] && FOOD_ES[f.name].toLowerCase().includes(q))).slice(0, 8);
-  }, [value]);
-
-  useEffect(() => { setHighlighted(0); }, [matches]);
-
-  useEffect(() => {
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      if (open && matches.length > 0) { e.preventDefault(); onSelect(matches[highlighted]); setOpen(false); }
-      else { onAddItem && onAddItem(); }
-      return;
-    }
-    if (!open || matches.length === 0) return;
-    if (e.key === "ArrowDown") { e.preventDefault(); setHighlighted((h) => Math.min(h + 1, matches.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setHighlighted((h) => Math.max(h - 1, 0)); }
-    else if (e.key === "Escape") { setOpen(false); }
-  };
-
-  return (
-    <div className="relative flex-1" ref={ref}>
-      <input
-        value={value}
-        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
-        onFocus={() => { if (value) setOpen(true); }}
-        onKeyDown={handleKeyDown}
-        placeholder={lang === "es" ? "Agregar artículo..." : "Add item..."}
-        className="w-full rounded-xl px-3 py-2 text-sm text-gray-900"
-      />
-      {open && matches.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg" style={{maxHeight:"220px",overflowY:"auto"}}>
-          {matches.map((f, i) => (
-            <button
-              key={f.name}
-              onMouseDown={() => { onSelect(f); setOpen(false); }}
-              onMouseEnter={() => setHighlighted(i)}
-              className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${highlighted === i ? "bg-green-50" : "hover:bg-green-50"}`}
-            >
-              <span>{fn(f.name)}</span>
-              <div className="flex items-center gap-1">
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[f.location]}`}>{LOCATION_ICONS[f.location]} {f.location}</span>
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[f.category]}`}>{f.category}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function shoppingFoodDbMatch(name) {
+  const q = name.trim().toLowerCase();
+  if (!q) return null;
+  return FOOD_DB.find((f) => f.name.toLowerCase() === q || (FOOD_ES[f.name] && FOOD_ES[f.name].toLowerCase() === q)) || null;
 }
 
 function Card({ children, className = "", style = {} }) {
@@ -1604,6 +1544,12 @@ export default function TrackFreshDashboard() {
     if (!name) return;
     setShoppingItems((prev) => [...prev, { id: crypto.randomUUID(), name, qty: `${newShoppingQtyNum} ${newShoppingQty}`, checked: false }]);
     setNewShoppingItem(""); setNewShoppingQtyNum("1"); setNewShoppingQty("count");
+  };
+
+  const applyShoppingFoodToField = (f) => {
+    if (!f) return;
+    const name = (lang === "es" && FOOD_ES[f.name]) ? FOOD_ES[f.name] : f.name;
+    setNewShoppingItem(name);
   };
 
   const handleToggleShoppingItem = (id) => setShoppingItems((prev) => prev.map((it) => it.id === id ? { ...it, checked: !it.checked } : it));
@@ -3859,78 +3805,16 @@ export default function TrackFreshDashboard() {
             <div className="mb-3">
               <span className="app-section-label">Grocery</span>
               <h2 className="app-section-h2"><span className="cart-icon">🛒</span> {t("shoppingList")}</h2>
+              <InstructionHint style={{ margin: "0.5rem 0 0", fontSize: "0.82rem", lineHeight: 1.45 }}>{t("shoppingIntro")}</InstructionHint>
             </div>
             <Card style={{background:"linear-gradient(160deg,#053d2e 0%,#064e3b 50%,#065f46 100%)",border:"2px solid rgba(183,214,58,0.75)"}}>
-              <div className="mb-3 flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" style={{color:"#B7D63A"}} />
-                <h2 className="text-lg font-bold text-white">{t("shoppingList")}</h2>
-                {shoppingItems.some((it) => it.checked) && (
-                  <button onClick={handleClearChecked} className="ml-auto rounded px-3 py-1 text-xs font-semibold text-red-200" style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,100,100,0.5)"}}>{t("clearChecked")}</button>
-                )}
-              </div>
-              <p className="text-xs mb-3 -mt-1 tf-instruction-hint--inline" style={{marginBottom:"0.75rem",fontWeight:700}}>{lang === "es" ? "Marca los artículos que hayas comprado." : "Check off items as you purchase them."}</p>
-              <div className="flex flex-col gap-2 mb-4 w-full">
-                <ShoppingAutocomplete
-                  value={newShoppingItem}
-                  onChange={setNewShoppingItem}
-                  onSelect={(f) => {
-                    const name = (lang === "es" && FOOD_ES[f.name]) ? FOOD_ES[f.name] : f.name;
-                    setShoppingItems(prev => [...prev, { id: crypto.randomUUID(), name, qty: `${newShoppingQtyNum} ${newShoppingQty}`, checked: false }]);
-                    setNewShoppingItem(""); setNewShoppingQtyNum("1"); setNewShoppingQty("count");
-                  }}
-                  onAddItem={handleAddShoppingItem}
-                  lang={lang}
-                />
-                <div className="flex gap-2">
-                  <select value={newShoppingQtyNum} onChange={(e) => setNewShoppingQtyNum(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"0 0 auto",width:"60px"}}>
-                    {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={String(n)}>{n}</option>)}
-                  </select>
-                  <select value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"1"}}>
-                    {["lbs","oz","kg","g","count","pack","bag","box","bottle","can","dozen"].map(u => <option key={u} value={u}>{u}</option>)}
-                  </select>
-                  <button onClick={handleAddShoppingItem} className="glass-scan-btn py-2 text-sm" style={{flex:"1"}}>{t("addBtn")}</button>
+              {shoppingItems.some((it) => it.checked) && (
+                <div className="mb-2 flex justify-end">
+                  <button onClick={handleClearChecked} className="rounded px-3 py-1 text-xs font-semibold text-red-200" style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,100,100,0.5)"}}>{t("clearChecked")}</button>
                 </div>
-                <div className="mb-1">
-                  <p className="text-xs font-bold mb-2" style={{color:"rgba(134,239,172,0.85)"}}>{t("deliveryServicePick")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {DELIVERY_SERVICES.map((svc) => {
-                      const selected = deliveryService === svc.id;
-                      return (
-                        <button
-                          key={svc.id}
-                          type="button"
-                          aria-pressed={selected}
-                          onClick={() => setDeliveryService(selected ? null : svc.id)}
-                          className="rounded-xl px-3 py-2 text-xs font-bold transition-all"
-                          style={{
-                            background: selected ? "rgba(183,214,58,0.35)" : "rgba(4,47,38,0.9)",
-                            border: selected ? "2px solid rgba(183,214,58,0.85)" : "1px solid rgba(255,255,255,0.25)",
-                            color: selected ? "#ecfccb" : "#fff",
-                          }}
-                        >
-                          {svc.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              )}
               {(() => {
                 const activeDelivery = DELIVERY_SERVICES.find((s) => s.id === deliveryService) || null;
-                const deliverySection = activeDelivery ? (
-                  <div className="mb-4 rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(183,214,58,0.45)"}}>
-                    <p className="text-xs font-bold mb-2" style={{color:"#fde68a"}}>🚚 {t("deliveryServiceTitle")}</p>
-                    <a
-                      href={activeDelivery.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="glass-scan-btn py-2 text-sm"
-                      style={{display:"flex",justifyContent:"center",textDecoration:"none"}}
-                    >
-                      {t("deliveryServiceOpen")} {activeDelivery.label} →
-                    </a>
-                  </div>
-                ) : null;
                 const expiringEntries = expiringSoon
                   .filter(it => !shoppingItems.some(s => s.name.toLowerCase() === it.name.toLowerCase()))
                   .map(it => ({ _type: "expiring", id: "exp_" + it.id, name: it.name, qty: "", checked: false, daysLeft: it.daysLeft, store: it.store || null, forMeal: null }));
@@ -3956,7 +3840,6 @@ export default function TrackFreshDashboard() {
                 };
                 const renderItem = (it) => {
                   const nameLower = it.name.toLowerCase();
-                  const flaggedAllergens = activeDietaryProfile.combinedTags.filter(tag => (ALLERGEN_KEYWORDS[tag] || []).some(kw => nameLower.includes(kw)));
                   const daysColor = it.daysLeft !== null ? (it.daysLeft <= 2 ? "#ef4444" : it.daysLeft <= 4 ? "#f97316" : "#eab308") : null;
                   const displayName = it.store ? `${it.name} — ${it.store}` : it.name;
                   return (
@@ -3965,6 +3848,9 @@ export default function TrackFreshDashboard() {
                       <div className="flex-1 min-w-0">
                         <span className={`text-sm${it.checked ? "" : " tf-food-item-name"}`} style={{textDecoration: it.checked ? "line-through" : "none", color: it.checked ? "rgba(255,255,255,0.6)" : undefined, fontWeight: it.checked ? 400 : 600}}>{displayName}{it.qty ? " — " + it.qty : ""}</span>
                         <div className="flex flex-wrap gap-1 mt-0.5">
+                          {it.source === "used" ? (
+                            <span className="rounded-full px-2 py-0.5 text-xs font-medium text-amber-100" style={{background:"rgba(251,191,36,0.28)"}}>{t("shoppingAutoUsedBadge")}</span>
+                          ) : null}
                           {it.forMeal && <span className="rounded-full px-2 py-0.5 text-xs font-medium text-orange-200" style={{background:"rgba(183,214,58,0.3)"}}>📅 {it.forMeal}</span>}
                         </div>
                       </div>
@@ -3976,23 +3862,102 @@ export default function TrackFreshDashboard() {
                   );
                 };
                 const isEmpty = unchecked.length === 0 && checked.length === 0;
+                const hasExpiringSuggestions = expiringEntries.length > 0;
                 return (
-                  <div>
-                    {deliverySection}
+                  <>
+                    {!isEmpty ? (
+                      <p className="text-xs mb-3 tf-instruction-hint--inline" style={{marginBottom:"0.75rem",fontWeight:600}}>{t("shoppingCheckHint")}</p>
+                    ) : null}
+                    {hasExpiringSuggestions ? (
+                      <InstructionHint style={{ margin: "0 0 0.75rem", fontSize: "0.78rem", lineHeight: 1.45 }}>{t("shoppingExpiringNote")}</InstructionHint>
+                    ) : null}
                     {isEmpty ? (
-                      <p className="text-sm text-green-100">{t("emptyList")}</p>
+                      <p className="text-sm text-green-100 mb-4">{t("emptyList")}</p>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-2 mb-4">
                         {unchecked.map(renderItem)}
                         {checked.length > 0 && (
                           <div className="mt-3">
-                            <p className="text-xs font-bold mb-2" style={{color:"rgba(255,255,255,0.45)"}}>{lang === "es" ? "✓ Recogido" : "✓ Picked Up"}</p>
+                            <p className="text-xs font-bold mb-2" style={{color:"rgba(255,255,255,0.45)"}}>✓ {t("shoppingPickedUp")}</p>
                             <div className="space-y-2">{checked.map(renderItem)}</div>
                           </div>
                         )}
                       </div>
                     )}
-                  </div>
+                    <div className="flex flex-col gap-2 mb-4 w-full" style={{ borderTop: isEmpty ? "none" : "1px solid rgba(255,255,255,0.12)", paddingTop: isEmpty ? 0 : "1rem" }}>
+                      <p className="tracker-add-step-label" style={{ margin: "0 0 0.35rem", paddingLeft: "0.15rem" }}>{t("shoppingAddStepLabel")}</p>
+                      <select
+                        value={shoppingFoodDbMatch(newShoppingItem)?.name || ""}
+                        onChange={(e) => {
+                          const f = FOOD_DB.find((x) => x.name === e.target.value);
+                          if (f) applyShoppingFoodToField(f);
+                        }}
+                        className="w-full rounded-xl px-3 py-2 text-sm font-semibold"
+                        style={{ background: "rgba(4,47,38,0.9)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", colorScheme: "light" }}
+                      >
+                        <option value="" style={{ color: "#0f172a", background: "#ffffff" }}>{t("chooseFromFoodList")}</option>
+                        {quickAddFoodOptions.map((f) => (
+                          <option key={f.name} value={f.name} style={{ color: "#0f172a", background: "#ffffff" }}>
+                            {lang === "es" && FOOD_ES[f.name] ? FOOD_ES[f.name] : f.name}
+                          </option>
+                        ))}
+                      </select>
+                      <FoodAutocomplete
+                        lang={lang}
+                        dark
+                        menuZIndex={300}
+                        value={newShoppingItem}
+                        onChange={setNewShoppingItem}
+                        onSelect={applyShoppingFoodToField}
+                        onEnter={handleAddShoppingItem}
+                        placeholder={t("shoppingAddPlaceholder")}
+                      />
+                      <div className="flex gap-2">
+                        <select value={newShoppingQtyNum} onChange={(e) => setNewShoppingQtyNum(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"0 0 auto",width:"60px"}}>
+                          {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={String(n)}>{n}</option>)}
+                        </select>
+                        <select value={newShoppingQty} onChange={(e) => setNewShoppingQty(e.target.value)} className="rounded-xl px-2 py-2 text-sm font-semibold" style={{background:"rgba(4,47,38,0.9)",border:"1px solid rgba(255,255,255,0.25)",color:"#fff",flex:"1"}}>
+                          {["lbs","oz","kg","g","count","pack","bag","box","bottle","can","dozen"].map(u => <option key={u} value={u}>{u}</option>)}
+                        </select>
+                        <button onClick={handleAddShoppingItem} className="glass-scan-btn py-2 text-sm" style={{flex:"1"}}>{t("addBtn")}</button>
+                      </div>
+                    </div>
+                    <div className="mt-1 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+                      <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("deliveryServicePick")}</p>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {DELIVERY_SERVICES.map((svc) => {
+                          const selected = deliveryService === svc.id;
+                          return (
+                            <button
+                              key={svc.id}
+                              type="button"
+                              aria-pressed={selected}
+                              onClick={() => setDeliveryService(selected ? null : svc.id)}
+                              className="rounded-xl px-3 py-2 text-xs font-bold transition-all"
+                              style={{
+                                background: selected ? "rgba(183,214,58,0.35)" : "rgba(4,47,38,0.9)",
+                                border: selected ? "2px solid rgba(183,214,58,0.85)" : "1px solid rgba(255,255,255,0.25)",
+                                color: selected ? "#ecfccb" : "#fff",
+                              }}
+                            >
+                              {svc.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {activeDelivery ? (
+                        <a
+                          href={activeDelivery.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass-scan-btn py-2 text-sm"
+                          style={{display:"flex",justifyContent:"center",textDecoration:"none"}}
+                        >
+                          {t("deliveryServiceOpen")} {activeDelivery.label} →
+                        </a>
+                      ) : null}
+                    </div>
+                  </>
                 );
               })()}
             </Card>
