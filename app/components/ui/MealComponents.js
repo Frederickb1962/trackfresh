@@ -20,7 +20,7 @@ export function MealSearchInput({ value, onChange, onKeyDown }) {
   );
 }
 
-export function FoodAutocomplete({ value, onChange, onSelect, lang, dark = false, menuZIndex = 50 }) {
+export function FoodAutocomplete({ value, onChange, onSelect, lang, dark = false, menuZIndex = 50, placeholder, onEnter }) {
   const fn = (name) => (lang === "es" && FOOD_ES[name]) ? FOOD_ES[name] : name;
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
@@ -43,10 +43,14 @@ export function FoodAutocomplete({ value, onChange, onSelect, lang, dark = false
   }, []);
 
   const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      if (open && matches.length > 0) { e.preventDefault(); onSelect(matches[highlighted]); setOpen(false); }
+      else { onEnter?.(); }
+      return;
+    }
     if (!open || matches.length === 0) return;
     if (e.key === "ArrowDown") { e.preventDefault(); setHighlighted((h) => Math.min(h + 1, matches.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setHighlighted((h) => Math.max(h - 1, 0)); }
-    else if (e.key === "Enter") { e.preventDefault(); onSelect(matches[highlighted]); setOpen(false); }
     else if (e.key === "Escape") { setOpen(false); }
   };
 
@@ -57,7 +61,7 @@ export function FoodAutocomplete({ value, onChange, onSelect, lang, dark = false
         onChange={(e) => { onChange(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
-        placeholder={lang === "es" ? "ej. Pechuga de Pollo" : "e.g. Chicken Breast"}
+        placeholder={placeholder ?? (lang === "es" ? "ej. Pechuga de Pollo" : "e.g. Chicken Breast")}
         className={dark ? "w-full rounded-xl px-3 py-2 text-sm" : "w-full rounded border px-3 py-2 text-sm text-gray-900"}
         style={dark ? { background: "#1a1a1a", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" } : undefined}
       />

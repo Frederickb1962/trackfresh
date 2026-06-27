@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
-import { aiErrorPayload } from "../../lib/apiAiError";
+import { aiErrorPayload, anthropicTextFromResponse, createAnthropicMessageWithRetry, parseAnthropicJsonText } from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -15,7 +15,7 @@ DIETARY REQUIREMENTS (ALL meals must comply):
 - Combined household requirements: ${dietaryNeeds.combinedTags.join(", ")}${dietaryNeeds.household.length > 0 ? `\n- Whole household: ${dietaryNeeds.household.join(", ")}` : ""}${dietaryNeeds.members.length > 0 ? "\n- Individual members:\n" + dietaryNeeds.members.map(m => `  • ${m.name}: ${m.tags.join(", ")}`).join("\n") : ""}
 Every single meal must be suitable for ALL listed dietary requirements. Do not suggest any meal that violates these restrictions.` : "- No dietary restrictions set.";
 
-    const resp = await client.messages.create({
+    const resp = await createAnthropicMessageWithRetry(client, {
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       messages: [
@@ -44,9 +44,10 @@ Reply ONLY with valid JSON, no markdown, no backticks. The format must be exactl
       ]
     });
 
-    let text = resp.content[0].text.trim();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const data = JSON.parse(text);
+    const text = anthropicTextFromResponse(resp);
+    if (!text) throw new Error("AI returned an empty response. Please try again.");
+
+    const data = parseAnthropicJsonText(text, "Could not build meal plan. Please try again.");
     return NextResponse.json(data);
   } catch (e) {
     console.error("Meal plan error:", e);

@@ -1,7 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
-import { ANTHROPIC_SCAN_MODEL, aiErrorPayload } from "../../lib/apiAiError";
+import {
+  ANTHROPIC_SCAN_MODEL,
+  aiErrorPayload,
+  anthropicTextFromResponse,
+  createAnthropicMessageWithRetry,
+  parseAnthropicJsonText,
+} from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -57,18 +63,7 @@ If you cannot read the receipt clearly, return: {"items":[],"error":"Could not r
     ],
   };
 
-  let lastErr;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      return await client.messages.create(params);
-    } catch (e) {
-      lastErr = e;
-      const retryable = e?.status === 500 || e?.status === 529 || e?.status === 503;
-      if (!retryable || attempt === 2) throw e;
-      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
-    }
-  }
-  throw lastErr;
+  return createAnthropicMessageWithRetry(client, params);
 }
 
 export async function POST(req) {
@@ -89,31 +84,29 @@ export async function POST(req) {
       console.warn("Receipt scan hit max_tokens — response may be truncated");
     }
 
-    const textBlock = Array.isArray(resp?.content) ? resp.content.find((c) => c.type === "text") : null;
-    const rawText = (textBlock?.text || "").trim();
+    const rawText = anthropicTextFromResponse(resp);
     console.log("Receipt scan raw response:", rawText.slice(0, 500));
 
     if (!rawText) {
-      return NextResponse.json({ items: [], error: "Empty response from scanner", stopReason });
-    }
-
-    let text = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-    const firstBrace = text.indexOf("{");
-    const lastBrace = text.lastIndexOf("}");
-    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-      text = text.slice(firstBrace, lastBrace + 1);
+      return NextResponse.json({
+        items: [],
+        error: stopReason === "max_tokens"
+          ? "Receipt was too long to read. Try a shorter receipt or crop the image."
+          : "Empty response from scanner",
+        stopReason,
+      });
     }
 
     let data;
     try {
-      data = JSON.parse(text);
+      data = parseAnthropicJsonText(rawText, "Could not parse scanner response");
     } catch (parseErr) {
       console.error("Receipt scan JSON parse error:", parseErr, "raw:", rawText);
       const snippet = rawText.length > 300 ? rawText.slice(0, 300) + "..." : rawText;
       const truncNote = stopReason === "max_tokens" ? " (response was truncated — try a shorter receipt)" : "";
       return NextResponse.json({
         items: [],
-        error: `Could not parse scanner response${truncNote}: ${parseErr.message}`,
+        error: `${parseErr.message}${truncNote}`,
         rawResponse: snippet,
         stopReason,
       });

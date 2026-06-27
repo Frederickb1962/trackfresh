@@ -564,7 +564,6 @@ export default function TrackFreshDashboard() {
   
   const [showMarketing, setShowMarketing] = useState(true);
   const [welcomeStep, setWelcomeStep] = useState(0);
-  const [isUnlocked, setIsUnlocked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [trackerScreen, setTrackerScreen] = useState("capture");
@@ -600,7 +599,6 @@ export default function TrackFreshDashboard() {
         }
         if (!gate.showMarketing) setShowMarketing(false);
         if (gate.welcomeStep > 0) setWelcomeStep(gate.welcomeStep);
-        if (gate.isUnlocked) setIsUnlocked(true);
         if (gate.isAdmin) setIsAdmin(true);
       } else if (hasCompletedFirstTimeOnboarding()) {
         setShowMarketing(false);
@@ -630,15 +628,25 @@ export default function TrackFreshDashboard() {
     }
   }, [navigateToTracker]);
   const enterAppIfReady = React.useCallback(() => {
-    if (showMarketing || welcomeStep > 0 || !isUnlocked) return false;
+    if (showMarketing || welcomeStep > 0) return false;
     return consumeLaunchTab();
-  }, [showMarketing, welcomeStep, isUnlocked, consumeLaunchTab]);
+  }, [showMarketing, welcomeStep, consumeLaunchTab]);
   const finishWelcomeOnboarding = () => {
     try {
       localStorage.setItem(DISCLAIMER_KEY, "1");
       localStorage.setItem(WELCOMED_KEY, "1");
     } catch (e) {}
     setWelcomeStep(0);
+    try {
+      const pending = sessionStorage.getItem(LAUNCH_TAB_KEY);
+      if (pending === "tracker") {
+        sessionStorage.removeItem(LAUNCH_TAB_KEY);
+        navigateToTracker();
+      } else if (pending) {
+        sessionStorage.removeItem(LAUNCH_TAB_KEY);
+        setActiveTab(pending);
+      }
+    } catch (e) {}
   };
   const finishWelcomeForFlow = () => finishWelcomeOnboarding();
   const queuePostMarketingOnboarding = () => {
@@ -663,66 +671,40 @@ export default function TrackFreshDashboard() {
     } else {
       try { sessionStorage.removeItem(LAUNCH_TAB_KEY); } catch (e) {}
     }
-    let unlocked = false;
     try {
       sessionStorage.setItem(MKT_SEEN_KEY, "1");
-      unlocked = sessionStorage.getItem("tf_ok") === "1";
-      if (unlocked) setIsUnlocked(true);
       if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
     } catch (e) {}
     const nextWelcome = resolveWelcomeStepAfterMarketing();
     setShowMarketing(false);
     setWelcomeStep(nextWelcome);
-    if (targetTab === "tracker") navigateToTracker();
+    if (nextWelcome === 0) {
+      try {
+        const pending = sessionStorage.getItem(LAUNCH_TAB_KEY);
+        if (pending === "tracker") {
+          sessionStorage.removeItem(LAUNCH_TAB_KEY);
+          navigateToTracker();
+        } else if (pending) {
+          sessionStorage.removeItem(LAUNCH_TAB_KEY);
+          setActiveTab(pending);
+        }
+      } catch (e) {}
+    }
     try { window.scrollTo(0, 0); } catch (e) {}
   };
   const handleLaunchToTracker = () => handleLaunchApp("tracker");
-  const [pwInput, setPwInput] = useState("");
-  const [pwError, setPwError] = useState(false);
-  const handlePwSubmit = () => {
-    if (pwInput === "fresh2026" || pwInput === "CarlosG2026") {
-      setIsUnlocked(true); setPwError(false);
-      try { if (window.sessionStorage) { sessionStorage.setItem("tf_ok", "1"); if (pwInput === "fresh2026") sessionStorage.setItem("tf_admin", "1"); } } catch(e) {}
-      if (pwInput === "fresh2026") setIsAdmin(true);
-      const nextWelcome = resolveWelcomeStepAfterMarketing();
-      setWelcomeStep(nextWelcome);
-      if (nextWelcome === 0) {
-        try {
-          const pending = sessionStorage.getItem(LAUNCH_TAB_KEY);
-          if (pending === "tracker") {
-            sessionStorage.removeItem(LAUNCH_TAB_KEY);
-            navigateToTracker();
-          } else if (pending) {
-            sessionStorage.removeItem(LAUNCH_TAB_KEY);
-            setActiveTab(pending);
-          }
-        } catch (e) {}
-      }
-    } else { setPwError(true); }
-  };
-  React.useEffect(() => {
-    try {
-      if (typeof window !== "undefined" && window.sessionStorage) {
-        if (sessionStorage.getItem("tf_ok") === "1") {
-          setIsUnlocked(true);
-          if (hasCompletedFirstTimeOnboarding()) queuePostMarketingOnboarding();
-        }
-        if (sessionStorage.getItem("tf_admin") === "1") setIsAdmin(true);
-      }
-    } catch (e) {}
-  }, []);
   React.useEffect(() => {
     enterAppIfReady();
   }, [enterAppIfReady]);
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.location.hash !== "#tracker") return;
-    if (showMarketing || welcomeStep > 0 || !isUnlocked) return;
+    if (showMarketing || welcomeStep > 0) return;
     navigateToTracker();
     try {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     } catch (e) {}
-  }, [showMarketing, welcomeStep, isUnlocked, navigateToTracker]);
+  }, [showMarketing, welcomeStep, navigateToTracker]);
   const homeTopRef = React.useRef(null);
   const [burstingBubble, setBurstingBubble] = useState(null);
   const trackerTopRef = React.useRef(null);
@@ -845,7 +827,6 @@ export default function TrackFreshDashboard() {
   const [quickAddQty, setQuickAddQty] = useState("");
   const [pendingDateItems, setPendingDateItems] = useState([]);
   const [pendingDateIndex, setPendingDateIndex] = useState(0);
-  const [showPendingDateIntro, setShowPendingDateIntro] = useState(false);
   const pendingDateIndexRef = React.useRef(pendingDateIndex);
   const pendingDateItemsRef = React.useRef(pendingDateItems);
   pendingDateIndexRef.current = pendingDateIndex;
@@ -1004,20 +985,10 @@ export default function TrackFreshDashboard() {
           setPendingDateIndex(0);
           setPendingPickedDate("");
           setPendingAwaitNextOrDone(false);
-          setShowPendingDateIntro(true);
         }, 0);
       }
       return [...prev, ...newRows];
     });
-  };
-
-  const speakPendingIntro = (text, onDone) => {
-    speakWithVoice(text, { lang: speechLocale(lang), onDone, rate: 0.93 });
-  };
-
-  const dismissPendingDateIntro = () => {
-    setShowPendingDateIntro(false);
-    try { window.speechSynthesis?.cancel(); } catch (e) {}
   };
 
   const itemStorageTip = (item, isEs) =>
@@ -1137,7 +1108,7 @@ export default function TrackFreshDashboard() {
       advanceCoachStep(2);
     }
   }, [pendingDateItems.length, trackedItems.length, coachStep, onboardingFlow, coachDismissed]);
-  const showGuidedWizard = onboardingFlow === FLOWS.guided && !guidedComplete && !guidedPaused && isUnlocked && welcomeStep === 0;
+  const showGuidedWizard = onboardingFlow === FLOWS.guided && !guidedComplete && !guidedPaused && welcomeStep === 0 && !showMarketing;
   useEffect(() => {
     if (showReceiptScanner || !guidedPaused || onboardingFlow !== FLOWS.guided || guidedComplete) return;
     setGuidedPaused(false);
@@ -2499,14 +2470,6 @@ export default function TrackFreshDashboard() {
   };
 
   useEffect(() => {
-    if (!showPendingDateIntro) return;
-    const text = t("pendingDateIntro");
-    speakPendingIntro(text);
-    return () => { try { window.speechSynthesis?.cancel(); } catch (e) {} };
-  }, [showPendingDateIntro, lang]);
-
-  useEffect(() => {
-    if (showPendingDateIntro) return;
     if (pendingDateItems.length === 0 || pendingDateIndex >= pendingDateItems.length) return;
     return () => {
       pendingVoiceUserStopRef.current = true;
@@ -2528,7 +2491,7 @@ export default function TrackFreshDashboard() {
       }
       setPendingVoiceListening(false);
     };
-  }, [pendingDateItems, pendingDateIndex, showPendingDateIntro]);
+  }, [pendingDateItems, pendingDateIndex]);
 
   useEffect(() => {
     setPendingTypedDate("");
@@ -2626,10 +2589,10 @@ export default function TrackFreshDashboard() {
 
   const handleSignOut = () => {
     if (!window.confirm(t("signOutConfirm"))) return;
-    setIsUnlocked(false);
+    setShowMarketing(true);
+    setWelcomeStep(0);
     setIsAdmin(false);
     try {
-      sessionStorage.removeItem("tf_ok");
       sessionStorage.removeItem("tf_admin");
     } catch (e) {}
   };
@@ -2641,16 +2604,16 @@ export default function TrackFreshDashboard() {
           <div className="w-full max-w-md text-center animate-[fadeIn_0.4s_ease]" style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px",padding:"2rem"}}>
             <div className="text-5xl mb-3">🥦</div>
             <h2 className="text-2xl font-extrabold text-white mb-5" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}>{t("welcomeBeforeStart")}</h2>
-            <div
-              className="rounded-xl p-4 text-sm leading-relaxed text-left mb-6"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "rgba(255,255,255,0.85)",
-              }}
+            <InstructionHint
+              style={{ textAlign: "center", marginBottom: "0.85rem", fontSize: "0.82rem", lineHeight: 1.5 }}
             >
               {t("welcomeNoticeBeta")}
-            </div>
+            </InstructionHint>
+            <InstructionHint
+              style={{ textAlign: "center", marginBottom: "1.5rem", fontSize: "0.82rem", lineHeight: 1.5 }}
+            >
+              {t("welcomeNoticeExpiry")}
+            </InstructionHint>
             <button
               type="button"
               onClick={finishWelcomeOnboarding}
@@ -2666,34 +2629,13 @@ export default function TrackFreshDashboard() {
   );
 
   if (showMarketing) return <MarketingPage onLaunchApp={handleLaunchApp} onLaunchToTracker={handleLaunchToTracker} lang={lang} onChangeLang={changeLang} />;
-  if (isUnlocked === false) return (
-    <>
-    <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
-    {onboardingOverlays}
-    {welcomeStep === 0 && (
-    <div className="min-h-screen tf-premium-bg flex items-center justify-center p-4">
-      <div style={{background:"rgba(0,0,0,0.35)",border:"2px solid rgba(255,102,0,0.45)",backdropFilter:"blur(14px)",borderRadius:"24px"}} className="shadow-2xl p-8 max-w-sm w-full text-center">
-        <div className="text-5xl mb-3">🥦</div>
-        <h1 className="text-3xl font-extrabold text-white mb-0" style={{textShadow:"0 2px 8px rgba(0,0,0,0.3)"}}><TrackFreshLogo showBroc={false} /></h1>
-        <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-1 mt-1">{t("betaTesting")}</p>
-        {(onboardingFlow === FLOWS.guided || onboardingFlow === FLOWS.coach) && (
-          <p className="text-xs font-semibold text-green-300 mb-2 px-3 py-1.5 rounded-lg" style={{ background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.35)" }}>
-            🧪 {flowLabel(onboardingFlow, lang)}
-          </p>
-        )}
-        <p className="text-sm text-green-200 mb-5">{t("enterAccessCode")}</p>
-        <input type="password" value={pwInput} onChange={(e) => { setPwInput(e.target.value); setPwError(false); }} onKeyDown={(e) => e.key === "Enter" && handlePwSubmit()} placeholder={t("betaInvitePlaceholder")} className="w-full rounded-xl px-4 py-3 text-center text-lg mb-3 focus:outline-none" style={{background:"rgba(255,255,255,0.1)",border:"2px solid rgba(255,102,0,0.4)",color:"#fff",caretColor:"#ff6600"}} />
-        {pwError && <p className="text-red-400 text-sm mb-3">{t("invalidCode")}</p>}
-        <button onClick={handlePwSubmit} style={{width:"100%",padding:"0.95rem 1.5rem",borderRadius:"16px",background:"linear-gradient(to bottom,#F0C070,#E8A63C)",color:"#1a0a00",fontWeight:800,fontSize:"1.05rem",border:"none",cursor:"pointer",boxShadow:"0 5px 0px #8C5A10, 0 10px 26px rgba(0,0,0,0.32), inset 0 1.5px 0 rgba(255,255,255,0.45)",letterSpacing:"0.01em"}}>{t("enterBeta")}</button>
-        <p className="text-xs text-green-300/60 mt-4">
-          {t("contactAccessBefore")}
-          <a href="mailto:hello@trackfresh.ai" className="underline hover:text-green-200">hello@trackfresh.ai</a>
-          {t("contactAccessAfter")}
-        </p>
+  if (welcomeStep === 1) return (
+    <div className="app-bg min-h-screen">
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
+      <div className="tf-app-shell min-h-screen">
+        {onboardingOverlays}
       </div>
     </div>
-    )}
-    </>
   );
 
     return (
@@ -2780,36 +2722,12 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
-        {pendingDateItems.length > 0 && showPendingDateIntro && (
-          <div className="fixed inset-0 z-[10055] flex flex-col items-center justify-center tf-premium-bg" style={{ padding: "2rem 1.25rem" }}>
-            <div
-              className="w-full max-w-md text-center animate-[fadeIn_0.35s_ease]"
-              style={{
-                background: "rgba(0,0,0,0.4)",
-                border: "2px solid rgba(250,204,21,0.55)",
-                backdropFilter: "blur(14px)",
-                borderRadius: "24px",
-                padding: "2rem 1.5rem",
-              }}
-            >
-              <div style={{ fontSize: "3.5rem", lineHeight: 1, marginBottom: "0.75rem" }}>🎤</div>
-              <p className="tf-modal-accent-h" style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>
-                📅 {t("pendingDateIntroTitle")}
-              </p>
-              <InstructionHint style={{ marginBottom: "1.5rem" }}>{t("pendingDateIntro")}</InstructionHint>
-              <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", margin: "0 0 1.25rem" }}>
-                {pendingDateItems.length} {lang === "es" ? "artículos por fechar" : "items to date"}
-              </p>
-              <button type="button" onClick={dismissPendingDateIntro} className="w-full py-3 rounded-xl font-bold text-base btn-amber-3d">
-                {t("pendingDateIntroContinue")}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {pendingDateItems.length > 0 && !showPendingDateIntro && pendingDateIndex < pendingDateItems.length && (() => {
+        {pendingDateItems.length > 0 && pendingDateIndex < pendingDateItems.length && (() => {
           const item = pendingDateItems[pendingDateIndex];
           const isEs = lang === "es";
+          const progressText = (t("pendingDateProgress") || "Item {current} of {total}")
+            .replace("{current}", String(pendingDateIndex + 1))
+            .replace("{total}", String(pendingDateItems.length));
           const micLblListen = isEs ? "🎤 Escuchando…" : "🎤 Listening…";
           const micLblNext = isEs ? "🎤 Di «Next» o «Done»" : '🎤 Say "Next" or "Done"';
           const micLblIdle = isEs ? "🎤 Voz" : "🎤 Voice";
@@ -2826,151 +2744,109 @@ export default function TrackFreshDashboard() {
             pointerEvents: "none",
           };
           return (
-            <div className="fixed inset-0 z-[10050] flex flex-col items-stretch justify-center tf-premium-bg" style={{padding:"2rem 1.25rem",gap:"1.25rem"}}>
-              <div style={{textAlign:"center"}}>
-                <p style={{color:"rgba(255,255,255,0.45)",fontSize:"0.75rem",fontWeight:600,margin:"0 0 0.35rem"}}>{pendingDateIndex + 1} / {pendingDateItems.length}</p>
-                <p className="tf-modal-accent-h" style={{fontSize:"1.1rem",margin:0}}>📅 {isEs ? "¿Fecha de vencimiento?" : "Expiration Date?"}</p>
-                <p className="tf-food-item-name tf-food-item-name--hero" style={{ margin: "0.65rem 0 0" }}>
-                  {itemDisplayName(item)}
-                </p>
-                {item.category === "Produce" && formatInGeneralInstruction(item, lang) ? (
-                  <p className="tf-instruction-hint--inline" style={{ margin: "0.45rem 0.5rem 0", textAlign: "center" }}>
-                    {formatInGeneralInstruction(item, lang)}
+            <div className="tf-pending-date-overlay tf-premium-bg">
+              <div className="tf-pending-date-sheet tf-modal-glass-surface">
+                <p className="tf-pending-date-progress">{progressText}</p>
+                <h2 className="tf-pending-date-sheet-title">{t("pendingDateSheetTitle")}</h2>
+
+                <div className="tf-pending-date-item-block">
+                  <p className="tf-food-item-name tf-food-item-name--hero" style={{ margin: 0 }}>
+                    {itemDisplayName(item)}
                   </p>
-                ) : null}
-              </div>
-              <div
-                className={`tf-date-field-wrap${pendingPickedDate ? "" : " tf-pending-date-empty"}`}
-                style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", padding: "0.35rem 0.5rem 0.5rem" }}
-                onClick={() => openDatePicker(pendingDateInputRef.current)}
-                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDatePicker(pendingDateInputRef.current); } }}
-                role="button"
-                tabIndex={0}
-                aria-label={isEs ? "Abrir calendario de vencimiento" : "Open expiration calendar"}
-              >
-                {!pendingPickedDate ? (
-                  <p className="tf-instruction-hint--inline" style={{ margin: "0.35rem 0 0.15rem", textAlign: "center", fontSize: "0.82rem", pointerEvents: "none" }}>
-                    {isEs ? "📅 Toca abajo para abrir el calendario" : "📅 Tap below to open calendar"}
-                  </p>
-                ) : null}
-                <input
-                  ref={pendingDateInputRef}
-                  type="date"
-                  className="tf-pending-date-native"
-                  value={pendingPickedDate}
-                  onChange={(e) => applyPendingDateValue(e.target.value)}
-                  onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
-                  onFocus={() => {
-                    abortPendingVoiceRecognition();
-                    pendingVoiceUserStopRef.current = false;
-                    setPendingVoiceError("");
-                  }}
-                  aria-label={isEs ? "Fecha de vencimiento" : "Expiration date"}
-                />
-              </div>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "stretch" }}>
-                <input
-                  type="text"
-                  value={pendingTypedDate}
-                  onChange={(e) => setPendingTypedDate(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") handlePendingApplyTypedDate(); }}
-                  placeholder={t("sayDateExample")}
-                  aria-label={t("sayDateExample")}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    padding: "0.75rem 0.85rem",
-                    borderRadius: "12px",
-                    border: "2px solid rgba(250,204,21,0.45)",
-                    background: "rgba(0,0,0,0.35)",
-                    color: "#fff",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                  }}
-                />
+                  {item.category === "Produce" && formatInGeneralInstruction(item, lang) ? (
+                    <p className="tf-pending-date-produce-note">{formatInGeneralInstruction(item, lang)}</p>
+                  ) : null}
+                </div>
+
+                <div className="tf-pending-date-section">
+                  <span className="tf-pending-date-section-label">📅 {t("expDateLabel")}</span>
+                  <div
+                    className={`tf-date-field-wrap${pendingPickedDate ? "" : " tf-pending-date-empty"}`}
+                    style={{ position: "relative", borderRadius: "14px", border: "2px solid #facc15", background: "#1a1a1a", padding: "0.35rem 0.5rem 0.5rem" }}
+                    onClick={() => openDatePicker(pendingDateInputRef.current)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDatePicker(pendingDateInputRef.current); } }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={isEs ? "Abrir calendario de vencimiento" : "Open expiration calendar"}
+                  >
+                    {!pendingPickedDate ? (
+                      <p className="tf-pending-date-calendar-hint">{t("pendingDateCalendarHint")}</p>
+                    ) : null}
+                    <input
+                      ref={pendingDateInputRef}
+                      type="date"
+                      className="tf-pending-date-native"
+                      value={pendingPickedDate}
+                      onChange={(e) => applyPendingDateValue(e.target.value)}
+                      onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
+                      onFocus={() => {
+                        abortPendingVoiceRecognition();
+                        pendingVoiceUserStopRef.current = false;
+                        setPendingVoiceError("");
+                      }}
+                      aria-label={isEs ? "Fecha de vencimiento" : "Expiration date"}
+                    />
+                  </div>
+                </div>
+
+                <p className="tf-pending-date-divider">{t("pendingDateOrType")}</p>
+                <div className="tf-pending-date-type-row tf-pending-date-section">
+                  <input
+                    type="text"
+                    value={pendingTypedDate}
+                    onChange={(e) => setPendingTypedDate(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handlePendingApplyTypedDate(); }}
+                    placeholder={t("sayDateExample")}
+                    aria-label={t("sayDateExample")}
+                  />
+                  <button type="button" onClick={handlePendingApplyTypedDate} className="tf-glass-primary-btn">
+                    {t("pendingDateTypeApply")}
+                  </button>
+                </div>
+
+                <p className="tf-pending-date-divider">{t("pendingDateOrVoice")}</p>
                 <button
                   type="button"
-                  onClick={handlePendingApplyTypedDate}
-                  className="tf-glass-primary-btn"
-                  style={{
-                    flexShrink: 0,
-                    padding: "0.75rem 1rem",
-                    borderRadius: "12px",
-                    fontWeight: 700,
-                    fontSize: "0.875rem",
-                  }}
+                  className={`tf-glass-scan tf-pending-date-mic${pendingVoiceListening ? " tf-pending-mic-listening" : ""}`}
+                  aria-label={micAria}
+                  onClick={handlePendingMicPress}
                 >
-                  {t("pendingDateTypeApply")}
+                  <span style={{ ...micSlotBase, opacity: pendingVoiceListening ? 1 : 0 }} aria-hidden>{micLblListen}</span>
+                  <span style={{ ...micSlotBase, opacity: !pendingVoiceListening && pendingAwaitNextOrDone && pendingPickedDate ? 1 : 0 }} aria-hidden>{micLblNext}</span>
+                  <span style={{ ...micSlotBase, opacity: !pendingVoiceListening && !(pendingAwaitNextOrDone && pendingPickedDate) ? 1 : 0 }} aria-hidden>{micLblIdle}</span>
                 </button>
-              </div>
-              <VoiceDateNextHint lang={lang} text={t("pendingDateVoiceHint")} />
-              <button
-                type="button"
-                className={`tf-glass-scan${pendingVoiceListening ? " tf-pending-mic-listening" : ""}`}
-                aria-label={micAria}
-                onClick={handlePendingMicPress}
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  minHeight: "4.5rem",
-                  boxSizing: "border-box",
-                  padding: 0,
-                  ...(!pendingVoiceListening ? { color: "#fde047" } : {}),
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  borderRadius: "16px",
-                  cursor: "pointer",
-                  overflow: "hidden",
-                  userSelect: "none",
-                }}
-              >
-                <span style={{ ...micSlotBase, opacity: pendingVoiceListening ? 1 : 0 }} aria-hidden>{micLblListen}</span>
-                <span style={{ ...micSlotBase, opacity: !pendingVoiceListening && pendingAwaitNextOrDone && pendingPickedDate ? 1 : 0 }} aria-hidden>{micLblNext}</span>
-                <span style={{ ...micSlotBase, opacity: !pendingVoiceListening && !(pendingAwaitNextOrDone && pendingPickedDate) ? 1 : 0 }} aria-hidden>{micLblIdle}</span>
-              </button>
-              <div style={{marginTop: "0.25rem"}}>
-                {pendingVoiceError && (
-                  <p style={{color:"#f87171", fontSize:"0.75rem", textAlign:"center", margin:"0.4rem 0 0", fontWeight:600}}>
-                    {pendingVoiceError}
-                  </p>
-                )}
-              </div>
-              {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.65rem" }}>
-                  {pendingDateIndex < pendingDateItems.length - 1 ? (
+                <p className="tf-pending-date-voice-sub">{t("pendingDateVoiceSub")}</p>
+                {pendingVoiceError ? (
+                  <p className="tf-pending-date-voice-error">{pendingVoiceError}</p>
+                ) : null}
+
+                {pendingPickedDate && isValidYYYYMMDD(pendingPickedDate) ? (
+                  <div className="tf-pending-date-actions">
+                    {pendingDateIndex < pendingDateItems.length - 1 ? (
+                      <button
+                        type="button"
+                        onClick={handlePendingSaveAndNext}
+                        className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
+                        style={{ color: "#ffffff" }}
+                      >
+                        {t("pendingSaveNext")}
+                      </button>
+                    ) : null}
                     <button
                       type="button"
-                      onClick={handlePendingSaveAndNext}
+                      onClick={handlePendingSaveAndFinish}
                       className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
                       style={{ color: "#ffffff" }}
                     >
-                      {t("pendingSaveNext")}
+                      {t("pendingSaveFinish")}
                     </button>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={handlePendingSaveAndFinish}
-                    className="w-full py-3 rounded-xl font-bold text-base text-white btn-amber-3d tf-onboarding-cta"
-                    style={{ color: "#ffffff" }}
-                  >
-                    {t("pendingSaveFinish")}
-                  </button>
-                </div>
-              )}
-              <button
-                type="button"
-                className="tf-pending-skip-btn tf-glass-primary-btn"
-                onClick={handlePendingSkipDate}
-                style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
-                  padding: "0.65rem 1rem",
-                  fontSize: "0.875rem",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                {isEs ? "Omitir fecha" : "Skip date"}
-              </button>
+                  </div>
+                ) : null}
+
+                <button type="button" className="tf-pending-date-skip" onClick={handlePendingSkipDate}>
+                  {t("pendingSkipDate")}
+                </button>
+              </div>
             </div>
           );
         })()}
@@ -3544,15 +3420,29 @@ export default function TrackFreshDashboard() {
                       const boxShadow = it.daysLeft !== null && it.daysLeft < 0 ? "0 0 20px rgba(239,68,68,0.6), 0 0 40px rgba(239,68,68,0.3)" : it.daysLeft !== null && it.daysLeft <= 2 ? "0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.3)" : it.daysLeft !== null && it.daysLeft <= 7 ? "0 0 15px rgba(251,191,36,0.5), 0 0 30px rgba(251,191,36,0.2)" : "none";
                       return (
                         <li key={it.id} className={`tf-pending-queue-item${expanded ? " tf-pending-queue-item--open" : ""}`} style={{ boxShadow }}>
-                          <div className="tf-pending-queue-header-row">
+                          <div className="tf-pending-queue-header-row tf-pending-queue-header-row--organize">
+                            <button type="button" className="tf-pending-queue-header tf-pending-queue-header--organize" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
+                              <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
+                              <div className="tf-organize-collapsed-main">
+                                <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
+                                <span className="tf-organize-collapsed-cat">{LOCATION_ICONS[locKey]} {catKey}</span>
+                              </div>
+                              {it.daysLeft !== null ? (
+                                <div className="tf-organize-collapsed-end">
+                                  {it.daysLeft <= 2 ? (
+                                    <span className="tf-pending-status-blink">{t("organizeUseSoonBadge")}</span>
+                                  ) : (
+                                    <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
+                                  )}
+                                </div>
+                              ) : null}
+                            </button>
+                          </div>
                           {it.daysLeft === null ? (
-                            <>
-                              <span className="tf-pending-queue-chip tf-pending-queue-chip--exp tf-organize-needs-date-chip">{t("organizeNeedsExpiryDate")}</span>
-                              <label
-                                className="tf-organize-inline-date-btn"
-                                title={t("organizeAddDateBtn")}
-                              >
-                                📅
+                            <div className="tf-organize-date-row">
+                              <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">{t("organizeNeedsExpiryDate")}</span>
+                              <label className="tf-organize-date-field" title={t("organizeAddDateBtn")} onClick={(e) => e.stopPropagation()}>
+                                <span aria-hidden>📅</span>
                                 <input
                                   type="date"
                                   value={it.useByDate || ""}
@@ -3562,27 +3452,8 @@ export default function TrackFreshDashboard() {
                                   aria-label={t("organizeAddDateBtn")}
                                 />
                               </label>
-                            </>
-                          ) : null}
-                          <button type="button" className="tf-pending-queue-header" onClick={() => toggleTrackerExpand(it.id)} aria-expanded={expanded}>
-                            <span className={`tf-pending-queue-arrow${expanded ? " tf-pending-queue-arrow--open" : ""}`} aria-hidden>▼</span>
-                            <div className="tf-pending-queue-summary">
-                              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.35rem 0.45rem", width: "100%" }}>
-                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LOCATION_COLORS[locKey]}`}>
-                                  {LOCATION_ICONS[locKey]} {locKey}
-                                </span>
-                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[catKey]}`}>{catKey}</span>
-                                <span className="tf-pending-queue-chip tf-pending-queue-chip--tip">{itemStorageTip(it, isEs)}</span>
-                                {it.daysLeft !== null && it.daysLeft <= 2 ? (
-                                  <span className="tf-pending-status-blink">{t("organizeUseSoonBadge")}</span>
-                                ) : it.daysLeft !== null ? (
-                                  <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
-                                ) : null}
-                              </div>
-                              <span className="tf-pending-queue-name">{itemDisplayName(it)}</span>
                             </div>
-                          </button>
-                          </div>
+                          ) : null}
                           {expanded && (
                           <div className="tf-pending-queue-body">
                           <div>
@@ -3757,7 +3628,7 @@ export default function TrackFreshDashboard() {
                 <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("trackerAddStepLabel")}</p>
                 <div>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.2rem",lineHeight:1}} aria-hidden>🧾</span><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
                   </button>
                   <button onClick={() => setShowGroceryScan(true)} className="w-full tf-glass-scan tf-glass-scan--accent" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginBottom:"0.5rem"}}>
@@ -3805,7 +3676,7 @@ export default function TrackFreshDashboard() {
                 <p className="tracker-add-step-label" style={{ margin: "0.65rem 0 0.5rem", paddingLeft: "0.15rem" }}>{t("trackerAddStepLabel")}</p>
                 <div style={{marginTop:"0"}}>
                   <button onClick={() => { setShowReceiptScanner(true); }} className="w-full tf-glass-scan" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 1rem", marginBottom:"0.75rem"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span>{t("scanReceipts")}</span></div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem"}}><span style={{fontSize:"1.2rem",lineHeight:1}} aria-hidden>🧾</span><span>{t("scanReceipts")}</span></div>
                     <span style={{display:"inline-block",background:"linear-gradient(135deg,#F0C070,#E8A63C)",color:"#000",fontWeight:800,fontSize:"0.65rem",borderRadius:"999px",padding:"0.2rem 0.75rem",boxShadow:"0 2px 6px rgba(232,166,60,0.4)"}}>{t("scanReceiptsBar")}</span>
                   </button>
                   <button onClick={() => setShowGroceryScan(true)} className="w-full tf-glass-scan tf-glass-scan--accent" style={{...TRACKER_SCAN_BTN_LAYOUT, padding:"0.85rem 0.35rem", marginBottom:"0.5rem"}}>

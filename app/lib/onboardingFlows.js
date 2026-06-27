@@ -18,14 +18,16 @@ export function readLaunchGateFromBrowser() {
     const forceEnter = enter === "1" || enter === "app" || enter === "tracker";
     const mktSeen = sessionStorage.getItem(MKT_SEEN_KEY) === "1" || forceEnter;
     const onboardingDone = hasCompletedFirstTimeOnboarding();
-    const unlocked = sessionStorage.getItem("tf_ok") === "1";
     const launchTab = enter === "tracker" ? "tracker" : null;
+    const adminParam = params.get("admin") === "1";
+    if (adminParam) {
+      try { sessionStorage.setItem("tf_admin", "1"); } catch (e) {}
+    }
 
     return {
       showMarketing: !(mktSeen || onboardingDone),
       welcomeStep: mktSeen && !onboardingDone ? resolveWelcomeStepAfterMarketing() : 0,
-      isUnlocked: unlocked,
-      isAdmin: sessionStorage.getItem("tf_admin") === "1",
+      isAdmin: adminParam || sessionStorage.getItem("tf_admin") === "1",
       launchTab,
       cleanUrl: forceEnter,
       markMktSeen: forceEnter,
@@ -80,6 +82,8 @@ export function applyFlowResetIfRequested() {
     localStorage.removeItem(WELCOMED_KEY);
     localStorage.removeItem(DISCLAIMER_KEY);
     sessionStorage.removeItem(MKT_SEEN_KEY);
+    sessionStorage.removeItem("tf_ok");
+    sessionStorage.removeItem("tf_admin");
   } catch (e) {}
 }
 

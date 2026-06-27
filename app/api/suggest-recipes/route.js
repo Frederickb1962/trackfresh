@@ -6,7 +6,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req) {
   try {
-    const { items } = await req.json();
+    const { items, timeframe = "week" } = await req.json();
     if (!items || items.length === 0) return NextResponse.json({ recipes: [] });
 
     const itemList = items.map(it => {
@@ -14,13 +14,32 @@ export async function POST(req) {
       return `- ${it.name}${days} [${it.category}, ${it.location}]`;
     }).join("\n");
 
+    const timeframePrompts = {
+      today: {
+        count: 3,
+        scope: `Suggest exactly 3 recipes the user can cook TODAY (breakfast, lunch, or dinner). Focus on items expiring within 0–2 days. Favor quick, practical meals they can make tonight.`,
+      },
+      tomorrow: {
+        count: 3,
+        scope: `Suggest exactly 3 recipes ideal for TOMORROW's meals. Prioritize items expiring in 1–3 days. Mix quick and moderate prep times.`,
+      },
+      week: {
+        count: 5,
+        scope: `Suggest 5 recipes for the entire week ahead. Prioritize items expiring soonest. Include a mix of quick weeknight meals and one more involved dish.`,
+      },
+    };
+    const tf = timeframePrompts[timeframe] || timeframePrompts.week;
+
     const resp = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 4096,
       messages: [
         {
           role: "user",
-          content: `You are a creative home chef assistant. Based on the user's tracked food items below, suggest 5 recipes for the week that prioritize items expiring soonest.
+          content: `You are a creative home chef assistant. Based on the user's tracked food items below, suggest recipes that prioritize items expiring soonest.
+
+TIMEFRAME: ${timeframe}
+${tf.scope}
 
 TRACKED ITEMS:
 ${itemList}
@@ -34,7 +53,7 @@ For each recipe provide:
 6. "difficulty" - Easy, Medium, or Hard
 7. "usesExpiring" - list of tracked items this recipe uses that are expiring soon
 
-Prioritize recipes that use the most items expiring soonest. Include a mix of quick weeknight meals and one more involved dish.
+Return exactly ${tf.count} recipes.
 
 Reply ONLY with valid JSON, no markdown, no backticks:
 {"recipes":[{"name":"...","description":"...","ingredients":["..."],"instructions":"1. ...\\n2. ...","time":"25 min","difficulty":"Easy","usesExpiring":["..."]}]}`

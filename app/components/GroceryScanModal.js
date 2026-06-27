@@ -11,6 +11,7 @@ import {
 import { LoadingFoodFact } from "./ui/LoadingFoodFact";
 import { compressImageFile } from "../lib/compressImage";
 import { formatAiError } from "../lib/formatAiError";
+import { fetchJsonSafe } from "../lib/fetchJson";
 
 const glassBtnLayout = {
   display: "inline-flex",
@@ -148,7 +149,22 @@ export default function GroceryScanModal({ onClose, lang, scanTitle, onEnqueue }
           body: JSON.stringify({ imageData: base64, mediaType: mediaType || "image/jpeg" }),
         });
         if (!mountedRef.current) return;
-        const data = await res.json();
+        const { data, parseError } = await fetchJsonSafe(
+          res,
+          isEs ? "El servidor no devolvió datos." : "Server returned no data."
+        );
+        if (parseError) {
+          playError();
+          const msg = formatAiError(parseError, lang);
+          if (isDesktop) {
+            setDesktopError(msg);
+            setParsedItems([]);
+          } else {
+            setErrorMsg(msg);
+            setScreen("error");
+          }
+          return;
+        }
         if (!res.ok || data.error) {
           playError();
           const msg = formatAiError(data.error, lang);

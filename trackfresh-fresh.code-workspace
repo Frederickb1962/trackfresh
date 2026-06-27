@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "name": "trackfresh-fresh",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "workbench.sideBar.location": "left",
+    "workbench.panel.defaultLocation": "bottom",
+    "workbench.editor.centeredLayout": false,
+    "workbench.startupEditor": "none",
+    "simpleBrowser.focusLockIndicator.enabled": true,
+    "trackfresh.preview.url": "http://127.0.0.1:3000/",
+    "task.allowAutomaticTasks": "on"
+  }
+}

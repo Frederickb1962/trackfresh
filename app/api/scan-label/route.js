@@ -1,6 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { finalizeProduceScannerItem } from "../../lib/aiProduceNormalize";
-import { ANTHROPIC_SCAN_MODEL, aiErrorPayload } from "../../lib/apiAiError";
+import {
+  ANTHROPIC_SCAN_MODEL,
+  aiErrorPayload,
+  anthropicTextFromResponse,
+  createAnthropicMessageWithRetry,
+  parseAnthropicJsonText,
+} from "../../lib/apiAiError";
 
 export async function POST(request) {
   try {
@@ -43,15 +49,19 @@ export async function POST(request) {
 
     const content = [{ type: "text", text: prompt }, ...imageContent];
 
-    const message = await anthropic.messages.create({
+    const message = await createAnthropicMessageWithRetry(anthropic, {
       model: ANTHROPIC_SCAN_MODEL,
       max_tokens: 1024,
       messages: [{ role: "user", content: content }]
     });
 
-    const text = message.content[0].text;
-    const clean = text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(clean);
+    const text = anthropicTextFromResponse(message);
+    if (!text) throw new Error("AI returned an empty response. Please try again.");
+
+    const parsed = parseAnthropicJsonText(
+      text,
+      "Could not read the label. Try a clearer photo of the product name."
+    );
     return Response.json({ item: finalizeProduceScannerItem(parsed) });
 
   } catch (error) {

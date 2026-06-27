@@ -1,6 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
+import {
+  aiErrorPayload,
+  anthropicTextFromResponse,
+  ANTHROPIC_SCAN_MODEL,
+  createAnthropicMessageWithRetry,
+  parseAnthropicJsonText,
+} from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -45,11 +52,15 @@ async function enrichWithBarcode(item) {
 
 export async function POST(req) {
   try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: "API authentication failed — check ANTHROPIC_API_KEY" }, { status: 401 });
+    }
+
     const { imageData, mediaType } = await req.json();
     if (!imageData) return NextResponse.json({ error: "No image" }, { status: 400 });
 
-    const resp = await client.messages.create({
-      model: "claude-sonnet-4-6",
+    const resp = await createAnthropicMessageWithRetry(client, {
+      model: ANTHROPIC_SCAN_MODEL,
       max_tokens: 3000,
       messages: [{
         role: "user",
@@ -112,12 +123,33 @@ Use null for barcode if none visible, empty string for date if not found.`
       }]
     });
 
-    let text = resp.content[0].text.trim();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const aiData = JSON.parse(text);
+    const stopReason = resp?.stop_reason;
+    if (stopReason === "max_tokens") {
+      console.warn("Smart scan hit max_tokens — response may be truncated");
+    }
 
-    let items = await Promise.all((aiData.items || []).map(enrichWithBarcode));
-    items = finalizeProduceScannerItems(items);
+    const text = anthropicTextFromResponse(resp);
+    if (!text) {
+      throw new Error(
+        stopReason === "max_tokens"
+          ? "Photo had too much to read. Try a closer shot or fewer items."
+          : "AI returned an empty response. Please try again."
+      );
+    }
+
+    const aiData = parseAnthropicJsonText(
+      text,
+      "Could not read items from the photo. Try again with better lighting or a clearer image."
+    );
+    if (!Array.isArray(aiData.items)) {
+      throw new Error("AI did not return any items. Try a closer photo.");
+    }
+
+    let items = await Promise.all(aiData.items.map(enrichWithBarcode));
+    items = finalizeProduceScannerItems(items).filter((it) => it && String(it.name || "").trim());
+    if (!items.length) {
+      throw new Error("No food items detected in the photo. Try a closer shot with better lighting.");
+    }
 
     // If single item, return in original format for backward compatibility
     if (aiData.type === "single" && items.length === 1) {
@@ -128,6 +160,7 @@ Use null for barcode if none visible, empty string for date if not found.`
     return NextResponse.json({ item: items[0] || null, items, type: aiData.type });
   } catch (e) {
     console.error("Smart scan error:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    const { error: errMsg, status } = aiErrorPayload(e, "Smart scan failed");
+    return NextResponse.json({ error: errMsg }, { status });
   }
 }

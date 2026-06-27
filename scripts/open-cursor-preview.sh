@@ -15,6 +15,11 @@ STATUS="$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "${URL}/" 2>/dev/n
 if [[ "$STATUS" != "200" ]]; then
   echo "Warning: ${URL} returned HTTP ${STATUS}. Run: npm run dev:clean"
 fi
+CHUNK_OK="$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "${URL}/_next/static/chunks/webpack.js" 2>/dev/null || echo "000")"
+if [[ "$CHUNK_OK" != "200" ]]; then
+  echo "Warning: Next.js client JS missing (HTTP ${CHUNK_OK}). Buttons will not respond."
+  echo "  Fix: npm run dev:clean  then hard-refresh Simple Browser (⌘⇧R)"
+fi
 open "vscode://vscode.simple-browser/show?url=${URL}" 2>/dev/null || true
 if [[ -x "$CURSOR_BIN" ]]; then
   "$CURSOR_BIN" --open-url "vscode://vscode.simple-browser/show?url=${URL}" 2>/dev/null || true

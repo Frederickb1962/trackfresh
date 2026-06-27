@@ -30,6 +30,11 @@ export function formatAiError(error, lang) {
       ? "El servicio de IA tuvo un problema. Espera un momento e intenta de nuevo."
       : "AI service had a hiccup. Wait a moment and try again.";
   }
+  if (/unexpected end of json|empty response|could not read items|could not read ai/i.test(msg)) {
+    return isEs
+      ? "No pudimos leer la foto. Intenta de nuevo con mejor luz o una imagen más clara."
+      : "We couldn't read that photo. Try again with better lighting or a clearer image.";
+  }
   if (/max_tokens|truncated|too long/i.test(msg)) {
     return isEs
       ? "Demasiados productos en una foto. Acerca el recibo o recorta la imagen."

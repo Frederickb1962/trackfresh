@@ -1,17 +1,27 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { finalizeProduceScannerItems } from "../../lib/aiProduceNormalize";
-import { aiErrorPayload } from "../../lib/apiAiError";
+import {
+  aiErrorPayload,
+  anthropicTextFromResponse,
+  ANTHROPIC_SCAN_MODEL,
+  createAnthropicMessageWithRetry,
+  parseAnthropicJsonText,
+} from "../../lib/apiAiError";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req) {
   try {
+    if (!process.env.ANTHROPIC_API_KEY?.trim()) {
+      return NextResponse.json({ error: "API authentication failed — check ANTHROPIC_API_KEY" }, { status: 401 });
+    }
+
     const { imageData, mediaType } = await req.json();
     if (!imageData) return NextResponse.json({ error: "No image" }, { status: 400 });
 
-    const resp = await client.messages.create({
-      model: "claude-sonnet-4-6",
+    const resp = await createAnthropicMessageWithRetry(client, {
+      model: ANTHROPIC_SCAN_MODEL,
       max_tokens: 3000,
       messages: [{
         role: "user",
@@ -46,12 +56,19 @@ Reply ONLY with valid JSON, no markdown:
       }]
     });
 
-    let text = resp.content[0].text.trim();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const aiData = JSON.parse(text);
+    const text = anthropicTextFromResponse(resp);
+    if (!text) throw new Error("AI returned an empty response. Please try again.");
+
+    const aiData = parseAnthropicJsonText(
+      text,
+      "Could not read items from the photo. Try again with better lighting or a clearer image."
+    );
+    if (!Array.isArray(aiData.items)) {
+      throw new Error("AI did not return any items. Try a closer photo.");
+    }
 
     // For items with barcodes, enrich from Open Food Facts
-    let items = await Promise.all((aiData.items || []).map(async (item) => {
+    let items = await Promise.all(aiData.items.map(async (item) => {
       if (item.barcode) {
         try {
           const offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${item.barcode}.json`);
@@ -93,7 +110,10 @@ Reply ONLY with valid JSON, no markdown:
       return item;
     }));
 
-    items = finalizeProduceScannerItems(items);
+    items = finalizeProduceScannerItems(items).filter((it) => it && String(it.name || "").trim());
+    if (!items.length) {
+      throw new Error("No food items detected in the photo. Try a closer shot with better lighting.");
+    }
 
     return NextResponse.json({ items });
   } catch (e) {

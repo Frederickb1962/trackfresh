@@ -116,8 +116,8 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
                   </p>
                   <p className="mkt-speculative__disclaimer">
                     {isEs
-                      ? "No se han firmado contratos ni acuerdos a la fecha, ya que esta es una aplicación Beta."
-                      : "No contracts nor agreements have been signed as of this date, as this is a Beta App."}
+                      ? "No se han firmado contratos ni acuerdos a la fecha — programa piloto."
+                      : "No contracts nor agreements have been signed as of this date — pilot program."}
                   </p>
                 </div>
               </section>
@@ -422,7 +422,7 @@ export default function MarketingPage({ onLaunchApp, onLaunchToTracker, lang, on
             <p className="mkt-speculative__disclaimer" style={{ marginTop: "0.75rem" }}>
               {isEs
                 ? "No se han firmado contratos ni acuerdos a la fecha, ya que esta es una aplicación Beta."
-                : "No contracts nor agreements have been signed as of this date, as this is a Beta App."}
+                : "No contracts nor agreements have been signed as of this date — pilot program."}
             </p>
           </div>
         </section>

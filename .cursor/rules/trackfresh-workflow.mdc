@@ -1,0 +1,54 @@
+---
+description: TrackFresh normal Cursor layout and dev workflow
+alwaysApply: true
+---
+
+# TrackFresh — normal Cursor workflow
+
+## Project
+
+- **Finish copy:** `/Users/frederickbigler/Documents/Projects/trackfresh-fresh` — work here until the app is done; **commit + push to `main`** is the final deploy step (do not commit until the user asks).
+- **Remote:** `https://github.com/Frederickb1962/trackfresh.git`
+- **Deploy:** push to `main` → Vercel → trackfresh.ai
+- **Open workspace:** `trackfresh-fresh.code-workspace` (not the parent `Projects` folder) so dev server, preview URL, and layout restore apply.
+
+## Layout (restore if broken)
+
+- **Left:** File explorer (primary sidebar)
+- **Center:** **Live app preview** (Simple Browser → `http://127.0.0.1:3000/?enter=1`)
+- **Right:** Agents chat panel
+- **Code:** open `app/page.js` in a second tab or split when editing
+
+Preferred preview URL is saved in workspace settings as `trackfresh.preview.url`.
+
+If layout is wrong after a Cursor update:
+
+1. `workbench.sideBar.location` should be `"left"` (set in `.vscode/settings.json`)
+2. Click the **gear icon** (top-right) → set **Agent Sidebar** to **Right**
+3. Press **⌘E** to toggle Agent / Editor layout if needed
+4. Open **`trackfresh-fresh.code-workspace`** (not an empty workspace) so layout restores reliably
+5. If preview is missing: **⌘⇧P** → `Tasks: Run Task` → `TrackFresh: Restore Editing Layout` or `npm run preview`
+
+## Dev server & preview
+
+**Run these yourself** — never tell the user to use an external Mac terminal:
+
+- `npm run dev` or `npm run dev:clean` — start dev server on :3000
+- `npm run preview` — open Simple Browser in Cursor center (uses saved `trackfresh.preview.url`)
+- On folder open, task **TrackFresh: Restore Editing Layout** auto-starts dev server + preview (allow automatic tasks when prompted)
+
+Manual fallback: **⌘⇧P** → `Tasks: Run Task` → `TrackFresh: Restore Editing Layout`
+
+Or: **Run and Debug** panel → `TrackFresh: Dev + Simple Browser`
+
+## UX changes (user approval required)
+
+- **Default:** copy/text only (headings, hints, translations, button labels).
+- **Ask first** before changing layout, colors, spacing, grid/tile sizes, navigation order, or component structure.
+- If the user says layouts changed without approval, revert the visual diff (e.g. `git show HEAD:app/page.js` for the Explore tiles block) and keep non-visual fixes (API bugs, copy).
+
+## Git
+
+- Run `git status`, `git diff`, `git add`, `git commit`, `git push` yourself
+- Remote uses HTTPS; macOS Keychain stores credentials after first login
+- When user says **commit and deploy**: status → diff → commit → push to `main`

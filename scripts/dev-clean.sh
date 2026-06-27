@@ -17,6 +17,7 @@ echo ""
 echo "✓ Starting fresh dev server at http://localhost:3000"
 echo "  Hard refresh in browser: ⌘ + Shift + R"
 echo "  Direct app entry:        http://localhost:3000/?enter=1"
+echo "  Test marketing CTA:      http://localhost:3000/?reset=1"
 echo ""
 
 exec npx next dev -p 3000

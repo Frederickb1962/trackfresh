@@ -26,5 +26,8 @@ Stop and confirm with the user before:
 
 ## Defaults
 
-- Working repo: `trackfresh-fresh` (deploys to trackfresh.ai from `main`)
+- **Folder:** `/Users/frederickbigler/Documents/Projects/trackfresh-fresh`
+- **Remote:** `https://github.com/Frederickb1962/trackfresh.git` (HTTPS; agent runs `git push` with network permission)
+- Deploys to trackfresh.ai from `main` via Vercel
 - Prefer minimal, focused diffs; match existing project conventions
+- Never tell the user to run npm/git in an external Mac terminal — use the agent shell

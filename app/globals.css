@@ -80,7 +80,7 @@
   align-items: start;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .tf-kitchen-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
@@ -490,6 +490,187 @@ input[type="date"].tf-date-calendar-input {
   cursor: pointer;
 }
 
+/* Post-scan expiration date sheet — single card, clear sections */
+.tf-pending-date-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.tf-pending-date-sheet {
+  width: 100%;
+  max-width: 26rem;
+  border-radius: 1.25rem;
+  padding: 1.35rem 1.25rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: fadeIn 0.35s ease;
+}
+
+.tf-pending-date-progress {
+  margin: 0 0 0.35rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.tf-pending-date-sheet-title {
+  margin: 0 0 0.85rem;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.tf-pending-date-item-block {
+  text-align: center;
+  margin-bottom: 1.1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tf-pending-date-produce-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+  text-align: center;
+}
+
+.tf-pending-date-section {
+  margin-bottom: 0.85rem;
+}
+
+.tf-pending-date-section-label {
+  display: block;
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tf-pending-date-calendar-hint {
+  margin: 0 0 0.35rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(253, 224, 71, 0.85);
+  pointer-events: none;
+}
+
+.tf-pending-date-divider {
+  margin: 0.15rem 0 0.65rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.tf-pending-date-type-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.tf-pending-date-type-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tf-pending-date-type-row button {
+  flex-shrink: 0;
+  padding: 0.7rem 0.95rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
+.tf-pending-date-mic {
+  position: relative;
+  width: 100%;
+  min-height: 3.25rem;
+  box-sizing: border-box;
+  padding: 0;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+}
+
+.tf-pending-date-mic:not(.tf-pending-mic-listening) {
+  color: #fde047;
+}
+
+.tf-pending-date-voice-sub {
+  margin: 0 0 0.85rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.tf-pending-date-voice-error {
+  margin: -0.35rem 0 0.65rem;
+  color: #f87171;
+  font-size: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.tf-pending-date-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tf-pending-date-skip {
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.55rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tf-pending-date-skip:hover {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .tf-pending-skip-btn {
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
@@ -578,6 +759,117 @@ input[type="date"].tf-date-calendar-input {
   color: #fff;
   border: 2px solid #ef4444;
   animation: tf-pending-status-pulse 1.2s ease-in-out infinite;
+}
+
+/* Organize — compact row: name + category; date on its own line */
+.tf-pending-queue-header-row--organize {
+  display: block;
+  padding: 0;
+}
+
+.tf-pending-queue-header--organize {
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tf-organize-collapsed-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  text-align: left;
+}
+
+.tf-organize-collapsed-main .tf-pending-queue-name {
+  flex: none;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.tf-organize-collapsed-cat {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.tf-organize-collapsed-end {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tf-organize-collapsed-end .tf-pending-status-blink,
+.tf-organize-collapsed-end .tf-pending-status-ready {
+  margin-left: 0;
+}
+
+.tf-organize-date-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem 0.65rem;
+  flex-wrap: wrap;
+}
+
+.tf-organize-date-row .tf-pending-queue-chip--exp {
+  font-size: 0.58rem;
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tf-organize-date-field {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.tf-organize-date-field input.tf-date-calendar-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  color: #111827;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color-scheme: light;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tf-organize-date-field input.tf-date-calendar-input::-webkit-date-and-time-value {
+  text-align: left;
+  color: #111827;
+}
+
+.tf-organize-date-field input.tf-date-calendar-input::-webkit-calendar-picker-indicator {
+  position: static;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+  opacity: 0.75;
+  cursor: pointer;
 }
 
 .tf-pending-queue-chip--tip {
@@ -757,6 +1049,17 @@ body {
   line-height: 1.25;
   letter-spacing: -0.02em;
   text-shadow: 0 0 28px rgba(253, 224, 71, 0.35), 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.tracker-add-step-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: #fde047;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 0 14px rgba(253, 224, 71, 0.35), 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 /* App-wide instruction / hint copy (recipe expand, scan flows, voice queue, etc.) */

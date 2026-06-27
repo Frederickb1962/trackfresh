@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "TrackFresh: Dev + Simple Browser",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "action": "openWith",
+        "editorType": "simpleBrowser.webview",
+        "pattern": "- Local:\\s+(https?://\\S+)",
+        "uriFormat": "%s/"
+      }
+    },
+    {
+      "name": "TrackFresh: Preview (Simple Browser)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run preview",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
