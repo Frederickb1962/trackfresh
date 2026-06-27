@@ -41,12 +41,12 @@ export default function SearchSaveDiscountCard({ item, lang, compact = false, on
         className="rounded-lg px-3 py-2 mt-3 text-center"
         style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.15)" }}
       >
-        <p className="text-xs m-0 mb-1" style={{ color: "rgba(255,255,255,0.65)" }}>
+        <p className="text-xs m-0 mb-1" style={{ color: "rgba(253, 224, 71, 0.75)" }}>
           {isEs ? "Buscar y Ahorrar — código" : "Search and Save — code"}
         </p>
         <p
           className="font-mono font-bold m-0 tracking-wider"
-          style={{ color: "#86efac", letterSpacing: "0.12em", fontSize: compact ? "1rem" : "1.25rem" }}
+          style={{ color: "#fde047", letterSpacing: "0.12em", fontSize: compact ? "1rem" : "1.25rem" }}
         >
           {code}
         </p>
@@ -55,9 +55,9 @@ export default function SearchSaveDiscountCard({ item, lang, compact = false, on
   );
 
   const cardStyle = {
-    border: "2px solid #f59e0b",
-    background: "linear-gradient(180deg, rgba(245,158,11,0.22) 0%, rgba(0,0,0,0.35) 100%)",
-    boxShadow: "0 0 24px rgba(249,115,22,0.35)",
+    border: "2px solid rgba(253, 224, 71, 0.45)",
+    background: "linear-gradient(180deg, rgba(253, 224, 71, 0.14) 0%, rgba(0, 0, 0, 0.38) 100%)",
+    boxShadow: "0 0 20px rgba(253, 224, 71, 0.14)",
     borderRadius: "12px",
     padding: compact ? "0.85rem 1rem" : "1rem 1.1rem",
     textAlign: "center",

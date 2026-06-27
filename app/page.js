@@ -948,6 +948,9 @@ export default function TrackFreshDashboard() {
   const openTrackerOrganize = () => {
     setActiveTab("tracker");
     setTrackerScreen("organize");
+    setFilterLocation("All");
+    setFilterCategory("All");
+    setTrackerExpandedId(null);
     try { window.scrollTo(0, 0); } catch (e) {}
   };
 
@@ -3375,7 +3378,9 @@ export default function TrackFreshDashboard() {
                               </div>
                               {it.daysLeft !== null ? (
                                 <div className="tf-organize-collapsed-end">
-                                  {it.daysLeft <= 2 ? (
+                                  {it.daysLeft < 0 ? (
+                                    <span className="tf-pending-status-blink">{t("organizePastDateBadge")}</span>
+                                  ) : it.daysLeft <= 2 ? (
                                     <span className="tf-pending-status-blink">{t("organizeUseSoonBadge")}</span>
                                   ) : (
                                     <span className="tf-pending-status-ready">{it.daysLeft} {t("days")}</span>
@@ -3387,12 +3392,12 @@ export default function TrackFreshDashboard() {
                           {it.daysLeft === null ? (
                             <div className="tf-organize-date-row">
                               <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">{t("organizeNeedsExpiryDate")}</span>
-                              <label className="tf-organize-date-field" title={t("organizeAddDateBtn")} onClick={(e) => e.stopPropagation()}>
+                              <label className="tf-organize-date-btn" title={t("organizeAddDateBtn")} onClick={(e) => e.stopPropagation()}>
                                 <span aria-hidden>📅</span>
                                 <input
                                   type="date"
                                   value={it.useByDate || ""}
-                                  className="tf-date-calendar-input"
+                                  className="tf-date-calendar-input tf-organize-date-input"
                                   onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
                                   onChange={(e) => handleOrganizeQuickDate(it.id, e.target.value)}
                                   aria-label={t("organizeAddDateBtn")}
@@ -3414,10 +3419,9 @@ export default function TrackFreshDashboard() {
                                 {it.daysLeft !== null && (() => {
                                   const d = it.daysLeft;
                                   const [color, border] = d < 0 || d <= 2 ? ["#ef4444","3px solid #ef4444"] : d <= 4 ? ["#f97316","3px solid #f97316"] : d <= 7 ? ["#eab308","3px solid #eab308"] : ["#4ade80","3px solid #4ade80"];
-                                  const expiredLabel = isEs ? "Vencido" : "Expired";
                                   return (
                                     <div>
-                                      <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:d < 0 ? "0.72rem" : "0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d < 0 ? expiredLabel : d}</div>
+                                      <div style={{display:"inline-block",background:"transparent",border,borderRadius:"999px",padding:"0.18rem 0.55rem",fontSize:d < 0 ? "0.72rem" : "0.85rem",fontWeight:800,color,whiteSpace:"nowrap",lineHeight:1.2}}>{d < 0 ? t("organizePastDateBadge") : d}</div>
                                       <div className="text-xs mt-0.5" style={{color,opacity:0.8}}>{d < 0 ? "" : t("days")}</div>
                                     </div>
                                   );
@@ -3445,6 +3449,8 @@ export default function TrackFreshDashboard() {
                                 >
                                   {t("storeDiscountBtn")}
                                 </button>
+                              ) : it.daysLeft < 0 ? (
+                                <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(239,68,68,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#ef4444",border:"2px solid #ef4444",textAlign:"center"}}>{t("organizePastDateBadge")}</div>
                               ) : it.daysLeft <= 2 ? (
                                 <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(183,214,58,0.2)",borderRadius:"10px",padding:"0.3rem 0.4rem",fontSize:"0.68rem",fontWeight:800,color:"#B7D63A",border:"2px solid #B7D63A",textAlign:"center"}}>{t("organizeUseSoonBadge")}</div>
                               ) : (
@@ -3646,67 +3652,76 @@ export default function TrackFreshDashboard() {
         {activeTab === "recipes" && (
           <>
           <div className="mb-3">
-            <h2
-              className="text-xl font-semibold"
-              style={{
-                margin: 0,
-                color: "rgba(255,255,255,0.93)",
-                letterSpacing: "0.06em",
-                fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-                fontWeight: 600,
-                fontSize: "1.05rem",
-                lineHeight: 1.35,
-              }}
-            >
-              🍳 {t("recipeSugg")}
-            </h2>
-            <p className="text-xs" style={{color:"rgba(255,255,255,0.72)",margin:"0.35rem 0 0",lineHeight:1.45}}>{t("recipeIntro")}</p>
+            <span className="app-section-label"><AiBadge />-Powered</span>
+            <h2 className="app-section-h2">🍳 {t("recipeSugg")}</h2>
+            <InstructionHint style={{ margin: "0.5rem 0 0", fontSize: "0.82rem", lineHeight: 1.45 }}>{t("recipeIntro")}</InstructionHint>
           </div>
-          <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-            <div className="mb-3 flex justify-end gap-2">
-              {recipeSubTab === "favorites" ? (
-                <button type="button" onClick={() => setRecipeSubTab("ai")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={{background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.75)"}}>← {t("recipeIdeasTab")}</button>
-              ) : (
-                <button type="button" onClick={() => setRecipeSubTab("favorites")} className="rounded-xl py-2 px-3 text-sm font-bold border-2 transition-all" style={{background:"rgba(255,255,255,0.07)",borderColor:"rgba(255,255,255,0.2)",color:"rgba(255,255,255,0.75)"}}>❤️ {t("recipeFavorites")}</button>
-              )}
-            </div>
-            {recipeSubTab === "favorites" && (
-              <div>
-                {favoriteRecipes.length === 0 ? (
-                  <p className="text-sm py-4 text-center tf-instruction-hint--inline" style={{ fontSize: "0.875rem" }}>{t("recipeFavoritesEmpty")}</p>
-                ) : (
-                  <div className="space-y-3">
-                    {favoriteRecipes.map((r, i) => (
-                      <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
-                        <div className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-bold text-white">{r.name}</h3>
-                              <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{t("recipeFavoritesSavedLabel")}</p>
-                            </div>
-                            <div className="flex items-center gap-2 ml-2 shrink-0">
-                              <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
-                              <button onClick={() => setFavoriteRecipes((prev) => prev.filter((_, fi) => fi !== i))} className="text-xs" style={{color:"rgba(255,100,100,0.7)"}}>✕</button>
-                            </div>
-                          </div>
-                          <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
-                          {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mt-3 mb-1 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-2 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm flex items-center gap-1" style={{color: ing.includes("(need)") ? "#F97316" : "rgba(255,255,255,0.8)"}}><span style={{color:"#4ade80"}}>•</span> {ing}</li>)}</ul></>)}
-                          <h4 className="mb-1 text-sm font-bold text-white">{t("instructionsWord")}</h4>
-                          <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+          <div className="tf-glass-window">
+            <Card className="tracker-items-card" style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
+              <div className="tf-recipe-tabs" role="tablist" aria-label={t("recipeSugg")}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={recipeSubTab === "ai"}
+                  onClick={() => setRecipeSubTab("ai")}
+                  className={`tf-recipe-tab${recipeSubTab === "ai" ? " tf-recipe-tab--active" : ""}`}
+                >
+                  🍳 {t("recipeIdeasTab")}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={recipeSubTab === "favorites"}
+                  onClick={() => setRecipeSubTab("favorites")}
+                  className={`tf-recipe-tab${recipeSubTab === "favorites" ? " tf-recipe-tab--active" : ""}`}
+                >
+                  ❤️ {t("recipeFavorites")}
+                  {favoriteRecipes.length > 0 ? <span className="tf-recipe-tab-count">{favoriteRecipes.length}</span> : null}
+                </button>
               </div>
-            )}
-            {recipeSubTab === "ai" && <>
-            <button onClick={handleSuggestRecipes} disabled={recipesLoading || trackedItems.length === 0} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50 w-full justify-center">{recipesLoading ? <><span className="animate-spin">🤖</span> {t("recipeLoading")}</> : <><ChefHat className="h-4 w-4" /> {t("recipeGenerateBtn")}</>}</button>
-            {recipesLoading && <div className="mt-4 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
-            {recipesGenerated && recipeSuggestions.length === 0 && <InstructionHint className="mt-4">{t("noMatches")}</InstructionHint>}
-            {recipeSuggestions.length > 0 && (
-              <div className="mt-4 space-y-3">
-                <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("recipeExpandHint")}</p>
+              {recipeSubTab === "favorites" && (
+                <div>
+                  {favoriteRecipes.length === 0 ? (
+                    <InstructionHint className="tf-recipe-empty-hint" style={{ textAlign: "center", padding: "1.25rem 0.5rem" }}>{t("recipeFavoritesEmpty")}</InstructionHint>
+                  ) : (
+                    <div className="space-y-3">
+                      {favoriteRecipes.map((r, i) => (
+                        <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
+                          <div className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h3 className="font-bold text-white">{r.name}</h3>
+                                <p className="text-xs mt-0.5" style={{color:"rgba(134,239,172,0.7)"}}>{t("recipeFavoritesSavedLabel")}</p>
+                              </div>
+                              <div className="flex items-center gap-2 ml-2 shrink-0">
+                                <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{background:"rgba(249,115,22,0.25)",color:"#fed7aa"}}>⏱ {r.time}</span>
+                                <button type="button" onClick={() => setFavoriteRecipes((prev) => prev.filter((_, fi) => fi !== i))} className="text-xs" style={{color:"rgba(255,100,100,0.7)"}} aria-label={lang === "es" ? "Quitar de favoritos" : "Remove from favorites"}>✕</button>
+                              </div>
+                            </div>
+                            <p className="mt-1 text-sm" style={{color:"rgba(255,255,255,0.72)"}}>{r.description}</p>
+                            {r.ingredients && r.ingredients.length > 0 && (<><h4 className="mt-3 mb-1 text-sm font-bold text-white">{t("ingredientsWord")}</h4><ul className="mb-2 space-y-1">{r.ingredients.map((ing, j) => <li key={j} className="text-sm flex items-center gap-1" style={{color: ing.includes("(need)") ? "#F97316" : "rgba(255,255,255,0.8)"}}><span style={{color:"#4ade80"}}>•</span> {ing}</li>)}</ul></>)}
+                            <h4 className="mb-1 text-sm font-bold text-white">{t("instructionsWord")}</h4>
+                            <p className="whitespace-pre-line text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.8)"}}>{r.instructions}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {recipeSubTab === "ai" && <>
+              {!recipesGenerated && (
+                <InstructionHint className="tf-recipe-empty-hint">
+                  {trackedItems.length === 0 ? t("recipeEmptyHintNone") : t("recipeEmptyHint").replace("{n}", String(trackedItems.length))}
+                </InstructionHint>
+              )}
+              <p className="tracker-add-step-label tf-recipe-step-label">{t("recipeGenerateStepLabel")}</p>
+              <button onClick={handleSuggestRecipes} disabled={recipesLoading || trackedItems.length === 0} className="glass-scan-btn inline-flex items-center gap-2 px-5 py-2.5 text-sm disabled:opacity-50 w-full justify-center">{recipesLoading ? <><span className="animate-spin">🤖</span> <AiBadge style={{ fontSize: "1.15em" }} /> {t("recipeLoading")}</> : <><AiBadge style={{ fontSize: "1.15em" }} /> {t("recipeGenerateBtn")}</>}</button>
+              {recipesLoading && <div className="mt-4 flex justify-center"><LoadingFoodFact lang={lang} /></div>}
+              {recipesGenerated && recipeSuggestions.length === 0 && <InstructionHint className="mt-4">{t("noMatches")}</InstructionHint>}
+              {recipeSuggestions.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  <p className="tracker-add-step-label" style={{ margin: "0 0 0.5rem", paddingLeft: "0.15rem" }}>{t("recipeExpandHint")}</p>
                 {recipeSuggestions.map((r, i) => (
                   <div key={i} className="rounded-2xl overflow-hidden" style={{background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.13)"}}>
                     <button
@@ -3791,13 +3806,9 @@ export default function TrackFreshDashboard() {
                 ))}
               </div>
             )}
-            {!recipesGenerated && (
-              <InstructionHint className="mt-4">
-                {trackedItems.length === 0 ? t("recipeEmptyHintNone") : t("recipeEmptyHint").replace("{n}", String(trackedItems.length))}
-              </InstructionHint>
-            )}
             </>}
-          </Card>
+            </Card>
+          </div>
           </>
         )}
         {activeTab === "shopping" && (
@@ -4161,222 +4172,228 @@ export default function TrackFreshDashboard() {
         )}
 
         {activeTab === "search-save" && (
-          <div className="space-y-4">
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div style={{textAlign:"center",marginBottom:"0.85rem"}}>
-                <p style={{color:"#f59e0b",fontWeight:700,fontSize:"0.85rem",letterSpacing:"0.13em",textTransform:"uppercase",margin:0}}>
-                  {lang === "es" ? "BUSCAR Y AHORRAR EN CAJA" : "SEARCH AND SAVE AT CHECKOUT"}
-                </p>
-              </div>
-              <h2 className="text-base font-bold text-white" style={{margin:"0 0 0.35rem",textAlign:"center"}}>
-                {lang === "es" ? "TrackFresh Buscar y Ahorrar — todos ganan" : "TrackFresh Search and Save — everyone wins"}
-              </h2>
-              <p className="text-xs text-green-200" style={{margin:"0 0 1rem",textAlign:"center",lineHeight:1.5}}>
-                {lang === "es"
-                  ? "Cuando encuentras un artículo que vence en 2 días o menos, TrackFresh te ayuda a ahorrar — y ayuda a la tienda a mover inventario antes de que se eche a perder."
-                  : "When you find an item that expires within 2 days, TrackFresh helps you save — and helps the store move inventory before it goes to waste."}
-              </p>
+          <div className="tf-search-save-page">
+            <div className="mb-1">
+              <button type="button" onClick={() => setActiveTab("more")} className="app-header-btn" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginBottom: "0.65rem" }} aria-label={lang === "es" ? "Volver" : "Back"}>
+                <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: "bold" }}>←</span> {lang === "es" ? "Atrás" : "Back"}
+              </button>
+              <span className="app-section-label">{t("searchSaveLabel")}</span>
+              <h2 className="app-section-h2" style={{ marginBottom: 0 }}>💰 {t("searchSaveTitle")}</h2>
+            </div>
 
-              <p className="tf-instruction-hint--inline text-xs mb-4" style={{ fontWeight: 700, lineHeight: 1.55 }}>
-                {t("searchSaveCheckoutIntro")}
-              </p>
-
-              {registerDiscountItems.length > 0 && (
-                <div
-                  className="tf-glass-window"
-                  style={{
-                    marginBottom: "1rem",
-                    padding: "0.85rem 1rem",
-                    border: "2px solid rgba(245, 158, 11, 0.65)",
-                    background: "linear-gradient(180deg, rgba(245,158,11,0.18) 0%, rgba(0,0,0,0.45) 100%)",
-                    boxShadow: "0 0 22px rgba(249, 115, 22, 0.28)",
-                  }}
-                >
-                  <p style={{ margin: 0, fontSize: "0.88rem", fontWeight: 800, color: "#fde68a", lineHeight: 1.45 }}>
-                    🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}
-                  </p>
-                  <button
-                    type="button"
-                    className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
-                    onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
-                  >
-                    {t("storeDiscountSee")} {t("storeDiscountBtn")} →
-                  </button>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-search-save-hero" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-search-save-hero-brand">
+                  <TrackFreshLogo showBroc={false} />
                 </div>
-              )}
+                <p className="tf-search-save-kicker">{t("searchSaveKicker")}</p>
+                <h3 className="tf-search-save-headline">{t("searchSaveHeadline")}</h3>
+                <p className="tf-search-save-body">{t("searchSaveHeroBody")}</p>
+                <p className="tf-search-save-badge">{t("searchSaveBadge")}</p>
+              </Card>
+            </div>
 
-              <div className="space-y-3 mb-4">
-                {registerDiscountItems.length > 0 ? (
-                  registerDiscountItems.map((it) => (
-                    <SearchSaveDiscountCard
-                      key={it.id}
-                      item={it}
-                      lang={lang}
-                      compact
-                      onClick={() => setStoreDiscountItem(it)}
-                    />
-                  ))
-                ) : (
-                  <InstructionHint style={{ margin: 0, fontSize: "0.8125rem" }}>
-                    {t("searchSaveNoEligible")}
-                  </InstructionHint>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-search-save-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <p className="tracker-add-step-label tf-search-save-step-label">{t("searchSaveYourDiscounts")}</p>
+                <InstructionHint style={{ margin: "0 0 0.85rem", fontSize: "0.8rem", lineHeight: 1.45 }}>{t("searchSaveCheckoutIntro")}</InstructionHint>
+
+                {registerDiscountItems.length > 0 && (
+                  <div className="tf-search-save-banner">
+                    <p>🏷️ {registerDiscountItems.length} {t("storeDiscountBanner")}</p>
+                    <button
+                      type="button"
+                      className="btn-amber-3d w-full rounded-xl py-2.5 text-sm font-bold mt-3"
+                      onClick={() => setStoreDiscountItem(registerDiscountItems[0])}
+                    >
+                      {t("storeDiscountSee")} {t("storeDiscountBtn")} →
+                    </button>
+                  </div>
                 )}
-              </div>
 
-              <div className="rounded-xl px-3 py-3 mb-4" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(250,204,21,0.28)"}}>
-                <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.65rem",color:"#fde68a"}}>
-                  🛒 {t("fdaDeptsTitle")}
-                </h3>
-                <ul style={{margin:0,padding:0,listStyle:"none",display:"flex",flexDirection:"column",gap:"0.55rem"}}>
+                <div className="space-y-3">
+                  {registerDiscountItems.length > 0 ? (
+                    registerDiscountItems.map((it) => (
+                      <SearchSaveDiscountCard
+                        key={it.id}
+                        item={it}
+                        lang={lang}
+                        compact
+                        onClick={() => setStoreDiscountItem(it)}
+                      />
+                    ))
+                  ) : (
+                    <InstructionHint style={{ margin: 0, fontSize: "0.8125rem" }}>
+                      {t("searchSaveNoEligible")}
+                    </InstructionHint>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-search-save-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <p className="tracker-add-step-label tf-search-save-step-label">{t("searchSaveHowItWorks")}</p>
+                <ol className="tf-search-save-steps">
                   {[
-                    { icon: "🥖", text: t("fdaDeptBakery") },
-                    { icon: "🥩", text: t("fdaDeptMeat") },
-                    { icon: "🥛", text: t("fdaDeptDairy") },
-                  ].map(({ icon, text }) => (
-                    <li key={text} style={{display:"flex",gap:"0.5rem",alignItems:"flex-start"}}>
-                      <span aria-hidden="true" style={{flexShrink:0}}>{icon}</span>
-                      <span className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</span>
+                    ["searchSaveStep1Label", "searchSaveStep1Body"],
+                    ["searchSaveStep2Label", "searchSaveStep2Body"],
+                    ["searchSaveStep3Label", "searchSaveStep3Body"],
+                  ].map(([labelKey, bodyKey], i) => (
+                    <li key={labelKey} className="tf-search-save-step">
+                      <span className="tf-search-save-step__num" aria-hidden>{i + 1}</span>
+                      <p className="tf-search-save-step__text">
+                        <strong>{t(labelKey)}</strong> {t(bodyKey)}
+                      </p>
                     </li>
                   ))}
-                </ul>
-              </div>
+                </ol>
+              </Card>
+            </div>
 
-              <p style={{textAlign:"center",fontWeight:900,fontSize:"1.35rem",color:"#f59e0b",margin:"0 0 1rem"}}>20% OFF</p>
-              <div className="space-y-3 mb-4">
-                {[
-                  [lang === "es" ? "Para consumidores" : "For consumers", lang === "es" ? "Ahorra con 'Buscar y Ahorrar' en productos que aún están buenos — no esperes al desperdicio." : "'Search & Save' money on food that's still good — don't wait until it's waste."],
-                  [lang === "es" ? "Para tiendas" : "For stores", lang === "es" ? "Mejor control de inventario: vende antes del vencimiento y reduce mermas." : "Better inventory control: sell through before expiry and cut shrinkage."],
-                  [lang === "es" ? "Para TrackFresh" : "For TrackFresh", lang === "es" ? "Valor añadido: engagement del usuario/ mayores ganancias para proveedores/ la app de referencia — menos desperdicio de alimentos, todo rastreado." : "Added value: User engagement/ Vendor increased profits/ The 'go to' App less food waste fully tracked."],
-                ].map(([title, text]) => (
-                  <div key={title} className="rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                    <h3 className="text-sm font-bold text-white" style={{margin:"0 0 0.35rem"}}>{title}</h3>
-                    <p className="text-xs text-green-100" style={{margin:0,lineHeight:1.45}}>{text}</p>
-                  </div>
-                ))}
-              </div>
-              <ol className="space-y-3" style={{margin:0,padding:0,listStyle:"none"}}>
-                {[
-                  [lang === "es" ? "Rastrea" : "Track", lang === "es" ? "fechas mientras recorres los pasillos." : "dates as you peruse the aisles."],
-                  [lang === "es" ? "Elegible:" : "Eligible:", lang === "es" ? "fecha de vencimiento o usar antes dentro de 2 días." : "expiry date or use-by date within 2 days."],
-                  [lang === "es" ? "En caja:" : "At checkout:", lang === "es" ? "presenta la app, muestra la fecha de vencimiento; el cajero verifica, escanea y etiqueta el artículo y aplica el código de descuento." : "present the app and show the expiry date; clerk verifies, scans and tags the item, then applies the discount code."],
-                ].map(([label, text], i) => (
-                  <li key={label} className="flex items-start gap-3">
-                    <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"1.5rem",height:"1.5rem",borderRadius:"999px",background:"rgba(245,158,11,0.25)",color:"#f59e0b",fontSize:"0.75rem",fontWeight:800,flexShrink:0}}>{i + 1}</span>
-                    <span className="text-xs text-green-100" style={{lineHeight:1.45}}><strong className="text-white">{label}</strong> {text}</span>
-                  </li>
-                ))}
-              </ol>
-              <p className="text-xs text-green-300 opacity-80" style={{margin:"0.85rem 0 0",textAlign:"center"}}>
-                {lang === "es" ? "Programa piloto en tiendas participantes." : "Pilot at participating stores."}
-              </p>
-            </Card>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-search-save-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <p className="tracker-add-step-label tf-search-save-step-label">{t("searchSaveWhoWins")}</p>
+                <div className="tf-search-save-win-grid">
+                  {[
+                    ["searchSaveForConsumers", "searchSaveForConsumersBody"],
+                    ["searchSaveForStores", "searchSaveForStoresBody"],
+                    ["searchSaveForTrackFresh", "searchSaveForTrackFreshBody"],
+                  ].map(([titleKey, bodyKey]) => (
+                    <div key={titleKey} className="tf-search-save-win-card">
+                      <h3>{t(titleKey)}</h3>
+                      <p>{t(bodyKey)}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="tf-search-save-depts" style={{ marginTop: "0.85rem" }}>
+                  <h3>🛒 {t("fdaDeptsTitle")}</h3>
+                  <ul>
+                    {[
+                      { icon: "🥖", text: t("fdaDeptBakery") },
+                      { icon: "🥩", text: t("fdaDeptMeat") },
+                      { icon: "🥛", text: t("fdaDeptDairy") },
+                    ].map(({ icon, text }) => (
+                      <li key={text}>
+                        <span aria-hidden>{icon}</span>
+                        <span>{text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <p className="tf-search-save-pilot">{t("searchSavePilotNote")}</p>
+              </Card>
+            </div>
           </div>
         )}
 
         {activeTab === "partners" && (
-          <div className="space-y-4">
-
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-1">
-              <button onClick={() => setActiveTab("more")} className="app-header-btn" style={{display:"inline-flex",alignItems:"center",gap:"4px"}}> Back</button>
-              <div>
-                <span className="app-section-label">Business</span>
-                <h2 className="app-section-h2" style={{marginBottom:0}}>🤝 Partners</h2>
-              </div>
+          <div className="tf-partner-page">
+            <div className="mb-1">
+              <button type="button" onClick={() => setActiveTab("more")} className="app-header-btn" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginBottom: "0.65rem" }} aria-label={lang === "es" ? "Volver" : "Back"}>
+                <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: "bold" }}>←</span> {lang === "es" ? "Atrás" : "Back"}
+              </button>
+              <span className="app-section-label">{t("partnersLabel")}</span>
+              <h2 className="app-section-h2" style={{ marginBottom: 0 }}>🤝 {t("partnersTitle")}</h2>
             </div>
 
-            {/* Hero tagline */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",textAlign:"center",padding:"1.75rem 1.25rem"}}>
-              <div style={{fontSize:"2.5rem",marginBottom:"0.5rem"}}>🌍</div>
-              <h2 className="text-xl font-extrabold text-white mb-2">The TrackFresh.AI Ecosystem</h2>
-              <p className="text-sm text-green-200 leading-relaxed">TrackFresh connects home cooks, grocery retailers, food brands, and sustainability partners — building a smarter, less wasteful food system together.</p>
-              <p className="text-sm text-white font-semibold mt-3">One platform. One goal: waste less, eat better.</p>
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                {[["🛒","Shoppers"],["🏪","Supermarkets"],["🏭","Brands"]].map(([icon, label]) => (
-                  <div key={label} className="rounded-xl py-2 px-1 text-center" style={{background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)"}}>
-                    <div style={{fontSize:"1.4rem"}}>{icon}</div>
-                    <div style={{fontSize:"0.6rem",fontWeight:700,color:"#86efac",marginTop:"0.2rem"}}>{label}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-partner-hero" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-partner-hero-brand">
+                  <TrackFreshLogo showBroc={false} />
+                </div>
+                <p className="tf-partner-hero-title">{t("partnersHeroTitle")}</p>
+                <p className="tf-partner-hero-body">{t("partnersHeroBody")}</p>
+                <p className="tf-partner-hero-goal">{t("partnersHeroGoal")}</p>
+                <div className="tf-partner-pillars">
+                  {[["🛒", "partnersPillarShoppers"], ["🏪", "partnersPillarSupermarkets"], ["🏷️", "partnersPillarBrands"]].map(([icon, key]) => (
+                    <div key={key} className="tf-partner-pillar">
+                      <div className="tf-partner-pillar__icon" aria-hidden>{icon}</div>
+                      <div className="tf-partner-pillar__label">{t(key)}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
 
-            {/* Supermarkets */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{fontSize:"1.75rem"}}>🏪</span>
-                <h2 className="text-lg font-bold text-white">Supermarkets</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-3">Build lasting loyalty by meeting your customers where they already manage their food.</p>
-              <div className="space-y-2 mb-4">
-                {[
-                  ["📍","Be listed in the TrackFresh store directory — drive traffic directly to your store"],
-                  ["🔁","Loyalty program integration — deliver promotions through your existing loyalty infrastructure"],
-                  ["📊","Access aggregate food waste trends from your region — no personal data shared"],
-                  ["🎯","Reach eco-conscious shoppers who are actively reducing waste and buying fresh"],
-                ].map(([icon, text]) => (
-                  <div key={text} className="flex gap-2 items-start rounded-xl px-3 py-2" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-                    <span style={{fontSize:"1rem",flexShrink:0}}>{icon}</span>
-                    <p className="text-xs text-green-100 leading-relaxed">{text}</p>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-partner-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-partner-section-head">
+                  <span className="tf-partner-section-head__icon" aria-hidden>🏪</span>
+                  <div>
+                    <p className="tf-partner-section-label">{t("partnersLabel")}</p>
+                    <h3 className="tf-partner-section-title">{t("partnersSupermarketsTitle")}</h3>
                   </div>
-                ))}
-              </div>
-              <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>🤝 Partner with us →</a>
-            </Card>
+                </div>
+                <p className="tf-partner-section-intro">{t("partnersSupermarketsIntro")}</p>
+                <p className="tracker-add-step-label tf-partner-step-label">{t("partnersSellingPoints")}</p>
+                <div className="tf-partner-bullets">
+                  {[["📍", "partnersSupermarket1"], ["🔁", "partnersSupermarket2"], ["📊", "partnersSupermarket3"], ["🎯", "partnersSupermarket4"], ["💰", "partnersSupermarket5"]].map(([icon, key]) => (
+                    <div key={key} className={`tf-partner-bullet${key === "partnersSupermarket5" ? " tf-partner-bullet--featured" : ""}`}>
+                      <span className="tf-partner-bullet__icon" aria-hidden>{icon}</span>
+                      <p className="tf-partner-bullet__text">{t(key)}</p>
+                    </div>
+                  ))}
+                </div>
+                <a href="mailto:hello@trackfresh.ai?subject=Supermarket%20Partnership" className="glass-scan-btn tf-partner-cta text-sm py-3">🤝 {t("partnersSupermarketsCta")} →</a>
+              </Card>
+            </div>
 
-            {/* Food Manufacturers */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)"}}>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{fontSize:"1.75rem"}}>🏭</span>
-                <h2 className="text-lg font-bold text-white">Food Manufacturers</h2>
-              </div>
-              <p className="text-xs text-green-200 mb-3">Put your brand in front of millions of meal planners — without ever touching their personal data.</p>
-              <div className="space-y-2 mb-3">
-                {[
-                  ["🍽️","Sponsored brand placements in the TrackFresh Meal Planner — your products appear naturally in weekly recipe suggestions"],
-                  ["🔒","Privacy-first: promotions are delivered through supermarket loyalty systems — you never receive customer data"],
-                  ["✅","Customers opt in to brand promotions through their supermarket loyalty account"],
-                  ["📈","Measure impact through coupon redemptions and loyalty program data — tracked back to TrackFresh placements"],
-                ].map(([icon, text]) => (
-                  <div key={text} className="flex gap-2 items-start rounded-xl px-3 py-2" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)"}}>
-                    <span style={{fontSize:"1rem",flexShrink:0}}>{icon}</span>
-                    <p className="text-xs text-green-100 leading-relaxed">{text}</p>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-partner-section" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-partner-section-head">
+                  <span className="tf-partner-section-head__icon" aria-hidden>🏷️</span>
+                  <div>
+                    <p className="tf-partner-section-label">{t("partnersLabel")}</p>
+                    <h3 className="tf-partner-section-title">{t("partnersManufacturersTitle")}</h3>
                   </div>
-                ))}
-              </div>
-              <div className="rounded-xl px-3 py-2 mb-4" style={{background:"rgba(255,102,0,0.12)",border:"1px solid rgba(255,102,0,0.35)"}}>
-                <p className="text-xs text-orange-200 font-semibold">Example: Kraft sponsors a "Mac & Cheese Night" meal slot. The suggestion appears in the user's weekly plan. A coupon is delivered through their supermarket loyalty app. Kraft sees redemptions — not names.</p>
-              </div>
-              <a href="#" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>📩 Learn about placements →</a>
-            </Card>
+                </div>
+                <p className="tf-partner-section-intro">{t("partnersManufacturersIntro")}</p>
+                <p className="tracker-add-step-label tf-partner-step-label">{t("partnersSellingPoints")}</p>
+                <div className="tf-partner-bullets">
+                  {[["🍽️", "partnersManufacturer1"], ["🔒", "partnersManufacturer2"], ["✅", "partnersManufacturer3"], ["📈", "partnersManufacturer4"]].map(([icon, key]) => (
+                    <div key={key} className="tf-partner-bullet">
+                      <span className="tf-partner-bullet__icon" aria-hidden>{icon}</span>
+                      <p className="tf-partner-bullet__text">{t(key)}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="tf-partner-example">
+                  <p className="tf-partner-example__label">{t("partnersExampleLabel")}</p>
+                  <p>{t("partnersExampleKraft")}</p>
+                </div>
+                <a href="mailto:hello@trackfresh.ai?subject=Brand%20Placements" className="glass-scan-btn tf-partner-cta text-sm py-3">📩 {t("partnersManufacturersCta")} →</a>
+              </Card>
+            </div>
 
-            {/* Privacy Principle */}
-            <Card style={{background:"linear-gradient(160deg,#1a0a00 0%,#2d1200 100%)",border:"2px solid rgba(255,102,0,0.5)"}}>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{fontSize:"1.5rem"}}>🔒</span>
-                <h2 className="text-base font-bold text-orange-300">Customer Data Stays Private. Always.</h2>
-              </div>
-              <p className="text-xs text-orange-100 leading-relaxed mb-3">TrackFresh never sells or shares individual customer data with brand partners or manufacturers. All promotions flow through supermarket loyalty systems or anonymized in-app placements.</p>
-              <div className="space-y-2">
-                {[
-                  "Manufacturers see redemption counts — not customer names or contact details",
-                  "Supermarkets manage their own customer relationships — TrackFresh supports but does not own that data",
-                ].map((point) => (
-                  <div key={point} className="flex gap-2 items-start">
-                    <span className="text-orange-400 font-bold text-xs mt-0.5">✓</span>
-                    <p className="text-xs text-orange-100">{point}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-partner-privacy">
+                <div className="tf-partner-section-head">
+                  <span className="tf-partner-section-head__icon" aria-hidden>🔒</span>
+                  <h3 className="tf-partner-privacy__title">{t("partnersPrivacyTitle")}</h3>
+                </div>
+                <p className="tf-partner-privacy__intro">{t("partnersPrivacyIntro")}</p>
+                <div className="tf-partner-privacy__points">
+                  {["partnersPrivacy1", "partnersPrivacy3"].map((key) => (
+                    <div key={key} className="tf-partner-privacy__point">
+                      <span className="tf-partner-privacy__check" aria-hidden>✓</span>
+                      <p>{t(key)}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
 
-            {/* Contact CTA */}
-            <Card style={{background:"linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)",textAlign:"center",padding:"1.75rem 1.25rem"}}>
-              <div style={{fontSize:"2rem",marginBottom:"0.5rem"}}>📬</div>
-              <h2 className="text-lg font-bold text-white mb-2">Interested in Partnering?</h2>
-              <p className="text-sm text-green-200 mb-4">Whether you&apos;re a supermarket or food brand — we&apos;d love to hear from you.</p>
-              <a href="mailto:hello@trackfresh.ai" className="glass-scan-btn text-sm py-3" style={{textDecoration:"none",display:"flex",justifyContent:"center"}}>✉️ hello@trackfresh.ai</a>
-            </Card>
+            <div className="tf-glass-window">
+              <Card className="tracker-items-card tf-partner-contact" style={{ background: "linear-gradient(160deg,#064e3b 0%,#065f46 45%,#047857 100%)" }}>
+                <div className="tf-partner-contact__icon" aria-hidden>📬</div>
+                <h3 className="tf-partner-contact__title">{t("partnersContactTitle")}</h3>
+                <p className="tf-partner-contact__intro">{t("partnersContactIntro")}</p>
+                <a href="mailto:hello@trackfresh.ai?subject=Partnership%20Inquiry" className="glass-scan-btn tf-partner-cta text-sm py-3">✉️ hello@trackfresh.ai</a>
+              </Card>
+            </div>
           </div>
         )}
                     
@@ -4458,17 +4475,22 @@ export default function TrackFreshDashboard() {
 
 
         {activeTab === "suggestions" && (
-          <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center px-2 pt-2">
-              <div className="text-4xl mb-2">💬</div>
-              <h2 className="text-2xl font-bold text-white">{lang === "es" ? "Tus Ideas Importan" : "Your Ideas Matter"}</h2>
-              <p className="text-sm mt-2" style={{color:"rgba(255,255,255,0.7)"}}>{lang === "es" ? "Somos un pequeño equipo con una gran misión. Tu opinión construye lo que creamos." : "We're a small team with a big mission. Your feedback directly shapes what we build next."}</p>
+          <div className="tf-suggestions-page">
+            <div className="mb-1">
+              <button type="button" onClick={() => setActiveTab("more")} className="app-header-btn" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginBottom: "0.65rem" }} aria-label={lang === "es" ? "Volver" : "Back"}>
+                <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: "bold" }}>←</span> {lang === "es" ? "Atrás" : "Back"}
+              </button>
             </div>
 
-            {/* Suggestion Form */}
-            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
-              <h3 className="font-bold text-white text-lg">{lang === "es" ? "Deja una Sugerencia" : "Leave a Suggestion"}</h3>
+            <div className="tf-suggestions-hero">
+              <div className="tf-suggestions-hero__icon" aria-hidden>💬</div>
+              <h2 className="tf-suggestions-hero__title">{t("suggestionsTitle")}</h2>
+              <p className="tf-suggestions-hero__intro">{t("suggestionsIntro")}</p>
+            </div>
+
+            <div className="tf-glass-window">
+              <div className="tf-suggestions-card">
+              <h3 className="tf-suggestions-card__title">{t("suggestionsLeaveTitle")}</h3>
               <select
                 value={suggCategory}
                 onChange={e => setSuggCategory(e.target.value)}
@@ -4517,61 +4539,66 @@ export default function TrackFreshDashboard() {
               >
                 {suggSubmitting ? "..." : suggSubmitted ? (lang === "es" ? "✅ ¡Enviado!" : "✅ Sent! Thank you!") : (lang === "es" ? "Enviar Sugerencia" : "Send Suggestion")}
               </button>
-              {suggSubmitted && <p className="text-center text-sm" style={{color:"rgba(255,255,255,0.6)"}}>{lang === "es" ? "Leemos cada sugerencia. Las mejores ideas se construyen." : "We read every suggestion. Top ideas get built."}</p>}
+              {suggSubmitted && <p className="text-center text-sm" style={{color:"rgba(253,224,71,0.75)"}}>{lang === "es" ? "Leemos cada sugerencia. Las mejores ideas se construyen." : "We read every suggestion. Top ideas get built."}</p>}
+              </div>
             </div>
 
-            {/* Community Votes */}
-            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
-              <h3 className="font-bold text-white text-lg">🗳️ {lang === "es" ? "Vota por lo Siguiente" : "Vote What We Build Next"}</h3>
-              <p className="text-xs" style={{color:"rgba(255,255,255,0.5)"}}>{lang === "es" ? "Toca para votar por tu función favorita" : "Tap to vote for your favorite feature"}</p>
+            <div className="tf-glass-window">
+              <div className="tf-suggestions-card">
+              <h3 className="tf-suggestions-card__title">🗳️ {t("suggestionsVoteTitle")}</h3>
+              <p className="tf-suggestions-vote-hint">{t("suggestionsVoteHint")}</p>
               {[
-                {id:"family", en:"Family & Friends Mode — share your fridge, vote on dinner, send meal polls to the whole household", es:"Modo Familia y Amigos — comparte tu refrigerador, vota la cena, envía encuestas a toda la familia"},
-                {id:"push", en:"Push notifications before items expire", es:"Notificaciones antes de que los alimentos venzan"},
-                {id:"feedback", en:"In-app feedback on every section", es:"Comentarios dentro de cada sección"},
-                {id:"household", en:"Shared household accounts", es:"Cuentas compartidas para el hogar"}
-              ].map(item => {
+                { id: "alerts", key: "voteAlerts" },
+                { id: "family", key: "voteFamily" },
+                { id: "dinner", key: "voteDinner" },
+                { id: "autolist", key: "voteAutoList" },
+                { id: "savings", key: "voteSavings" },
+                { id: "nearby", key: "voteNearby" },
+              ].map((item) => {
                 const voteKey = "sugg_vote_" + item.id;
                 const count = parseInt(localStorage.getItem(voteKey) || "0");
                 const voted = localStorage.getItem(voteKey + "_voted") === "1";
                 return (
-                  <div key={item.id} className="flex items-center justify-between rounded-xl px-3 py-3" style={{background:"rgba(255,255,255,0.06)"}}>
-                    <span className="text-sm text-white flex-1 pr-3">{lang === "es" ? item.es : item.en}</span>
+                  <div key={item.id} className="tf-suggestions-vote-row">
+                    <span className="tf-suggestions-vote-text">{t(item.key)}</span>
                     <button
+                      type="button"
                       onClick={() => {
                         if (voted) return;
                         localStorage.setItem(voteKey, String(count + 1));
                         localStorage.setItem(voteKey + "_voted", "1");
                         setVoteCounts(v => ({...v, [item.id]: count + 1}));
                       }}
-                      className="flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold"
-                      style={{background: voted ? "rgba(183,214,58,0.3)" : "rgba(183,214,58,0.15)", color:"#B7D63A", border:"1px solid rgba(183,214,58,0.4)"}}
+                      className={`tf-suggestions-vote-btn${voted ? " tf-suggestions-vote-btn--voted" : ""}`}
                     >
                       👍 {voteCounts[item.id] ?? count}
                     </button>
                   </div>
                 );
               })}
+              </div>
             </div>
 
-            {/* Recently Added */}
-            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)"}}>
-              <h3 className="font-bold text-white text-lg">✅ {lang === "es" ? "Agregado por Usuarios" : "Added From Your Feedback"}</h3>
+            <div className="tf-glass-window">
+              <div className="tf-suggestions-card">
+              <h3 className="tf-suggestions-card__title">✅ {t("suggestionsAddedTitle")}</h3>
               {[
                 {en:"Receipt scanning — scan your grocery receipt to add items instantly", es:"Escaneo de recibos — agrega artículos escaneando tu ticket"},
                 {en:"Bilingual support — full English & Spanish throughout the app", es:"Soporte bilingüe — inglés y español en toda la app"},
                 {en:"FDA Recalls panel — real-time food safety alerts", es:"Panel de retiros FDA — alertas de seguridad alimentaria en tiempo real"}
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <span className="text-green-400 mt-0.5">✓</span>
-                  <span className="text-sm" style={{color:"rgba(255,255,255,0.8)"}}>{lang === "es" ? item.es : item.en}</span>
+                <div key={i} className="tf-suggestions-added-item">
+                  <span className="tf-suggestions-added-check" aria-hidden>✓</span>
+                  <span>{lang === "es" ? item.es : item.en}</span>
                 </div>
               ))}
+              </div>
             </div>
 
-            {/* Device Backup */}
-            <div className="rounded-2xl p-4 space-y-3" style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(183,214,58,0.25)"}}>
-              <h3 className="font-bold text-white text-lg">📲 {t("backupTitle")}</h3>
-              <p className="text-sm leading-relaxed" style={{color:"rgba(255,255,255,0.72)"}}>{t("backupDesc")}</p>
+            <div className="tf-glass-window">
+              <div className="tf-suggestions-card" style={{ borderColor: "rgba(253, 224, 71, 0.38)" }}>
+              <h3 className="tf-suggestions-card__title">📲 {t("backupTitle")}</h3>
+              <p className="text-sm leading-relaxed" style={{color:"rgba(253,224,71,0.85)", fontWeight: 600}}>{t("backupDesc")}</p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   type="button"
@@ -4597,8 +4624,9 @@ export default function TrackFreshDashboard() {
                 onChange={handleImportBackup}
               />
               {backupMessage && (
-                <p className="text-sm" style={{color:"rgba(183,214,58,0.95)"}}>{backupMessage}</p>
+                <p className="text-sm" style={{color:"rgba(253,224,71,0.9)"}}>{backupMessage}</p>
               )}
+              </div>
             </div>
 
             {/* Data & Privacy */}
@@ -4684,6 +4712,7 @@ export default function TrackFreshDashboard() {
                 <p style={{ margin: "0 0 0.65rem", fontSize: "0.76rem", color: "rgba(255,255,255,0.82)", lineHeight: 1.45 }}>
                   {usdaAlertNoteForLang(lang)}
                 </p>
+                <InstructionHint style={{ margin: "0 0 0.65rem", fontSize: "0.72rem", lineHeight: 1.4 }}>{t("externalLinkReturnHint")}</InstructionHint>
                 <button
                   type="button"
                   onClick={() => window.open(USDA_FSIS_RECALLS_URL, "_blank")}
@@ -4736,6 +4765,7 @@ export default function TrackFreshDashboard() {
                 </div>
               </div>
               <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <InstructionHint style={{ margin: 0, fontSize: "0.72rem", lineHeight: 1.4 }}>{t("externalLinkReturnHint")}</InstructionHint>
                 <button onClick={() => window.open("https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#dc2626,#991b1b)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewAll")} &#8594;</button>
                 <button onClick={() => window.open(USDA_FSIS_RECALLS_URL, "_blank")} style={{ width: "100%", background: "linear-gradient(to bottom,#b45309,#92400e)", color: "white", border: "none", borderRadius: "10px", padding: "0.7rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>{t("fdaViewUsda")} &#8594;</button>
                 <button type="button" onClick={() => setShowRecallsPanel(false)} className="tf-glass-primary-btn" style={{ width: "100%", padding: "0.7rem", fontSize: "0.85rem" }}>{t("fdaClose")}</button>
