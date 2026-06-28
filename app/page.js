@@ -693,6 +693,7 @@ export default function TrackFreshDashboard() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertItem, setAlertItem] = useState({ name: "", daysLeft: 0 });
   const [editingItem, setEditingItem] = useState(null);
+  const [organizeQuickDateItem, setOrganizeQuickDateItem] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
   const [recipeSuggestions, setRecipeSuggestions] = useState([]);
   const [recipesGenerated, setRecipesGenerated] = useState(false);
@@ -1209,6 +1210,14 @@ export default function TrackFreshDashboard() {
   const handleOrganizeQuickDate = (id, useByDate) => {
     if (!useByDate) return;
     setTrackedItems((prev) => prev.map((it) => (it.id === id ? { ...it, useByDate } : it)));
+  };
+  const openOrganizeQuickDateModal = (item) => {
+    setOrganizeQuickDateItem({
+      id: item.id,
+      name: item.name,
+      brand: item.brand,
+      useByDate: item.useByDate || "",
+    });
   };
   const handleSaveEdit = () => { if (!editingItem) return; setTrackedItems(prev => prev.map(it => it.id === editingItem.id ? { ...editingItem } : it)); setEditingItem(null); };
 
@@ -2818,6 +2827,38 @@ export default function TrackFreshDashboard() {
           </div>
         )}
 
+        {organizeQuickDateItem && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
+            <div className="w-full max-w-md rounded-2xl p-6 tf-modal-glass-surface">
+              <h2 className="mb-2 text-lg tf-modal-accent-h--mint">📅 {t("organizeAddDateBtn")}</h2>
+              <p className="mb-4 text-sm font-semibold tf-food-item-name" style={{ color: "rgba(255,255,255,0.9)", margin: 0 }}>
+                {itemDisplayName(organizeQuickDateItem)}
+              </p>
+              <div>
+                <label className="mb-1 flex items-center gap-1.5 text-sm font-medium" style={{ color: "#fff" }}>
+                  <Calendar className="h-4 w-4 shrink-0" style={{ color: "var(--tf-instruction-text)" }} aria-hidden />
+                  {t("expDateLabel")}
+                </label>
+                <input
+                  type="date"
+                  value={organizeQuickDateItem.useByDate}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setOrganizeQuickDateItem((prev) => (prev ? { ...prev, useByDate: value } : prev));
+                    if (!value) return;
+                    handleOrganizeQuickDate(organizeQuickDateItem.id, value);
+                    setOrganizeQuickDateItem(null);
+                  }}
+                  onClick={(e) => openDatePicker(e.currentTarget)}
+                  className="tf-date-calendar-input w-full rounded-xl px-3 py-2 text-sm"
+                  style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "2px solid #B7D63A" }}
+                />
+              </div>
+              <button type="button" onClick={() => setOrganizeQuickDateItem(null)} className="mt-4 w-full rounded-xl py-2 text-sm tf-glass-primary-btn">{t("cancel")}</button>
+            </div>
+          </div>
+        )}
+
         {editingItem && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center tf-premium-overlay p-4">
             <div className="w-full max-w-md rounded-2xl p-6 tf-modal-glass-surface">
@@ -3390,19 +3431,20 @@ export default function TrackFreshDashboard() {
                             </button>
                           </div>
                           {it.daysLeft === null ? (
-                            <div className="tf-organize-date-row">
+                            <div className="tf-organize-date-row" onClick={(e) => e.stopPropagation()}>
                               <span className="tf-pending-queue-chip tf-pending-queue-chip--exp">{t("organizeNeedsExpiryDate")}</span>
-                              <label className="tf-organize-date-btn" title={t("organizeAddDateBtn")} onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                className="tf-organize-date-btn"
+                                title={t("organizeAddDateBtn")}
+                                aria-label={t("organizeAddDateBtn")}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openOrganizeQuickDateModal(it);
+                                }}
+                              >
                                 <span aria-hidden>📅</span>
-                                <input
-                                  type="date"
-                                  value={it.useByDate || ""}
-                                  className="tf-date-calendar-input tf-organize-date-input"
-                                  onClick={(e) => { e.stopPropagation(); openDatePicker(e.currentTarget); }}
-                                  onChange={(e) => handleOrganizeQuickDate(it.id, e.target.value)}
-                                  aria-label={t("organizeAddDateBtn")}
-                                />
-                              </label>
+                              </button>
                             </div>
                           ) : null}
                           {expanded && (
@@ -5141,6 +5183,7 @@ export default function TrackFreshDashboard() {
           })()}
         </div>
       )}
+
 
     </>
   );

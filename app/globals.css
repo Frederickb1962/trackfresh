@@ -700,6 +700,11 @@ input[type="date"].tf-date-calendar-input {
   overflow: hidden;
 }
 
+/* Inline date picker on organize rows — overflow:hidden clips iOS native calendar */
+.tf-pending-queue-item:has(.tf-organize-date-row) {
+  overflow: visible;
+}
+
 .tf-pending-queue-item--open {
   border-color: rgba(250, 204, 21, 0.55);
   box-shadow: 0 0 20px rgba(250, 204, 21, 0.12);
@@ -846,18 +851,8 @@ input[type="date"].tf-date-calendar-input {
   cursor: pointer;
   font-size: 1.1rem;
   line-height: 1;
-}
-
-.tf-organize-date-btn input.tf-organize-date-input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
   padding: 0;
-  border: none;
-  cursor: pointer;
+  color: inherit;
 }
 
 .tf-recipe-tabs {

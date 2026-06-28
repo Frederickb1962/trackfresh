@@ -2,21 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { FOOD_FACTS } from "../../lib/foodFacts";
-
-function nextIndex(prev) {
-  if (FOOD_FACTS.length <= 1) return 0;
-  let i = Math.floor(Math.random() * FOOD_FACTS.length);
-  while (i === prev) i = Math.floor(Math.random() * FOOD_FACTS.length);
-  return i;
-}
+import { nextFoodFactIndex } from "../../lib/foodFactRotation";
 
 /** Rotating food fact for loading / scanning screens. Mount only while loading. */
 export function LoadingFoodFact({ lang, className = "", style }) {
   const isEs = lang === "es";
-  const [idx, setIdx] = useState(() => Math.floor(Math.random() * FOOD_FACTS.length));
+  const [idx, setIdx] = useState(() => nextFoodFactIndex());
 
   useEffect(() => {
-    const id = setInterval(() => setIdx((prev) => nextIndex(prev)), 4500);
+    const id = setInterval(() => setIdx(nextFoodFactIndex()), 4500);
     return () => clearInterval(id);
   }, []);
 
